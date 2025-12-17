@@ -121,10 +121,7 @@ Parameters:
 """
 
     def render(self, mesh, num_views=8, resolution=512, render_mode="normal"):
-        try:
-            from trellis2.utils import render_utils
-        except ImportError:
-            raise ImportError("Could not import trellis2 render_utils")
+        from ..trellis2.utils import render_utils
 
         mesh_obj = mesh["mesh"]
 
@@ -181,11 +178,8 @@ Requires HDRI environment maps in TRELLIS.2 assets folder.
 """
 
     def render_video(self, mesh, fps=15, filename_prefix="trellis2_video"):
-        try:
-            from trellis2.utils import render_utils
-            import imageio
-        except ImportError as e:
-            raise ImportError(f"Could not import required modules: {e}")
+        from ..trellis2.utils import render_utils
+        import imageio
 
         mesh_obj = mesh["mesh"]
 

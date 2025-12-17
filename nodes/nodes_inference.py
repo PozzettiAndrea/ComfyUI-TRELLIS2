@@ -179,10 +179,7 @@ or for experimenting with latent manipulation.
     def decode(self, pipeline, latent):
         pipe = pipeline["pipeline"]
 
-        try:
-            from trellis2.modules.sparse import SparseTensor
-        except ImportError:
-            raise ImportError("Could not import trellis2 modules")
+        from ..trellis2.modules.sparse import SparseTensor
 
         # Unpack latent
         shape_slat = SparseTensor(
