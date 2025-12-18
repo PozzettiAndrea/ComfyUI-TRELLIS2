@@ -480,6 +480,141 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         return out_mesh
     
     @torch.no_grad()
+    def run_shape(
+        self,
+        cond: dict,
+        num_samples: int = 1,
+        seed: int = 42,
+        sparse_structure_sampler_params: dict = {},
+        shape_slat_sampler_params: dict = {},
+        pipeline_type: Optional[str] = None,
+        max_num_tokens: int = 49152,
+    ) -> Tuple[List[Mesh], SparseTensor, int]:
+        """
+        Run shape generation only (no texture).
+
+        Args:
+            cond (dict): The conditioning dict with 'cond_512', 'cond_1024' (optional), 'neg_cond'.
+            num_samples (int): The number of samples to generate.
+            seed (int): The random seed.
+            sparse_structure_sampler_params (dict): Additional parameters for the sparse structure sampler.
+            shape_slat_sampler_params (dict): Additional parameters for the shape SLat sampler.
+            pipeline_type (str): The type of the pipeline. Options: '512', '1024', '1024_cascade', '1536_cascade'.
+            max_num_tokens (int): The maximum number of tokens to use.
+
+        Returns:
+            Tuple of (meshes, shape_slat, resolution)
+        """
+        pipeline_type = pipeline_type or self.default_pipeline_type
+
+        # Validate models
+        if pipeline_type == '512':
+            assert 'shape_slat_flow_model_512' in self.models, "No 512 resolution shape SLat flow model found."
+        elif pipeline_type == '1024':
+            assert 'shape_slat_flow_model_1024' in self.models, "No 1024 resolution shape SLat flow model found."
+        elif pipeline_type in ('1024_cascade', '1536_cascade'):
+            assert 'shape_slat_flow_model_512' in self.models, "No 512 resolution shape SLat flow model found."
+            assert 'shape_slat_flow_model_1024' in self.models, "No 1024 resolution shape SLat flow model found."
+        else:
+            raise ValueError(f"Invalid pipeline type: {pipeline_type}")
+
+        # Extract conditioning
+        cond_512 = {'cond': cond['cond_512'], 'neg_cond': cond['neg_cond']}
+        cond_1024 = {'cond': cond['cond_1024'], 'neg_cond': cond['neg_cond']} if 'cond_1024' in cond else None
+
+        torch.manual_seed(seed)
+        ss_res = {'512': 32, '1024': 64, '1024_cascade': 32, '1536_cascade': 32}[pipeline_type]
+        coords = self.sample_sparse_structure(
+            cond_512, ss_res,
+            num_samples, sparse_structure_sampler_params
+        )
+
+        if pipeline_type == '512':
+            shape_slat = self.sample_shape_slat(
+                cond_512, self.models['shape_slat_flow_model_512'],
+                coords, shape_slat_sampler_params
+            )
+            res = 512
+        elif pipeline_type == '1024':
+            shape_slat = self.sample_shape_slat(
+                cond_1024, self.models['shape_slat_flow_model_1024'],
+                coords, shape_slat_sampler_params
+            )
+            res = 1024
+        elif pipeline_type == '1024_cascade':
+            shape_slat, res = self.sample_shape_slat_cascade(
+                cond_512, cond_1024,
+                self.models['shape_slat_flow_model_512'], self.models['shape_slat_flow_model_1024'],
+                512, 1024,
+                coords, shape_slat_sampler_params,
+                max_num_tokens
+            )
+        elif pipeline_type == '1536_cascade':
+            shape_slat, res = self.sample_shape_slat_cascade(
+                cond_512, cond_1024,
+                self.models['shape_slat_flow_model_512'], self.models['shape_slat_flow_model_1024'],
+                512, 1536,
+                coords, shape_slat_sampler_params,
+                max_num_tokens
+            )
+
+        # Decode shape only (no texture)
+        meshes, _ = self.decode_shape_slat(shape_slat, res)
+
+        torch.cuda.empty_cache()
+        return meshes, shape_slat, res
+
+    @torch.no_grad()
+    def run_texture(
+        self,
+        cond: dict,
+        shape_slat: SparseTensor,
+        resolution: int,
+        seed: int = 42,
+        tex_slat_sampler_params: dict = {},
+        pipeline_type: Optional[str] = None,
+    ) -> List[MeshWithVoxel]:
+        """
+        Run texture generation on existing shape.
+
+        Args:
+            cond (dict): The conditioning dict with 'cond_512', 'cond_1024' (optional), 'neg_cond'.
+            shape_slat (SparseTensor): The shape latent from run_shape().
+            resolution (int): The resolution from run_shape().
+            seed (int): The random seed.
+            tex_slat_sampler_params (dict): Additional parameters for the texture SLat sampler.
+            pipeline_type (str): The type of the pipeline.
+
+        Returns:
+            List of MeshWithVoxel with PBR attributes.
+        """
+        pipeline_type = pipeline_type or self.default_pipeline_type
+
+        # Validate texture models
+        if pipeline_type == '512':
+            assert 'tex_slat_flow_model_512' in self.models, "No 512 resolution texture SLat flow model found."
+            tex_model_key = 'tex_slat_flow_model_512'
+            tex_cond = {'cond': cond['cond_512'], 'neg_cond': cond['neg_cond']}
+        else:
+            assert 'tex_slat_flow_model_1024' in self.models, "No 1024 resolution texture SLat flow model found."
+            tex_model_key = 'tex_slat_flow_model_1024'
+            tex_cond = {'cond': cond['cond_1024'], 'neg_cond': cond['neg_cond']}
+
+        torch.manual_seed(seed)
+
+        # Sample texture latent
+        tex_slat = self.sample_tex_slat(
+            tex_cond, self.models[tex_model_key],
+            shape_slat, tex_slat_sampler_params
+        )
+
+        # Decode both shape and texture
+        out_mesh = self.decode_latent(shape_slat, tex_slat, resolution)
+
+        torch.cuda.empty_cache()
+        return out_mesh
+
+    @torch.no_grad()
     def run(
         self,
         image: Image.Image,
@@ -494,7 +629,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         max_num_tokens: int = 49152,
     ) -> List[MeshWithVoxel]:
         """
-        Run the pipeline.
+        Run the full pipeline (shape + texture).
 
         Args:
             image (Image.Image): The image prompt.
@@ -526,7 +661,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             assert 'tex_slat_flow_model_1024' in self.models, "No 1024 resolution texture SLat flow model found."
         else:
             raise ValueError(f"Invalid pipeline type: {pipeline_type}")
-        
+
         if preprocess_image:
             image = self.preprocess_image(image)
         torch.manual_seed(seed)
