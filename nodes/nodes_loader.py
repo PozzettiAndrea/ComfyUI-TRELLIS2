@@ -6,11 +6,46 @@ import folder_paths
 
 from .utils import logger
 
-# Available models
-TRELLIS2_MODELS = [
-    'microsoft/TRELLIS.2-4B',
-    'microsoft/TRELLIS-image-large',
-]
+# Resolution modes and which models they need
+RESOLUTION_MODES = ['512', '1024', '1024_cascade', '1536_cascade']
+
+# Models needed for each resolution mode
+MODELS_BY_RESOLUTION = {
+    '512': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+        'tex_slat_decoder',
+        'tex_slat_flow_model_512',
+    ],
+    '1024': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_1024',
+        'tex_slat_decoder',
+        'tex_slat_flow_model_1024',
+    ],
+    '1024_cascade': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+        'shape_slat_flow_model_1024',
+        'tex_slat_decoder',
+        'tex_slat_flow_model_1024',
+    ],
+    '1536_cascade': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+        'shape_slat_flow_model_1024',
+        'tex_slat_decoder',
+        'tex_slat_flow_model_1024',
+    ],
+}
 
 
 class DownloadAndLoadTrellis2Model:
@@ -20,7 +55,7 @@ class DownloadAndLoadTrellis2Model:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "model": (TRELLIS2_MODELS, {"default": 'microsoft/TRELLIS.2-4B'}),
+                "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
                 "low_vram": ("BOOLEAN", {"default": True}),
@@ -32,25 +67,37 @@ class DownloadAndLoadTrellis2Model:
     FUNCTION = "loadmodel"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
-Load TRELLIS.2 Image-to-3D pipeline from HuggingFace.
+Load TRELLIS.2 4B Image-to-3D pipeline from HuggingFace.
 
-Models autodownload from HuggingFace (microsoft org).
+Resolution modes (only downloads models needed):
+- 512: Fast, lower quality (downloads ~4GB)
+- 1024: Higher quality (downloads ~5GB)
+- 1024_cascade: Best quality, uses 512->1024 cascade (downloads ~7GB)
+- 1536_cascade: Highest resolution output (downloads ~7GB)
 
 Parameters:
-- model: The model variant to load
-- low_vram: Enable low-VRAM mode for reduced memory usage (recommended)
+- resolution: Output resolution mode
+- low_vram: Enable low-VRAM mode (recommended)
 """
 
-    def loadmodel(self, model, low_vram=True):
+    def loadmodel(self, resolution='1024_cascade', low_vram=True):
         device = mm.get_torch_device()
+        model = 'microsoft/TRELLIS.2-4B'
 
-        logger.info(f"Loading TRELLIS.2 pipeline: {model}")
+        logger.info(f"Loading TRELLIS.2 pipeline (resolution={resolution})")
 
         from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
-        # Load pipeline from HuggingFace
-        pipeline = Trellis2ImageTo3DPipeline.from_pretrained(model)
+        # Get list of models needed for this resolution
+        needed_models = MODELS_BY_RESOLUTION.get(resolution, MODELS_BY_RESOLUTION['1024_cascade'])
+
+        # Load pipeline with only needed models
+        pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
+            model,
+            models_to_load=needed_models
+        )
         pipeline.low_vram = low_vram
+        pipeline.default_pipeline_type = resolution
 
         # Move to device
         if device.type == 'cuda':
@@ -58,11 +105,12 @@ Parameters:
         else:
             pipeline.to(device)
 
-        logger.info(f"TRELLIS.2 pipeline loaded successfully (low_vram={low_vram})")
+        logger.info(f"TRELLIS.2 pipeline loaded successfully (resolution={resolution}, low_vram={low_vram})")
 
         trellis_model = {
             "pipeline": pipeline,
             "model_name": model,
+            "resolution": resolution,
             "device": device,
         }
 

@@ -19,24 +19,47 @@ from pathlib import Path
 # Package Configuration
 # =============================================================================
 
+# GitHub release URL template: {repo}/releases/download/{tag}/{wheel_name}
+# wheel_name format: {package}-{version}+{cuda_suffix}-cp{py}-cp{py}-{platform}.whl
 PACKAGES = [
     {
         "name": "nvdiffrast",
         "import_name": "nvdiffrast",
         "wheel_index": "https://pozzettiandrea.github.io/nvdiffrast-full-wheels/",
+        "wheel_release_base": "https://github.com/PozzettiAndrea/nvdiffrast-full-wheels/releases/download",
+        "wheel_version": "0.4.0",
         "git_url": "git+https://github.com/NVlabs/nvdiffrast",
     },
     {
         "name": "flex_gemm",
         "import_name": "flex_gemm",
         "wheel_index": "https://pozzettiandrea.github.io/flexgemm-wheels/",
+        "wheel_release_base": "https://github.com/PozzettiAndrea/flexgemm-wheels/releases/download",
+        "wheel_version": "0.0.1",
         "git_url": "git+https://github.com/JeffreyXiang/FlexGEMM",
     },
     {
         "name": "cumesh",
         "import_name": "cumesh",
         "wheel_index": "https://pozzettiandrea.github.io/cumesh-wheels/",
+        "wheel_release_base": "https://github.com/PozzettiAndrea/cumesh-wheels/releases/download",
+        "wheel_version": "0.0.1",
         "git_url": "git+https://github.com/JeffreyXiang/CuMesh",
+    },
+    {
+        "name": "o_voxel",
+        "import_name": "o_voxel",
+        "wheel_index": "https://pozzettiandrea.github.io/ovoxel-wheels/",
+        "wheel_release_base": "https://github.com/PozzettiAndrea/ovoxel-wheels/releases/download",
+        "wheel_version": "0.0.1",
+        "git_url": "git+https://github.com/microsoft/TRELLIS.2#subdirectory=o-voxel",
+    },
+    {
+        "name": "flash_attn",
+        "import_name": "flash_attn",
+        "wheel_release_base": "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download",
+        "wheel_type": "flash_attn",  # Special handling for torch version in wheel name
+        "git_url": "git+https://github.com/Dao-AILab/flash-attention",
     },
 ]
 
@@ -209,9 +232,107 @@ def is_package_installed(import_name):
         return False
 
 
+def get_direct_wheel_url(package_config):
+    """
+    Build a direct wheel URL from GitHub releases.
+    Returns URL string or None if not available.
+    """
+    wheel_release_base = package_config.get("wheel_release_base")
+    wheel_version = package_config.get("wheel_version")
+    wheel_type = package_config.get("wheel_type")
+
+    # flash_attn uses different URL building
+    if wheel_type == "flash_attn":
+        return None  # Handled by get_flash_attn_wheel_urls
+
+    if not wheel_release_base or not wheel_version:
+        return None
+
+    cuda_suffix = get_wheel_cuda_suffix()
+    if not cuda_suffix:
+        return None
+
+    py_major, py_minor = sys.version_info[:2]
+    platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
+
+    # Build wheel filename: package-version+cuda-cpXX-cpXX-platform.whl
+    package_name = package_config["name"]
+    wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+
+    # Release tag is typically the CUDA suffix (e.g., cu124, cu128)
+    return f"{wheel_release_base}/{cuda_suffix}/{wheel_name}"
+
+
+def get_flash_attn_wheel_urls():
+    """
+    Build flash_attn wheel URLs to try.
+    Returns list of (url, version) tuples to try in order.
+    flash_attn uses: flash_attn-{ver}+cu{cuda}torch{torch}-cp{py}-cp{py}-{platform}.whl
+    """
+    torch_ver, cuda_ver = get_torch_info()
+    if not torch_ver or not cuda_ver:
+        return []
+
+    cuda_mm = cuda_ver.split('.')[0] + cuda_ver.split('.')[1]  # "12.8" -> "128"
+    torch_mm = '.'.join(torch_ver.split('.')[:2])  # "2.8.0" -> "2.8"
+    py_major, py_minor = sys.version_info[:2]
+    platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
+
+    base_url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download"
+
+    # flash_attn versions to try (newest first) with their release tags
+    versions_to_try = [
+        ("2.7.4", "v0.5.4"),
+        ("2.6.3", "v0.5.4"),
+        ("2.7.4", "v0.4.19"),
+    ]
+
+    urls = []
+    for flash_ver, release_tag in versions_to_try:
+        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+        url = f"{base_url}/{release_tag}/{wheel_name}"
+        urls.append((url, flash_ver))
+
+    return urls
+
+
+def try_install_from_direct_url(package_config):
+    """
+    Try installing a package from a direct GitHub release wheel URL.
+    Returns True if successful, False otherwise.
+    """
+    wheel_url = get_direct_wheel_url(package_config)
+    if not wheel_url:
+        return False
+
+    package_name = package_config["name"]
+    print(f"[ComfyUI-TRELLIS2] Trying direct wheel URL: {wheel_url}")
+
+    try:
+        result = subprocess.run([
+            sys.executable, "-m", "pip", "install", wheel_url
+        ], capture_output=True, text=True, timeout=300)
+
+        if result.returncode == 0:
+            print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from direct wheel URL")
+            return True
+        else:
+            if result.stderr and "404" in result.stderr:
+                print(f"[ComfyUI-TRELLIS2] Wheel not found at URL (404)")
+            elif result.stderr:
+                print(f"[ComfyUI-TRELLIS2] Direct URL install failed: {result.stderr[:200]}")
+            return False
+    except subprocess.TimeoutExpired:
+        print(f"[ComfyUI-TRELLIS2] Direct URL install timed out")
+        return False
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Direct URL install error: {e}")
+        return False
+
+
 def try_install_from_wheel(package_name, wheel_index_url):
     """
-    Try installing a package from pre-built wheels.
+    Try installing a package from pre-built wheels via index.
     Returns True if successful, False otherwise.
     """
     py_ver = get_python_version()
@@ -234,10 +355,9 @@ def try_install_from_wheel(package_name, wheel_index_url):
             if result.stderr:
                 # Check if it's a "no matching distribution" error
                 if "No matching distribution" in result.stderr or "no matching distribution" in result.stderr.lower():
-                    print(f"[ComfyUI-TRELLIS2] No matching wheel for {package_name} (Python {py_ver}, {wheel_suffix})")
-                    print(f"[ComfyUI-TRELLIS2] Available wheels are for Python 3.10-3.12, CUDA 12.4/12.8")
+                    print(f"[ComfyUI-TRELLIS2] No matching wheel in index for {package_name}")
                 else:
-                    print(f"[ComfyUI-TRELLIS2] Wheel install failed: {result.stderr[:300]}")
+                    print(f"[ComfyUI-TRELLIS2] Wheel index install failed: {result.stderr[:200]}")
             return False
     except subprocess.TimeoutExpired:
         print(f"[ComfyUI-TRELLIS2] Wheel install timed out for {package_name}")
@@ -245,6 +365,65 @@ def try_install_from_wheel(package_name, wheel_index_url):
     except Exception as e:
         print(f"[ComfyUI-TRELLIS2] Wheel install error: {e}")
         return False
+
+
+def clone_and_init_submodules(git_url, target_dir):
+    """
+    Clone a git repo and initialize submodules with HTTPS URLs.
+    Returns True if successful, False otherwise.
+    """
+    import tempfile
+
+    # Extract repo URL (remove git+ prefix and #subdirectory suffix)
+    repo_url = git_url
+    subdirectory = None
+    if repo_url.startswith("git+"):
+        repo_url = repo_url[4:]
+    if "#subdirectory=" in repo_url:
+        repo_url, subdirectory = repo_url.split("#subdirectory=")
+
+    print(f"[ComfyUI-TRELLIS2] Cloning {repo_url}...")
+    try:
+        # Clone the repo
+        result = subprocess.run(
+            ["git", "clone", "--depth", "1", repo_url, target_dir],
+            capture_output=True, text=True, timeout=300
+        )
+        if result.returncode != 0:
+            print(f"[ComfyUI-TRELLIS2] Git clone failed: {result.stderr[:200]}")
+            return None
+
+        # Initialize submodules
+        print(f"[ComfyUI-TRELLIS2] Initializing submodules...")
+        result = subprocess.run(
+            ["git", "submodule", "update", "--init", "--recursive"],
+            cwd=target_dir, capture_output=True, text=True, timeout=300
+        )
+        if result.returncode != 0:
+            # Try to fix SSH URLs to HTTPS
+            print(f"[ComfyUI-TRELLIS2] Submodule init failed, trying to fix SSH URLs...")
+            gitmodules_path = os.path.join(target_dir, ".gitmodules")
+            if os.path.exists(gitmodules_path):
+                with open(gitmodules_path, 'r') as f:
+                    content = f.read()
+                # Replace git@github.com: with https://github.com/
+                content = content.replace("git@github.com:", "https://github.com/")
+                with open(gitmodules_path, 'w') as f:
+                    f.write(content)
+                # Sync and retry
+                subprocess.run(["git", "submodule", "sync"], cwd=target_dir, capture_output=True)
+                result = subprocess.run(
+                    ["git", "submodule", "update", "--init", "--recursive"],
+                    cwd=target_dir, capture_output=True, text=True, timeout=300
+                )
+
+        if subdirectory:
+            return os.path.join(target_dir, subdirectory)
+        return target_dir
+
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Clone error: {e}")
+        return None
 
 
 def try_compile_from_source(package_name, git_url):
@@ -282,6 +461,8 @@ def try_compile_from_source(package_name, git_url):
             cuda_env["CXX"] = gxx
 
     print(f"[ComfyUI-TRELLIS2] Compiling {package_name} from source (this may take several minutes)...")
+
+    # First try direct pip install
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pip", "install", "--no-build-isolation", git_url],
@@ -290,17 +471,69 @@ def try_compile_from_source(package_name, git_url):
         if result.returncode == 0:
             print(f"[ComfyUI-TRELLIS2] [OK] Compiled {package_name} successfully")
             return True
-        else:
-            print(f"[ComfyUI-TRELLIS2] Compilation failed for {package_name}")
-            if result.stderr:
-                print(f"[ComfyUI-TRELLIS2] Error: {result.stderr[:500]}")
-            return False
-    except subprocess.TimeoutExpired:
-        print(f"[ComfyUI-TRELLIS2] Compilation timed out for {package_name}")
+    except:
+        pass
+
+    # If direct install fails, try manual clone with submodule fix
+    print(f"[ComfyUI-TRELLIS2] Direct install failed, trying manual clone with submodule fix...")
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmpdir:
+        clone_dir = os.path.join(tmpdir, "repo")
+        source_path = clone_and_init_submodules(git_url, clone_dir)
+
+        if source_path and os.path.exists(source_path):
+            # Install any missing pure-Python dependencies first
+            print(f"[ComfyUI-TRELLIS2] Installing build dependencies...")
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "plyfile", "zstandard", "ninja"],
+                capture_output=True, text=True, timeout=120
+            )
+
+            # Try to install with --no-deps to skip problematic dependencies
+            print(f"[ComfyUI-TRELLIS2] Building from cloned source...")
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", "--no-build-isolation", "--no-deps", source_path],
+                capture_output=True, text=True, timeout=900, env=cuda_env
+            )
+            if result.returncode == 0:
+                print(f"[ComfyUI-TRELLIS2] [OK] Compiled {package_name} successfully")
+                return True
+            else:
+                print(f"[ComfyUI-TRELLIS2] Compilation failed for {package_name}")
+                if result.stderr:
+                    print(f"[ComfyUI-TRELLIS2] Error: {result.stderr[:500]}")
+                return False
+
+    print(f"[ComfyUI-TRELLIS2] Compilation failed for {package_name}")
+    return False
+
+
+def try_install_flash_attn():
+    """
+    Try installing flash_attn from pre-built wheels.
+    Returns True if successful, False otherwise.
+    """
+    urls = get_flash_attn_wheel_urls()
+    if not urls:
+        print("[ComfyUI-TRELLIS2] Could not determine flash_attn wheel URL for this environment")
         return False
-    except Exception as e:
-        print(f"[ComfyUI-TRELLIS2] Compilation error: {e}")
-        return False
+
+    for url, version in urls:
+        print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version}: {url}")
+        try:
+            result = subprocess.run([
+                sys.executable, "-m", "pip", "install", url
+            ], capture_output=True, text=True, timeout=300)
+
+            if result.returncode == 0:
+                print(f"[ComfyUI-TRELLIS2] [OK] Installed flash_attn {version} from wheel")
+                return True
+            elif "404" in (result.stderr or ""):
+                continue  # Try next URL
+        except:
+            continue
+
+    return False
 
 
 def install_cuda_package(package_config):
@@ -310,8 +543,9 @@ def install_cuda_package(package_config):
     """
     name = package_config["name"]
     import_name = package_config["import_name"]
-    wheel_index = package_config["wheel_index"]
+    wheel_index = package_config.get("wheel_index")
     git_url = package_config.get("git_url")
+    wheel_type = package_config.get("wheel_type")
 
     print(f"\n[ComfyUI-TRELLIS2] Installing {name}...")
 
@@ -326,11 +560,22 @@ def install_cuda_package(package_config):
         print(f"[ComfyUI-TRELLIS2] [SKIP] PyTorch CUDA not available, skipping {name}")
         return False
 
-    # Try wheel installation first
-    if try_install_from_wheel(name, wheel_index):
-        return True
+    # Special handling for flash_attn
+    if wheel_type == "flash_attn":
+        if try_install_flash_attn():
+            return True
+        # Fall through to compilation
+    else:
+        # Try 1: wheel index (pip --find-links)
+        if wheel_index and try_install_from_wheel(name, wheel_index):
+            return True
 
-    # Fall back to compilation
+        # Try 2: direct GitHub release URL
+        print(f"[ComfyUI-TRELLIS2] Trying direct GitHub release URL...")
+        if try_install_from_direct_url(package_config):
+            return True
+
+    # Try 3: compile from source
     print(f"[ComfyUI-TRELLIS2] No pre-built wheel found, attempting compilation...")
     if try_compile_from_source(name, git_url):
         return True

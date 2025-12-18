@@ -21,6 +21,7 @@ class Trellis2ExportGLB:
             "optional": {
                 "decimation_target": ("INT", {"default": 500000, "min": 10000, "max": 2000000, "step": 10000}),
                 "texture_size": ("INT", {"default": 2048, "min": 512, "max": 4096, "step": 512}),
+                "remesh": ("BOOLEAN", {"default": True}),
                 "filename_prefix": ("STRING", {"default": "trellis2"}),
             }
         }
@@ -37,12 +38,13 @@ Parameters:
 - mesh: The generated 3D mesh
 - decimation_target: Target face count for mesh simplification
 - texture_size: Resolution of baked textures (512-4096)
+- remesh: Enable mesh cleaning/remeshing (disable if CuMesh errors occur)
 - filename_prefix: Prefix for output filename
 
 Output GLB is saved to ComfyUI output folder.
 """
 
-    def export(self, mesh, decimation_target=500000, texture_size=2048, filename_prefix="trellis2"):
+    def export(self, mesh, decimation_target=500000, texture_size=2048, remesh=True, filename_prefix="trellis2"):
         try:
             import o_voxel
         except ImportError:
@@ -53,7 +55,7 @@ Output GLB is saved to ComfyUI output folder.
         mesh_obj = mesh["mesh"]
         pipeline = mesh["pipeline"]
 
-        logger.info(f"Exporting GLB (decimation={decimation_target}, texture={texture_size})")
+        logger.info(f"Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
         # Generate GLB
         glb = o_voxel.postprocess.to_glb(
@@ -66,7 +68,7 @@ Output GLB is saved to ComfyUI output folder.
             aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
             decimation_target=decimation_target,
             texture_size=texture_size,
-            remesh=True,
+            remesh=remesh,
             remesh_band=1,
             remesh_project=0,
             use_tqdm=True,
