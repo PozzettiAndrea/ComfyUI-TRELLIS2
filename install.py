@@ -384,6 +384,35 @@ def is_package_installed(import_name):
         return False
 
 
+def verify_package_import(import_name, package_name):
+    """
+    Verify that a package can be imported without errors (e.g., ABI mismatch).
+    If import fails, uninstall the broken package.
+    Returns True if import succeeds, False otherwise.
+    """
+    try:
+        __import__(import_name)
+        return True
+    except ImportError as e:
+        # Check for ABI/symbol errors
+        error_str = str(e)
+        if "undefined symbol" in error_str or "cannot import" in error_str:
+            print(f"[ComfyUI-TRELLIS2] [WARNING] {package_name} has ABI incompatibility: {error_str[:100]}")
+            print(f"[ComfyUI-TRELLIS2] Uninstalling broken wheel and will try compilation...")
+            try:
+                subprocess.run([
+                    sys.executable, "-m", "pip", "uninstall", "-y", package_name
+                ], capture_output=True, timeout=60)
+            except:
+                pass
+            return False
+        # Regular import error - package not installed
+        return False
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] [WARNING] {package_name} import error: {e}")
+        return False
+
+
 def get_direct_wheel_urls(package_config):
     """
     Build direct wheel URLs from GitHub releases.
@@ -484,8 +513,14 @@ def try_install_from_direct_url(package_config):
             ], capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
-                print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from wheel")
-                return True
+                # Verify the package can be imported (check for ABI issues)
+                import_name = package_config.get("import_name", package_name)
+                if verify_package_import(import_name, package_name):
+                    print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from wheel")
+                    return True
+                else:
+                    # ABI mismatch - wheel installed but can't be imported
+                    return False
             else:
                 if result.stderr and "404" in result.stderr:
                     continue  # Try next URL
@@ -501,11 +536,14 @@ def try_install_from_direct_url(package_config):
     return False
 
 
-def try_install_from_wheel(package_name, wheel_index_url):
+def try_install_from_wheel(package_name, wheel_index_url, import_name=None):
     """
     Try installing a package from pre-built wheels via index.
     Returns True if successful, False otherwise.
     """
+    if import_name is None:
+        import_name = package_name
+
     py_ver = get_python_version()
     wheel_suffix = get_wheel_cuda_suffix()
     print(f"[ComfyUI-TRELLIS2] Looking for {package_name} wheel (Python {py_ver}, {wheel_suffix or 'unknown CUDA'})")
@@ -520,8 +558,13 @@ def try_install_from_wheel(package_name, wheel_index_url):
         ], capture_output=True, text=True, timeout=300)
 
         if result.returncode == 0:
-            print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from pre-built wheel")
-            return True
+            # Verify the package can be imported (check for ABI issues)
+            if verify_package_import(import_name, package_name):
+                print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from pre-built wheel")
+                return True
+            else:
+                # ABI mismatch - wheel installed but can't be imported
+                return False
         else:
             if result.stderr:
                 # Check if it's a "no matching distribution" error
@@ -743,7 +786,7 @@ def install_cuda_package(package_config):
         # Fall through to compilation
     else:
         # Try 1: wheel index (pip --find-links)
-        if wheel_index and try_install_from_wheel(name, wheel_index):
+        if wheel_index and try_install_from_wheel(name, wheel_index, import_name):
             return True
 
         # Try 2: direct GitHub release URL
