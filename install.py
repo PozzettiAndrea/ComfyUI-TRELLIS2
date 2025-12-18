@@ -191,11 +191,12 @@ def find_cuda_home():
 
 def try_install_cuda_toolkit():
     """
-    Try to install CUDA toolkit via pip when nvcc is not found.
-    This installs nvidia-cuda-nvcc-cuXX which provides nvcc compiler.
+    Try to install minimal CUDA toolkit components needed for compilation.
+    - Linux: Uses apt to install cuda-nvcc and cuda-cudart-dev
+    - Windows: Downloads and runs CUDA network installer with minimal components
     Returns True if successful, False otherwise.
     """
-    print("[ComfyUI-TRELLIS2] CUDA compiler not found, attempting to install via pip...")
+    print("[ComfyUI-TRELLIS2] CUDA compiler not found, attempting to install...")
 
     # Get CUDA version from PyTorch
     try:
@@ -204,37 +205,139 @@ def try_install_cuda_toolkit():
         if not cuda_ver:
             print("[ComfyUI-TRELLIS2] PyTorch CUDA version not available")
             return False
-        cuda_major = cuda_ver.split('.')[0]  # "12"
+        cuda_parts = cuda_ver.split('.')
+        cuda_major = cuda_parts[0]  # "12"
+        cuda_minor = cuda_parts[1] if len(cuda_parts) > 1 else "0"  # "8"
     except Exception as e:
         print(f"[ComfyUI-TRELLIS2] Could not detect CUDA version: {e}")
         return False
 
-    # Install nvidia-cuda-nvcc via pip (provides nvcc compiler)
-    # Also install nvidia-cuda-runtime for development headers
-    packages = [
-        f"nvidia-cuda-nvcc-cu{cuda_major}",
-        f"nvidia-cuda-runtime-cu{cuda_major}",
-    ]
+    if sys.platform == "linux":
+        return _install_cuda_linux(cuda_major, cuda_minor)
+    elif sys.platform == "win32":
+        return _install_cuda_windows(cuda_major, cuda_minor)
+    else:
+        print(f"[ComfyUI-TRELLIS2] Unsupported platform: {sys.platform}")
+        return False
 
-    for pkg in packages:
-        print(f"[ComfyUI-TRELLIS2] Installing {pkg}...")
+
+def _install_cuda_linux(cuda_major, cuda_minor):
+    """Install minimal CUDA components on Linux via apt."""
+    print("[ComfyUI-TRELLIS2] Installing CUDA compiler via apt (minimal components)...")
+
+    # Add NVIDIA repository if not present
+    keyring_path = "/usr/share/keyrings/cuda-archive-keyring.gpg"
+    if not os.path.exists(keyring_path):
+        print("[ComfyUI-TRELLIS2] Adding NVIDIA CUDA repository...")
         try:
-            result = subprocess.run([
-                sys.executable, "-m", "pip", "install", pkg
-            ], capture_output=True, text=True, timeout=300)
-            if result.returncode != 0:
-                print(f"[ComfyUI-TRELLIS2] Failed to install {pkg}")
-                if result.stderr:
-                    print(f"[ComfyUI-TRELLIS2] Error: {result.stderr[:200]}")
-                return False
-        except subprocess.TimeoutExpired:
-            print(f"[ComfyUI-TRELLIS2] Installation timed out for {pkg}")
+            # Download and install keyring
+            subprocess.run([
+                "wget", "-q", "-O", "/tmp/cuda-keyring.deb",
+                "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb"
+            ], check=True, timeout=60)
+            subprocess.run(["sudo", "dpkg", "-i", "/tmp/cuda-keyring.deb"], check=True, timeout=30)
+            subprocess.run(["sudo", "apt-get", "update", "-qq"], check=True, timeout=120)
+        except subprocess.CalledProcessError as e:
+            print(f"[ComfyUI-TRELLIS2] Failed to add NVIDIA repository: {e}")
             return False
         except Exception as e:
-            print(f"[ComfyUI-TRELLIS2] Installation error: {e}")
+            print(f"[ComfyUI-TRELLIS2] Repository setup error: {e}")
             return False
 
-    print("[ComfyUI-TRELLIS2] [OK] CUDA toolkit installed via pip")
+    # Install minimal CUDA components
+    packages = [
+        f"cuda-nvcc-{cuda_major}-{cuda_minor}",
+        f"cuda-cudart-dev-{cuda_major}-{cuda_minor}",
+    ]
+
+    print(f"[ComfyUI-TRELLIS2] Installing: {', '.join(packages)}")
+    try:
+        result = subprocess.run(
+            ["sudo", "apt-get", "install", "-y", "-qq"] + packages,
+            capture_output=True, text=True, timeout=300
+        )
+        if result.returncode != 0:
+            print(f"[ComfyUI-TRELLIS2] apt install failed: {result.stderr[:200] if result.stderr else 'unknown error'}")
+            return False
+    except subprocess.TimeoutExpired:
+        print("[ComfyUI-TRELLIS2] Installation timed out")
+        return False
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Installation error: {e}")
+        return False
+
+    # Update PATH
+    cuda_path = f"/usr/local/cuda-{cuda_major}.{cuda_minor}"
+    if os.path.exists(cuda_path):
+        os.environ["CUDA_HOME"] = cuda_path
+        os.environ["PATH"] = f"{cuda_path}/bin:" + os.environ.get("PATH", "")
+
+    print("[ComfyUI-TRELLIS2] [OK] CUDA compiler installed via apt")
+    return True
+
+
+def _install_cuda_windows(cuda_major, cuda_minor):
+    """Install minimal CUDA components on Windows via network installer."""
+    import tempfile
+    import urllib.request
+
+    print("[ComfyUI-TRELLIS2] Installing CUDA compiler via network installer (minimal components)...")
+
+    # CUDA network installer URL (adjust version as needed)
+    cuda_version = f"{cuda_major}.{cuda_minor}"
+    # Map to installer version (e.g., 12.8 -> 12.8.1)
+    installer_versions = {
+        "12.8": "12.8.1",
+        "12.6": "12.6.3",
+        "12.4": "12.4.1",
+    }
+    installer_ver = installer_versions.get(cuda_version, f"{cuda_version}.0")
+
+    installer_url = f"https://developer.download.nvidia.com/compute/cuda/{installer_ver}/network_installers/cuda_{installer_ver}_windows_network.exe"
+    installer_path = os.path.join(tempfile.gettempdir(), "cuda_network_installer.exe")
+
+    # Download installer
+    print(f"[ComfyUI-TRELLIS2] Downloading CUDA {cuda_version} network installer...")
+    try:
+        urllib.request.urlretrieve(installer_url, installer_path)
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Failed to download installer: {e}")
+        return False
+
+    # Run installer with minimal components (silent mode)
+    # Components: nvcc (compiler), cudart (runtime)
+    components = [
+        f"nvcc_{cuda_major}.{cuda_minor}",
+        f"cudart_{cuda_major}.{cuda_minor}",
+    ]
+
+    print(f"[ComfyUI-TRELLIS2] Installing components: {', '.join(components)}")
+    try:
+        cmd = [installer_path, "-s"] + components
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode != 0:
+            print(f"[ComfyUI-TRELLIS2] Installer failed with code {result.returncode}")
+            return False
+    except subprocess.TimeoutExpired:
+        print("[ComfyUI-TRELLIS2] Installation timed out")
+        return False
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Installation error: {e}")
+        return False
+
+    # Update environment
+    cuda_path = f"C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v{cuda_major}.{cuda_minor}"
+    if os.path.exists(cuda_path):
+        os.environ["CUDA_HOME"] = cuda_path
+        os.environ["PATH"] = f"{cuda_path}\\bin;" + os.environ.get("PATH", "")
+
+    # Cleanup
+    try:
+        os.remove(installer_path)
+    except:
+        pass
+
+    print("[ComfyUI-TRELLIS2] [OK] CUDA compiler installed")
     return True
 
 
