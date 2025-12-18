@@ -55,6 +55,14 @@ PACKAGES = [
         "git_url": "git+https://github.com/microsoft/TRELLIS.2#subdirectory=o-voxel",
     },
     {
+        "name": "nvdiffrec_render",
+        "import_name": "nvdiffrec_render",
+        "wheel_index": "https://pozzettiandrea.github.io/nvdiffrec_render-wheels/",
+        "wheel_release_base": "https://github.com/PozzettiAndrea/nvdiffrec_render-wheels/releases/download",
+        "wheel_version": "0.0.1",
+        "git_url": None,  # Source requires custom build process, wheel-only
+    },
+    {
         "name": "flash_attn",
         "import_name": "flash_attn",
         "wheel_release_base": "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download",

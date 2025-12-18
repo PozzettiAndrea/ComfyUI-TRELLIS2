@@ -1,4 +1,5 @@
 """Modular mesh processing nodes for TRELLIS.2."""
+import gc
 import os
 import torch
 import numpy as np
@@ -101,6 +102,8 @@ Parameters:
                 bvh=bvh,
             ))
             logger.info(f"After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            # Clean up BVH after remesh
+            del bvh, curr_verts, curr_faces
 
         # Simplify
         cumesh.simplify(target_face_count, verbose=True)
@@ -123,6 +126,9 @@ Parameters:
 
         logger.info(f"Simplify complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
+        # Clean up GPU memory
+        del vertices, faces, vertices_orig, out_vertices, out_faces, cumesh
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (result,)
@@ -228,6 +234,9 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
 
         logger.info(f"UV Unwrap complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
+        # Clean up GPU memory
+        del vertices, faces, vertices_orig, cumesh
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (result,)
@@ -341,6 +350,12 @@ Parameters:
             mask_chunk = rast_chunk[..., 3:4] > 0
             rast_chunk[..., 3:4] += i
             rast = torch.where(mask_chunk, rast_chunk, rast)
+            # Clean up chunk tensors to prevent memory accumulation
+            del rast_chunk, mask_chunk
+
+        # Clean up after rasterization loop
+        del ctx, uvs_rast
+        torch.cuda.empty_cache()
 
         mask = rast[0, ..., 3] > 0
 
@@ -352,6 +367,10 @@ Parameters:
         _, face_id, uvw = bvh.unsigned_distance(valid_pos, return_uvw=True)
         orig_tri_verts = orig_vertices[orig_faces[face_id.long()]]
         valid_pos = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
+
+        # Clean up BVH and intermediate tensors
+        del bvh, face_id, uvw, orig_tri_verts, pos, rast, vertices_yup
+        torch.cuda.empty_cache()
 
         # Sample voxel attributes
         logger.info("Sampling voxel attributes...")
@@ -366,6 +385,10 @@ Parameters:
 
         logger.info("Building PBR textures...")
 
+        # Clean up voxel sampling intermediates
+        del valid_pos, attr_volume, coords
+        torch.cuda.empty_cache()
+
         mask_np = mask.cpu().numpy()
 
         # Extract PBR channels
@@ -373,6 +396,11 @@ Parameters:
         metallic = np.clip(attrs[..., attr_layout['metallic']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
         roughness = np.clip(attrs[..., attr_layout['roughness']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
         alpha = np.clip(attrs[..., attr_layout['alpha']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+
+        # Clean up attrs tensor after extraction to CPU
+        del attrs, mask
+        gc.collect()
+        torch.cuda.empty_cache()
 
         # Inpaint UV seams
         mask_inv = (~mask_np).astype(np.uint8)
@@ -406,6 +434,9 @@ Parameters:
 
         logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures")
 
+        # Final cleanup
+        del vertices, faces, uvs, orig_vertices, orig_faces
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (result,)
