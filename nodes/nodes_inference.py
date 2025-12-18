@@ -2,10 +2,59 @@
 import torch
 import numpy as np
 from PIL import Image
+import trimesh as Trimesh
+from trimesh.voxel.base import VoxelGrid
 
 import comfy.model_management as mm
 
 from .utils import logger, tensor_to_pil, pil_to_tensor
+
+
+def mesh_with_voxel_to_outputs(mesh_obj, pipeline):
+    """
+    Convert TRELLIS MeshWithVoxel to separate TRIMESH and VOXELGRID outputs.
+
+    Returns:
+        trimesh: trimesh.Trimesh geometry (GeometryPack compatible)
+        voxelgrid: trimesh.voxel.VoxelGrid with PBR attributes attached
+    """
+    # Extract geometry as trimesh
+    vertices = mesh_obj.vertices.cpu().numpy()
+    faces = mesh_obj.faces.cpu().numpy()
+
+    # Coordinate system conversion (Y-up to Z-up for compatibility)
+    vertices_converted = vertices.copy()
+    vertices_converted[:, 1], vertices_converted[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
+
+    tri_mesh = Trimesh.Trimesh(
+        vertices=vertices_converted,
+        faces=faces,
+        process=False
+    )
+
+    # Create VoxelGrid with PBR attributes
+    # Use sparse coordinates to determine grid shape
+    coords = mesh_obj.coords.cpu()
+    grid_shape = tuple((coords.max(dim=0).values + 1).int().tolist())
+
+    # Create boolean encoding from sparse coords
+    encoding = np.zeros(grid_shape, dtype=bool)
+    coords_np = coords.numpy().astype(int)
+    encoding[coords_np[:, 0], coords_np[:, 1], coords_np[:, 2]] = True
+
+    voxel_grid = VoxelGrid(encoding)
+
+    # Attach PBR attributes
+    voxel_grid.pbr_attrs = mesh_obj.attrs  # Sparse tensor features
+    voxel_grid.pbr_coords = mesh_obj.coords  # Sparse coordinates
+    voxel_grid.pbr_layout = pipeline.pbr_attr_layout  # {'base_color': slice(0,3), ...}
+    voxel_grid.pbr_voxel_size = mesh_obj.voxel_size
+
+    # Store original vertices for BVH lookup during texture baking
+    voxel_grid.original_vertices = mesh_obj.vertices
+    voxel_grid.original_faces = mesh_obj.faces
+
+    return tri_mesh, voxel_grid
 
 
 class Trellis2PreprocessImage:
@@ -95,8 +144,8 @@ class Trellis2ImageTo3D:
             }
         }
 
-    RETURN_TYPES = ("TRELLIS2_MESH", "TRELLIS2_LATENT")
-    RETURN_NAMES = ("mesh", "latent")
+    RETURN_TYPES = ("TRIMESH", "VOXELGRID", "TRELLIS2_LATENT")
+    RETURN_NAMES = ("trimesh", "voxelgrid", "latent")
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
@@ -112,7 +161,8 @@ Parameters:
 - preprocess_image: Whether to preprocess (crop to object). Auto bg removal skipped if mask provided.
 
 Returns:
-- mesh: The generated 3D mesh with PBR materials
+- trimesh: The generated 3D mesh geometry (GeometryPack compatible)
+- voxelgrid: VoxelGrid with PBR attributes for texture baking
 - latent: Latent codes for further manipulation
 """
 
@@ -184,6 +234,9 @@ Returns:
 
         logger.info("3D mesh generated successfully")
 
+        # Convert to TRIMESH + VOXELGRID outputs
+        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe)
+
         # Pack latent for potential reuse
         shape_slat, tex_slat, res = latents
         latent_dict = {
@@ -193,15 +246,9 @@ Returns:
             'res': res,
         }
 
-        # Pack mesh
-        mesh_dict = {
-            "mesh": mesh,
-            "pipeline": pipe,
-        }
-
         torch.cuda.empty_cache()
 
-        return (mesh_dict, latent_dict)
+        return (tri_mesh, voxel_grid, latent_dict)
 
 
 class Trellis2DecodeLatent:
@@ -216,8 +263,8 @@ class Trellis2DecodeLatent:
             },
         }
 
-    RETURN_TYPES = ("TRELLIS2_MESH",)
-    RETURN_NAMES = ("mesh",)
+    RETURN_TYPES = ("TRIMESH", "VOXELGRID")
+    RETURN_NAMES = ("trimesh", "voxelgrid")
     FUNCTION = "decode"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
@@ -225,6 +272,10 @@ Decode latent codes back to a 3D mesh.
 
 Useful for regenerating mesh from saved latents
 or for experimenting with latent manipulation.
+
+Returns:
+- trimesh: The decoded mesh geometry (GeometryPack compatible)
+- voxelgrid: VoxelGrid with PBR attributes for texture baking
 """
 
     def decode(self, pipeline, latent):
@@ -246,14 +297,12 @@ or for experimenting with latent manipulation.
         mesh = pipe.decode_latent(shape_slat, tex_slat, res)[0]
         mesh.simplify(16777216)
 
-        mesh_dict = {
-            "mesh": mesh,
-            "pipeline": pipe,
-        }
+        # Convert to TRIMESH + VOXELGRID outputs
+        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe)
 
         torch.cuda.empty_cache()
 
-        return (mesh_dict,)
+        return (tri_mesh, voxel_grid)
 
 
 NODE_CLASS_MAPPINGS = {

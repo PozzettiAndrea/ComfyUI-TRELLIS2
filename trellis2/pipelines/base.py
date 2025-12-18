@@ -4,6 +4,18 @@ import torch.nn as nn
 from .. import models
 
 
+def _get_trellis2_models_dir():
+    """Get the ComfyUI/models/trellis2 directory."""
+    import os
+    try:
+        import folder_paths
+        models_dir = os.path.join(folder_paths.models_dir, "trellis2")
+    except ImportError:
+        models_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "models", "trellis2")
+    os.makedirs(models_dir, exist_ok=True)
+    return models_dir
+
+
 class Pipeline:
     """
     A base class for pipelines.
@@ -29,14 +41,27 @@ class Pipeline:
         """
         import os
         import json
+        import shutil
+
         is_local = os.path.exists(f"{path}/pipeline.json")
 
-        print(f"[ComfyUI-TRELLIS2] Loading pipeline config from {'local' if is_local else 'HuggingFace'}...")
+        # Check for cached pipeline.json in ComfyUI/models/trellis2
+        models_dir = _get_trellis2_models_dir()
+        cached_config = os.path.join(models_dir, "pipeline.json")
+
         if is_local:
+            print(f"[ComfyUI-TRELLIS2] Loading pipeline config from local path...")
             config_file = f"{path}/pipeline.json"
+        elif os.path.exists(cached_config):
+            print(f"[ComfyUI-TRELLIS2] Loading pipeline config from local cache...")
+            config_file = cached_config
         else:
             from huggingface_hub import hf_hub_download
-            config_file = hf_hub_download(path, "pipeline.json")
+            print(f"[ComfyUI-TRELLIS2] Downloading pipeline config from HuggingFace...")
+            hf_config = hf_hub_download(path, "pipeline.json")
+            # Cache it
+            shutil.copy2(hf_config, cached_config)
+            config_file = cached_config
 
         with open(config_file, 'r') as f:
             args = json.load(f)['args']
