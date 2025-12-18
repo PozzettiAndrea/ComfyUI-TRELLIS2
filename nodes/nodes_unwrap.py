@@ -300,9 +300,9 @@ Parameters:
         vertices_yup = vertices.clone()
         vertices_yup[:, 1], vertices_yup[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
 
-        # Get voxel data
-        attr_volume = voxelgrid.pbr_attrs
-        coords = voxelgrid.pbr_coords
+        # Get voxel data - ensure tensors are on GPU for grid_sample_3d
+        attr_volume = voxelgrid.pbr_attrs.cuda()
+        coords = voxelgrid.pbr_coords.cuda()
         voxel_size = voxelgrid.pbr_voxel_size
         attr_layout = voxelgrid.pbr_layout
         orig_vertices = voxelgrid.original_vertices.cuda()
