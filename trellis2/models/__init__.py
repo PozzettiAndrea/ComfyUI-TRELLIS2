@@ -48,13 +48,18 @@ def _get_trellis2_models_dir():
     return models_dir
 
 
-def from_pretrained(path: str, **kwargs):
+def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None, **kwargs):
     """
     Load a model from a pretrained checkpoint.
 
     Args:
         path: The path to the checkpoint. Can be either local path or a Hugging Face model name.
               NOTE: config file and model file should take the name f'{path}.json' and f'{path}.safetensors' respectively.
+        disk_offload_manager: Optional DiskOffloadManager for RAM-efficient loading.
+                              When provided, the model's safetensors path will be registered
+                              for later disk-to-GPU direct loading.
+        model_key: Optional key to identify this model in the disk_offload_manager.
+                   Required if disk_offload_manager is provided.
         **kwargs: Additional arguments for the model constructor.
     """
     import os
@@ -107,6 +112,14 @@ def from_pretrained(path: str, **kwargs):
     model = __getattr__(config['name'])(**config['args'], **kwargs)
     print(f"[ComfyUI-TRELLIS2]   Loading weights...")
     model.load_state_dict(load_file(model_file), strict=False)
+
+    # Register with disk offload manager if provided
+    if disk_offload_manager is not None:
+        if model_key is None:
+            raise ValueError(
+                "model_key is required when disk_offload_manager is provided"
+            )
+        disk_offload_manager.register(model_key, model_file)
 
     return model
 

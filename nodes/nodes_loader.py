@@ -75,7 +75,7 @@ class LoadTrellis2ShapeModel:
                 "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
-                "low_vram": ("BOOLEAN", {"default": True}),
+                "keep_model_loaded": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -97,10 +97,15 @@ Resolution modes:
 - 1024_cascade: Best quality, uses 512->1024 cascade (~4GB)
 - 1536_cascade: Highest resolution output (~4GB)
 
+Memory options:
+- keep_model_loaded=False (default): Models are unloaded after each use
+  and reloaded directly from disk to GPU. Zero RAM usage but ~2-3s reload time.
+- keep_model_loaded=True: Models stay on GPU between uses. Faster but uses VRAM.
+
 Connect to "Image to Shape" node for geometry generation.
 """
 
-    def loadmodel(self, resolution='1024_cascade', low_vram=True):
+    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False):
         device = mm.get_torch_device()
         model = 'microsoft/TRELLIS.2-4B'
 
@@ -111,21 +116,26 @@ Connect to "Image to Shape" node for geometry generation.
         # Get list of shape models needed for this resolution
         needed_models = SHAPE_MODELS_BY_RESOLUTION.get(resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade'])
 
-        # Load pipeline with only shape models
+        # Load pipeline with disk offload support when not keeping models loaded
         pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
             model,
-            models_to_load=needed_models
+            models_to_load=needed_models,
+            enable_disk_offload=not keep_model_loaded
         )
-        pipeline.low_vram = low_vram
+        pipeline.keep_model_loaded = keep_model_loaded
         pipeline.default_pipeline_type = resolution
 
-        # Move to device
-        if device.type == 'cuda':
-            pipeline.cuda()
+        # Move to device (only if keeping models loaded)
+        if keep_model_loaded:
+            if device.type == 'cuda':
+                pipeline.cuda()
+            else:
+                pipeline.to(device)
         else:
-            pipeline.to(device)
+            # Just set the device, models will be loaded on-demand
+            pipeline._device = device
 
-        logger.info(f"TRELLIS.2 shape pipeline loaded successfully (resolution={resolution}, low_vram={low_vram})")
+        logger.info(f"TRELLIS.2 shape pipeline loaded successfully (resolution={resolution}, keep_model_loaded={keep_model_loaded})")
 
         shape_model = {
             "pipeline": pipeline,
@@ -147,7 +157,7 @@ class LoadTrellis2TextureModel:
                 "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
-                "low_vram": ("BOOLEAN", {"default": True}),
+                "keep_model_loaded": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -167,10 +177,15 @@ Resolution modes:
 - 512: Uses 512px texture models (~2.5GB)
 - 1024/1024_cascade/1536_cascade: Uses 1024px texture models (~2.5GB)
 
+Memory options:
+- keep_model_loaded=False (default): Models are unloaded after each use
+  and reloaded directly from disk to GPU. Zero RAM usage but ~2-3s reload time.
+- keep_model_loaded=True: Models stay on GPU between uses. Faster but uses VRAM.
+
 Connect to "Shape to Texture" node for PBR material generation.
 """
 
-    def loadmodel(self, resolution='1024_cascade', low_vram=True):
+    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False):
         device = mm.get_torch_device()
         model = 'microsoft/TRELLIS.2-4B'
 
@@ -181,21 +196,26 @@ Connect to "Shape to Texture" node for PBR material generation.
         # Get list of texture models needed for this resolution
         needed_models = TEXTURE_MODELS_BY_RESOLUTION.get(resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade'])
 
-        # Load pipeline with only texture models
+        # Load pipeline with disk offload support when not keeping models loaded
         pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
             model,
-            models_to_load=needed_models
+            models_to_load=needed_models,
+            enable_disk_offload=not keep_model_loaded
         )
-        pipeline.low_vram = low_vram
+        pipeline.keep_model_loaded = keep_model_loaded
         pipeline.default_pipeline_type = resolution
 
-        # Move to device
-        if device.type == 'cuda':
-            pipeline.cuda()
+        # Move to device (only if keeping models loaded)
+        if keep_model_loaded:
+            if device.type == 'cuda':
+                pipeline.cuda()
+            else:
+                pipeline.to(device)
         else:
-            pipeline.to(device)
+            # Just set the device, models will be loaded on-demand
+            pipeline._device = device
 
-        logger.info(f"TRELLIS.2 texture pipeline loaded successfully (resolution={resolution}, low_vram={low_vram})")
+        logger.info(f"TRELLIS.2 texture pipeline loaded successfully (resolution={resolution}, keep_model_loaded={keep_model_loaded})")
 
         texture_model = {
             "pipeline": pipeline,
