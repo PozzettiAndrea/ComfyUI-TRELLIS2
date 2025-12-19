@@ -79,6 +79,8 @@ Render a rotating video of the 3D mesh.
 
 ## Example Workflow
 
+![Simple Workflow](docs/simple.png)
+
 1. Load Image
 2. Load TRELLIS.2 Model
 3. (Optional) Configure Sampler Parameters
