@@ -2,7 +2,7 @@
   "id": "993ef16b-b850-4a37-8e99-cdfe9b8651d3",
   "revision": 0,
   "last_node_id": 89,
-  "last_link_id": 136,
+  "last_link_id": 137,
   "nodes": [
     {
       "id": 29,
@@ -191,48 +191,6 @@
       ]
     },
     {
-      "id": 1,
-      "type": "LoadImage",
-      "pos": [
-        -370.05066743827155,
-        173.18005738811723
-      ],
-      "size": [
-        315,
-        314
-      ],
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            42
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            13
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.5.0",
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "T.png",
-        "image"
-      ]
-    },
-    {
       "id": 65,
       "type": "Trellis2ImageToShape",
       "pos": [
@@ -273,18 +231,19 @@
           "name": "mesh",
           "type": "TRIMESH",
           "links": [
-            134
+            137
           ]
         }
       ],
       "properties": {
         "cnr_id": "ComfyUI-TRELLIS2",
         "ver": "c7089ebab7c126ac3c0829f27f359d549de56bf6",
-        "Node name for S&R": "Trellis2ImageToShape"
+        "Node name for S&R": "Trellis2ImageToShape",
+        "aux_id": "PozzettiAndrea/ComfyUI-TRELLIS2"
       },
       "widgets_values": [
-        261620082,
-        "randomize",
+        42,
+        "fixed",
         "1024",
         7.5,
         12,
@@ -293,24 +252,66 @@
       ]
     },
     {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        -405.41394868827155,
+        161.18396363811723
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            42
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.5.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "t_logo.png",
+        "image"
+      ]
+    },
+    {
       "id": 87,
       "type": "GeomPackRemesh",
       "pos": [
-        324.9394138646338,
-        517.2312960952976
+        369.5370701146338,
+        348.6922335952976
       ],
       "size": [
         210,
         126
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
           "name": "trimesh",
           "type": "TRIMESH",
-          "link": 135
+          "link": 137
         }
       ],
       "outputs": [
@@ -330,7 +331,8 @@
       "properties": {
         "cnr_id": "comfyui-geometrypack",
         "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
-        "Node name for S&R": "GeomPackRemesh"
+        "Node name for S&R": "GeomPackRemesh",
+        "aux_id": "PozzettiAndrea/ComfyUI-GeometryPack"
       },
       "widgets_values": [
         "cumesh",
@@ -357,7 +359,7 @@
         722
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -377,57 +379,12 @@
       "properties": {
         "cnr_id": "comfyui-geometrypack",
         "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
-        "Node name for S&R": "GeomPackPreviewMeshVTK"
+        "Node name for S&R": "GeomPackPreviewMeshVTK",
+        "aux_id": "PozzettiAndrea/ComfyUI-GeometryPack"
       },
       "widgets_values": [
         "fields",
         ""
-      ]
-    },
-    {
-      "id": 86,
-      "type": "GeomPackFillHoles",
-      "pos": [
-        328.6201185851923,
-        361.678745894136
-      ],
-      "size": [
-        210,
-        102
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "mesh",
-          "type": "TRIMESH",
-          "link": 134
-        }
-      ],
-      "outputs": [
-        {
-          "name": "filled_mesh",
-          "type": "TRIMESH",
-          "links": [
-            135
-          ]
-        },
-        {
-          "name": "info",
-          "type": "STRING",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-geometrypack",
-        "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
-        "Node name for S&R": "GeomPackFillHoles"
-      },
-      "widgets_values": [
-        "cumesh",
-        0.03,
-        1000
       ]
     }
   ],
@@ -489,26 +446,18 @@
       "TRELLIS2_SHAPE_PIPELINE"
     ],
     [
-      134,
-      65,
-      2,
-      86,
-      0,
-      "TRIMESH"
-    ],
-    [
-      135,
-      86,
-      0,
-      87,
-      0,
-      "TRIMESH"
-    ],
-    [
       136,
       87,
       0,
       69,
+      0,
+      "TRIMESH"
+    ],
+    [
+      137,
+      65,
+      2,
+      87,
       0,
       "TRIMESH"
     ]
@@ -517,10 +466,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.6855477887646165,
+      "scale": 0.8800118720577279,
       "offset": [
-        858.0060097292856,
-        315.8531611458321
+        598.2032096461023,
+        198.00189289784404
       ]
     },
     "frontendVersion": "1.34.9",

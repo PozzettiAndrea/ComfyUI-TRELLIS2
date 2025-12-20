@@ -11,6 +11,87 @@ import comfy.model_management as mm
 from .utils import logger, tensor_to_pil
 
 
+def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
+    """
+    Extract object with margin, pad to square. Leave at native resolution.
+    DINOv3 will resize to 512/1024 in image_feature_extractor.py.
+
+    Args:
+        pil_image: Input RGBA image (after mask applied)
+        mask_np: Numpy mask array (H, W), values 0-255
+        margin_ratio: Padding around object (default 10%)
+
+    Returns:
+        RGB PIL Image - square, with black background
+    """
+    # 1. Find object bounding box from mask
+    alpha_threshold = 0.8 * 255
+    bbox_coords = np.argwhere(mask_np > alpha_threshold)
+    if len(bbox_coords) == 0:
+        # No object found, return as-is (fallback)
+        logger.warning("[smart_crop_square] No object found in mask, returning original image")
+        w, h = pil_image.size
+        size = max(w, h)
+        canvas = Image.new('RGB', (size, size), (0, 0, 0))
+        canvas.paste(pil_image.convert('RGB'), ((size - w) // 2, (size - h) // 2))
+        return canvas
+
+    y_min, x_min = bbox_coords.min(axis=0)
+    y_max, x_max = bbox_coords.max(axis=0)
+
+    # 2. Calculate object size and add margin
+    obj_w = x_max - x_min
+    obj_h = y_max - y_min
+    obj_size = max(obj_w, obj_h)
+    margin = int(obj_size * margin_ratio)
+
+    # 3. Expand to square with margin (centered on object)
+    center_x = (x_min + x_max) / 2
+    center_y = (y_min + y_max) / 2
+    half_size = (obj_size / 2) + margin
+
+    crop_x1 = int(center_x - half_size)
+    crop_y1 = int(center_y - half_size)
+    crop_x2 = int(center_x + half_size)
+    crop_y2 = int(center_y + half_size)
+    crop_size = crop_x2 - crop_x1  # Should be square
+
+    # Ensure crop_size is at least 1
+    if crop_size < 1:
+        crop_size = 1
+        crop_x2 = crop_x1 + 1
+        crop_y2 = crop_y1 + 1
+
+    # 4. Create black canvas and paste cropped region
+    img_w, img_h = pil_image.size
+    canvas = Image.new('RGB', (crop_size, crop_size), (0, 0, 0))
+
+    # Calculate source region (clamp to image bounds)
+    src_x1 = max(0, crop_x1)
+    src_y1 = max(0, crop_y1)
+    src_x2 = min(img_w, crop_x2)
+    src_y2 = min(img_h, crop_y2)
+
+    # Calculate destination offset (if crop extends beyond image)
+    dst_x = src_x1 - crop_x1
+    dst_y = src_y1 - crop_y1
+
+    # Crop source region
+    cropped = pil_image.crop((src_x1, src_y1, src_x2, src_y2))
+
+    # 5. Premultiply alpha before pasting (black background)
+    cropped_np = np.array(cropped.convert('RGBA')).astype(np.float32) / 255
+    cropped_np = cropped_np[:, :, :3] * cropped_np[:, :, 3:4]
+    cropped_rgb = Image.fromarray((cropped_np * 255).astype(np.uint8))
+
+    canvas.paste(cropped_rgb, (dst_x, dst_y))
+
+    logger.info(f"[smart_crop_square] Object bbox: ({x_min},{y_min})-({x_max},{y_max}), "
+                f"size={obj_size}, margin={margin}, output={crop_size}x{crop_size}")
+
+    return canvas  # Square RGB, native resolution, DINOv3 will resize
+
+
 def mesh_to_trimesh(mesh_obj):
     """
     Convert TRELLIS Mesh to trimesh.Trimesh (untextured).
@@ -221,20 +302,8 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
         rgba = np.dstack([img_np, alpha_np])
         pil_image = Image.fromarray(rgba, 'RGBA')
 
-        # Crop to bounding box
-        bbox = np.argwhere(alpha_np > 0.8 * 255)
-        if len(bbox) > 0:
-            bbox = np.min(bbox[:, 1]), np.min(bbox[:, 0]), np.max(bbox[:, 1]), np.max(bbox[:, 0])
-            center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
-            size = max(bbox[2] - bbox[0], bbox[3] - bbox[1])
-            size = int(size * 1)
-            bbox = center[0] - size // 2, center[1] - size // 2, center[0] + size // 2, center[1] + size // 2
-            pil_image = pil_image.crop(bbox)
-
-        # Premultiply alpha
-        output_np = np.array(pil_image.convert('RGBA')).astype(np.float32) / 255
-        output_np = output_np[:, :, :3] * output_np[:, :, 3:4]
-        pil_image = Image.fromarray((output_np * 255).astype(np.uint8))
+        # Smart crop: extract object with 10% margin, pad to square, premultiply alpha
+        pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1)
 
         logger.info("Extracting DinoV3 conditioning...")
 
