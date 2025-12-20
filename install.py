@@ -81,6 +81,16 @@ WHEEL_CUDA_MAP = {
     ("12.8", "2.9"): "cu128",
 }
 
+# Map (CUDA major.minor, PyTorch major.minor) -> wheel subdirectory
+# Static mapping ensures any patch version (2.9.0, 2.9.1, etc.) finds the right wheels
+WHEEL_DIRS = {
+    ("12.4", "2.5"): "cu124-torch251",
+    ("12.6", "2.6"): "cu126-torch260",
+    ("12.6", "2.8"): "cu126-torch280",
+    ("12.8", "2.8"): "cu128-torch280",
+    ("12.8", "2.9"): "cu128-torch291",
+}
+
 
 # =============================================================================
 # Version Detection
@@ -132,6 +142,27 @@ def get_wheel_cuda_suffix():
         return "cu128"
 
     print(f"[ComfyUI-TRELLIS2] No matching wheel for CUDA {cuda_mm} + PyTorch {torch_mm}")
+    return None
+
+
+def get_wheel_dir():
+    """
+    Get the wheel subdirectory for current CUDA + PyTorch version.
+    Uses static mapping so any patch version (2.9.0, 2.9.1) maps to the same wheels.
+    Returns directory string (e.g., 'cu128-torch291') or None if no match.
+    """
+    torch_ver, cuda_ver = get_torch_info()
+    if not torch_ver or not cuda_ver:
+        return None
+
+    cuda_mm = '.'.join(cuda_ver.split('.')[:2])
+    torch_mm = '.'.join(torch_ver.split('.')[:2])
+
+    wheel_dir = WHEEL_DIRS.get((cuda_mm, torch_mm))
+    if wheel_dir:
+        print(f"[ComfyUI-TRELLIS2] Using wheel directory: {wheel_dir}")
+        return wheel_dir
+
     return None
 
 
@@ -437,28 +468,24 @@ def get_direct_wheel_urls(package_config):
     if not wheel_release_base or not wheel_version:
         return []
 
-    cuda_suffix = get_wheel_cuda_suffix()
-    if not cuda_suffix:
+    # Use static mapping for wheel directory
+    wheel_dir = get_wheel_dir()
+    if not wheel_dir:
         return []
 
-    torch_ver, _ = get_torch_info()
-    if not torch_ver:
+    cuda_suffix = get_wheel_cuda_suffix()
+    if not cuda_suffix:
         return []
 
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
     package_name = package_config["name"]
 
-    # Extract torch major.minor for release tag (e.g., "2.8.0" -> "280")
-    torch_parts = torch_ver.split('.')[:2]
-    torch_tag = f"{torch_parts[0]}{torch_parts[1]}0"  # "2.8" -> "280"
-
     urls = []
 
-    # New format: tag=cu128-torch280, wheel=package-version-cpXX-cpXX-platform.whl (no cuda suffix)
-    new_tag = f"{cuda_suffix}-torch{torch_tag}"
+    # New format: tag=cu128-torch291, wheel=package-version-cpXX-cpXX-platform.whl (no cuda suffix)
     new_wheel = f"{package_name}-{wheel_version}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-    urls.append(f"{wheel_release_base}/{new_tag}/{new_wheel}")
+    urls.append(f"{wheel_release_base}/{wheel_dir}/{new_wheel}")
 
     # Old format: tag=cu128, wheel=package-version+cu128-cpXX-cpXX-platform.whl (with cuda suffix)
     old_wheel = f"{package_name}-{wheel_version}+{cuda_suffix}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
@@ -553,23 +580,18 @@ def try_install_from_wheel(package_name, wheel_index_url, import_name=None):
         import_name = package_name
 
     py_ver = get_python_version()
-    wheel_suffix = get_wheel_cuda_suffix()
 
-    if not wheel_suffix:
-        print(f"[ComfyUI-TRELLIS2] No matching CUDA suffix for {package_name}")
+    # Use static mapping for wheel directory
+    wheel_dir = get_wheel_dir()
+    if not wheel_dir:
+        print(f"[ComfyUI-TRELLIS2] No matching wheel directory for {package_name}")
         return False
 
     # Build the subdirectory URL for this CUDA/torch version
-    # e.g., https://pozzettiandrea.github.io/ovoxel-wheels/cu128-torch280/
-    torch_ver, _ = get_torch_info()
-    if torch_ver:
-        torch_parts = torch_ver.split('.')[:2]
-        torch_tag = f"{torch_parts[0]}{torch_parts[1]}0"  # "2.8" -> "280"
-        wheel_index_with_subdir = f"{wheel_index_url.rstrip('/')}/{wheel_suffix}-torch{torch_tag}/"
-    else:
-        wheel_index_with_subdir = wheel_index_url
+    # e.g., https://pozzettiandrea.github.io/ovoxel-wheels/cu128-torch291/
+    wheel_index_with_subdir = f"{wheel_index_url.rstrip('/')}/{wheel_dir}/"
 
-    print(f"[ComfyUI-TRELLIS2] Looking for {package_name} wheel (Python {py_ver}, {wheel_suffix})")
+    print(f"[ComfyUI-TRELLIS2] Looking for {package_name} wheel (Python {py_ver}, {wheel_dir})")
     print(f"[ComfyUI-TRELLIS2] Wheel index: {wheel_index_with_subdir}")
 
     try:
