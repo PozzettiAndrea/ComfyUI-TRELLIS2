@@ -105,9 +105,17 @@ Parameters:
             # Clean up BVH after remesh
             del bvh, curr_verts, curr_faces
 
+        # Unify face orientations before simplify
+        cumesh.unify_face_orientations()
+        logger.info("Unified face orientations (pre-simplify)")
+
         # Simplify
         cumesh.simplify(target_face_count, verbose=True)
         logger.info(f"After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+
+        # Unify face orientations again after simplify (simplify can break it)
+        cumesh.unify_face_orientations()
+        logger.info("Unified face orientations (post-simplify)")
 
         # Read result
         out_vertices, out_faces = cumesh.read()
@@ -250,7 +258,7 @@ class Trellis2RasterizePBR:
         return {
             "required": {
                 "trimesh": ("TRIMESH",),
-                "voxelgrid": ("VOXELGRID",),
+                "voxelgrid": ("TRELLIS2_VOXELGRID",),
                 "texture_size": ("INT", {"default": 2048, "min": 512, "max": 16384, "step": 512}),
             },
         }
@@ -286,7 +294,7 @@ Parameters:
             raise ValueError("Input mesh has no UVs! Use UV Unwrap node first.")
 
         # Check for voxel data
-        if not hasattr(voxelgrid, 'pbr_attrs'):
+        if 'attrs' not in voxelgrid:
             raise ValueError("VoxelGrid has no PBR attributes.")
 
         logger.info(f"Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
@@ -296,17 +304,20 @@ Parameters:
         faces = torch.tensor(trimesh.faces, dtype=torch.int32).cuda()
         uvs = torch.tensor(trimesh.visual.uv, dtype=torch.float32).cuda()
 
+        # NOTE: Don't call unify_face_orientations here - it would break UV mapping!
+        # Face orientation should be fixed BEFORE UV unwrapping (in Simplify or earlier)
+
         # Undo Z-up to Y-up for voxel sampling
         vertices_yup = vertices.clone()
         vertices_yup[:, 1], vertices_yup[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
 
-        # Get voxel data - ensure tensors are on GPU for grid_sample_3d
-        attr_volume = voxelgrid.pbr_attrs.cuda()
-        coords = voxelgrid.pbr_coords.cuda()
-        voxel_size = voxelgrid.pbr_voxel_size
-        attr_layout = voxelgrid.pbr_layout
-        orig_vertices = voxelgrid.original_vertices.cuda()
-        orig_faces = voxelgrid.original_faces.cuda()
+        # Get voxel data from dict (already on GPU)
+        attr_volume = voxelgrid['attrs'].cuda()
+        coords = voxelgrid['coords'].cuda()
+        voxel_size = voxelgrid['voxel_size']
+        attr_layout = voxelgrid['layout']
+        orig_vertices = voxelgrid['original_vertices'].cuda()
+        orig_faces = voxelgrid['original_faces'].cuda()
 
         # DEBUG: Print raw voxel attribute statistics
         logger.info(f"[DEBUG] attr_volume shape: {attr_volume.shape}")
@@ -471,7 +482,7 @@ Parameters:
         logger.info(f"[DEBUG] Final texture pixels with alpha < 200: {low_alpha_final}/{alpha.size}")
         logger.info(f"[DEBUG] Final texture pixels with alpha == 0: {zero_alpha_final}/{alpha.size}")
 
-        # Create PBR material
+        # Create PBR material (double-sided to avoid backface culling issues)
         material = Trimesh.visual.material.PBRMaterial(
             baseColorTexture=Image.fromarray(np.concatenate([base_color, alpha], axis=-1)),
             baseColorFactor=np.array([255, 255, 255, 255], dtype=np.uint8),
@@ -483,6 +494,7 @@ Parameters:
             metallicFactor=1.0,
             roughnessFactor=1.0,
             alphaMode='BLEND',
+            doubleSided=True,
         )
 
         # Build result

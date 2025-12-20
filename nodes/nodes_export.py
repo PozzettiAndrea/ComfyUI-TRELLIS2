@@ -17,7 +17,7 @@ class Trellis2ExportGLB:
         return {
             "required": {
                 "trimesh": ("TRIMESH",),
-                "voxelgrid": ("VOXELGRID",),
+                "voxelgrid": ("TRELLIS2_VOXELGRID",),
             },
             "optional": {
                 "decimation_target": ("INT", {"default": 500000, "min": 10000, "max": 2000000, "step": 10000}),
@@ -55,20 +55,17 @@ Output GLB is saved to ComfyUI output folder.
             )
 
         # Check if voxelgrid has PBR attributes
-        if not hasattr(voxelgrid, 'pbr_attrs'):
+        if 'attrs' not in voxelgrid:
             raise ValueError("VoxelGrid does not have PBR attributes. Use a voxelgrid from TRELLIS.2 generation.")
 
         logger.info(f"Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
-        # Move tensors to GPU for o_voxel processing
+        # Get tensors from dict (already on GPU)
         device = torch.device('cuda')
-        vertices = voxelgrid.original_vertices.to(device) if hasattr(voxelgrid.original_vertices, 'to') else voxelgrid.original_vertices
-        faces = voxelgrid.original_faces.to(device) if hasattr(voxelgrid.original_faces, 'to') else voxelgrid.original_faces
-        attr_volume = voxelgrid.pbr_attrs.to(device) if hasattr(voxelgrid.pbr_attrs, 'to') else voxelgrid.pbr_attrs
-        coords = voxelgrid.pbr_coords.to(device) if hasattr(voxelgrid.pbr_coords, 'to') else voxelgrid.pbr_coords
-
-        # Clear cache before large allocation
-        torch.cuda.empty_cache()
+        vertices = voxelgrid['original_vertices'].to(device)
+        faces = voxelgrid['original_faces'].to(device)
+        attr_volume = voxelgrid['attrs'].to(device)
+        coords = voxelgrid['coords'].to(device)
 
         # Generate GLB using o_voxel
         glb = o_voxel.postprocess.to_glb(
@@ -76,8 +73,8 @@ Output GLB is saved to ComfyUI output folder.
             faces=faces,
             attr_volume=attr_volume,
             coords=coords,
-            attr_layout=voxelgrid.pbr_layout,
-            grid_size=max(voxelgrid.shape),
+            attr_layout=voxelgrid['layout'],
+            voxel_size=voxelgrid['voxel_size'],
             aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
             decimation_target=decimation_target,
             texture_size=texture_size,
@@ -87,7 +84,7 @@ Output GLB is saved to ComfyUI output folder.
             use_tqdm=True,
         )
 
-        # Immediately clean up GPU tensors after export
+        # Clean up GPU tensors
         del vertices, faces, attr_volume, coords
         torch.cuda.empty_cache()
 
@@ -110,7 +107,7 @@ Output GLB is saved to ComfyUI output folder.
 
 
 class Trellis2RenderPreview:
-    """Render preview images of a mesh with voxel-based PBR materials."""
+    """Render preview images of a mesh."""
 
     @classmethod
     def INPUT_TYPES(s):
@@ -119,7 +116,6 @@ class Trellis2RenderPreview:
                 "trimesh": ("TRIMESH",),
             },
             "optional": {
-                "voxelgrid": ("VOXELGRID",),
                 "num_views": ("INT", {"default": 8, "min": 1, "max": 36, "step": 1}),
                 "resolution": ("INT", {"default": 512, "min": 256, "max": 2048, "step": 128}),
                 "render_mode": (["normal", "clay", "base_color"], {"default": "normal"}),
@@ -135,13 +131,12 @@ Render preview images of the 3D mesh.
 
 Parameters:
 - trimesh: The 3D mesh geometry
-- voxelgrid: Optional VoxelGrid for PBR rendering
 - num_views: Number of views to render (rotating around object)
 - resolution: Render resolution
 - render_mode: Rendering style (normal, clay, base_color)
 """
 
-    def render(self, trimesh, voxelgrid=None, num_views=8, resolution=512, render_mode="normal"):
+    def render(self, trimesh, num_views=8, resolution=512, render_mode="normal"):
         import pyrender
         import math
 
@@ -224,7 +219,6 @@ class Trellis2RenderVideo:
                 "trimesh": ("TRIMESH",),
             },
             "optional": {
-                "voxelgrid": ("VOXELGRID",),
                 "num_frames": ("INT", {"default": 60, "min": 10, "max": 360, "step": 10}),
                 "fps": ("INT", {"default": 15, "min": 1, "max": 60, "step": 1}),
                 "resolution": ("INT", {"default": 512, "min": 256, "max": 2048, "step": 128}),
@@ -242,14 +236,13 @@ Render a rotating video of the 3D mesh.
 
 Parameters:
 - trimesh: The 3D mesh geometry
-- voxelgrid: Optional VoxelGrid for PBR rendering
 - num_frames: Number of frames in the video
 - fps: Frames per second
 - resolution: Render resolution
 - filename_prefix: Prefix for output filename
 """
 
-    def render_video(self, trimesh, voxelgrid=None, num_frames=60, fps=15, resolution=512, filename_prefix="trellis2_video"):
+    def render_video(self, trimesh, num_frames=60, fps=15, resolution=512, filename_prefix="trellis2_video"):
         import pyrender
         import imageio
         import math
@@ -260,8 +253,8 @@ Parameters:
         scene = pyrender.Scene(bg_color=[0.1, 0.1, 0.1, 1.0])
 
         # Create mesh for pyrender
-        mesh = pyrender.Mesh.from_trimesh(trimesh)
-        scene.add(mesh)
+        pyrender_mesh = pyrender.Mesh.from_trimesh(trimesh)
+        scene.add(pyrender_mesh)
 
         # Setup camera
         camera = pyrender.PerspectiveCamera(yfov=np.pi / 5.0)

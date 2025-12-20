@@ -48,7 +48,7 @@ def _get_trellis2_models_dir():
     return models_dir
 
 
-def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None, **kwargs):
+def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None, device=None, **kwargs):
     """
     Load a model from a pretrained checkpoint.
 
@@ -108,10 +108,17 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
 
     with open(config_file, 'r') as f:
         config = json.load(f)
+
+    # Auto-detect device: prefer CUDA, fallback to CPU
+    if device is None:
+        import torch
+        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
     print(f"[ComfyUI-TRELLIS2]   Building model: {config['name']}")
     model = __getattr__(config['name'])(**config['args'], **kwargs)
-    print(f"[ComfyUI-TRELLIS2]   Loading weights...")
-    model.load_state_dict(load_file(model_file), strict=False)
+    model.to(device)  # Move empty model to GPU before loading weights
+    print(f"[ComfyUI-TRELLIS2]   Loading weights directly to {device}...")
+    model.load_state_dict(load_file(model_file, device=device), strict=False)
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:

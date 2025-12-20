@@ -40,25 +40,21 @@ SHAPE_MODELS_BY_RESOLUTION = {
 }
 
 # Texture models needed for each resolution mode
-# Note: shape_slat_decoder is needed for texture decoding (generates mesh structure)
+# Note: shape_slat_decoder is NOT needed here - texture node receives pre-computed 'subs' from shape node
 TEXTURE_MODELS_BY_RESOLUTION = {
     '512': [
-        'shape_slat_decoder',
         'tex_slat_decoder',
         'tex_slat_flow_model_512',
     ],
     '1024': [
-        'shape_slat_decoder',
         'tex_slat_decoder',
         'tex_slat_flow_model_1024',
     ],
     '1024_cascade': [
-        'shape_slat_decoder',
         'tex_slat_decoder',
         'tex_slat_flow_model_1024',
     ],
     '1536_cascade': [
-        'shape_slat_decoder',
         'tex_slat_decoder',
         'tex_slat_flow_model_1024',
     ],
@@ -166,10 +162,12 @@ class LoadTrellis2TextureModel:
     FUNCTION = "loadmodel"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
-Load TRELLIS.2 texture/PBR generation models from HuggingFace.
+Prepare TRELLIS.2 texture/PBR generation pipeline config.
 
-This loads models needed for texture generation:
-- Shape decoder (needed to decode mesh structure)
+Models are loaded LAZILY when the "Shape to Textured Mesh" node runs,
+ensuring texture models don't compete with shape models for VRAM.
+
+This will load:
 - Texture latent flow models
 - Texture decoder (outputs base_color, metallic, roughness, alpha)
 
@@ -182,46 +180,27 @@ Memory options:
   and reloaded directly from disk to GPU. Zero RAM usage but ~2-3s reload time.
 - keep_model_loaded=True: Models stay on GPU between uses. Faster but uses VRAM.
 
-Connect to "Shape to Texture" node for PBR material generation.
+Connect to "Shape to Textured Mesh" node for PBR material generation.
 """
 
     def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False):
         device = mm.get_torch_device()
         model = 'microsoft/TRELLIS.2-4B'
 
-        logger.info(f"Loading TRELLIS.2 texture pipeline (resolution={resolution})")
-
-        from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
-
         # Get list of texture models needed for this resolution
         needed_models = TEXTURE_MODELS_BY_RESOLUTION.get(resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade'])
 
-        # Load pipeline with disk offload support when not keeping models loaded
-        pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
-            model,
-            models_to_load=needed_models,
-            enable_disk_offload=not keep_model_loaded
-        )
-        pipeline.keep_model_loaded = keep_model_loaded
-        pipeline.default_pipeline_type = resolution
+        logger.info(f"Prepared TRELLIS.2 texture pipeline config (resolution={resolution}, models will load lazily)")
 
-        # Move to device (only if keeping models loaded)
-        if keep_model_loaded:
-            if device.type == 'cuda':
-                pipeline.cuda()
-            else:
-                pipeline.to(device)
-        else:
-            # Just set the device, models will be loaded on-demand
-            pipeline._device = device
-
-        logger.info(f"TRELLIS.2 texture pipeline loaded successfully (resolution={resolution}, keep_model_loaded={keep_model_loaded})")
-
+        # Don't load models here - defer to inference node for optimal VRAM usage
+        # This ensures texture models don't compete with shape models during shape inference
         texture_model = {
-            "pipeline": pipeline,
+            "pipeline": None,  # Will be loaded lazily in inference node
             "model_name": model,
             "resolution": resolution,
             "device": device,
+            "keep_model_loaded": keep_model_loaded,
+            "models_to_load": needed_models,
         }
 
         return (texture_model,)
