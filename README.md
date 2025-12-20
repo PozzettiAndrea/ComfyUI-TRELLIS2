@@ -33,6 +33,7 @@ The video render nodes will be implemented soon! Not yet working.
 
 TRELLIS2 Checkpoints (downloaded from microsoft/TRELLIS-image-large)
 
+```text
 ComfyUI/models/trellis2/
 ├── ss_dec_conv3d_16l8_fp16/          # sparse structure decoder
 ├── ss_flow_img_dit_1_3B_64_bf16/     # sparse structure flow
@@ -49,6 +50,7 @@ ComfyUI/models/dinov3/
 
 ComfyUI/models/birefnet/
 └── models--ZhengPeng7--BiRefNet/
+```
 
 ## Credits
 
