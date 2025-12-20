@@ -95,6 +95,35 @@ WHEEL_DIRS = {
     ("12.9", "2.9"): "cu128-torch291",
 }
 
+# Flash attention wheel sources - tried in order until one works
+# Different repos use different naming conventions
+FLASH_ATTN_SOURCES = [
+    {
+        "name": "bdashore3",
+        "base_url": "https://github.com/bdashore3/flash-attention/releases/download",
+        "versions": [("2.8.3", "v2.8.3")],
+        # Format: flash_attn-{ver}+cu{cuda}torch{torch}.0cxx11abiFALSE-cp{py}-cp{py}-{platform}.whl
+        "format": "cxx11abi",
+        "platforms": ["win_amd64", "linux_x86_64"],
+    },
+    {
+        "name": "mjun0812",
+        "base_url": "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download",
+        "versions": [("2.8.3", "v0.4.19"), ("2.7.4.post1", "v0.4.19")],
+        # Format: flash_attn-{ver}+cu{cuda}torch{torch}-cp{py}-cp{py}-{platform}.whl
+        "format": "simple",
+        "platforms": ["win_amd64", "linux_x86_64"],
+    },
+    {
+        "name": "oobabooga",
+        "base_url": "https://github.com/oobabooga/flash-attention/releases/download",
+        "versions": [("2.7.4.post1", "v2.7.4.post1"), ("2.7.3", "v2.7.3")],
+        # Format: flash_attn-{ver}+cu{cuda}torch{torch}.0cxx11abiFALSE-cp{py}-cp{py}-{platform}.whl
+        "format": "cxx11abi",
+        "platforms": ["win_amd64", "linux_x86_64"],
+    },
+]
+
 
 # =============================================================================
 # Version Detection
@@ -490,9 +519,9 @@ def get_direct_wheel_urls(package_config):
 
 def get_flash_attn_wheel_urls():
     """
-    Build flash_attn wheel URLs to try.
-    Returns list of (url, version) tuples to try in order.
-    flash_attn uses: flash_attn-{ver}+cu{cuda}torch{torch}-cp{py}-cp{py}-{platform}.whl
+    Build flash_attn wheel URLs from multiple sources.
+    Returns list of (url, version, source_name) tuples to try in order.
+    Different repos use different naming conventions.
     """
     torch_ver, cuda_ver = get_torch_info()
     if not torch_ver or not cuda_ver:
@@ -503,20 +532,21 @@ def get_flash_attn_wheel_urls():
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
 
-    base_url = "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download"
-
-    # flash_attn versions to try (newest first) with their release tags
-    versions_to_try = [
-        ("2.7.4", "v0.5.4"),
-        ("2.6.3", "v0.5.4"),
-        ("2.7.4", "v0.4.19"),
-    ]
-
     urls = []
-    for flash_ver, release_tag in versions_to_try:
-        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-        url = f"{base_url}/{release_tag}/{wheel_name}"
-        urls.append((url, flash_ver))
+    for source in FLASH_ATTN_SOURCES:
+        if platform not in source["platforms"]:
+            continue
+
+        for flash_ver, release_tag in source["versions"]:
+            if source["format"] == "cxx11abi":
+                # bdashore3/oobabooga format: +cu128torch2.8.0cxx11abiFALSE
+                wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}.0cxx11abiFALSE-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+            else:
+                # mjun0812 format: +cu128torch2.8
+                wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+
+            url = f"{source['base_url']}/{release_tag}/{wheel_name}"
+            urls.append((url, flash_ver, source["name"]))
 
     return urls
 
@@ -713,11 +743,17 @@ def try_compile_from_source(package_name, git_url):
     # Platform-specific compiler setup
     if sys.platform == "win32":
         if not shutil.which("cl"):
-            print(f"[ComfyUI-TRELLIS2] MSVC not found, cannot compile {package_name}")
+            print(f"[ComfyUI-TRELLIS2] MSVC C++ compiler not found.")
+            print(f"[ComfyUI-TRELLIS2] To install build tools, run: python install_compilers.py")
+            print(f"[ComfyUI-TRELLIS2] Or run ComfyUI from 'Developer Command Prompt for VS'")
             return False
     else:
         gcc = shutil.which("gcc-11") or shutil.which("gcc")
         gxx = shutil.which("g++-11") or shutil.which("g++")
+        if not gxx:
+            print(f"[ComfyUI-TRELLIS2] g++ compiler not found.")
+            print(f"[ComfyUI-TRELLIS2] To install build tools, run: python install_compilers.py")
+            return False
         if gcc:
             cuda_env["CC"] = gcc
         if gxx:
@@ -774,6 +810,7 @@ def try_compile_from_source(package_name, git_url):
 def try_install_flash_attn():
     """
     Try installing flash_attn from pre-built wheels.
+    Tries multiple sources (bdashore3, mjun0812, oobabooga) until one works.
     Returns True if successful, False otherwise.
     """
     urls = get_flash_attn_wheel_urls()
@@ -781,21 +818,33 @@ def try_install_flash_attn():
         print("[ComfyUI-TRELLIS2] Could not determine flash_attn wheel URL for this environment")
         return False
 
-    for url, version in urls:
-        print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version}: {url}")
+    for url, version, source in urls:
+        print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version} from {source}...")
         try:
             result = subprocess.run([
                 sys.executable, "-m", "pip", "install", url
             ], capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
-                print(f"[ComfyUI-TRELLIS2] [OK] Installed flash_attn {version} from wheel")
+                print(f"[ComfyUI-TRELLIS2] [OK] Installed flash_attn {version} from {source}")
                 return True
-            elif "404" in (result.stderr or ""):
-                continue  # Try next URL
-        except:
+            else:
+                # Check for 404 or other errors
+                error_msg = result.stderr or result.stdout or ""
+                if "404" in error_msg or "not found" in error_msg.lower():
+                    continue  # Try next URL
+                else:
+                    # Log non-404 errors but continue trying
+                    print(f"[ComfyUI-TRELLIS2] {source} failed: {error_msg[:100]}")
+                    continue
+        except subprocess.TimeoutExpired:
+            print(f"[ComfyUI-TRELLIS2] {source} timed out")
+            continue
+        except Exception as e:
+            print(f"[ComfyUI-TRELLIS2] {source} error: {e}")
             continue
 
+    print("[ComfyUI-TRELLIS2] Could not find flash_attn wheel from any source")
     return False
 
 
