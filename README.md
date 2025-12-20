@@ -27,6 +27,10 @@ https://github.com/user-attachments/assets/e28e4a74-b119-4303-8e30-63361f26aa88
 All dependencies should theoretically install through wheel by running install.py!
 This node was made for comfyui-manager install, but you can also pip install requirements and "python install.py" manually.
 
+## Notes
+
+The video render nodes will be implemented soon! Not yet working.
+
 ## Credits
 
 - [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) by Microsoft Research
