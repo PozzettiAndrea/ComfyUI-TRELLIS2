@@ -14,7 +14,8 @@ INIT_ERRORS = []
 WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
 
 # Only run initialization and imports when loaded by ComfyUI, not during pytest
-if 'pytest' not in sys.modules:
+# Use PYTEST_CURRENT_TEST env var which is only set when pytest is actually running tests
+if 'PYTEST_CURRENT_TEST' not in os.environ:
     print("[ComfyUI-TRELLIS2] Initializing custom node...")
 
     try:
