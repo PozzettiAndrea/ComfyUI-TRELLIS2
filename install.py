@@ -81,6 +81,7 @@ WHEEL_CUDA_MAP = {
     ("12.8", "2.9"): "cu128",
     ("12.9", "2.8"): "cu128",  # CUDA 12.9 can use 12.8 wheels
     ("12.9", "2.9"): "cu128",
+    ("13.0", "2.9"): "cu130",  # CUDA 13.0 for RTX 50 series
 }
 
 # Map (CUDA major.minor, PyTorch major.minor) -> wheel subdirectory
@@ -93,6 +94,7 @@ WHEEL_DIRS = {
     ("12.8", "2.9"): "cu128-torch291",
     ("12.9", "2.8"): "cu128-torch280",  # CUDA 12.9 uses 12.8 wheels
     ("12.9", "2.9"): "cu128-torch291",
+    ("13.0", "2.9"): "cu130-torch291",  # CUDA 13.0 for RTX 50 series
 }
 
 # Flash attention wheel sources - tried in order until one works
@@ -223,8 +225,9 @@ def find_cuda_home():
 
     # Check system CUDA installations
     system_paths = [
-        "/usr/local/cuda-12.8", "/usr/local/cuda-12.6", "/usr/local/cuda-12.4",
-        "/usr/local/cuda-12.2", "/usr/local/cuda-12.0", "/usr/local/cuda",
+        "/usr/local/cuda-13.0", "/usr/local/cuda-12.8", "/usr/local/cuda-12.6",
+        "/usr/local/cuda-12.4", "/usr/local/cuda-12.2", "/usr/local/cuda-12.0",
+        "/usr/local/cuda",
     ]
     for cuda_path in system_paths:
         if os.path.exists(cuda_path):
@@ -489,6 +492,8 @@ def get_direct_wheel_urls(package_config):
     """
     Build direct wheel URL from GitHub releases.
     Uses static WHEEL_DIRS mapping for reliable URL construction.
+    Wheel name format: {package}-{version}+cu{cuda_short}torch{torch_mm}-cpXX-cpXX-{platform}.whl
+    Example: flex_gemm-0.0.1+cu128torch29-cp312-cp312-linux_x86_64.whl
     """
     wheel_release_base = package_config.get("wheel_release_base")
     wheel_version = package_config.get("wheel_version")
@@ -506,12 +511,26 @@ def get_direct_wheel_urls(package_config):
     if not wheel_dir:
         return []
 
+    # Get CUDA suffix (e.g., "cu128") and torch version for wheel naming
+    cuda_suffix = get_wheel_cuda_suffix()
+    if not cuda_suffix:
+        return []
+
+    torch_ver, _ = get_torch_info()
+    if not torch_ver:
+        return []
+
+    # Build torch_mm: "2.9.1" -> "29"
+    torch_parts = torch_ver.split('.')[:2]
+    torch_mm = ''.join(torch_parts)
+
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
     package_name = package_config["name"]
 
-    # Build wheel URL: {release_base}/{wheel_dir}/{package}-{version}-cpXX-cpXX-{platform}.whl
-    wheel_name = f"{package_name}-{wheel_version}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    # Build wheel URL with new naming: {package}-{version}+cu{cuda}torch{mm}-cpXX-cpXX-{platform}.whl
+    # cuda_suffix is already "cu128", so we just add "torch{mm}"
+    wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
     wheel_url = f"{wheel_release_base}/{wheel_dir}/{wheel_name}"
 
     return [wheel_url]
@@ -568,7 +587,7 @@ def try_install_from_direct_url(package_config):
 
         try:
             result = subprocess.run([
-                sys.executable, "-m", "pip", "install", wheel_url
+                sys.executable, "-m", "pip", "install", "--no-deps", wheel_url
             ], capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
@@ -625,9 +644,10 @@ def try_install_from_wheel(package_name, wheel_index_url, import_name=None):
 
     try:
         # Use --no-index to ONLY look at our wheel index, not PyPI
+        # Use --no-deps to avoid pulling in dependencies (we manage them ourselves)
         # This avoids conflicts with similarly-named packages on PyPI
         result = subprocess.run([
-            sys.executable, "-m", "pip", "install",
+            sys.executable, "-m", "pip", "install", "--no-deps",
             package_name, "--no-index", "--find-links", wheel_index_with_subdir
         ], capture_output=True, text=True, timeout=300)
 
@@ -764,7 +784,7 @@ def try_compile_from_source(package_name, git_url):
     # First try direct pip install
     try:
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--no-build-isolation", git_url],
+            [sys.executable, "-m", "pip", "install", "--no-build-isolation", "--no-deps", git_url],
             capture_output=True, text=True, timeout=900, env=cuda_env
         )
         if result.returncode == 0:
@@ -822,7 +842,7 @@ def try_install_flash_attn():
         print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version} from {source}...")
         try:
             result = subprocess.run([
-                sys.executable, "-m", "pip", "install", url
+                sys.executable, "-m", "pip", "install", "--no-deps", url
             ], capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
