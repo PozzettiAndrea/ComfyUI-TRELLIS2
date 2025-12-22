@@ -10,6 +10,32 @@ import traceback
 INIT_SUCCESS = False
 INIT_ERRORS = []
 
+
+def _check_xatlas_conflict():
+    """Check for potential xatlas pybind11 conflicts before loading cumesh."""
+    conflicts = []
+
+    # Check for standalone xatlas package
+    try:
+        import importlib.util
+        if importlib.util.find_spec("xatlas") is not None:
+            # Check if it's the cumesh-bundled version or standalone
+            import xatlas
+            xatlas_path = getattr(xatlas, '__file__', '')
+            if 'cumesh' not in xatlas_path.lower():
+                conflicts.append(f"Standalone 'xatlas' package detected at: {xatlas_path}")
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    # Check for already-loaded xatlas-related modules
+    xatlas_modules = [m for m in sys.modules if 'xatlas' in m.lower() and 'cumesh' not in m.lower()]
+    if xatlas_modules:
+        conflicts.append(f"xatlas modules already loaded by another node: {xatlas_modules}")
+
+    return conflicts
+
 # Web directory for JavaScript extensions (if needed in future)
 WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
 
@@ -30,6 +56,20 @@ if 'PYTEST_CURRENT_TEST' not in os.environ:
         INIT_ERRORS.append(error_msg)
         print(f"[ComfyUI-TRELLIS2] [WARNING] {error_msg}")
         print(f"[ComfyUI-TRELLIS2] Traceback:\n{traceback.format_exc()}")
+
+        # Check for xatlas/pybind11 conflicts
+        if "already registered" in str(e).lower():
+            print("[ComfyUI-TRELLIS2] [HINT] This error is caused by a pybind11 type conflict.")
+            print("[ComfyUI-TRELLIS2] [HINT] Another custom node has loaded xatlas before this one.")
+            print("[ComfyUI-TRELLIS2] [HINT] Common fixes:")
+            print("[ComfyUI-TRELLIS2]   1. Remove ComfyUI_TRELLIS (v1) if installed")
+            print("[ComfyUI-TRELLIS2]   2. Run: pip uninstall xatlas")
+            print("[ComfyUI-TRELLIS2]   3. Disable other 3D mesh processing nodes")
+            conflicts = _check_xatlas_conflict()
+            if conflicts:
+                print("[ComfyUI-TRELLIS2] [DETECTED CONFLICTS]:")
+                for c in conflicts:
+                    print(f"[ComfyUI-TRELLIS2]   - {c}")
 
         NODE_CLASS_MAPPINGS = {}
         NODE_DISPLAY_NAME_MAPPINGS = {}
