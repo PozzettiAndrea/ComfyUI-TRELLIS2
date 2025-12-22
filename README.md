@@ -72,3 +72,5 @@ ComfyUI/models/trellis2/
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
+
+Thank you @fire for pointing out the segment_reduce bug!
