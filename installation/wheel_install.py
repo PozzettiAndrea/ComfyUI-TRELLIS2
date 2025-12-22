@@ -39,6 +39,9 @@ def verify_package_import(import_name, package_name):
             except:
                 pass
             return False
+        elif "No module named" in error_str:
+            print(f"[ComfyUI-TRELLIS2] [WARNING] {package_name} missing dependency: {error_str}")
+            return False
         # Regular import error - package not installed
         return False
     except Exception as e:
