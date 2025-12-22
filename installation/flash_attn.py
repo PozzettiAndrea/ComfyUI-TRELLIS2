@@ -89,7 +89,8 @@ def try_install_flash_attn():
         print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version}...")
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "pip", "install", "--no-deps", url],
+                [sys.executable, "-m", "pip", "install",
+                 "--no-deps", "--force-reinstall", "--no-cache-dir", url],
                 capture_output=True, text=True, timeout=300
             )
 
