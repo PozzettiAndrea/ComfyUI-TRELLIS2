@@ -10,6 +10,9 @@ Falls back to compilation from source if no wheel is available.
 import subprocess
 import sys
 import os
+import tempfile
+import urllib.request
+import zipfile
 from pathlib import Path
 
 # Ensure script directory is in path (for users with outdated installations)
@@ -26,6 +29,7 @@ from installation import (
     try_install_from_wheel,
     try_compile_from_source,
     try_install_flash_attn,
+    try_install_vcredist,
 )
 
 
@@ -107,6 +111,85 @@ def install_requirements():
         return False
 
 
+def try_install_python_headers():
+    """
+    Install Python development headers for embedded Python on Windows.
+    Required for Triton to compile CUDA utilities at runtime.
+
+    Downloads include/ and libs/ folders from triton-windows releases.
+    """
+    # Only needed on Windows
+    if sys.platform != "win32":
+        return True
+
+    # Check if we're using embedded Python (ComfyUI portable)
+    python_path = Path(sys.executable)
+    python_dir = python_path.parent
+
+    # Look for python_embeded folder pattern
+    if "python_embeded" not in str(python_dir).lower() and "python_embedded" not in str(python_dir).lower():
+        # Not embedded Python, probably has headers already
+        print("[ComfyUI-TRELLIS2] [SKIP] Not using embedded Python, headers should exist")
+        return True
+
+    include_dir = python_dir / "include"
+    libs_dir = python_dir / "libs"
+
+    # Check if Python.h already exists
+    python_h = include_dir / "Python.h"
+    if python_h.exists():
+        print("[ComfyUI-TRELLIS2] [OK] Python headers already installed")
+        return True
+
+    print("[ComfyUI-TRELLIS2] Installing Python headers for Triton compatibility...")
+    print(f"[ComfyUI-TRELLIS2] Target directory: {python_dir}")
+
+    # Determine Python version for download URL
+    py_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+
+    # Try version-specific URL first, fall back to 3.12.7 (most common for ComfyUI)
+    urls_to_try = [
+        f"https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_{py_version}_include_libs.zip",
+        "https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.12.7_include_libs.zip",
+    ]
+
+    for url in urls_to_try:
+        try:
+            print(f"[ComfyUI-TRELLIS2] Downloading from {url}...")
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                zip_path = Path(tmpdir) / "python_headers.zip"
+
+                # Download the zip file
+                urllib.request.urlretrieve(url, zip_path)
+                print("[ComfyUI-TRELLIS2] Download complete, extracting...")
+
+                # Extract to python_embeded directory
+                with zipfile.ZipFile(zip_path, 'r') as zf:
+                    zf.extractall(python_dir)
+
+                # Verify extraction
+                if python_h.exists():
+                    print("[ComfyUI-TRELLIS2] [OK] Python headers installed successfully")
+                    return True
+                else:
+                    print("[ComfyUI-TRELLIS2] [WARNING] Extraction completed but Python.h not found")
+
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                print(f"[ComfyUI-TRELLIS2] [INFO] Headers for Python {py_version} not available, trying fallback...")
+                continue
+            print(f"[ComfyUI-TRELLIS2] [WARNING] Download failed: {e}")
+        except Exception as e:
+            print(f"[ComfyUI-TRELLIS2] [WARNING] Failed to install Python headers: {e}")
+
+    print("[ComfyUI-TRELLIS2] [WARNING] Could not install Python headers")
+    print("[ComfyUI-TRELLIS2] [WARNING] Triton may fail to compile CUDA utilities")
+    print("[ComfyUI-TRELLIS2] [WARNING] Manual fix: download Python include/libs folders from")
+    print("[ComfyUI-TRELLIS2] [WARNING] https://github.com/woct0rdho/triton-windows/releases")
+    return False
+
+
 def main():
     print("\n" + "=" * 60)
     print("ComfyUI-TRELLIS2 Installation")
@@ -131,6 +214,10 @@ def main():
     if wheel_suffix:
         print(f"[ComfyUI-TRELLIS2] Wheel suffix: {wheel_suffix}")
 
+    # Install Visual C++ Redistributable on Windows (required for opencv, etc.)
+    if sys.platform == "win32":
+        try_install_vcredist()
+
     # Install triton-windows on Windows (required by flex_gemm)
     if sys.platform == "win32":
         print("\n[ComfyUI-TRELLIS2] Installing triton-windows (required for flex_gemm)...")
@@ -145,6 +232,9 @@ def main():
                 print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install failed: {result.stderr[:200] if result.stderr else 'unknown error'}")
         except Exception as e:
             print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install error: {e}")
+
+        # Install Python headers for embedded Python (required for Triton to compile CUDA utils)
+        try_install_python_headers()
 
     # Install requirements.txt first
     print("\n" + "-" * 60)
