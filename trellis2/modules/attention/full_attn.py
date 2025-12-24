@@ -94,36 +94,34 @@ def scaled_dot_product_attention(*args, **kwargs):
         assert len(v.shape) == 4, f"Invalid shape for v, got {v.shape}, expected [N, L, H, Co]"
         device = q.device    
 
-    if config.BACKEND == 'xformers':
-        if 'xops' not in globals():
-            import xformers.ops as xops
+    backend = config.get_backend()
+
+    if backend == 'xformers':
+        import xformers.ops as xops
         if num_all_args == 1:
             q, k, v = qkv.unbind(dim=2)
         elif num_all_args == 2:
             k, v = kv.unbind(dim=2)
         out = xops.memory_efficient_attention(q, k, v)
-    elif config.BACKEND == 'flash_attn':
-        if 'flash_attn' not in globals():
-            import flash_attn
+    elif backend == 'flash_attn':
+        import flash_attn
         if num_all_args == 1:
             out = flash_attn.flash_attn_qkvpacked_func(qkv)
         elif num_all_args == 2:
             out = flash_attn.flash_attn_kvpacked_func(q, kv)
         elif num_all_args == 3:
             out = flash_attn.flash_attn_func(q, k, v)
-    elif config.BACKEND == 'flash_attn_3':
-        if 'flash_attn_3' not in globals():
-            import flash_attn_interface as flash_attn_3
-            if num_all_args == 1:
-                out = flash_attn_3.flash_attn_qkvpacked_func(qkv)
-            elif num_all_args == 2:
-                k, v = kv.unbind(dim=2)
-                out = flash_attn_3.flash_attn_func(q, k, v)
-            elif num_all_args == 3:
-                out = flash_attn_3.flash_attn_func(q, k, v)
-    elif config.BACKEND == 'sdpa':
-        if 'sdpa' not in globals():
-            from torch.nn.functional import scaled_dot_product_attention as sdpa
+    elif backend == 'flash_attn_3':
+        import flash_attn_interface as flash_attn_3
+        if num_all_args == 1:
+            out = flash_attn_3.flash_attn_qkvpacked_func(qkv)
+        elif num_all_args == 2:
+            k, v = kv.unbind(dim=2)
+            out = flash_attn_3.flash_attn_func(q, k, v)
+        elif num_all_args == 3:
+            out = flash_attn_3.flash_attn_func(q, k, v)
+    elif backend == 'sdpa':
+        from torch.nn.functional import scaled_dot_product_attention as sdpa
         if num_all_args == 1:
             q, k, v = qkv.unbind(dim=2)
         elif num_all_args == 2:
@@ -133,13 +131,13 @@ def scaled_dot_product_attention(*args, **kwargs):
         v = v.permute(0, 2, 1, 3)   # [N, H, L, C]
         out = sdpa(q, k, v)         # [N, H, L, C]
         out = out.permute(0, 2, 1, 3)   # [N, L, H, C]
-    elif config.BACKEND == 'naive':
+    elif backend == 'naive':
         if num_all_args == 1:
             q, k, v = qkv.unbind(dim=2)
         elif num_all_args == 2:
             k, v = kv.unbind(dim=2)
         out = _naive_sdpa(q, k, v)
     else:
-        raise ValueError(f"Unknown attention module: {config.BACKEND}")
+        raise ValueError(f"Unknown attention backend: {backend}")
     
     return out
