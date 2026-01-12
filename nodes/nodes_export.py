@@ -1,14 +1,15 @@
 """Export nodes for TRELLIS.2 3D meshes."""
 import os
-import torch
 import numpy as np
 from datetime import datetime
 
 import folder_paths
 
+from comfyui_isolation import isolated
 from .utils import logger
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2ExportGLB:
     """Export TRELLIS.2 mesh to GLB format with PBR textures from voxel data."""
 
@@ -47,25 +48,36 @@ Output GLB is saved to ComfyUI output folder.
 """
 
     def export(self, trimesh, voxelgrid, decimation_target=500000, texture_size=2048, remesh=True, filename_prefix="trellis2"):
-        try:
-            import o_voxel
-        except ImportError:
-            raise ImportError(
-                "Could not import o_voxel. Please ensure TRELLIS.2 dependencies are installed."
-            )
+        import torch
+        import o_voxel
 
         # Check if voxelgrid has PBR attributes
         if 'attrs' not in voxelgrid:
             raise ValueError("VoxelGrid does not have PBR attributes. Use a voxelgrid from TRELLIS.2 generation.")
 
-        logger.info(f"Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
+        print(f"[TRELLIS2] Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
-        # Get tensors from dict (already on GPU)
+        # Get tensors from dict
         device = torch.device('cuda')
-        vertices = voxelgrid['original_vertices'].to(device)
-        faces = voxelgrid['original_faces'].to(device)
-        attr_volume = voxelgrid['attrs'].to(device)
-        coords = voxelgrid['coords'].to(device)
+        vertices = voxelgrid['original_vertices']
+        if isinstance(vertices, np.ndarray):
+            vertices = torch.from_numpy(vertices)
+        vertices = vertices.to(device)
+
+        faces = voxelgrid['original_faces']
+        if isinstance(faces, np.ndarray):
+            faces = torch.from_numpy(faces)
+        faces = faces.to(device)
+
+        attr_volume = voxelgrid['attrs']
+        if isinstance(attr_volume, np.ndarray):
+            attr_volume = torch.from_numpy(attr_volume)
+        attr_volume = attr_volume.to(device)
+
+        coords = voxelgrid['coords']
+        if isinstance(coords, np.ndarray):
+            coords = torch.from_numpy(coords)
+        coords = coords.to(device)
 
         # Generate GLB using o_voxel
         glb = o_voxel.postprocess.to_glb(
@@ -99,7 +111,7 @@ Output GLB is saved to ComfyUI output folder.
 
         glb.export(output_path, extension_webp=False)
 
-        logger.info(f"GLB exported to: {output_path}")
+        print(f"[TRELLIS2] GLB exported to: {output_path}")
 
         torch.cuda.empty_cache()
 
@@ -107,7 +119,10 @@ Output GLB is saved to ComfyUI output folder.
 
 
 class Trellis2RenderPreview:
-    """Render preview images of a mesh."""
+    """Render preview images of a mesh.
+
+    Note: This is NOT isolated because pyrender runs on CPU.
+    """
 
     @classmethod
     def INPUT_TYPES(s):
@@ -137,6 +152,7 @@ Parameters:
 """
 
     def render(self, trimesh, num_views=8, resolution=512, render_mode="normal"):
+        import torch
         import pyrender
         import math
 
@@ -210,7 +226,10 @@ Parameters:
 
 
 class Trellis2RenderVideo:
-    """Render a rotating video of the mesh."""
+    """Render a rotating video of the mesh.
+
+    Note: This is NOT isolated because pyrender runs on CPU.
+    """
 
     @classmethod
     def INPUT_TYPES(s):
@@ -243,6 +262,7 @@ Parameters:
 """
 
     def render_video(self, trimesh, num_frames=60, fps=15, resolution=512, filename_prefix="trellis2_video"):
+        import torch
         import pyrender
         import imageio
         import math
