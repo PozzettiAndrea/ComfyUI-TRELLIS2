@@ -1,5 +1,6 @@
 from typing import *
 import gc
+import sys
 import torch
 import torch.nn as nn
 from .. import models
@@ -60,14 +61,14 @@ class Pipeline:
         cached_config = os.path.join(models_dir, "pipeline.json")
 
         if is_local:
-            print(f"[ComfyUI-TRELLIS2] Loading pipeline config from local path...")
+            print(f"[TRELLIS2] Loading pipeline config from local path...", file=sys.stderr, flush=True)
             config_file = f"{path}/pipeline.json"
         elif os.path.exists(cached_config):
-            print(f"[ComfyUI-TRELLIS2] Loading pipeline config from local cache...")
+            print(f"[TRELLIS2] Loading pipeline config from local cache...", file=sys.stderr, flush=True)
             config_file = cached_config
         else:
             from huggingface_hub import hf_hub_download
-            print(f"[ComfyUI-TRELLIS2] Downloading pipeline config from HuggingFace...")
+            print(f"[TRELLIS2] Downloading pipeline config from HuggingFace...", file=sys.stderr, flush=True)
             hf_config = hf_hub_download(path, "pipeline.json")
             # Cache it
             shutil.copy2(hf_config, cached_config)
@@ -87,10 +88,10 @@ class Pipeline:
 
         if models_to_load:
             skipped = len(args['models']) - total_models
-            print(f"[ComfyUI-TRELLIS2] Loading {total_models} models (skipping {skipped} not needed for this resolution)")
+            print(f"[TRELLIS2] Loading {total_models} models (skipping {skipped} not needed for this resolution)", file=sys.stderr, flush=True)
 
         for i, (k, v) in enumerate(model_items, 1):
-            print(f"[ComfyUI-TRELLIS2] Loading model [{i}/{total_models}]: {k}...")
+            print(f"[TRELLIS2] Loading model [{i}/{total_models}]: {k}...", file=sys.stderr, flush=True)
             # Check if v is already a full HuggingFace path (org/repo/file pattern)
             # Full paths have 3+ parts; relative paths like "ckpts/model" have only 2
             v_parts = v.split('/')
@@ -105,11 +106,11 @@ class Pipeline:
                 disk_offload_manager=disk_offload_manager,
                 model_key=k
             )
-            print(f"[ComfyUI-TRELLIS2] Loaded {k} successfully")
+            print(f"[TRELLIS2] Loaded {k} successfully", file=sys.stderr, flush=True)
 
         new_pipeline = Pipeline(_models, disk_offload_manager=disk_offload_manager)
         new_pipeline._pretrained_args = args
-        print(f"[ComfyUI-TRELLIS2] All {total_models} models loaded!")
+        print(f"[TRELLIS2] All {total_models} models loaded!", file=sys.stderr, flush=True)
         return new_pipeline
 
     @property

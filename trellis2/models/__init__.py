@@ -1,4 +1,5 @@
 import importlib
+import sys
 
 __attributes = {
     # Sparse Structure
@@ -88,18 +89,18 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         os.makedirs(os.path.dirname(local_config), exist_ok=True)
 
         if os.path.exists(local_config) and os.path.exists(local_weights):
-            print(f"[ComfyUI-TRELLIS2]   Loading {model_name} from local cache...")
+            print(f"[TRELLIS2]   Loading {model_name} from local cache...", file=sys.stderr, flush=True)
             config_file = local_config
             model_file = local_weights
         else:
             from huggingface_hub import hf_hub_download
-            print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} config...")
+            print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
             hf_config = hf_hub_download(repo_id, f"{model_name}.json")
-            print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} weights...")
+            print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
             hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
 
             # Copy to local models folder
-            print(f"[ComfyUI-TRELLIS2]   Saving to {models_dir}...")
+            print(f"[TRELLIS2]   Caching to {models_dir}...", file=sys.stderr, flush=True)
             shutil.copy2(hf_config, local_config)
             shutil.copy2(hf_weights, local_weights)
 
@@ -114,10 +115,10 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         import torch
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    print(f"[ComfyUI-TRELLIS2]   Building model: {config['name']}")
+    print(f"[TRELLIS2]   Building model: {config['name']}", file=sys.stderr, flush=True)
     model = __getattr__(config['name'])(**config['args'], **kwargs)
     model.to(device)  # Move empty model to GPU before loading weights
-    print(f"[ComfyUI-TRELLIS2]   Loading weights directly to {device}...")
+    print(f"[TRELLIS2]   Loading weights directly to {device}...", file=sys.stderr, flush=True)
     model.load_state_dict(load_file(model_file, device=device), strict=False)
 
     # Register with disk offload manager if provided
