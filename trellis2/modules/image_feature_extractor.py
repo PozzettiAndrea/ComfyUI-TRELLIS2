@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 from torchvision import transforms
 try:
-    from transformers import DINOv3ViTModel
+    from transformers import DINOv3ViTModel, DINOv3ViTConfig
 except ImportError:
     raise ImportError(
         "DINOv3ViTModel requires transformers>=4.56.0. "
@@ -17,6 +17,37 @@ from PIL import Image
 DINOV3_MODEL_REMAP = {
     "facebook/dinov3-vitl16-pretrain-lvd1689m": "PIA-SPACE-LAB/dinov3-vitl-pretrain-lvd1689m",
 }
+
+# Embedded config for DINOv3 ViT-L (avoids needing config.json download)
+DINOV3_VITL_CONFIG = {
+    "hidden_size": 1024,
+    "num_hidden_layers": 24,
+    "num_attention_heads": 16,
+    "mlp_ratio": 4,
+    "hidden_act": "gelu",
+    "hidden_dropout_prob": 0.0,
+    "attention_probs_dropout_prob": 0.0,
+    "initializer_range": 0.02,
+    "layer_norm_eps": 1e-6,
+    "image_size": 512,
+    "patch_size": 16,
+    "num_channels": 3,
+    "qkv_bias": True,
+    "layerscale_value": 1e-5,
+    "drop_path_rate": 0.4,
+    "use_swiglu_ffn": True,
+    "num_register_tokens": 4,
+    "interpolate_pos_encoding": True,
+    "interpolate_offset": 0.0,
+    "model_type": "dinov3_vit",
+}
+
+# Clean local safetensors filenames to check (in order of preference)
+LOCAL_SAFETENSORS_NAMES = [
+    "dinov3-vitl-pretrain.safetensors",
+    "dinov3-vitl.safetensors",
+    "model.safetensors",
+]
 
 
 def _is_offline_mode() -> bool:
@@ -33,6 +64,36 @@ def _is_model_cached(model_name: str, cache_dir: str) -> bool:
         return cached is not None and cached != _CACHED_NO_EXIST
     except Exception:
         return False
+
+
+def _find_local_safetensors(cache_dir: str) -> Optional[str]:
+    """
+    Check for clean local safetensors file in cache_dir.
+    Returns the path if found, None otherwise.
+    """
+    for name in LOCAL_SAFETENSORS_NAMES:
+        path = os.path.join(cache_dir, name)
+        if os.path.isfile(path):
+            return path
+    return None
+
+
+def _load_dinov3_from_safetensors(safetensors_path: str) -> DINOv3ViTModel:
+    """
+    Load DINOv3 ViT-L model from a single safetensors file.
+    Uses embedded config to avoid needing config.json.
+    """
+    from safetensors.torch import load_file
+
+    # Create model from embedded config
+    config = DINOv3ViTConfig(**DINOV3_VITL_CONFIG)
+    model = DINOv3ViTModel(config)
+
+    # Load weights from safetensors
+    state_dict = load_file(safetensors_path)
+    model.load_state_dict(state_dict, strict=True)
+
+    return model
 
 
 class DinoV2FeatureExtractor:
@@ -87,6 +148,10 @@ class DinoV2FeatureExtractor:
 class DinoV3FeatureExtractor:
     """
     Feature extractor for DINOv3 models.
+
+    Supports loading from:
+    1. Clean local safetensors file (preferred): models/dinov3/dinov3-vitl-pretrain.safetensors
+    2. HuggingFace cache (fallback): downloads to models/dinov3/models--PIA-SPACE-LAB--...
     """
     def __init__(self, model_name: str, image_size=512):
         # Remap gated models to public reuploads
@@ -100,17 +165,26 @@ class DinoV3FeatureExtractor:
         cache_dir = os.path.join(folder_paths.models_dir, "dinov3")
         os.makedirs(cache_dir, exist_ok=True)
 
-        # Use local_files_only if model is cached or offline mode is enabled
-        local_files_only = _is_offline_mode() or _is_model_cached(actual_model_name, cache_dir)
-        if local_files_only:
-            print(f"[ComfyUI-TRELLIS2] Loading DINOv3 model from cache: {actual_model_name}...")
+        # Priority 1: Check for clean local safetensors file
+        local_safetensors = _find_local_safetensors(cache_dir)
+        if local_safetensors:
+            print(f"[ComfyUI-TRELLIS2] Loading DINOv3 from local safetensors: {os.path.basename(local_safetensors)}")
+            self.model = _load_dinov3_from_safetensors(local_safetensors)
+            print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         else:
-            print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...")
+            # Priority 2: Use HuggingFace (cache or download)
+            local_files_only = _is_offline_mode() or _is_model_cached(actual_model_name, cache_dir)
+            if local_files_only:
+                print(f"[ComfyUI-TRELLIS2] Loading DINOv3 from HF cache: {actual_model_name}...")
+            else:
+                print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...")
+                print(f"[ComfyUI-TRELLIS2] TIP: For cleaner storage, download model.safetensors directly to {cache_dir}/")
 
-        self.model = DINOv3ViTModel.from_pretrained(
-            actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
-        )
-        print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
+            self.model = DINOv3ViTModel.from_pretrained(
+                actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
+            )
+            print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
+
         self.model.eval()
         self.image_size = image_size
         self.transform = transforms.Compose([
