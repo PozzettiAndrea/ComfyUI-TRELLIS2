@@ -183,20 +183,28 @@ def main():
         print("[TRELLIS2] Cannot continue without comfyui-envmanager package.")
         return 1
 
-    from comfyui_envmanager import IsolatedEnvManager, discover_env_config
+    from comfyui_envmanager import IsolatedEnvManager, discover_config
 
     node_root = Path(__file__).parent.absolute()
 
-    # Load environment config from comfyui_env.toml
-    env_config = discover_env_config(node_root)
-    if env_config is None:
+    # Load environment config from comfyui_env.toml (v2 schema)
+    config = discover_config(node_root)
+    if config is None:
         print("[TRELLIS2] ERROR: Could not find comfyui_env.toml")
         return 1
+
+    # Get the trellis2 isolated environment
+    if "trellis2" not in config.envs:
+        print("[TRELLIS2] ERROR: No 'trellis2' environment defined in config")
+        return 1
+
+    env_config = config.envs["trellis2"]
 
     print(f"[TRELLIS2] Loaded config: {env_config.name}")
     print(f"[TRELLIS2]   CUDA: {env_config.cuda}")
     print(f"[TRELLIS2]   PyTorch: {env_config.pytorch_version}")
     print(f"[TRELLIS2]   Requirements: {len(env_config.requirements)} packages")
+    print(f"[TRELLIS2]   CUDA packages: {len(env_config.no_deps_requirements)} packages")
 
     # Create environment manager
     def log(msg):
