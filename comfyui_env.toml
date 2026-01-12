@@ -6,7 +6,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 
 [trellis2]
-python = "3.10"
+python = "3.12"
 cuda_version = "auto"      # 12.8 for Turing+, 12.4 for Pascal
 pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
 
@@ -17,6 +17,7 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
     cumesh = "0.0.1"
     o_voxel = "0.0.1"
     nvdiffrec_render = "0.0.1"
+    sageattention = "2.2.0"  # Fast attention (2-5x faster than flash_attn)
 
     [trellis2.packages]
     requirements = [

@@ -96,7 +96,15 @@ def scaled_dot_product_attention(*args, **kwargs):
 
     backend = config.get_backend()
 
-    if backend == 'xformers':
+    if backend == 'sageattn':
+        from sageattention import sageattn
+        if num_all_args == 1:
+            q, k, v = qkv.unbind(dim=2)
+        elif num_all_args == 2:
+            k, v = kv.unbind(dim=2)
+        # sageattn expects [N, L, H, C] with tensor_layout="NHD"
+        out = sageattn(q, k, v, tensor_layout="NHD", is_causal=False)
+    elif backend == 'xformers':
         import xformers.ops as xops
         if num_all_args == 1:
             q, k, v = qkv.unbind(dim=2)
