@@ -1,270 +1,237 @@
 #!/usr/bin/env python3
 """
-Installation script for ComfyUI-TRELLIS2.
-Called by ComfyUI Manager during installation/update.
+Installation script for ComfyUI-TRELLIS2 with isolated environment.
 
-Automatically detects PyTorch/CUDA versions and installs pre-built wheels
-for CUDA extensions (nvdiffrast, flex_gemm, cumesh, o_voxel, nvdiffrec_render).
-Falls back to compilation from source if no wheel is available.
+This script sets up an isolated Python virtual environment with all dependencies
+required for TRELLIS2. The environment is completely isolated from
+ComfyUI's main environment, preventing any dependency conflicts.
+
+Uses comfyui-isolation package for environment management.
 """
-import subprocess
+
 import sys
 import os
-import tempfile
-import urllib.request
-import zipfile
+import platform
+import subprocess
 from pathlib import Path
 
-# Ensure script directory is in path (for users with outdated installations)
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import from modular installation package
-from installation import (
-    PACKAGES,
-    get_python_version,
-    get_torch_info,
-    get_wheel_cuda_suffix,
-    is_package_installed,
-    try_install_from_direct_url,
-    try_install_from_wheel,
-    try_compile_from_source,
-    try_install_flash_attn,
-    try_install_vcredist,
-)
+# =============================================================================
+# VC++ Redistributable Check (Windows only)
+# =============================================================================
+
+VCREDIST_URL = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
 
-def install_cuda_package(package_config):
-    """
-    Install a CUDA package - tries wheel first, falls back to compilation.
-    Returns True if successful, False otherwise.
-    """
-    name = package_config["name"]
-    import_name = package_config["import_name"]
-    wheel_index = package_config.get("wheel_index")
-    git_url = package_config.get("git_url")
-    wheel_type = package_config.get("wheel_type")
+def check_vcredist_installed():
+    """Check if VC++ Redistributable DLLs are actually present on the system."""
+    if platform.system() != "Windows":
+        return True  # Not needed on non-Windows
 
-    print(f"\n[ComfyUI-TRELLIS2] Installing {name}...")
+    required_dlls = ['vcruntime140.dll', 'msvcp140.dll']
 
-    # Always reinstall to ensure users get the latest fixed wheels
-    # (Previous wheel builds had naming bugs that caused installation failures)
+    # Search locations in order of preference
+    search_paths = []
 
-    # Check if we have CUDA
-    torch_ver, cuda_ver = get_torch_info()
-    if not cuda_ver:
-        print(f"[ComfyUI-TRELLIS2] [SKIP] PyTorch CUDA not available, skipping {name}")
+    # 1. System directory (most reliable)
+    system_root = os.environ.get('SystemRoot', r'C:\Windows')
+    search_paths.append(os.path.join(system_root, 'System32'))
+
+    # 2. Python environment directories
+    if hasattr(sys, 'base_prefix'):
+        search_paths.append(os.path.join(sys.base_prefix, 'Library', 'bin'))
+        search_paths.append(os.path.join(sys.base_prefix, 'DLLs'))
+    if hasattr(sys, 'prefix') and sys.prefix != getattr(sys, 'base_prefix', sys.prefix):
+        search_paths.append(os.path.join(sys.prefix, 'Library', 'bin'))
+        search_paths.append(os.path.join(sys.prefix, 'DLLs'))
+
+    # Check each required DLL
+    for dll in required_dlls:
+        found = False
+        for search_path in search_paths:
+            dll_path = os.path.join(search_path, dll)
+            if os.path.exists(dll_path):
+                found = True
+                break
+        if not found:
+            return False
+
+    return True
+
+
+def install_vcredist():
+    """Download and install VC++ Redistributable with UAC elevation."""
+    import urllib.request
+    import tempfile
+
+    print("[TRELLIS2] Downloading VC++ Redistributable...")
+
+    # Download to temp file
+    temp_path = os.path.join(tempfile.gettempdir(), "vc_redist.x64.exe")
+    try:
+        urllib.request.urlretrieve(VCREDIST_URL, temp_path)
+    except Exception as e:
+        print(f"[TRELLIS2] Failed to download VC++ Redistributable: {e}")
+        print(f"[TRELLIS2] Please download manually from: {VCREDIST_URL}")
         return False
 
-    # Special handling for flash_attn
-    if wheel_type == "flash_attn":
-        if try_install_flash_attn():
-            return True
-        # Fall through to compilation
-    else:
-        # Try 1: direct GitHub release URL (most reliable - bypasses pip index parsing)
-        if try_install_from_direct_url(package_config):
-            return True
+    print("[TRELLIS2] Installing VC++ Redistributable (UAC prompt may appear)...")
 
-        # Try 2: wheel index as fallback (pip --find-links)
-        if wheel_index and try_install_from_wheel(name, wheel_index, import_name):
-            return True
-
-    # Try 3: compile from source
-    print(f"[ComfyUI-TRELLIS2] No pre-built wheel found, attempting compilation...")
-    if try_compile_from_source(name, git_url):
-        return True
-
-    print(f"[ComfyUI-TRELLIS2] [FAILED] Could not install {name}")
-    return False
-
-
-def install_requirements():
-    """Install dependencies from requirements.txt."""
-    print("[ComfyUI-TRELLIS2] Installing requirements.txt dependencies...")
-
-    script_dir = Path(__file__).parent.absolute()
-    requirements_path = script_dir / "requirements.txt"
-
-    if not requirements_path.exists():
-        print("[ComfyUI-TRELLIS2] [WARNING] requirements.txt not found")
-        return False
-
+    # Run with elevation - /passive shows progress, /quiet is fully silent
     try:
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-r", str(requirements_path)],
-            capture_output=True, text=True, timeout=600
+            [temp_path, '/install', '/passive', '/norestart'],
+            capture_output=True
         )
-
-        if result.returncode == 0:
-            print("[ComfyUI-TRELLIS2] [OK] Requirements installed successfully")
-            return True
-        else:
-            print("[ComfyUI-TRELLIS2] [WARNING] Some requirements failed to install")
-            if result.stderr:
-                print(f"[ComfyUI-TRELLIS2] Error: {result.stderr[:300]}")
-            return False
-    except subprocess.TimeoutExpired:
-        print("[ComfyUI-TRELLIS2] [WARNING] Requirements installation timed out")
-        return False
     except Exception as e:
-        print(f"[ComfyUI-TRELLIS2] [WARNING] Requirements error: {e}")
+        print(f"[TRELLIS2] Failed to run installer: {e}")
+        print(f"[TRELLIS2] Please run manually: {temp_path}")
+        return False
+
+    # Clean up
+    try:
+        os.remove(temp_path)
+    except:
+        pass
+
+    if result.returncode == 0:
+        print("[TRELLIS2] VC++ Redistributable installer completed.")
+    elif result.returncode == 1638:
+        # 1638 = newer version already installed
+        print("[TRELLIS2] VC++ Redistributable already installed (newer version)")
+    else:
+        print(f"[TRELLIS2] Installation returned code {result.returncode}")
+        print(f"[TRELLIS2] Please install manually from: {VCREDIST_URL}")
+        return False
+
+    # Verify DLLs are actually present after installation
+    if check_vcredist_installed():
+        print("[TRELLIS2] VC++ Redistributable DLLs verified!")
+        return True
+    else:
+        print("[TRELLIS2] Installation completed but DLLs not found in expected locations.")
+        print("[TRELLIS2] You may need to restart your system or terminal.")
         return False
 
 
-def try_install_python_headers():
-    """
-    Install Python development headers for embedded Python on Windows.
-    Required for Triton to compile CUDA utilities at runtime.
-
-    Downloads include/ and libs/ folders from triton-windows releases.
-    """
-    # Only needed on Windows
-    if sys.platform != "win32":
+def ensure_vcredist():
+    """Check and install VC++ Redistributable if needed (Windows only)."""
+    if platform.system() != "Windows":
         return True
 
-    # Check if we're using embedded Python (ComfyUI portable)
-    python_path = Path(sys.executable)
-    python_dir = python_path.parent
-
-    # Look for python_embeded folder pattern
-    if "python_embeded" not in str(python_dir).lower() and "python_embedded" not in str(python_dir).lower():
-        # Not embedded Python, probably has headers already
-        print("[ComfyUI-TRELLIS2] [SKIP] Not using embedded Python, headers should exist")
+    if check_vcredist_installed():
+        print("[TRELLIS2] VC++ Redistributable: OK (DLLs found)")
         return True
 
-    include_dir = python_dir / "include"
-    libs_dir = python_dir / "libs"
+    print("[TRELLIS2] VC++ Redistributable DLLs not found - attempting automatic install...")
 
-    # Check if Python.h already exists
-    python_h = include_dir / "Python.h"
-    if python_h.exists():
-        print("[ComfyUI-TRELLIS2] [OK] Python headers already installed")
+    if install_vcredist():
         return True
 
-    print("[ComfyUI-TRELLIS2] Installing Python headers for Triton compatibility...")
-    print(f"[ComfyUI-TRELLIS2] Target directory: {python_dir}")
-
-    # Determine Python version for download URL
-    py_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-
-    # Try version-specific URL first, fall back to 3.12.7 (most common for ComfyUI)
-    urls_to_try = [
-        f"https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_{py_version}_include_libs.zip",
-        "https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.12.7_include_libs.zip",
-    ]
-
-    for url in urls_to_try:
-        try:
-            print(f"[ComfyUI-TRELLIS2] Downloading from {url}...")
-
-            with tempfile.TemporaryDirectory() as tmpdir:
-                zip_path = Path(tmpdir) / "python_headers.zip"
-
-                # Download the zip file
-                urllib.request.urlretrieve(url, zip_path)
-                print("[ComfyUI-TRELLIS2] Download complete, extracting...")
-
-                # Extract to python_embeded directory
-                with zipfile.ZipFile(zip_path, 'r') as zf:
-                    zf.extractall(python_dir)
-
-                # Verify extraction
-                if python_h.exists():
-                    print("[ComfyUI-TRELLIS2] [OK] Python headers installed successfully")
-                    return True
-                else:
-                    print("[ComfyUI-TRELLIS2] [WARNING] Extraction completed but Python.h not found")
-
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                print(f"[ComfyUI-TRELLIS2] [INFO] Headers for Python {py_version} not available, trying fallback...")
-                continue
-            print(f"[ComfyUI-TRELLIS2] [WARNING] Download failed: {e}")
-        except Exception as e:
-            print(f"[ComfyUI-TRELLIS2] [WARNING] Failed to install Python headers: {e}")
-
-    print("[ComfyUI-TRELLIS2] [WARNING] Could not install Python headers")
-    print("[ComfyUI-TRELLIS2] [WARNING] Triton may fail to compile CUDA utilities")
-    print("[ComfyUI-TRELLIS2] [WARNING] Manual fix: download Python include/libs folders from")
-    print("[ComfyUI-TRELLIS2] [WARNING] https://github.com/woct0rdho/triton-windows/releases")
+    # Fallback: provide clear manual instructions
+    print("")
+    print("=" * 70)
+    print("[TRELLIS2] MANUAL INSTALLATION REQUIRED")
+    print("=" * 70)
+    print("")
+    print("  The automatic installation of VC++ Redistributable failed.")
+    print("  This is required for PyTorch CUDA and other native extensions.")
+    print("")
+    print("  Please download and install manually:")
+    print(f"    {VCREDIST_URL}")
+    print("")
+    print("  After installation, restart your terminal and try again.")
+    print("=" * 70)
+    print("")
     return False
+
+
+# =============================================================================
+# Main Installation
+# =============================================================================
+
+def ensure_comfyui_isolation():
+    """Install comfyui-isolation package if not already installed."""
+    try:
+        import comfyui_isolation
+        return True
+    except ImportError:
+        print("[TRELLIS2] Installing comfyui-isolation package...")
+        try:
+            # Try local install first (for development)
+            local_path = Path("/home/ubuntu/comfyui-isolation")
+            if local_path.exists():
+                subprocess.check_call([
+                    sys.executable, "-m", "pip", "install", "-e", str(local_path)
+                ])
+            else:
+                subprocess.check_call([
+                    sys.executable, "-m", "pip", "install",
+                    "git+https://github.com/PozzettiAndrea/comfyui-isolation"
+                ])
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f"[TRELLIS2] Failed to install comfyui-isolation: {e}")
+            return False
 
 
 def main():
+    """Main installation function."""
     print("\n" + "=" * 60)
-    print("ComfyUI-TRELLIS2 Installation")
+    print("ComfyUI-TRELLIS2 Installation (Isolated Environment)")
     print("=" * 60)
 
-    # Show detected environment
-    py_ver = get_python_version()
-    torch_ver, cuda_ver = get_torch_info()
+    # Check VC++ Redistributable first (required for PyTorch CUDA and native extensions)
+    if not ensure_vcredist():
+        print("[TRELLIS2] WARNING: VC++ Redistributable installation failed.")
+        print("[TRELLIS2] Some features may not work. Continuing anyway...")
 
-    print(f"[ComfyUI-TRELLIS2] Python: {py_ver}")
-    if torch_ver:
-        print(f"[ComfyUI-TRELLIS2] PyTorch: {torch_ver}")
-    if cuda_ver:
-        print(f"[ComfyUI-TRELLIS2] CUDA: {cuda_ver}")
+    # Ensure comfyui-isolation is installed
+    if not ensure_comfyui_isolation():
+        print("[TRELLIS2] Cannot continue without comfyui-isolation package.")
+        return 1
 
-    # Warn about Python version compatibility
-    if sys.version_info >= (3, 13):
-        print(f"[ComfyUI-TRELLIS2] [WARNING] Python {py_ver} detected - pre-built wheels may not be available")
-        print(f"[ComfyUI-TRELLIS2] [WARNING] Will attempt compilation from source where possible")
+    from comfyui_isolation import IsolatedEnvManager, discover_env_config
 
-    wheel_suffix = get_wheel_cuda_suffix()
-    if wheel_suffix:
-        print(f"[ComfyUI-TRELLIS2] Wheel suffix: {wheel_suffix}")
+    node_root = Path(__file__).parent.absolute()
 
-    # Install Visual C++ Redistributable on Windows (required for opencv, etc.)
-    if sys.platform == "win32":
-        try_install_vcredist()
+    # Load environment config from comfyui_isolation_reqs.toml
+    env_config = discover_env_config(node_root)
+    if env_config is None:
+        print("[TRELLIS2] ERROR: Could not find comfyui_isolation_reqs.toml")
+        return 1
 
-    # Install triton-windows on Windows (required by flex_gemm)
-    if sys.platform == "win32":
-        print("\n[ComfyUI-TRELLIS2] Installing triton-windows (required for flex_gemm)...")
-        try:
-            result = subprocess.run(
-                [sys.executable, "-m", "pip", "install", "triton-windows"],
-                capture_output=True, text=True, timeout=300
-            )
-            if result.returncode == 0:
-                print("[ComfyUI-TRELLIS2] [OK] triton-windows installed")
-            else:
-                print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install failed: {result.stderr[:200] if result.stderr else 'unknown error'}")
-        except Exception as e:
-            print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install error: {e}")
+    print(f"[TRELLIS2] Loaded config: {env_config.name}")
+    print(f"[TRELLIS2]   CUDA: {env_config.cuda}")
+    print(f"[TRELLIS2]   PyTorch: {env_config.pytorch_version}")
+    print(f"[TRELLIS2]   Requirements: {len(env_config.requirements)} packages")
 
-        # Install Python headers for embedded Python (required for Triton to compile CUDA utils)
-        try_install_python_headers()
+    # Create environment manager
+    def log(msg):
+        print(f"[TRELLIS2] {msg}")
 
-    # Install requirements.txt first
-    print("\n" + "-" * 60)
-    install_requirements()
+    manager = IsolatedEnvManager(base_dir=node_root, log_callback=log)
 
-    # Install CUDA packages
-    results = {}
-    for pkg in PACKAGES:
-        print("-" * 60)
-        results[pkg["name"]] = install_cuda_package(pkg)
+    # Check if already ready
+    if manager.is_ready(env_config, verify_packages=["torch", "nvdiffrast"]):
+        env_dir = manager.get_env_dir(env_config)
+        print("[TRELLIS2] Isolated environment already exists and is ready!")
+        print(f"[TRELLIS2] Location: {env_dir}")
+        print("[TRELLIS2] To reinstall, delete the environment directory.")
+        return 0
 
-    # Summary
-    print("\n" + "=" * 60)
-    print("Installation Summary")
-    print("=" * 60)
-    for name, success in results.items():
-        status = "[OK]" if success else "[FAILED]"
-        print(f"  {name}: {status}")
-    print("=" * 60)
-
-    # Overall status
-    if all(results.values()):
-        print("[ComfyUI-TRELLIS2] Installation completed successfully!")
-    elif any(results.values()):
-        print("[ComfyUI-TRELLIS2] Installation completed with some failures")
-        print("[ComfyUI-TRELLIS2] TRELLIS2 may still work with reduced functionality")
-    else:
-        print("[ComfyUI-TRELLIS2] Installation failed")
-        print("[ComfyUI-TRELLIS2] Check that you have PyTorch with CUDA support installed")
+    # Setup environment
+    try:
+        manager.setup(env_config, verify_packages=["torch", "nvdiffrast"])
+        print("\n" + "=" * 60)
+        print("[TRELLIS2] Installation completed successfully!")
+        print("=" * 60)
+        return 0
+    except Exception as e:
+        print(f"\n[TRELLIS2] Installation FAILED: {e}")
+        print("[TRELLIS2] Report issues at: https://github.com/PozzettiAndrea/ComfyUI-TRELLIS2/issues")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
