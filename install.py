@@ -6,7 +6,7 @@ This script sets up an isolated Python virtual environment with all dependencies
 required for TRELLIS2. The environment is completely isolated from
 ComfyUI's main environment, preventing any dependency conflicts.
 
-Uses comfyui-isolation package for environment management.
+Uses comfyui-envmanager package for environment management.
 """
 
 import sys
@@ -150,28 +150,20 @@ def ensure_vcredist():
 # Main Installation
 # =============================================================================
 
-def ensure_comfyui_isolation():
-    """Install comfyui-isolation package if not already installed."""
+def ensure_comfyui_envmanager():
+    """Install comfyui-envmanager package if not already installed."""
     try:
-        import comfyui_isolation
+        import comfyui_envmanager
         return True
     except ImportError:
-        print("[TRELLIS2] Installing comfyui-isolation package...")
+        print("[TRELLIS2] Installing comfyui-envmanager package...")
         try:
-            # Try local install first (for development)
-            local_path = Path("/home/ubuntu/comfyui-isolation")
-            if local_path.exists():
-                subprocess.check_call([
-                    sys.executable, "-m", "pip", "install", "-e", str(local_path)
-                ])
-            else:
-                subprocess.check_call([
-                    sys.executable, "-m", "pip", "install",
-                    "git+https://github.com/PozzettiAndrea/comfyui-isolation"
-                ])
+            subprocess.check_call([
+                sys.executable, "-m", "pip", "install", "comfyui-envmanager>=0.0.8"
+            ])
             return True
         except subprocess.CalledProcessError as e:
-            print(f"[TRELLIS2] Failed to install comfyui-isolation: {e}")
+            print(f"[TRELLIS2] Failed to install comfyui-envmanager: {e}")
             return False
 
 
@@ -186,19 +178,19 @@ def main():
         print("[TRELLIS2] WARNING: VC++ Redistributable installation failed.")
         print("[TRELLIS2] Some features may not work. Continuing anyway...")
 
-    # Ensure comfyui-isolation is installed
-    if not ensure_comfyui_isolation():
-        print("[TRELLIS2] Cannot continue without comfyui-isolation package.")
+    # Ensure comfyui-envmanager is installed
+    if not ensure_comfyui_envmanager():
+        print("[TRELLIS2] Cannot continue without comfyui-envmanager package.")
         return 1
 
-    from comfyui_isolation import IsolatedEnvManager, discover_env_config
+    from comfyui_envmanager import IsolatedEnvManager, discover_env_config
 
     node_root = Path(__file__).parent.absolute()
 
-    # Load environment config from comfyui_isolation_reqs.toml
+    # Load environment config from comfyui_env.toml
     env_config = discover_env_config(node_root)
     if env_config is None:
-        print("[TRELLIS2] ERROR: Could not find comfyui_isolation_reqs.toml")
+        print("[TRELLIS2] ERROR: Could not find comfyui_env.toml")
         return 1
 
     print(f"[TRELLIS2] Loaded config: {env_config.name}")

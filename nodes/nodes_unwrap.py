@@ -8,7 +8,7 @@ from pathlib import Path
 
 import folder_paths
 
-from comfyui_isolation import isolated
+from comfyui_envmanager import isolated
 from .utils import logger
 
 
