@@ -155,8 +155,7 @@ def ensure_comfy_env():
     print("[TRELLIS2] Installing comfy-env package...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--upgrade",
-            "comfy-env @ git+https://github.com/PozzettiAndrea/comfyui-envmanager"
+            sys.executable, "-m", "pip", "install", "--upgrade", "comfy-env>=0.0.1"
         ])
         return True
     except subprocess.CalledProcessError as e:
@@ -180,7 +179,7 @@ def main():
         print("[TRELLIS2] Cannot continue without comfy-env package.")
         return 1
 
-    from comfyui_envmanager import IsolatedEnvManager, discover_config
+    from comfy_env import IsolatedEnvManager, discover_config
 
     node_root = Path(__file__).parent.absolute()
 
