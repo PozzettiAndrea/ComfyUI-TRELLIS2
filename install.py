@@ -151,20 +151,16 @@ def ensure_vcredist():
 # =============================================================================
 
 def ensure_comfyui_envmanager():
-    """Install comfyui-envmanager package if not already installed."""
+    """Install/upgrade comfyui-envmanager package."""
+    print("[TRELLIS2] Installing comfyui-envmanager package...")
     try:
-        import comfyui_envmanager
+        subprocess.check_call([
+            sys.executable, "-m", "pip", "install", "--upgrade", "comfyui-envmanager>=0.0.12"
+        ])
         return True
-    except ImportError:
-        print("[TRELLIS2] Installing comfyui-envmanager package...")
-        try:
-            subprocess.check_call([
-                sys.executable, "-m", "pip", "install", "comfyui-envmanager>=0.0.11"
-            ])
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"[TRELLIS2] Failed to install comfyui-envmanager: {e}")
-            return False
+    except subprocess.CalledProcessError as e:
+        print(f"[TRELLIS2] Failed to install comfyui-envmanager: {e}")
+        return False
 
 
 def main():
