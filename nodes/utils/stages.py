@@ -198,6 +198,7 @@ def run_shape_generation(
     ss_sampling_steps: int = 12,
     shape_guidance_strength: float = 7.5,
     shape_sampling_steps: int = 12,
+    max_num_tokens: int = 49152,
 ) -> Dict[str, Any]:
     """
     Run shape generation.
@@ -208,6 +209,7 @@ def run_shape_generation(
         seed: Random seed
         ss_*: Sparse structure sampling params
         shape_*: Shape latent sampling params
+        max_num_tokens: Max tokens for 1024 cascade (lower = less VRAM)
 
     Returns:
         Dict with shape_slat, subs, mesh_vertices, mesh_faces, resolution, pipeline_type
@@ -247,12 +249,16 @@ def run_shape_generation(
     }
 
     # Run shape generation
+    torch.cuda.reset_peak_memory_stats()
     meshes, shape_slat, subs, res = pipeline.run_shape(
         cond_on_device,
         seed=seed,
         pipeline_type=model_config.resolution,
+        max_num_tokens=max_num_tokens,
         **sampler_params
     )
+    peak_mem = torch.cuda.max_memory_allocated() / 1024**2
+    print(f"[TRELLIS2] Shape generation peak VRAM: {peak_mem:.0f} MB", file=sys.stderr)
     mesh = meshes[0]
     mesh.fill_holes()
 
@@ -363,6 +369,7 @@ def run_texture_generation(
     }
 
     # Run texture generation
+    torch.cuda.reset_peak_memory_stats()
     textured_meshes = pipeline.run_texture_with_subs(
         cond_on_device,
         shape_slat,
@@ -373,6 +380,8 @@ def run_texture_generation(
         pipeline_type=pipeline_type,
         **sampler_params
     )
+    peak_mem = torch.cuda.max_memory_allocated() / 1024**2
+    print(f"[TRELLIS2] Texture generation peak VRAM: {peak_mem:.0f} MB", file=sys.stderr)
     mesh = textured_meshes[0]
     mesh.simplify(16777216)
 
