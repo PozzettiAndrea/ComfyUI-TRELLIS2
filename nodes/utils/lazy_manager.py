@@ -128,7 +128,12 @@ class LazyModelManager:
                 from trellis2.modules.attention import config as dense_config
                 from trellis2.modules.sparse import config as sparse_config
                 dense_config.set_backend(self.attn_backend)
-                sparse_config.set_attn_backend(self.attn_backend)
+                # sageattn only supports full attention, not sparse/varlen
+                # Use flash_attn for sparse when sageattn is selected
+                if self.attn_backend == "sageattn":
+                    sparse_config.set_attn_backend("flash_attn")
+                else:
+                    sparse_config.set_attn_backend(self.attn_backend)
                 print(f"[TRELLIS2] Attention backend set to: {self.attn_backend}", file=sys.stderr)
             except Exception as e:
                 print(f"[TRELLIS2] Warning: Could not set attention backend: {e}", file=sys.stderr)
