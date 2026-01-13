@@ -20,7 +20,7 @@ _LAZY_MANAGER: Optional["LazyModelManager"] = None
 def get_model_manager(
     model_name: str = "microsoft/TRELLIS.2-4B",
     resolution: str = "1024_cascade",
-    attn_backend: str = "auto",
+    attn_backend: str = "flash_attn",
     vram_mode: str = "keep_loaded",
 ) -> "LazyModelManager":
     """
@@ -114,7 +114,7 @@ class LazyModelManager:
         self,
         model_name: str = "microsoft/TRELLIS.2-4B",
         resolution: str = "1024_cascade",
-        attn_backend: str = "auto",
+        attn_backend: str = "flash_attn",
         vram_mode: str = "keep_loaded",
     ):
         self.model_name = model_name
@@ -139,20 +139,18 @@ class LazyModelManager:
 
     def _setup_attention_backend(self):
         """Setup attention backend before any model loading."""
-        if self.attn_backend != "auto":
-            try:
-                from trellis2.modules.attention import config as dense_config
-                from trellis2.modules.sparse import config as sparse_config
-                dense_config.set_backend(self.attn_backend)
-                # sageattn only supports full attention, not sparse/varlen
-                # Use flash_attn for sparse when sageattn is selected
-                if self.attn_backend == "sageattn":
-                    sparse_config.set_attn_backend("flash_attn")
-                else:
-                    sparse_config.set_attn_backend(self.attn_backend)
-                print(f"[TRELLIS2] Attention backend set to: {self.attn_backend}", file=sys.stderr)
-            except Exception as e:
-                print(f"[TRELLIS2] Warning: Could not set attention backend: {e}", file=sys.stderr)
+        # Block sageattn - not yet implemented
+        if self.attn_backend == "sageattn":
+            raise NotImplementedError("sage_attn not yet implemented!")
+
+        try:
+            from trellis2.modules.attention import config as dense_config
+            from trellis2.modules.sparse import config as sparse_config
+            dense_config.set_backend(self.attn_backend)
+            sparse_config.set_attn_backend(self.attn_backend)
+            print(f"[TRELLIS2] Attention backend set to: {self.attn_backend}", file=sys.stderr)
+        except Exception as e:
+            print(f"[TRELLIS2] Warning: Could not set attention backend: {e}", file=sys.stderr)
 
     def get_dinov3(self, device: torch.device) -> "DinoV3FeatureExtractor":
         """Load DinoV3 model on demand."""
@@ -203,8 +201,9 @@ class LazyModelManager:
             self.shape_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
 
             if self.vram_mode != "keep_loaded":
-                print(f"[TRELLIS2] Shape pipeline: sequential model loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
-            print(f"[TRELLIS2] Shape pipeline loaded", file=sys.stderr)
+                print(f"[TRELLIS2] Shape pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
+                print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+            print(f"[TRELLIS2] Shape pipeline ready", file=sys.stderr)
 
         return self.shape_pipeline
 
@@ -244,8 +243,9 @@ class LazyModelManager:
             self.texture_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
 
             if self.vram_mode != "keep_loaded":
-                print(f"[TRELLIS2] Texture pipeline: sequential model loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
-            print(f"[TRELLIS2] Texture pipeline loaded", file=sys.stderr)
+                print(f"[TRELLIS2] Texture pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
+                print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+            print(f"[TRELLIS2] Texture pipeline ready", file=sys.stderr)
 
         return self.texture_pipeline
 
