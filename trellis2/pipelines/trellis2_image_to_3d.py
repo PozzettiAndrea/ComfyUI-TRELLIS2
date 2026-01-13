@@ -1,4 +1,5 @@
 from typing import *
+import gc
 import torch
 import torch.nn as nn
 import numpy as np
@@ -223,16 +224,22 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling sparse structure",
         ).samples
+        del noise, flow_model  # Free tensors and local model reference
         self._unload_model('sparse_structure_flow_model')
 
         # Decode sparse structure latent
         decoder = self._load_model('sparse_structure_decoder')
         decoded = decoder(z_s) > 0
+        del z_s, decoder  # Free tensors and local model reference
         self._unload_model('sparse_structure_decoder')
+
         if resolution != decoded.shape[2]:
             ratio = decoded.shape[2] // resolution
             decoded = torch.nn.functional.max_pool3d(decoded.float(), ratio, ratio, 0) > 0.5
         coords = torch.argwhere(decoded)[:, [0, 2, 3, 4]].int()
+        del decoded  # Free decoded tensor
+        gc.collect()
+        torch.cuda.empty_cache()
 
         return coords
 
@@ -267,6 +274,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling shape SLat",
         ).samples
+        del noise, flow_model
         self._unload_model(model_key)
 
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
@@ -274,7 +282,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         slat = slat * std + mean
 
         return slat
-    
+
     def sample_shape_slat_cascade(
         self,
         lr_cond: dict,
@@ -302,6 +310,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             max_num_tokens (int): Maximum number of tokens.
         """
         # LR pass
+        import sys
         flow_model_lr = self._load_model(model_key_lr)
         noise = SparseTensor(
             feats=torch.randn(coords.shape[0], flow_model_lr.in_channels).to(self.device),
@@ -316,7 +325,19 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling shape SLat (LR)",
         ).samples
+        del noise, flow_model_lr  # Free tensors and local model reference
         self._unload_model(model_key_lr)
+
+        # Free LR conditioning and coords - no longer needed
+        for k, v in lr_cond.items():
+            if torch.is_tensor(v):
+                lr_cond[k] = None
+        del lr_cond, coords
+        gc.collect()
+        torch.cuda.empty_cache()
+        mem_after_lr = torch.cuda.memory_allocated() / 1024**2
+        print(f"[TRELLIS2] After LR cleanup: {mem_after_lr:.0f} MB", file=sys.stderr, flush=True)
+
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
         mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(slat.device)
         slat = slat * std + mean
@@ -325,8 +346,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         decoder = self._load_model('shape_slat_decoder')
         decoder.low_vram = not self.keep_model_loaded
         hr_coords = decoder.upsample(slat, upsample_times=4)
+
+        # Free LR slat and decoder - not used in HR pass
+        del slat, std, mean, decoder
         self._unload_model('shape_slat_decoder')
-        decoder.low_vram = False
 
         hr_resolution = resolution
         while True:
@@ -342,8 +365,38 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 break
             hr_resolution -= 128
 
+        # Move conditioning to CPU to free GPU memory before loading HR model
+        # This ensures maximum free VRAM when the 1024 model is loaded
+        import sys
+        mem_before_cleanup = torch.cuda.memory_allocated() / 1024**2
+        print(f"[TRELLIS2] Before HR cleanup: {mem_before_cleanup:.0f} MB", file=sys.stderr, flush=True)
+
+        cond_on_cpu = {}
+        for k, v in cond.items():
+            if torch.is_tensor(v):
+                cond_on_cpu[k] = v.cpu()
+            else:
+                cond_on_cpu[k] = v
+        del cond
+        # Also move hr_coords to CPU temporarily
+        hr_coords_cpu = hr_coords.cpu()
+        coords_cpu = coords.cpu()
+        del hr_coords, coords, quant_coords
+        gc.collect()
+        torch.cuda.empty_cache()
+
+        mem_after_cleanup = torch.cuda.memory_allocated() / 1024**2
+        print(f"[TRELLIS2] After HR cleanup: {mem_after_cleanup:.0f} MB (freed {mem_before_cleanup - mem_after_cleanup:.0f} MB)", file=sys.stderr, flush=True)
+
         # HR pass - Sample structured latent
+        # Load the 1024 model with maximum free GPU memory
         flow_model = self._load_model(model_key)
+
+        # Move conditioning and coords back to GPU
+        cond = {k: v.to(self.device) if torch.is_tensor(v) else v for k, v in cond_on_cpu.items()}
+        del cond_on_cpu
+        coords = coords_cpu.to(self.device)
+        del coords_cpu, hr_coords_cpu
         noise = SparseTensor(
             feats=torch.randn(coords.shape[0], flow_model.in_channels).to(self.device),
             coords=coords,
@@ -357,6 +410,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling shape SLat (HR)",
         ).samples
+        del noise, coords, cond, flow_model
         self._unload_model(model_key)
 
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
@@ -385,8 +439,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         decoder.set_resolution(resolution)
         decoder.low_vram = not self.keep_model_loaded
         ret = decoder(slat, return_subs=True)
+        del decoder
         self._unload_model('shape_slat_decoder')
-        decoder.low_vram = False
         return ret
     
     def sample_tex_slat(
@@ -423,6 +477,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling texture SLat",
         ).samples
+        del noise, flow_model
         self._unload_model(model_key)
 
         std = torch.tensor(self.tex_slat_normalization['std'])[None].to(slat.device)
@@ -449,8 +504,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         decoder = self._load_model('tex_slat_decoder')
         decoder.low_vram = not self.keep_model_loaded
         ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
+        del decoder
         self._unload_model('tex_slat_decoder')
-        decoder.low_vram = False
         return ret
     
     @torch.no_grad()
@@ -565,6 +620,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 coords, shape_slat_sampler_params,
                 max_num_tokens
             )
+            del cond_512, cond_1024  # Free conditioning refs
         elif pipeline_type == '1536_cascade':
             shape_slat, res = self.sample_shape_slat_cascade(
                 cond_512, cond_1024,
@@ -573,6 +629,13 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 coords, shape_slat_sampler_params,
                 max_num_tokens
             )
+            del cond_512, cond_1024  # Free conditioning refs
+
+        # Free original cond dict references
+        for k in list(cond.keys()):
+            cond[k] = None
+        gc.collect()
+        torch.cuda.empty_cache()
 
         # Decode shape (keep subs for texture generation)
         meshes, subs = self.decode_shape_slat(shape_slat, res)
@@ -685,7 +748,9 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             shape_slat, tex_slat_sampler_params
         )
 
-        # Clear GPU cache before decode
+        # Free shape_slat and cond - no longer needed after sampling
+        del shape_slat, tex_cond, cond
+        gc.collect()
         torch.cuda.empty_cache()
 
         # Decode texture using pre-computed subs (skip shape decoder!)

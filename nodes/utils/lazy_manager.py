@@ -203,6 +203,8 @@ class LazyModelManager:
             if self.vram_mode != "keep_loaded":
                 print(f"[TRELLIS2] Shape pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
                 print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+                # Enable low_vram mode for chunked processing to reduce peak memory
+                self.shape_pipeline.low_vram = True
             print(f"[TRELLIS2] Shape pipeline ready", file=sys.stderr)
 
         return self.shape_pipeline
@@ -245,6 +247,8 @@ class LazyModelManager:
             if self.vram_mode != "keep_loaded":
                 print(f"[TRELLIS2] Texture pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
                 print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+                # Enable low_vram mode for chunked processing to reduce peak memory
+                self.texture_pipeline.low_vram = True
             print(f"[TRELLIS2] Texture pipeline ready", file=sys.stderr)
 
         return self.texture_pipeline
