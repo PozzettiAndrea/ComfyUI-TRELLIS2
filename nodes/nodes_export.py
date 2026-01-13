@@ -5,7 +5,7 @@ from datetime import datetime
 
 import folder_paths
 
-from comfyui_envmanager import isolated
+from comfy_env import isolated
 from .utils import logger
 
 
