@@ -155,7 +155,7 @@ def ensure_comfy_env():
     print("[TRELLIS2] Installing comfy-env package...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--upgrade", "comfy-env>=0.0.1"
+            sys.executable, "-m", "pip", "install", "--upgrade", "comfy-env>=0.0.2"
         ])
         return True
     except subprocess.CalledProcessError as e:
