@@ -1,0 +1,18 @@
+[test]
+name = "ComfyUI-TRELLIS2"
+
+[test.verification]
+expected_nodes = [
+    "LoadTrellis2Models",
+    "Trellis2RemoveBackground",
+    "Trellis2GetConditioning",
+    "Trellis2ImageToShape",
+    "Trellis2ShapeToTexturedMesh",
+    "Trellis2ExportGLB",
+    "Trellis2RenderPreview",
+    "Trellis2RenderVideo",
+    "Trellis2Simplify",
+    "Trellis2UVUnwrap",
+    "Trellis2RasterizePBR",
+    "Trellis2ExportTrimesh",
+]
