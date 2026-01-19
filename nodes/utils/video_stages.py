@@ -427,87 +427,226 @@ def run_animated_texture_generation(
         },
     }
 
-    for kf_idx in keyframe_indices:
-        print(f"[TRELLIS2] Generating keyframe {kf_idx}...", file=sys.stderr, flush=True)
+    # Determine texture model based on pipeline resolution (not conditioning availability)
+    # This ensures we use a model that's actually loaded
+    if model_config.resolution in ('1024_cascade', '1536_cascade') and frame_conds_1024:
+        tex_model_key = 'tex_slat_flow_model_1024'
+        use_1024_cond = True
+    else:
+        tex_model_key = 'tex_slat_flow_model_512'
+        use_1024_cond = False
+    print(f"[TRELLIS2] Using texture model: {tex_model_key} (resolution={model_config.resolution})", file=sys.stderr)
 
-        # Build conditioning for this frame
+    # ========== Sample all tex_slats and save to disk ==========
+    print(f"[TRELLIS2] Sampling texture latents...", file=sys.stderr)
+    import os
+    import tempfile
+
+    # Create output folder for slats in temp directory
+    base_temp = tempfile.gettempdir()
+    slat_folder = os.path.join(base_temp, f"trellis2_tex_slats_{seed}")
+    os.makedirs(slat_folder, exist_ok=True)
+    print(f"[TRELLIS2] Saving texture latents to {slat_folder}", file=sys.stderr)
+
+    for kf_idx in keyframe_indices:
+        print(f"[TRELLIS2] Sampling keyframe {kf_idx}...", file=sys.stderr, flush=True)
+
+        # Build conditioning for this frame based on model resolution
         cond_512 = frame_conds_512[kf_idx].to(device)
-        if frame_conds_1024:
+        if use_1024_cond and frame_conds_1024:
             cond_1024 = frame_conds_1024[kf_idx].to(device)
             tex_cond = {'cond': cond_1024, 'neg_cond': neg_cond}
         else:
             tex_cond = {'cond': cond_512, 'neg_cond': neg_cond}
 
         torch.manual_seed(seed + kf_idx)
-
-        # Sample texture latent
-        tex_model_key = 'tex_slat_flow_model_1024' if frame_conds_1024 else 'tex_slat_flow_model_512'
         tex_slat = pipeline.sample_tex_slat(
             tex_cond, tex_model_key,
             shape_slat, sampler_params["tex_slat_sampler_params"]
         )
 
-        # Store tex_slat for interpolation
+        # Save to disk immediately
+        slat_path = os.path.join(slat_folder, f"slat_{kf_idx}.pt")
+        torch.save({
+            'feats': tex_slat.feats.cpu(),
+            'coords': tex_slat.coords.cpu(),
+        }, slat_path)
+
+        # Also store feats for interpolation
         keyframe_tex_slats[kf_idx] = tex_slat.feats.cpu()
 
-        # Decode to get attrs (we'll use the coords from first keyframe)
-        tex_voxels = pipeline.decode_tex_slat(tex_slat, subs)
-
-        if coords is None:
-            # Save shared coords from first keyframe
-            coords = tex_voxels[0].coords[:, 1:].cpu().numpy().astype(np.float32)
-            voxel_size = 1.0 / resolution
-            pbr_layout = pipeline.pbr_attr_layout
-
-        # Store decoded attrs
-        keyframe_attrs[kf_idx] = tex_voxels[0].feats.cpu()
-
-        del tex_slat, tex_voxels
+        del tex_slat
         torch.cuda.empty_cache()
 
-    # Interpolate between keyframes
-    print(f"[TRELLIS2] Interpolating between keyframes...", file=sys.stderr)
-    attrs_sequence = []
-
-    for frame_idx in range(num_frames):
-        if frame_idx in keyframe_attrs:
-            # Use keyframe directly
-            attrs_sequence.append(keyframe_attrs[frame_idx].numpy())
-        else:
-            # Find surrounding keyframes
-            prev_kf = max([k for k in keyframe_indices if k < frame_idx])
-            next_kf = min([k for k in keyframe_indices if k > frame_idx])
-
-            # Interpolation factor
-            t = (frame_idx - prev_kf) / (next_kf - prev_kf)
-
-            # Interpolate in latent space then decode
-            if interpolation_mode == "slerp":
-                interp_slat = slerp(keyframe_tex_slats[prev_kf], keyframe_tex_slats[next_kf], t)
-            else:  # linear
-                interp_slat = (1 - t) * keyframe_tex_slats[prev_kf] + t * keyframe_tex_slats[next_kf]
-
-            # Simple linear interpolation of decoded attrs (faster than re-decoding)
-            # This works because attrs are relatively smooth
-            prev_attrs = keyframe_attrs[prev_kf]
-            next_attrs = keyframe_attrs[next_kf]
-            interp_attrs = (1 - t) * prev_attrs + t * next_attrs
-            attrs_sequence.append(interp_attrs.numpy())
+    # Save metadata for decoding later
+    metadata = {
+        'keyframe_indices': keyframe_indices,
+        'num_frames': num_frames,
+        'resolution': resolution,
+        'interpolation_mode': interpolation_mode,
+        'model_name': model_config.model_name,
+        'mesh_vertices': shape_result['mesh_vertices'],
+        'mesh_faces': shape_result['mesh_faces'],
+        # Save subs for decoding
+        'subs': [{
+            'feats': s.feats.cpu(),
+            'coords': s.coords.cpu(),
+        } for s in subs],
+        # Save keyframe feats for interpolation
+        'keyframe_tex_slats': keyframe_tex_slats,
+    }
+    torch.save(metadata, os.path.join(slat_folder, 'metadata.pt'))
 
     # Cleanup
     manager.unload_texture_pipeline()
     gc.collect()
     torch.cuda.empty_cache()
 
-    result = {
-        'coords': coords,
-        'attrs_sequence': attrs_sequence,
-        'voxel_size': voxel_size,
-        'layout': pbr_layout,
-        'num_frames': num_frames,
-        'mesh_vertices': shape_result['mesh_vertices'],
-        'mesh_faces': shape_result['mesh_faces'],
-    }
+    print(f"[TRELLIS2] Saved {len(keyframe_indices)} texture latents to {slat_folder}", file=sys.stderr)
+    return {'slat_folder': slat_folder, 'num_keyframes': len(keyframe_indices), 'num_frames': num_frames}
 
-    print(f"[TRELLIS2] Animation generated: {num_frames} frames, {len(coords)} voxels each", file=sys.stderr)
-    return result
+
+def run_decode_and_export(
+    model_config: Any,
+    slat_folder: str,
+    output_folder: str,
+    decimation_target: int = 100000,
+    texture_size: int = 2048,
+) -> Dict[str, Any]:
+    """
+    Decode texture latents and export to GLB files.
+
+    This runs in a separate node to avoid OOM - completely separate VRAM allocation.
+    """
+    import os
+    print(f"[TRELLIS2] Loading metadata from {slat_folder}...", file=sys.stderr)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load metadata (weights_only=False needed for numpy arrays in metadata)
+    metadata = torch.load(os.path.join(slat_folder, 'metadata.pt'), weights_only=False)
+    keyframe_indices = metadata['keyframe_indices']
+    num_frames = metadata['num_frames']
+    resolution = metadata['resolution']
+    interpolation_mode = metadata['interpolation_mode']
+    model_name = metadata['model_name']
+    mesh_vertices = metadata['mesh_vertices']
+    mesh_faces = metadata['mesh_faces']
+    subs_cpu = metadata['subs']
+    keyframe_tex_slats = metadata['keyframe_tex_slats']
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Load decoder only
+    from trellis2.modules.sparse import SparseTensor
+    from trellis2.pipelines import Trellis2ImageTo3DPipeline
+
+    print(f"[TRELLIS2] Loading texture decoder...", file=sys.stderr)
+    decoder_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
+        model_name,
+        models_to_load=['tex_slat_decoder'],
+    )
+    decoder_pipeline._device = device
+
+    # Restore subs to GPU
+    subs = [SparseTensor(
+        feats=s['feats'].to(device),
+        coords=s['coords'].to(device),
+    ) for s in subs_cpu]
+    del subs_cpu
+
+    # Decode keyframes and export
+    keyframe_attrs = {}
+    coords = None
+    voxel_size = None
+    pbr_layout = None
+
+    print(f"[TRELLIS2] Decoding {len(keyframe_indices)} keyframes...", file=sys.stderr)
+
+    for kf_idx in keyframe_indices:
+        print(f"[TRELLIS2] Decoding keyframe {kf_idx}...", file=sys.stderr, flush=True)
+
+        # Load slat from disk
+        slat_path = os.path.join(slat_folder, f"slat_{kf_idx}.pt")
+        slat_data = torch.load(slat_path, weights_only=False)
+        tex_slat = SparseTensor(
+            feats=slat_data['feats'].to(device),
+            coords=slat_data['coords'].to(device),
+        )
+        del slat_data
+
+        # Decode
+        tex_voxels = decoder_pipeline.decode_tex_slat(tex_slat, subs)
+
+        if coords is None:
+            coords = tex_voxels[0].coords[:, 1:].cpu().numpy().astype(np.float32)
+            voxel_size = 1.0 / resolution
+            pbr_layout = decoder_pipeline.pbr_attr_layout
+
+        keyframe_attrs[kf_idx] = tex_voxels[0].feats.cpu()
+
+        del tex_slat, tex_voxels
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    # Unload decoder before export
+    del decoder_pipeline, subs
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    # Interpolate and export
+    print(f"[TRELLIS2] Interpolating and exporting {num_frames} frames...", file=sys.stderr)
+
+    try:
+        import o_voxel
+        has_ovoxel = True
+    except ImportError:
+        has_ovoxel = False
+        print(f"[TRELLIS2] o_voxel not available, skipping GLB export", file=sys.stderr)
+
+    for frame_idx in range(num_frames):
+        if frame_idx in keyframe_attrs:
+            attrs = keyframe_attrs[frame_idx].numpy()
+        else:
+            # Interpolate
+            prev_kf = max([k for k in keyframe_indices if k < frame_idx])
+            next_kf = min([k for k in keyframe_indices if k > frame_idx])
+            t = (frame_idx - prev_kf) / (next_kf - prev_kf)
+
+            if interpolation_mode == "slerp":
+                interp_slat = slerp(keyframe_tex_slats[prev_kf], keyframe_tex_slats[next_kf], t)
+            else:
+                interp_slat = (1 - t) * keyframe_tex_slats[prev_kf] + t * keyframe_tex_slats[next_kf]
+
+            # Linear interpolate decoded attrs
+            prev_attrs = keyframe_attrs[prev_kf]
+            next_attrs = keyframe_attrs[next_kf]
+            attrs = ((1 - t) * prev_attrs + t * next_attrs).numpy()
+
+        # Export GLB
+        if has_ovoxel:
+            glb = o_voxel.postprocess.to_glb(
+                vertices=mesh_vertices,
+                faces=mesh_faces,
+                attr_volume=attrs,
+                coords=coords,
+                attr_layout=pbr_layout,
+                voxel_size=voxel_size,
+                aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
+                decimation_target=decimation_target,
+                texture_size=texture_size,
+                remesh=True,
+                remesh_band=1,
+                remesh_project=0,
+                verbose=False
+            )
+            glb_path = os.path.join(output_folder, f"frame_{frame_idx:04d}.glb")
+            glb.export(glb_path, extension_webp=True)
+
+        if frame_idx % 10 == 0:
+            print(f"[TRELLIS2] Exported frame {frame_idx}", file=sys.stderr)
+
+    print(f"[TRELLIS2] Exported {num_frames} frames to {output_folder}", file=sys.stderr)
+    return {'output_folder': output_folder, 'num_frames': num_frames}
+
+
