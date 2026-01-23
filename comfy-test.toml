@@ -1,11 +1,10 @@
 [test]
-name = "ComfyUI-TRELLIS2"
-levels = ["syntax", "install", "registration", "instantiation", "validation"]
+levels = "all"
 
 [test.workflows]
-files = [
-    "workflows/geometry_only.json",
-    "workflows/geometry_texture.json",
-    "workflows/remove_background.json",
-]
-timeout = 120
+gpu = "all"
+
+[test.platforms]
+linux = true
+windows = true
+windows_portable = true
