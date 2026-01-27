@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ComfyUI Test Results</title>
+  <title>PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #1a1a2e; color: #eee; }
     .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -21,7 +21,7 @@
   </style>
 </head>
 <body>
-  <h1>ComfyUI Test Results</h1>
+  <h1>PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</h1>
   <div class="legend">
     <span><span class="dot available"></span> Results available</span>
     <span><span class="dot unavailable"></span> No results yet</span>
@@ -31,15 +31,7 @@
     <iframe id="frame" src="about:blank"></iframe>
   </div>
   <script>
-    const platforms = [
-      { id: 'linux-cpu', label: 'Linux CPU' },
-      { id: 'linux-gpu', label: 'Linux GPU' },
-      { id: 'windows-cpu', label: 'Windows CPU' },
-      { id: 'windows-gpu', label: 'Windows GPU' },
-      { id: 'windows-portable-cpu', label: 'Win Portable CPU' },
-      { id: 'windows-portable-gpu', label: 'Win Portable GPU' },
-    ];
-
+    const platforms = [{"id": "linux-cpu", "label": "Linux CPU"}, {"id": "linux-gpu", "label": "Linux GPU"}, {"id": "macos-cpu", "label": "macOS CPU"}, {"id": "macos-gpu", "label": "macOS GPU"}, {"id": "windows-cpu", "label": "Windows CPU"}, {"id": "windows-gpu", "label": "Windows GPU"}, {"id": "windows-portable-cpu", "label": "Win Portable CPU"}, {"id": "windows-portable-gpu", "label": "Win Portable GPU"}];
     const tabs = document.getElementById('tabs');
     const frame = document.getElementById('frame');
     let activeTab = null;
