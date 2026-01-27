@@ -45,7 +45,7 @@ temporally for animated 3D generation.
 """
 
     def get_conditioning(self, model_config, images, mask, include_1024=True, background_color="black", batch_size=8):
-        from utils.video_stages import run_video_conditioning
+        from .utils.video_stages import run_video_conditioning
 
         video_conditioning = run_video_conditioning(
             model_config=model_config,
@@ -115,7 +115,7 @@ The generated shape provides a consistent topology for animated texture generati
         max_tokens=49152,
     ):
         import trimesh as Trimesh
-        from utils.video_stages import run_temporal_shape_generation
+        from .utils.video_stages import run_temporal_shape_generation
 
         shape_result = run_temporal_shape_generation(
             model_config=model_config,
@@ -199,7 +199,7 @@ Output is a folder path containing the texture latents.
         keyframe_interval=10,
         interpolation_mode="slerp",
     ):
-        from utils.video_stages import run_animated_texture_generation
+        from .utils.video_stages import run_animated_texture_generation
 
         result = run_animated_texture_generation(
             model_config=model_config,
@@ -261,7 +261,7 @@ Parameters:
         decimation_target=100000,
         texture_size=2048,
     ):
-        from utils.video_stages import run_decode_and_export
+        from .utils.video_stages import run_decode_and_export
 
         result = run_decode_and_export(
             model_config=model_config,
