@@ -3,10 +3,6 @@
 These nodes enable generating animated 3D from video frame sequences.
 """
 
-from comfy_env import isolated
-
-
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2VideoConditioning:
     """Extract image conditioning from multiple video frames using DinoV3."""
 
@@ -63,7 +59,6 @@ temporally for animated 3D generation.
         return (video_conditioning,)
 
 
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2VideoToShape:
     """Generate 3D shape from temporal video conditioning."""
 
@@ -144,7 +139,6 @@ The generated shape provides a consistent topology for animated texture generati
         return (shape_result, tri_mesh)
 
 
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2AnimatedTexture:
     """Sample texture latents from video conditioning - saves to disk for separate decoding."""
 
@@ -221,7 +215,6 @@ Output is a folder path containing the texture latents.
         return (result['slat_folder'],)
 
 
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2DecodeAndExport:
     """Decode texture latents and export to GLB files."""
 

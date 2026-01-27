@@ -76,6 +76,15 @@ WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
 if 'PYTEST_CURRENT_TEST' not in os.environ:
     print("[ComfyUI-TRELLIS2] Initializing custom node...")
 
+    # Setup import stubs BEFORE importing nodes
+    try:
+        from comfy_env import setup_isolated_imports
+        setup_isolated_imports(__file__)
+    except ImportError:
+        print("[ComfyUI-TRELLIS2] comfy-env not installed, import stubbing disabled")
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Failed to setup import stubs: {e}")
+
     # Inject CUDA mocks if running in test mode (CPU-only CI)
     mocked_packages = _inject_cuda_mocks()
     if mocked_packages:
@@ -110,6 +119,16 @@ if 'PYTEST_CURRENT_TEST' not in os.environ:
 
         NODE_CLASS_MAPPINGS = {}
         NODE_DISPLAY_NAME_MAPPINGS = {}
+
+    # Enable process isolation - ALL nodes run in pixi env (Python 3.12)
+    try:
+        from comfy_env import enable_isolation
+        enable_isolation(NODE_CLASS_MAPPINGS)
+        print("[ComfyUI-TRELLIS2] [OK] Process isolation enabled")
+    except ImportError:
+        pass  # Already warned above
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Failed to enable isolation: {e}")
 
     if INIT_SUCCESS:
         print("[ComfyUI-TRELLIS2] [OK] Loaded successfully!")
