@@ -45,7 +45,7 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 
     def get_conditioning(self, model_config, image, mask, include_1024=True, background_color="black"):
         # All heavy imports happen inside subprocess
-        from utils.stages import run_conditioning
+        from .utils.stages import run_conditioning
 
         conditioning, preprocessed_image = run_conditioning(
             model_config=model_config,
@@ -116,7 +116,7 @@ Returns:
     ):
         # All heavy imports happen inside subprocess
         import trimesh as Trimesh
-        from utils.stages import run_shape_generation
+        from .utils.stages import run_shape_generation
 
         shape_result = run_shape_generation(
             model_config=model_config,
@@ -195,7 +195,7 @@ Returns:
         # All heavy imports happen inside subprocess
         import numpy as np
         import trimesh as Trimesh
-        from utils.stages import run_texture_generation
+        from .utils.stages import run_texture_generation
 
         texture_result = run_texture_generation(
             model_config=model_config,
@@ -305,7 +305,7 @@ Returns:
         import comfy.model_management as mm
 
         # Lazy import rembg from trellis2
-        from ..trellis2.pipelines import rembg
+        from .trellis2.pipelines import rembg
 
         device = mm.get_torch_device()
 

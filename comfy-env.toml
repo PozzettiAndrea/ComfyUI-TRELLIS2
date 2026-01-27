@@ -4,7 +4,7 @@
 # Node dependencies (installed via git clone)
 [node_reqs]
 ComfyUI-GeometryPack = "PozzettiAndrea/ComfyUI-GeometryPack"
-ComfyUI-VideoHelperSuitek = "Kosinkadink/ComfyUI-VideoHelperSuite"
+ComfyUI-VideoHelperSuite = "Kosinkadink/ComfyUI-VideoHelperSuite"
 # ═══════════════════════════════════════════════════════════════════════════════
 # ISOLATED ENVIRONMENT
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -25,6 +25,9 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
 
     [trellis2.packages]
     requirements = [
+        # Testing
+        "comfy-test>0.0.1",
+
         # HuggingFace
         "huggingface_hub>=0.20.0,<1.0.0",
         "hf_transfer",
