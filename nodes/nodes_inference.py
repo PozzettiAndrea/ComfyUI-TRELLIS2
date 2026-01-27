@@ -1,12 +1,9 @@
 """Inference nodes for TRELLIS.2 Image-to-3D generation.
 
-All GPU inference runs inside isolated subprocess via @isolated decorator.
+All GPU inference runs inside isolated subprocess.
 """
 
-from comfy_env import isolated
 
-
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2GetConditioning:
     """Extract image conditioning using DinoV3 for TRELLIS.2."""
 
@@ -61,7 +58,6 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
         return (conditioning, preprocessed_image)
 
 
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2ImageToShape:
     """Generate 3D shape from conditioning using TRELLIS.2."""
 
@@ -143,7 +139,6 @@ Returns:
         return (shape_result, tri_mesh)
 
 
-@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2ShapeToTexturedMesh:
     """Generate PBR textured mesh from shape using TRELLIS.2."""
 
