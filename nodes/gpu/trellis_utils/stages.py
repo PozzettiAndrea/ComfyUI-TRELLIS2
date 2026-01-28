@@ -121,10 +121,10 @@ def run_conditioning(
 
     # Get model manager
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
 
     # Convert image to PIL
@@ -229,10 +229,10 @@ def run_shape_generation(
 
     # Get model manager and shape pipeline
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
     pipeline = manager.get_shape_pipeline(device)
 
@@ -253,7 +253,7 @@ def run_shape_generation(
     meshes, shape_slat, subs, res = pipeline.run_shape(
         cond_on_device,
         seed=seed,
-        pipeline_type=model_config.resolution,
+        pipeline_type=model_config["resolution"],
         max_num_tokens=max_num_tokens,
         **sampler_params
     )
@@ -290,7 +290,7 @@ def run_shape_generation(
         'mesh_vertices': vertices,  # numpy, coordinate-converted for output
         'mesh_faces': faces,        # numpy, for output
         'resolution': res,
-        'pipeline_type': model_config.resolution,
+        'pipeline_type': model_config["resolution"],
         # Raw mesh data for texture stage reconstruction (CPU tensors, original coords)
         'raw_mesh_vertices': raw_mesh_vertices.cpu(),
         'raw_mesh_faces': raw_mesh_faces.cpu(),
@@ -353,10 +353,10 @@ def run_texture_generation(
 
     # Get model manager and texture pipeline
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
     pipeline = manager.get_texture_pipeline(device)
 
