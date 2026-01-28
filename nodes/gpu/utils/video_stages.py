@@ -372,7 +372,7 @@ def run_animated_texture_generation(
             - num_frames: int
     """
     import cumesh as CuMesh
-    from ..trellis2.representations.mesh import Mesh
+    from trellis2.representations.mesh import Mesh
 
     num_frames = video_conditioning['num_frames']
     print(f"[TRELLIS2] Running animated texture generation ({num_frames} frames, keyframe_interval={keyframe_interval})...", file=sys.stderr)
@@ -538,8 +538,8 @@ def run_decode_and_export(
     os.makedirs(output_folder, exist_ok=True)
 
     # Load decoder only
-    from ..trellis2.modules.sparse import SparseTensor
-    from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+    from trellis2.modules.sparse import SparseTensor
+    from trellis2.pipelines import Trellis2ImageTo3DPipeline
 
     print(f"[TRELLIS2] Loading texture decoder...", file=sys.stderr)
     decoder_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(

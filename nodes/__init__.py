@@ -1,20 +1,23 @@
 """
 ComfyUI-TRELLIS2: TRELLIS.2 Image-to-3D nodes for ComfyUI
+
+Main nodes (run in main ComfyUI environment):
+- nodes_loader: Model config loading
+- nodes_export: GLB/mesh export
+- nodes_unwrap: UV unwrapping
+
+GPU nodes (run in isolated environment):
+- gpu/nodes_inference: DinoV3 conditioning, shape/texture generation
+- gpu/nodes_video: Video generation
 """
 
 import os
 
 # Only do imports when NOT running under pytest
-# Use PYTEST_CURRENT_TEST env var which is only set when pytest is actually running tests
 if 'PYTEST_CURRENT_TEST' not in os.environ:
     from .nodes_loader import (
         NODE_CLASS_MAPPINGS as LOADER_NODE_CLASS_MAPPINGS,
         NODE_DISPLAY_NAME_MAPPINGS as LOADER_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-
-    from .nodes_inference import (
-        NODE_CLASS_MAPPINGS as INFERENCE_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as INFERENCE_NODE_DISPLAY_NAME_MAPPINGS,
     )
 
     from .nodes_export import (
@@ -27,26 +30,17 @@ if 'PYTEST_CURRENT_TEST' not in os.environ:
         NODE_DISPLAY_NAME_MAPPINGS as UNWRAP_NODE_DISPLAY_NAME_MAPPINGS,
     )
 
-    from .nodes_video import (
-        NODE_CLASS_MAPPINGS as VIDEO_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as VIDEO_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-
-    # Merge all node mappings
+    # Main nodes only (GPU nodes are wrapped via comfy_env.wrap_isolated_nodes)
     NODE_CLASS_MAPPINGS = {
         **LOADER_NODE_CLASS_MAPPINGS,
-        **INFERENCE_NODE_CLASS_MAPPINGS,
         **EXPORT_NODE_CLASS_MAPPINGS,
         **UNWRAP_NODE_CLASS_MAPPINGS,
-        **VIDEO_NODE_CLASS_MAPPINGS,
     }
 
     NODE_DISPLAY_NAME_MAPPINGS = {
         **LOADER_NODE_DISPLAY_NAME_MAPPINGS,
-        **INFERENCE_NODE_DISPLAY_NAME_MAPPINGS,
         **EXPORT_NODE_DISPLAY_NAME_MAPPINGS,
         **UNWRAP_NODE_DISPLAY_NAME_MAPPINGS,
-        **VIDEO_NODE_DISPLAY_NAME_MAPPINGS,
     }
 else:
     NODE_CLASS_MAPPINGS = {}
