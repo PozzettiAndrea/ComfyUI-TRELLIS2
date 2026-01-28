@@ -5,65 +5,56 @@
   <style>
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #1a1a2e; color: #eee; display: flex; flex-direction: column; }
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab { padding: 10px 20px; background: #16213e; border: none; color: #888; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 14px; }
-    .tab:hover { background: #1f3460; color: #fff; }
-    .tab.active { background: #0f3460; color: #fff; }
-    .tab.available { color: #4ade80; }
-    .tab.unavailable { color: #666; cursor: not-allowed; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; display: flex; flex-direction: column; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-bottom: 1px solid #0f3460; }
+    h1 { margin: 0; font-size: 20px; }
+    h1 a { color: #fff; text-decoration: none; }
+    h1 a:hover { color: #4da6ff; }
+    .branch-switcher { display: flex; gap: 8px; align-items: center; }
+    .branch-btn { padding: 8px 16px; background: #0f3460; border: none; color: #888; cursor: pointer; border-radius: 6px; font-size: 13px; transition: all 0.2s; }
+    .branch-btn:hover { background: #1f4470; color: #fff; }
+    .branch-btn.active { background: #4da6ff; color: #fff; }
+    .branch-btn.main { background: #0f3460; }
+    .branch-btn.main.active { background: #22c55e; color: #fff; }
     iframe { flex: 1; width: 100%; border: none; background: #1a1a2e; }
-    h1 { margin: 0 0 20px 0; font-size: 24px; }
-    .legend { display: flex; gap: 20px; margin-bottom: 15px; font-size: 12px; }
-    .legend span { display: flex; align-items: center; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot.available { background: #4ade80; }
-    .dot.unavailable { background: #666; }
+    .current-branch { color: #888; font-size: 12px; margin-right: 8px; }
   </style>
 </head>
 <body>
-  <h1>PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</h1>
-  <div class="legend">
-    <span><span class="dot available"></span> Results available</span>
-    <span><span class="dot unavailable"></span> No results yet</span>
-  </div>
-  <div class="tabs" id="tabs"></div>
+  <header>
+    <h1><a href="https://github.com/PozzettiAndrea/ComfyUI-TRELLIS2">PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</a></h1>
+    <div class="branch-switcher">
+      <span class="current-branch">Branch:</span>
+      <div id="branch-tabs"></div>
+    </div>
+  </header>
   <iframe id="frame" src="about:blank"></iframe>
   <script>
-    const platforms = [{"id": "linux-cpu", "label": "Linux CPU"}, {"id": "linux-gpu", "label": "Linux GPU"}, {"id": "windows-cpu", "label": "Windows CPU"}, {"id": "windows-gpu", "label": "Windows GPU"}, {"id": "windows-portable-cpu", "label": "Win Portable CPU"}, {"id": "windows-portable-gpu", "label": "Win Portable GPU"}, {"id": "macos-cpu", "label": "macOS CPU"}];
-    const tabs = document.getElementById('tabs');
+    const branches = ["dev"];
+    const tabs = document.getElementById('branch-tabs');
     const frame = document.getElementById('frame');
     let activeTab = null;
 
-    async function checkAvailable(id) {
-      try {
-        const resp = await fetch(id + '/index.html', { method: 'HEAD' });
-        return resp.ok;
-      } catch { return false; }
-    }
-
-    async function init() {
-      for (const p of platforms) {
-        const available = await checkAvailable(p.id);
+    function init() {
+      branches.forEach(function(branch) {
         const btn = document.createElement('button');
-        btn.className = 'tab ' + (available ? 'available' : 'unavailable');
-        btn.textContent = p.label;
-        btn.onclick = () => {
-          if (!available) return;
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.className = 'branch-btn' + (branch === 'main' ? ' main' : '');
+        btn.textContent = branch;
+        btn.onclick = function() {
+          document.querySelectorAll('.branch-btn').forEach(function(t) { t.classList.remove('active'); });
           btn.classList.add('active');
-          frame.src = p.id + '/index.html';
-          activeTab = p.id;
-          history.replaceState(null, '', '#' + p.id);
+          frame.src = branch + '/index.html';
+          activeTab = branch;
+          history.replaceState(null, '', '#' + branch);
         };
         tabs.appendChild(btn);
 
-        // Auto-select first available or from hash
+        // Auto-select from hash or default to main
         const hash = location.hash.slice(1);
-        if ((hash === p.id || (!activeTab && available)) && available) {
+        if (hash === branch || (!activeTab && branch === 'main') || (!activeTab && branches.indexOf('main') === -1 && branch === branches[0])) {
           btn.click();
         }
-      }
+      });
     }
 
     init();

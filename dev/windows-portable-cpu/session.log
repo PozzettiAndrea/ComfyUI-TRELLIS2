@@ -1,0 +1,157 @@
+[00:00] Crash dump logging enabled: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test\crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:01] Unicode check: OK (all characters cp1252-safe)
+[00:01] [SYNTAX] PASSED
+[00:01] 
+[00:01] [2/7] INSTALL
+[00:01] ----------------------------------------
+[00:01] Using existing ComfyUI: .comfy-test-env\ComfyUI_windows_portable\ComfyUI
+[00:01] Installing custom node...
+[00:01] Copying ComfyUI-TRELLIS2 to custom_nodes/...
+[00:02] Installing node requirements...
+[00:02] Running: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\venv\Scripts\python.exe -m pip install -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
+[00:09]   Collecting comfy-env>=0.0.11 (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[00:09]     Downloading comfy_env-0.1.2-py3-none-any.whl.metadata (6.9 kB)
+[00:09]   Collecting trimesh>=3.0.0 (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 5))
+[00:09]     Downloading trimesh-4.11.1-py3-none-any.whl.metadata (13 kB)
+[00:09]   Collecting plyfile (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 6))
+[00:09]     Downloading plyfile-1.1.3-py3-none-any.whl.metadata (43 kB)
+[00:09]   Collecting imageio>=2.0.0 (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 9))
+[00:09]     Downloading imageio-2.37.2-py3-none-any.whl.metadata (9.7 kB)
+[00:09]   Collecting imageio-ffmpeg>=0.4.0 (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 10))
+[00:09]     Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl.metadata (1.5 kB)
+[00:09]   Requirement already satisfied: pillow>=9.0.0 in d:\a\comfyui-trellis2\comfyui-trellis2\.comfy-test-env\venv\lib\site-packages (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 11)) (12.1.0)
+[00:09]   Collecting numpy>=1.21.0 (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 14))
+[00:09]     Downloading numpy-2.4.1-cp312-cp312-win_amd64.whl.metadata (6.6 kB)
+[00:09]   Collecting easydict (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 15))
+[00:09]     Downloading easydict-1.13-py3-none-any.whl.metadata (4.2 kB)
+[00:09]   Collecting tqdm (from -r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16))
+[00:09]     Downloading tqdm-4.67.1-py3-none-any.whl.metadata (57 kB)
+[00:09]   Collecting tomli-w>=1.0.0 (from comfy-env>=0.0.11->-r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[00:09]     Downloading tomli_w-1.2.0-py3-none-any.whl.metadata (5.7 kB)
+[00:09]   Requirement already satisfied: uv>=0.4.0 in d:\a\comfyui-trellis2\comfyui-trellis2\.comfy-test-env\venv\lib\site-packages (from comfy-env>=0.0.11->-r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2)) (0.9.27)
+[00:09]   Collecting colorama (from tqdm->-r D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16))
+[00:09]     Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+[00:09]   Downloading comfy_env-0.1.2-py3-none-any.whl (68 kB)
+[00:09]   Downloading trimesh-4.11.1-py3-none-any.whl (740 kB)
+[00:09]      --------------------------------------- 740.4/740.4 kB 14.9 MB/s eta 0:00:00
+[00:09]   Downloading plyfile-1.1.3-py3-none-any.whl (36 kB)
+[00:09]   Downloading imageio-2.37.2-py3-none-any.whl (317 kB)
+[00:09]   Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl (31.2 MB)
+[00:09]      ---------------------------------------- 31.2/31.2 MB 68.2 MB/s eta 0:00:00
+[00:09]   Downloading numpy-2.4.1-cp312-cp312-win_amd64.whl (12.3 MB)
+[00:09]      ---------------------------------------- 12.3/12.3 MB 128.2 MB/s eta 0:00:00
+[00:09]   Downloading easydict-1.13-py3-none-any.whl (6.8 kB)
+[00:09]   Downloading tqdm-4.67.1-py3-none-any.whl (78 kB)
+[00:09]   Downloading tomli_w-1.2.0-py3-none-any.whl (6.7 kB)
+[00:09]   Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+[00:09]   Installing collected packages: easydict, tomli-w, numpy, imageio-ffmpeg, colorama, trimesh, tqdm, plyfile, imageio, comfy-env
+[00:09]   Successfully installed colorama-0.4.6 comfy-env-0.1.2 easydict-1.13 imageio-2.37.2 imageio-ffmpeg-0.6.0 numpy-2.4.1 plyfile-1.1.3 tomli-w-1.2.0 tqdm-4.67.1 trimesh-4.11.1
+[00:09] Running install.py...
+[00:09] Running: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\venv\Scripts\python.exe D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
+[02:37]   Installing 1 node dependencies...
+[02:37]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[02:37]     Warning: Failed to install ComfyUI-GeometryPack: Failed to clone https://github.com/PozzettiAndrea/ComfyUI-GeometryPack: Cloning into 'D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack'...
+[02:37]   fatal: cannot create directory at 'build_vtk_bundle/node_modules/@kitware/vtk.js/_virtual/rollup-plugin-worker-loader__module_Sources/Filters/General/PaintFilter': Filename too long
+[02:37]   warning: Clone succeeded, but checkout failed.
+[02:37]   You can inspect what was checked out with 'git status'
+[02:37]   and retry with 'git restore --source=HEAD :/'
+[02:37]   No packages to install
+[02:37]   
+[02:37]   [isolated] Installing: nodes\gpu
+[02:37]   Detected CUDA 12.8 -> PyTorch 2.8
+[02:37]   Pixi not found, downloading...
+[02:37]   Installed pixi to: C:\Users\runneradmin\.local\bin\pixi.exe
+[02:37]   Generated D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\pixi.toml
+[02:37]   Running pixi install...
+[02:37]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[02:37]     Installing nvdiffrast
+[02:37]     Installing flex_gemm
+[02:37]     Installing cumesh
+[02:37]     Installing o_voxel
+[02:37]     Installing nvdiffrec_render
+[02:37]     Installing flash-attn
+[02:37]   CUDA package install failed for flash-attn:
+[02:37]     error: subprocess-exited-with-error
+[02:37]     
+[02:37]     Getting requirements to build wheel did not run successfully.
+[02:37]     exit code: 1
+[02:37]     
+[02:37]     [22 lines of output]
+[02:37]     C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+[02:37]       warn(
+[02:37]     Traceback (most recent call last):
+[02:37]       File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+[02:37]         main()
+[02:37]       File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+[02:37]         json_out["return_val"] = hook(**hook_input["kwargs"])
+[02:37]                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[02:37]       File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+[02:37]         return hook(config_settings)
+[02:37]                ^^^^^^^^^^^^^^^^^^^^^
+[02:37]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+[02:37]         return self._get_build_requires(config_settings, requirements=[])
+[02:37]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[02:37]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+[02:37]         self.run_setup()
+[02:37]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+[02:37]         super().run_setup(setup_script=setup_script)
+[02:37]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+[02:37]         exec(code, locals())
+[02:37]       File "<string>", line 22, in <module>
+[02:37]     ModuleNotFoundError: No module named 'torch'
+[02:37]     [end of output]
+[02:37]     
+[02:37]     note: This error originates from a subprocess, and is likely not a problem with pip.
+[02:37]   ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+[02:37] Command failed with code 1
+[02:37] stderr: Traceback (most recent call last):
+  File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py", line 2, in <module>
+    install()
+  File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\venv\Lib\site-packages\comfy_env\install.py", line 74, in install
+    _install_isolated_subdirs(node_dir, log, dry_run)
+  File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\venv\Lib\site-packages\comfy_env\install.py", line 318, in _install_isolated_subdirs
+    pixi_install(sub_cfg, sub_dir, log)
+  File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\venv\Lib\site-packages\comfy_env\pixi\core.py", line 356, in pixi_install
+    raise RuntimeError(f"CUDA package install failed: {result.stderr}")
+RuntimeError: CUDA package install failed:   error: subprocess-exited-with-error
+  
+  Getting requirements to build wheel did not run successfully.
+  exit code: 1
+  
+  [22 lines of output]
+  C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+    warn(
+  Traceback (most recent call last):
+    File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+      main()
+    File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+      json_out["return_val"] = hook(**hook_input["kwargs"])
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test-env\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+      return hook(config_settings)
+             ^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+      return self._get_build_requires(config_settings, requirements=[])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+      self.run_setup()
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+      super().run_setup(setup_script=setup_script)
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-ztptnzvr\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+      exec(code, locals())
+    File "<string>", line 22, in <module>
+  ModuleNotFoundError: No module named 'torch'
+  [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+
+
+[02:37] 
+windows-portable: FAILED (unexpected error)
+[02:37] Error: Command '['D:\\a\\ComfyUI-TRELLIS2\\ComfyUI-TRELLIS2\\.comfy-test-env\\venv\\Scripts\\python.exe', 'D:\\a\\ComfyUI-TRELLIS2\\ComfyUI-TRELLIS2\\.comfy-test-env\\ComfyUI_windows_portable\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\install.py']' returned non-zero exit status 1.

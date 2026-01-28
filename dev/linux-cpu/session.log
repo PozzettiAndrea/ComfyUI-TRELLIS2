@@ -1,0 +1,54 @@
+[00:00] Crash dump logging enabled: /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test/crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:01] Unicode check: OK (all characters cp1252-safe)
+[00:01] [SYNTAX] PASSED
+[00:01] 
+[00:01] [2/7] INSTALL
+[00:01] ----------------------------------------
+[00:01] Using existing ComfyUI: .comfy-test-env/ComfyUI
+[00:01] Installing custom node...
+[00:01] Linking ComfyUI-TRELLIS2 to custom_nodes/...
+[00:01] Installing node requirements...
+[00:01] Running: uv pip install -r /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
+[00:01] Running install.py...
+[00:01] Running: /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/bin/python /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
+[01:36]   Installing 1 node dependencies...
+[01:36]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[01:36]     Running install.py for ComfyUI-GeometryPack...
+[01:36]   No packages to install
+[01:36]   
+[01:36]   [isolated] Installing: nodes/gpu
+[01:36]   Detected CUDA 12.8 -> PyTorch 2.8
+[01:36]   Pixi not found, downloading...
+[01:36]   Installed pixi to: /home/runner/.local/bin/pixi
+[01:36]   Generated /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
+[01:36]   Running pixi install...
+[01:36]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[01:36]     Installing nvdiffrast
+[01:36]     Installing flex_gemm
+[01:36]     Installing cumesh
+[01:36]     Installing o_voxel
+[01:36]     Installing nvdiffrec_render
+[01:36]     Installing flash-attn
+[01:36]   CUDA packages installed
+[01:36]   Installation complete!
+[01:36]   
+[01:36]   [isolated] Installing: .comfy-test-env/venv/lib/python3.12/site-packages/comfy_env/templates
+[01:36]   Generated /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/lib/python3.12/site-packages/comfy_env/templates/pixi.toml
+[01:36]   Running pixi install...
+[01:36]   Installation complete!
+[01:36]   
+[01:36]   Installation complete!
+[01:36] Installing 1 node dependency(ies)...
+[01:36]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
+[01:36]   Cloning PozzettiAndrea/ComfyUI-GeometryPack...
+[01:36] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-GeometryPack.git /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[01:38]   Installing ComfyUI-GeometryPack requirements...
+[01:38] Running: uv pip install -r /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt
+[01:38] 
+linux: FAILED (unexpected error)
+[01:38] Error: [Errno 2] No such file or directory: 'uv'
