@@ -65,9 +65,15 @@ def _import_subprocess_utils():
     }
 
 
+# Export stage functions for direct import
+from .stages import run_conditioning, run_shape_generation, run_texture_generation
+
 __all__ = [
     "logger",
     "get_trellis_models_dir",
     "get_dinov3_models_dir",
     "get_birefnet_models_dir",
+    "run_conditioning",
+    "run_shape_generation",
+    "run_texture_generation",
 ]
