@@ -39,7 +39,7 @@ def _dict_to_sparse_tensor(d: Dict[str, Any], device: torch.device):
     Reconstruct a SparseTensor from a serialized dict.
     Must be called within the isolated environment where trellis2 is available.
     """
-    from ..trellis2.modules.sparse import SparseTensor
+    from trellis2.modules.sparse import SparseTensor
 
     feats = d['feats'].to(device)
     coords = d['coords'].to(device)
@@ -325,7 +325,7 @@ def run_texture_generation(
         Dict with textured mesh data
     """
     import cumesh as CuMesh
-    from ..trellis2.representations.mesh import Mesh
+    from trellis2.representations.mesh import Mesh
 
     print(f"[TRELLIS2] Running texture generation (seed={seed})...", file=sys.stderr)
 

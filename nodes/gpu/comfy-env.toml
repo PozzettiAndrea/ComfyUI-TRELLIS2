@@ -1,0 +1,34 @@
+python = "3.12"
+
+[cuda]
+packages = ["nvdiffrast", "flex_gemm", "cumesh", "o_voxel", "nvdiffrec_render", "flash-attn"]
+
+[pypi-dependencies]
+# HuggingFace models
+huggingface_hub = ">=0.20.0,<1.0.0"
+hf_transfer = "*"
+hf_xet = "*"
+transformers = ">=4.56.0"
+safetensors = "*"
+timm = "*"
+
+# ML utilities
+kornia = "*"
+lpips = "*"
+einops = "*"
+zstandard = "*"
+
+# Image processing
+pillow = ">=9.0.0"
+opencv-python-headless = "*"
+
+# General
+numpy = ">=1.21.0"
+easydict = "*"
+tqdm = "*"
+
+[target.linux-64.pypi-dependencies]
+triton = ">=3.0.0"
+
+[target.win-64.pypi-dependencies]
+triton-windows = ">=3.5.0"
