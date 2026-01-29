@@ -182,9 +182,16 @@ class DinoV3FeatureExtractor:
                 print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...")
                 print(f"[ComfyUI-TRELLIS2] TIP: For cleaner storage, download model.safetensors directly to {cache_dir}/")
 
-            self.model = DINOv3ViTModel.from_pretrained(
-                actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
-            )
+            # Suppress verbose weight loading progress bars
+            import transformers
+            old_verbosity = transformers.logging.get_verbosity()
+            transformers.logging.set_verbosity_error()
+            try:
+                self.model = DINOv3ViTModel.from_pretrained(
+                    actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
+                )
+            finally:
+                transformers.logging.set_verbosity(old_verbosity)
             print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
 
         self.model.eval()
