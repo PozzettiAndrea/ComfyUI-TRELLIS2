@@ -14,44 +14,41 @@
 [00:00] Linking ComfyUI-TRELLIS2 to custom_nodes/...
 [00:00] Installing node requirements...
 [00:00] Running: uv pip install -r /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
-[00:01] Running install.py...
-[00:01] Running: /home/runner/venv/venv/bin/python /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
-[01:37]   Installing 1 node dependencies...
-[01:37]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
-[01:37]     Running install.py for ComfyUI-GeometryPack...
-[01:37]   No packages to install
-[01:37]   
-[01:37]   [isolated] Installing: nodes/gpu
-[01:37]   Detected CUDA 12.8 -> PyTorch 2.8
-[01:37]   Generated /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
-[01:37]   Running pixi install...
-[01:37]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
-[01:37]     Installing nvdiffrast
-[01:37]     Installing flex_gemm
-[01:37]     Installing cumesh
-[01:37]     Installing o_voxel
-[01:37]     Installing nvdiffrec_render
-[01:37]     Installing flash-attn===2.8.3+cu128torch2.8
-[01:37]   CUDA package install failed for flash-attn:
-[01:37]   ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: 2.8.3+cu124torch2.6, 2.8.3+cu124torch2.7, 2.8.3+cu124torch2.8, 2.8.3+cu126torch2.6, 2.8.3+cu126torch2.7, 2.8.3+cu126torch2.8, 2.8.3+cu126torch2.9, 2.8.3+cu126torch2.10, 2.8.3+cu128torch2.5, 2.8.3+cu128torch2.6, 2.8.3+cu128torch2.7, 2.8.3+cu128torch2.8, 2.8.3+cu128torch2.9, 2.8.3+cu128torch2.10, 2.8.3+cu129torch2.6, 2.8.3+cu129torch2.8, 2.8.3+cu129torch2.9, 2.8.3+cu130torch2.9, 2.8.3+cu130torch2.10, 2.8.3+cu131torch2.9)
-[01:37]   ERROR: No matching distribution found for flash-attn===2.8.3+cu128torch2.8
-[01:37] Command failed with code 1
-[01:37] stderr: Traceback (most recent call last):
+[00:00] Running install.py...
+[00:00] Running: /home/runner/venv/venv/bin/python /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
+[01:34]   Installing 1 node dependencies...
+[01:34]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[01:34]     Running install.py for ComfyUI-GeometryPack...
+[01:34]   No packages to install
+[01:34]   
+[01:34]   [isolated] Installing: nodes/gpu
+[01:34]   Detected CUDA 12.8 -> PyTorch 2.8
+[01:34]   Generated /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
+[01:34]   Running pixi install...
+[01:34]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[01:34]     Installing nvdiffrast
+[01:34]     Installing flex_gemm
+[01:34]     Installing cumesh
+[01:34]     Installing o_voxel
+[01:34]     Installing nvdiffrec_render
+[01:34]     Installing flash-attn===2.8.3+cu128torch2.8
+[01:34]   CUDA package install failed for flash-attn:
+[01:34]   ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: 2.8.3+cu124torch2.5, 2.8.3+cu124torch2.6, 2.8.3+cu124torch2.7, 2.8.3+cu124torch2.8, 2.8.3+cu124torch2.9, 2.8.3+cu126torch2.5, 2.8.3+cu126torch2.6, 2.8.3+cu126torch2.7, 2.8.3+cu126torch2.8, 2.8.3+cu126torch2.9, 2.8.3+cu126torch2.10, 2.8.3+cu128torch2.5, 2.8.3+cu128torch2.6, 2.8.3+cu128torch2.7, 2.8.3+cu128torch2.8, 2.8.3+cu128torch2.9, 2.8.3+cu128torch2.10, 2.8.3+cu129torch2.6, 2.8.3+cu129torch2.8, 2.8.3+cu129torch2.9, 2.8.3+cu130torch2.9, 2.8.3+cu130torch2.10, 2.8.3+cu131torch2.9)
+[01:34]   ERROR: No matching distribution found for flash-attn===2.8.3+cu128torch2.8
+[01:34] Command failed with code 1
+[01:34] stderr: Traceback (most recent call last):
   File "/home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py", line 2, in <module>
     install()
-    ~~~~~~~^^
-  File "/home/runner/venv/venv/lib/python3.13/site-packages/comfy_env/install.py", line 74, in install
+  File "/home/runner/venv/venv/lib/python3.12/site-packages/comfy_env/install.py", line 74, in install
     _install_isolated_subdirs(node_dir, log, dry_run)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/venv/venv/lib/python3.13/site-packages/comfy_env/install.py", line 318, in _install_isolated_subdirs
+  File "/home/runner/venv/venv/lib/python3.12/site-packages/comfy_env/install.py", line 318, in _install_isolated_subdirs
     pixi_install(sub_cfg, sub_dir, log)
-    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/venv/venv/lib/python3.13/site-packages/comfy_env/pixi/core.py", line 423, in pixi_install
+  File "/home/runner/venv/venv/lib/python3.12/site-packages/comfy_env/pixi/core.py", line 423, in pixi_install
     raise RuntimeError(f"CUDA package install failed: {result.stderr}")
-RuntimeError: CUDA package install failed: ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: 2.8.3+cu124torch2.6, 2.8.3+cu124torch2.7, 2.8.3+cu124torch2.8, 2.8.3+cu126torch2.6, 2.8.3+cu126torch2.7, 2.8.3+cu126torch2.8, 2.8.3+cu126torch2.9, 2.8.3+cu126torch2.10, 2.8.3+cu128torch2.5, 2.8.3+cu128torch2.6, 2.8.3+cu128torch2.7, 2.8.3+cu128torch2.8, 2.8.3+cu128torch2.9, 2.8.3+cu128torch2.10, 2.8.3+cu129torch2.6, 2.8.3+cu129torch2.8, 2.8.3+cu129torch2.9, 2.8.3+cu130torch2.9, 2.8.3+cu130torch2.10, 2.8.3+cu131torch2.9)
+RuntimeError: CUDA package install failed: ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: 2.8.3+cu124torch2.5, 2.8.3+cu124torch2.6, 2.8.3+cu124torch2.7, 2.8.3+cu124torch2.8, 2.8.3+cu124torch2.9, 2.8.3+cu126torch2.5, 2.8.3+cu126torch2.6, 2.8.3+cu126torch2.7, 2.8.3+cu126torch2.8, 2.8.3+cu126torch2.9, 2.8.3+cu126torch2.10, 2.8.3+cu128torch2.5, 2.8.3+cu128torch2.6, 2.8.3+cu128torch2.7, 2.8.3+cu128torch2.8, 2.8.3+cu128torch2.9, 2.8.3+cu128torch2.10, 2.8.3+cu129torch2.6, 2.8.3+cu129torch2.8, 2.8.3+cu129torch2.9, 2.8.3+cu130torch2.9, 2.8.3+cu130torch2.10, 2.8.3+cu131torch2.9)
 ERROR: No matching distribution found for flash-attn===2.8.3+cu128torch2.8
 
 
-[01:37] 
+[01:34] 
 linux: FAILED (unexpected error)
-[01:37] Error: Command '['/home/runner/venv/venv/bin/python', '/home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py']' returned non-zero exit status 1.
+[01:34] Error: Command '['/home/runner/venv/venv/bin/python', '/home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py']' returned non-zero exit status 1.
