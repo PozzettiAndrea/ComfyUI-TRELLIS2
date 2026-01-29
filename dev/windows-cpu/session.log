@@ -1,9 +1,94 @@
-[00:00] Crash dump logging enabled: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test\crash_dump.log
+[00:00] Crash dump logging enabled: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\comfy-test-results\crash_dump.log
 [00:00] 
 [00:00] [1/7] SYNTAX
 [00:00] ----------------------------------------
 [00:00] Found pyproject.toml (modern format)
 [00:00] Found requirements.txt (legacy format)
-[00:01] Unicode check: OK (all characters cp1252-safe)
-[00:01] [SYNTAX] PASSED
-[00:01] Setting up Windows isolation...
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] Setting up Windows isolation...
+[00:00]   Isolated TEMP: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_jumi52wp\temp
+[00:00]   Isolation active
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Using existing ComfyUI: C:\Users\runneradmin\venv\ComfyUI
+[00:00] Installing custom node...
+[00:00] Copying ComfyUI-TRELLIS2 to custom_nodes/...
+[00:00] Installing node requirements...
+[00:00] Running: C:\Users\runneradmin\venv\venv\Scripts\python.exe -m pip install -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
+[00:05]   Collecting comfy-env>=0.0.11 (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[00:05]     Downloading comfy_env-0.1.8-py3-none-any.whl.metadata (6.9 kB)
+[00:05]   Collecting trimesh>=3.0.0 (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 5))
+[00:05]     Downloading trimesh-4.11.1-py3-none-any.whl.metadata (13 kB)
+[00:05]   Collecting plyfile (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 6))
+[00:05]     Downloading plyfile-1.1.3-py3-none-any.whl.metadata (43 kB)
+[00:05]   Collecting imageio>=2.0.0 (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 9))
+[00:05]     Downloading imageio-2.37.2-py3-none-any.whl.metadata (9.7 kB)
+[00:05]   Collecting imageio-ffmpeg>=0.4.0 (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 10))
+[00:05]     Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl.metadata (1.5 kB)
+[00:05]   Requirement already satisfied: pillow>=9.0.0 in c:\users\runneradmin\venv\venv\lib\site-packages (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 11)) (12.1.0)
+[00:05]   Requirement already satisfied: numpy>=1.21.0 in c:\users\runneradmin\venv\venv\lib\site-packages (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 14)) (2.4.1)
+[00:05]   Collecting easydict (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 15))
+[00:05]     Downloading easydict-1.13-py3-none-any.whl.metadata (4.2 kB)
+[00:05]   Requirement already satisfied: tqdm in c:\users\runneradmin\venv\venv\lib\site-packages (from -r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16)) (4.67.1)
+[00:05]   Collecting tomli-w>=1.0.0 (from comfy-env>=0.0.11->-r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[00:05]     Downloading tomli_w-1.2.0-py3-none-any.whl.metadata (5.7 kB)
+[00:05]   Requirement already satisfied: uv>=0.4.0 in c:\users\runneradmin\venv\venv\lib\site-packages (from comfy-env>=0.0.11->-r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2)) (0.9.27)
+[00:05]   Requirement already satisfied: colorama in c:\users\runneradmin\venv\venv\lib\site-packages (from tqdm->-r C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16)) (0.4.6)
+[00:05]   Downloading comfy_env-0.1.8-py3-none-any.whl (71 kB)
+[00:05]   Downloading trimesh-4.11.1-py3-none-any.whl (740 kB)
+[00:05]      ---------------------------------------- 740.4/740.4 kB 17.6 MB/s  0:00:00
+[00:05]   Downloading plyfile-1.1.3-py3-none-any.whl (36 kB)
+[00:05]   Downloading imageio-2.37.2-py3-none-any.whl (317 kB)
+[00:05]   Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl (31.2 MB)
+[00:05]      ---------------------------------------- 31.2/31.2 MB 80.2 MB/s  0:00:00
+[00:05]   Downloading easydict-1.13-py3-none-any.whl (6.8 kB)
+[00:05]   Downloading tomli_w-1.2.0-py3-none-any.whl (6.7 kB)
+[00:05]   Installing collected packages: easydict, trimesh, tomli-w, plyfile, imageio-ffmpeg, imageio, comfy-env
+[00:05]   
+[00:05]   Successfully installed comfy-env-0.1.8 easydict-1.13 imageio-2.37.2 imageio-ffmpeg-0.6.0 plyfile-1.1.3 tomli-w-1.2.0 trimesh-4.11.1
+[00:05] Running install.py...
+[00:05] Running: C:\Users\runneradmin\venv\venv\Scripts\python.exe C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
+[04:29]   Installing 1 node dependencies...
+[04:29]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[04:29]     Running install.py for ComfyUI-GeometryPack...
+[04:29]   No packages to install
+[04:29]   
+[04:29]   [isolated] Installing: nodes\gpu
+[04:29]   Detected CUDA 12.8 -> PyTorch 2.8
+[04:29]   Generated C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\pixi.toml
+[04:29]   Running pixi install...
+[04:29]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[04:29]     Installing nvdiffrast
+[04:29]     Installing flex_gemm
+[04:29]     Installing cumesh
+[04:29]     Installing o_voxel
+[04:29]     Installing nvdiffrec_render
+[04:29]     Installing flash-attn===2.8.3+cu128torch2.8
+[04:29]   CUDA package install failed for flash-attn:
+[04:29]   ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: none)
+[04:29]   ERROR: No matching distribution found for flash-attn===2.8.3+cu128torch2.8
+[04:29] Command failed with code 1
+[04:29] stderr: Traceback (most recent call last):
+  File "C:\Users\runneradmin\venv\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py", line 2, in <module>
+    install()
+    ~~~~~~~^^
+  File "C:\Users\runneradmin\venv\venv\Lib\site-packages\comfy_env\install.py", line 74, in install
+    _install_isolated_subdirs(node_dir, log, dry_run)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\venv\venv\Lib\site-packages\comfy_env\install.py", line 318, in _install_isolated_subdirs
+    pixi_install(sub_cfg, sub_dir, log)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\venv\venv\Lib\site-packages\comfy_env\pixi\core.py", line 423, in pixi_install
+    raise RuntimeError(f"CUDA package install failed: {result.stderr}")
+RuntimeError: CUDA package install failed: ERROR: Could not find a version that satisfies the requirement flash-attn===2.8.3+cu128torch2.8 (from versions: none)
+ERROR: No matching distribution found for flash-attn===2.8.3+cu128torch2.8
+
+
+[04:29] Tearing down Windows isolation...
+[04:29]   Environment restored
+[04:29]   Isolation torn down
+[04:29] 
+windows: FAILED (unexpected error)
+[04:29] Error: Command '['C:\\Users\\runneradmin\\venv\\venv\\Scripts\\python.exe', 'C:\\Users\\runneradmin\\venv\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\install.py']' returned non-zero exit status 1.

@@ -1,72 +1,357 @@
-[00:00] Crash dump logging enabled: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test/crash_dump.log
+[00:00] Crash dump logging enabled: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/crash_dump.log
 [00:00] 
 [00:00] [1/7] SYNTAX
 [00:00] ----------------------------------------
 [00:00] Found pyproject.toml (modern format)
 [00:00] Found requirements.txt (legacy format)
-[00:01] Unicode check: OK (all characters cp1252-safe)
-[00:01] [SYNTAX] PASSED
-[00:01] 
-[00:01] [2/7] INSTALL
-[00:01] ----------------------------------------
-[00:01] Using existing ComfyUI: .comfy-test-env/ComfyUI
-[00:01] Installing custom node...
-[00:01] Linking ComfyUI-TRELLIS2 to custom_nodes/...
-[00:01] Installing node requirements...
-[00:01] Running: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/bin/python3.12 -m uv pip install -r /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
-[00:02] Running install.py...
-[00:02] Running: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/bin/python3.12 /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
-[00:47]   Installing 1 node dependencies...
-[00:47]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
-[00:47]     Running install.py for ComfyUI-GeometryPack...
-[00:47]   No packages to install
-[00:47]   
-[00:47]   [isolated] Installing: nodes/gpu
-[00:47]   Pixi not found, downloading...
-[00:47]   Installed pixi to: /Users/runner/.local/bin/pixi
-[00:47]   Generated /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
-[00:47]   Running pixi install...
-[00:47]   Installation complete!
-[00:47]   
-[00:47]   [isolated] Installing: .comfy-test-env/venv/lib/python3.12/site-packages/comfy_env/templates
-[00:47]   Generated /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/lib/python3.12/site-packages/comfy_env/templates/pixi.toml
-[00:47]   Running pixi install...
-[00:47]   Installation complete!
-[00:47]   
-[00:47]   Installation complete!
-[00:47] Installing 1 node dependency(ies)...
-[00:47]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
-[00:47]   Cloning PozzettiAndrea/ComfyUI-GeometryPack...
-[00:47] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-GeometryPack.git /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/ComfyUI/custom_nodes/ComfyUI-GeometryPack
-[00:51]   Installing ComfyUI-GeometryPack requirements...
-[00:51] Running: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/bin/python3.12 -m uv pip install -r /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt
-[00:52] Command failed with code 1
-[00:52] stderr: Using Python 3.12.10 environment at: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv
-  × No solution found when resolving dependencies:
-  ╰─▶ Because only the following versions of embreex are available:
-          embreex==2.17.7
-          embreex==2.17.7.post1
-          embreex==2.17.7.post2
-          embreex==2.17.7.post3
-          embreex==2.17.7.post4
-          embreex==2.17.7.post5
-          embreex==2.17.7.post6
-          embreex==2.17.7.post7
-      and embreex<=2.17.7.post1 has no wheels with a matching Python ABI tag
-      (e.g., `cp312`), we can conclude that embreex<=2.17.7.post1 cannot be
-      used.
-      And because embreex>=2.17.7.post2 has no wheels with a matching platform
-      tag (e.g., `macosx_15_0_arm64`) and you require embreex, we can conclude
-      that your requirements are unsatisfiable.
-
-      hint: You require CPython 3.12 (`cp312`), but we only found wheels for
-      `embreex` (v2.17.7.post1) with the following Python ABI tags: `cp36m`,
-      `cp37m`, `cp38`, `cp39`, `cp310`, `cp311`
-
-      hint: Wheels are available for `embreex` (v2.17.7.post7) on the
-      following platforms: `manylinux_2_12_x86_64`, `manylinux_2_28_x86_64`,
-      `manylinux2010_x86_64`, `macosx_10_13_x86_64`, `win_amd64`
-
-[00:52] 
-macos: FAILED (unexpected error)
-[00:52] Error: Command '['/Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/venv/bin/python3.12', '-m', 'uv', 'pip', 'install', '-r', '/Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test-env/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt']' returned non-zero exit status 1.
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Using existing ComfyUI: /Users/runner/venv/ComfyUI
+[00:00] Installing custom node...
+[00:00] Linking ComfyUI-TRELLIS2 to custom_nodes/...
+[00:00] Installing node requirements...
+[00:00] Running: /Users/runner/venv/venv/bin/python3.13 -m uv pip install -r /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
+[00:00] Running install.py...
+[00:00] Running: /Users/runner/venv/venv/bin/python3.13 /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
+[00:32]   Installing 1 node dependencies...
+[00:32]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[00:32]     Running install.py for ComfyUI-GeometryPack...
+[00:32]   No packages to install
+[00:32]   
+[00:32]   [isolated] Installing: nodes/gpu
+[00:32]   Generated /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
+[00:32]   Running pixi install...
+[00:32]   Installation complete!
+[00:32]   
+[00:32]   Installation complete!
+[00:32] Installing 1 node dependency(ies)...
+[00:32]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
+[00:32]   Cloning PozzettiAndrea/ComfyUI-GeometryPack...
+[00:32] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-GeometryPack.git /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[00:33]   Installing ComfyUI-GeometryPack requirements...
+[00:33] Running: /Users/runner/venv/venv/bin/python3.13 -m uv pip install -r /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt
+[00:38]   Running ComfyUI-GeometryPack install.py...
+[00:38] Running: /Users/runner/venv/venv/bin/python3.13 /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack/install.py
+[00:45]   [apt] Skipping apt packages (not Linux)
+[00:45]   
+[00:45]   [env] Setting 2 persistent environment variable(s)...
+[00:45]     - KMP_DUPLICATE_LIB_OK=TRUE
+[00:45]     - OMP_NUM_THREADS=1
+[00:45]     [env] Set KMP_DUPLICATE_LIB_OK (launchctl)
+[00:45]     [env] Set OMP_NUM_THREADS (launchctl)
+[00:45]     [env] Wrote /Users/runner/.comfy-env-profile
+[00:45]     [env] Already configured in /Users/runner/.bashrc
+[00:45]   [env] Restart terminal/ComfyUI for changes to take effect
+[00:45]   No packages to install
+[00:45]   
+[00:45]   [isolated] Installing: nodes/gpu
+[00:45]   Generated /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/pixi.toml
+[00:45]   Running pixi install...
+[00:45]   Installation complete!
+[00:45]   
+[00:45]   [isolated] Installing: nodes/cgal
+[00:45]   Generated /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/cgal/pixi.toml
+[00:45]   Running pixi install...
+[00:45]   Installation complete!
+[00:45]   
+[00:45]   [isolated] Installing: nodes/blender
+[00:45]   Using specified Python 3.11
+[00:45]   Generated /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/blender/pixi.toml
+[00:45]   Running pixi install...
+[00:45]   Installation complete!
+[00:45]   
+[00:45]   Installation complete!
+[00:45] Installing validation endpoint...
+[00:45]   Cloning PozzettiAndrea/ComfyUI-validate-endpoint...
+[00:45] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-validate-endpoint.git /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-validate-endpoint
+[00:46] [INSTALL] PASSED
+[00:46] COMFY_TEST_GPU env var = None
+[00:46] 
+Starting ComfyUI server...
+[00:46] Starting ComfyUI server on port 8188...
+[00:46] Starting ComfyUI server on port 8188...
+[00:46] Waiting for server to be ready (timeout: 300s)...
+[00:50]   [ComfyUI] 
+[00:50]   [ComfyUI] Prestartup times for custom nodes:
+[00:50]   [ComfyUI]    0.0 seconds: /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-TRELLIS2
+[00:50]   [ComfyUI]    3.1 seconds: /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[00:50]   [ComfyUI] 
+[00:50]   [ComfyUI] WARNING: Potential Error in code: Torch already imported, torch should never be imported before this point.
+[00:51]   [ComfyUI] Checkpoint files will always be loaded safely.
+[00:51]   [ComfyUI] Total VRAM 7168 MB, total RAM 7168 MB
+[00:51]   [ComfyUI] pytorch version: 2.10.0
+[00:51]   [ComfyUI] Mac Version (15, 7, 3)
+[00:51]   [ComfyUI] Set vram state to: DISABLED
+[00:51]   [ComfyUI] Device: cpu
+[00:54]   [ComfyUI] Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['apply_rope', 'apply_rope1', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'scaled_mm_nvfp4']}
+[00:54]   [ComfyUI] Found comfy_kitchen backend triton: {'available': False, 'disabled': True, 'unavailable_reason': "ImportError: No module named 'triton'", 'capabilities': []}
+[00:54]   [ComfyUI] Found comfy_kitchen backend cuda: {'available': False, 'disabled': True, 'unavailable_reason': 'Extension file not found: /Users/runner/venv/venv/lib/python3.13/site-packages/comfy_kitchen/backends/cuda/_C.abi3.so', 'capabilities': []}
+[00:55]   [ComfyUI] Using sub quadratic optimization for attention, if you have memory or speed issues try using: --use-split-cross-attention
+[01:02]   [ComfyUI] Python version: 3.13.11 (v3.13.11:627894459a8, Dec  5 2025, 11:26:37) [Clang 16.0.0 (clang-1600.0.26.6)]
+[01:02]   [ComfyUI] ComfyUI version: 0.11.1
+[01:02]   [ComfyUI] ****** User settings have been changed to be stored on the server instead of browser storage. ******
+[01:02]   [ComfyUI] ****** For multi-user setups add the --multi-user CLI argument to enable multiple user profiles. ******
+[01:02]   [ComfyUI] ComfyUI frontend version: 1.37.11
+[01:02]   [ComfyUI] [Prompt Server] web root: /Users/runner/venv/venv/lib/python3.13/site-packages/comfyui_frontend_package/static
+[01:10]   [ComfyUI] 
+[01:10]   [ComfyUI] Import times for custom nodes:
+[01:10]   [ComfyUI]    0.0 seconds: /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-validate-endpoint
+[01:10]   [ComfyUI]    0.0 seconds: /Users/runner/venv/ComfyUI/custom_nodes/websocket_image_save.py
+[01:10]   [ComfyUI]    0.0 seconds: /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-TRELLIS2
+[01:10]   [ComfyUI]    5.4 seconds: /Users/runner/venv/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[01:10]   [ComfyUI] 
+[01:10]   [ComfyUI] Context impl SQLiteImpl.
+[01:10]   [ComfyUI] Will assume non-transactional DDL.
+[01:10]   [ComfyUI] Context impl SQLiteImpl.
+[01:10]   [ComfyUI] Will assume non-transactional DDL.
+[01:10]   [ComfyUI] Running upgrade  -> 0001_assets, Initial assets schema
+[01:10]   [ComfyUI] Revision ID: 0001_assets
+[01:10]   [ComfyUI] Revises: None
+[01:10]   [ComfyUI] Create Date: 2025-12-10 00:00:00
+[01:10]   [ComfyUI] Database upgraded from None to 0001_assets
+[01:10]   [ComfyUI] Assets scan(roots=['models']) completed in 0.020s (created=11, skipped_existing=0, total_seen=11)
+[01:10]   [ComfyUI] Starting server
+[01:10]   [ComfyUI] 
+[01:10]   [ComfyUI] To see the GUI go to: http://127.0.0.1:8188
+[01:10] Server responding, waiting for nodes to load...
+[01:30] Server is ready!
+[01:30] 
+[01:30] [3/7] REGISTRATION
+[01:30] ----------------------------------------
+[01:30] Checking for import errors in server logs...
+[01:30] No import errors detected
+[01:30] [REGISTRATION] PASSED
+[01:30] Found 670 registered nodes
+[01:30] 
+[01:30] [4/7] INSTANTIATION
+[01:30] ----------------------------------------
+[01:30] Testing node constructors...
+[01:31] All 670 node(s) instantiated successfully!
+[01:31] [INSTANTIATION] PASSED
+[01:31] 
+[01:31] [5/7] STATIC_CAPTURE
+[01:31] ----------------------------------------
+[01:31] Capturing 3 static screenshot(s)...
+[01:31] Starting headless browser...
+[01:32]   [1/3] STATIC geometry_only.json
+[01:32] Capturing: geometry_only.json
+[01:32]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:32]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:33]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:33]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:33]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:33]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:35]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[01:35]   [Console-error] No input!
+[01:35]   [Console-warning] [.WebGL-0x134000b6400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[01:35]   [Console-warning] [.WebGL-0x134000b6400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[01:38]   Saved: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/screenshots/geometry_only.png
+[01:38]   [2/3] STATIC geometry_texture.json
+[01:38] Capturing: geometry_texture.json
+[01:38]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:38]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:38]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:38]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:38]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:38]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:39]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[01:39]   [Console-error] No input!
+[01:39]   [Console-warning] [.WebGL-0x134000a9e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[01:40]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:40]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:41]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:41]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:43]   Saved: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/screenshots/geometry_texture.png
+[01:43]   [3/3] STATIC remove_background.json
+[01:43] Capturing: remove_background.json
+[01:43]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:43]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:43]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:43]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:43]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:43]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:45]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:45]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:45]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:45]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:46]   [Console-warning] WebGL: INVALID_OPERATION: loseContext: context already lost
+[01:46]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[01:46]   [Console-error] No input!
+[01:49]   Saved: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/screenshots/remove_background.png
+[01:49] [STATIC_CAPTURE] PASSED
+[01:49] 
+[01:49] [6/7] VALIDATION
+[01:49] ----------------------------------------
+[01:49] Validating 3 workflow(s)...
+[01:49] Starting headless browser...
+[01:50]   [1/3] Validating geometry_only.json
+[01:50]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:50]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:50]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:50]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:51]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:51]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:52]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[01:52]   [Console-error] No input!
+[01:52]   [Console-warning] [.WebGL-0x12c00436400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[01:52]   [Console-warning] [.WebGL-0x12c00436400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[01:53]   [ComfyUI] === /validate endpoint called ===
+[01:53]   [ComfyUI] Received JSON with keys: ['prompt']
+[01:53]   [ComfyUI] Prompt has 8 nodes
+[01:53]   [ComfyUI]   Node 1: LoadImage
+[01:53]   [ComfyUI]     Inputs: {"image": "t_logo.png"}
+[01:53]   [ComfyUI]   Node 10: MaskPreview
+[01:53]   [ComfyUI]     Inputs: {"mask": ["11", 0]}
+[01:53]   [ComfyUI]   Node 11: InvertMask
+[01:53]   [ComfyUI]     Inputs: {"mask": ["1", 1]}
+[01:53]   [ComfyUI]   Node 69: GeomPackPreviewMeshVTK
+[01:53]   [ComfyUI]     Inputs: {"mode": "fields", "preview_vtk": "", "trimesh": ["94", 0]}
+[01:53]   [ComfyUI]   Node 91: Trellis2GetConditioning
+[01:53]   [ComfyUI]     Inputs: {"include_1024": true, "background_color": "black", "model_config": ["92", 0], "image": ["1", 0], "mask": ["11", 0]}
+[01:53]   [ComfyUI]   Node 92: LoadTrellis2Models
+[01:53]   [ComfyUI]     Inputs: {"resolution": "1024_cascade", "attn_backend": "flash_attn", "vram_mode": "keep_loaded"}
+[01:53]   [ComfyUI]   Node 94: GeomPackRemesh
+[01:53]   [ComfyUI]     Inputs: {"backend": "cumesh", "target_edge_length": 1, "iterations": 3, "feature_angle": 30, "adaptive": "false", "target_vertex_count": "true", "deterministic": 1, "crease_angle": 500000, "report_info": "",
+[01:53]   [ComfyUI]   Node 95: Trellis2ImageToShape
+[01:53]   [ComfyUI]     Inputs: {"seed": 42, "ss_guidance_strength": 7.5, "ss_sampling_steps": 12, "shape_guidance_strength": 7.5, "shape_sampling_steps": 12, "max_tokens": 49152, "model_config": ["92", 0], "conditioning": ["91", 0]
+[01:53]   [ComfyUI] Generated prompt_id: ffd8b892-b158-4fd4-9fc3-5ed1c6dbe58b
+[01:53]     OK
+[01:53]   [ComfyUI] Calling execution.validate_prompt()...
+[01:53]   [2/3] Validating geometry_texture.json
+[01:53]   [ComfyUI] Failed to validate prompt for output 94:
+[01:53]   [ComfyUI] * (prompt):
+[01:53]   [ComfyUI]   - Value 500000.0 bigger than max of 180.0: crease_angle
+[01:53]   [ComfyUI]   - Failed to convert an input value to a INT value: target_vertex_count, true, invalid literal for int() with base 10: 'true'
+[01:53]   [ComfyUI]   - Value not in list: deterministic: '1' not in ['true', 'false']
+[01:53]   [ComfyUI]   - Value not in list: backend: 'cumesh' not in ['pymeshlab_isotropic', 'instant_meshes']
+[01:53]   [ComfyUI] * GeomPackRemesh 94:
+[01:53]   [ComfyUI]   - Value 500000.0 bigger than max of 180.0: crease_angle
+[01:53]   [ComfyUI]   - Failed to convert an input value to a INT value: target_vertex_count, true, invalid literal for int() with base 10: 'true'
+[01:53]   [ComfyUI]   - Value not in list: deterministic: '1' not in ['true', 'false']
+[01:53]   [ComfyUI]   - Value not in list: backend: 'cumesh' not in ['pymeshlab_isotropic', 'instant_meshes']
+[01:53]   [ComfyUI] Output will be ignored
+[01:53]   [ComfyUI] Failed to validate prompt for output 69:
+[01:53]   [ComfyUI] Output will be ignored
+[01:53]   [ComfyUI] Validation result: valid=True
+[01:53]   [ComfyUI]   Node errors: {"94": {"errors": [{"type": "value_bigger_than_max", "message": "Value 500000.0 bigger than max of 180.0", "details": "crease_angle", "extra_info": {"input_name": "crease_angle", "input_config": ["FLOAT", {"default": 0.0, "min": 0.0, "max": 180.0, "step": 1.0, "tooltip": "Angle threshold (degrees) for preserving sharp/crease edges in Instant Meshes. 0 = no crease preservation.", "visible_when": {"backend": ["instant_meshes"]}}], "received_value": 500000.0}}, {"type": "invalid_input_type", "messa
+[01:53]   [ComfyUI] === Validation PASSED ===
+[01:53]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:53]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:53]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:53]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:53]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:53]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:55]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[01:55]   [Console-error] No input!
+[01:55]   [Console-warning] [.WebGL-0x12c0042ec00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[01:56]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:56]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:56]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:56]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:56]   [ComfyUI] === /validate endpoint called ===
+[01:56]   [ComfyUI] Received JSON with keys: ['prompt']
+[01:56]   [ComfyUI] Prompt has 9 nodes
+[01:56]   [ComfyUI]   Node 1: LoadImage
+[01:56]   [ComfyUI]     Inputs: {"image": "cannon.webp"}
+[01:56]   [ComfyUI]   Node 10: MaskPreview
+[01:56]   [ComfyUI]     Inputs: {"mask": ["11", 0]}
+[01:56]   [ComfyUI]   Node 11: InvertMask
+[01:56]   [ComfyUI]     Inputs: {"mask": ["1", 1]}
+[01:56]   [ComfyUI]   Node 64: Preview3D
+[01:56]   [ComfyUI]     Inputs: {"model_file": ["72", 0], "image": ""}
+[01:56]   [ComfyUI]   Node 68: LoadTrellis2Models
+[01:56]   [ComfyUI]     Inputs: {"resolution": "1024_cascade", "attn_backend": "flash_attn", "vram_mode": "keep_loaded"}
+[01:56]   [ComfyUI]   Node 69: Trellis2GetConditioning
+[01:56]   [ComfyUI]     Inputs: {"include_1024": true, "background_color": "black", "model_config": ["68", 0], "image": ["1", 0], "mask": ["11", 0]}
+[01:56]     OK
+[01:56]   [3/3] Validating remove_background.json
+[01:56]   [ComfyUI]   Node 71: Trellis2ShapeToTexturedMesh
+[01:56]   [ComfyUI]     Inputs: {"seed": 42, "tex_guidance_strength": 12, "tex_sampling_steps": 12, "model_config": ["68", 0], "conditioning": ["69", 0], "shape_result": ["73", 0]}
+[01:56]   [ComfyUI]   Node 72: Trellis2ExportGLB
+[01:56]   [ComfyUI]     Inputs: {"decimation_target": 500000, "texture_size": 2048, "remesh": true, "filename_prefix": "trellis2", "trimesh": ["71", 0], "voxelgrid": ["71", 1]}
+[01:56]   [ComfyUI]   Node 73: Trellis2ImageToShape
+[01:56]   [ComfyUI]     Inputs: {"seed": 42, "ss_guidance_strength": 7.5, "ss_sampling_steps": 12, "shape_guidance_strength": 7.5, "shape_sampling_steps": 12, "max_tokens": 49152, "model_config": ["68", 0], "conditioning": ["69", 0]
+[01:56]   [ComfyUI] Generated prompt_id: 62f82e3e-beaf-4cd5-b038-e44c199ef34c
+[01:56]   [ComfyUI] Calling execution.validate_prompt()...
+[01:56]   [ComfyUI] Validation result: valid=True
+[01:56]   [ComfyUI] === Validation PASSED ===
+[01:57]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:57]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:57]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:57]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:57]   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[01:57]   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+[01:58]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:58]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:59]   [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[01:59]   [Console-error] Error loading model: zy: fetch for "http://127.0.0.1:8188/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20251225_203254.glb" responded with 403: Forbidden
+    at http://127.0.0.1:8188/assets/vendor-three-DH0o8VQ7.js:3824:114758
+[01:59]   [Console-warning] WebGL: INVALID_OPERATION: loseContext: context already lost
+[01:59]   [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+[02:00]   [Console-error] No input!
+[02:00]   [ComfyUI] === /validate endpoint called ===
+[02:00]   [ComfyUI] Received JSON with keys: ['prompt']
+[02:00]   [ComfyUI] Prompt has 9 nodes
+[02:00]   [ComfyUI]   Node 1: LoadImage
+[02:00]   [ComfyUI]     Inputs: {"image": "bike.webp"}
+[02:00]   [ComfyUI]   Node 10: MaskPreview
+[02:00]   [ComfyUI]     Inputs: {"mask": ["81", 1]}
+[02:00]   [ComfyUI]   Node 69: Trellis2RemoveBackground
+[02:00]   [ComfyUI]     Inputs: {"low_vram": true, "image": ["1", 0]}
+[02:00]   [ComfyUI]   Node 73: GeomPackPreviewMeshVTK
+[02:00]   [ComfyUI]     Inputs: {"mode": "fields", "preview_vtk": "", "trimesh": ["82", 0]}
+[02:00]   [ComfyUI]   Node 76: LoadTrellis2Models
+[02:00]   [ComfyUI]     Inputs: {"resolution": "1024_cascade", "attn_backend": "flash_attn", "vram_mode": "keep_loaded"}
+[02:00]   [ComfyUI]   Node 77: Trellis2GetConditioning
+[02:00]   [ComfyUI]     Inputs: {"include_1024": true, "background_color": "black", "model_config": ["76", 0], "image": ["81", 0], "mask": ["81", 1]}
+[02:00]   [ComfyUI]   Node 81: Trellis2RemoveBackground
+[02:00]   [ComfyUI]     Inputs: {"low_vram": true, "image": ["1", 0]}
+[02:00]   [ComfyUI]   Node 82: GeomPackRemesh
+[02:00]   [ComfyUI]     Inputs: {"backend": "cumesh", "target_edge_length": 1, "iterations": 3, "feature_angle": 30, "adaptive": "false", "target_vertex_count": "true", "deterministic": 1, "crease_angle": 500000, "report_info": "",
+[02:00]   [ComfyUI]   Node 84: Trellis2ImageToShape
+[02:00]   [ComfyUI]     Inputs: {"seed": 42, "ss_guidance_strength": 7.5, "ss_sampling_steps": 12, "shape_guidance_strength": 7.5, "shape_sampling_steps": 12, "max_tokens": 49152, "model_config": ["76", 0], "conditioning": ["77", 0]
+[02:00]   [ComfyUI] Generated prompt_id: 5fce7993-97b4-4f3e-b1ca-017cdaedd293
+[02:00]   [ComfyUI] Calling execution.validate_prompt()...
+[02:00]   [ComfyUI] Failed to validate prompt for output 82:
+[02:00]     OK
+[02:00]   [ComfyUI] * (prompt):
+[02:00]   [ComfyUI]   - Value 500000.0 bigger than max of 180.0: crease_angle
+[02:00]   [ComfyUI]   - Failed to convert an input value to a INT value: target_vertex_count, true, invalid literal for int() with base 10: 'true'
+[02:00]   [ComfyUI]   - Value not in list: deterministic: '1' not in ['true', 'false']
+[02:00]   [ComfyUI]   - Value not in list: backend: 'cumesh' not in ['pymeshlab_isotropic', 'instant_meshes']
+[02:00]   [ComfyUI] * GeomPackRemesh 82:
+[02:00]   [ComfyUI]   - Value 500000.0 bigger than max of 180.0: crease_angle
+[02:00]   [ComfyUI]   - Failed to convert an input value to a INT value: target_vertex_count, true, invalid literal for int() with base 10: 'true'
+[02:00]   [ComfyUI]   - Value not in list: deterministic: '1' not in ['true', 'false']
+[02:00]   [ComfyUI]   - Value not in list: backend: 'cumesh' not in ['pymeshlab_isotropic', 'instant_meshes']
+[02:00]   [ComfyUI] Output will be ignored
+[02:00]   [ComfyUI] Failed to validate prompt for output 73:
+[02:00]   [ComfyUI] Output will be ignored
+[02:00]   [ComfyUI] Validation result: valid=True
+[02:00]   [ComfyUI]   Node errors: {"82": {"errors": [{"type": "value_bigger_than_max", "message": "Value 500000.0 bigger than max of 180.0", "details": "crease_angle", "extra_info": {"input_name": "crease_angle", "input_config": ["FLOAT", {"default": 0.0, "min": 0.0, "max": 180.0, "step": 1.0, "tooltip": "Angle threshold (degrees) for preserving sharp/crease edges in Instant Meshes. 0 = no crease preservation.", "visible_when": {"backend": ["instant_meshes"]}}], "received_value": 500000.0}}, {"type": "invalid_input_type", "messa
+[02:00]   [ComfyUI] === Validation PASSED ===
+[02:00] [VALIDATION] PASSED
+[02:00] 
+[02:00] [7/7] EXECUTION
+[02:00] ----------------------------------------
+[02:00] No GPU detected - GPU workflows will be skipped
+[02:00] Running 3 workflow(s) (all with videos)...
+[02:01]   [1/3] SKIPPED (GPU required) geometry_only.json
+[02:01]   [2/3] SKIPPED (GPU required) geometry_texture.json
+[02:01]   [3/3] SKIPPED (GPU required) remove_background.json
+[02:01] Results saved to /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/results.json
+[02:01] Saved: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/comfy-test-results/index.html
+[02:01] [EXECUTION] PASSED
+[02:01] Stopping ComfyUI server...
+[02:02] 
+macos: PASSED
