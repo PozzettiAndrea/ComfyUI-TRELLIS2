@@ -305,6 +305,11 @@ def run_shape_generation(
     # Pack results - serialize SparseTensor objects to dicts for IPC
     # This allows the result to cross the subprocess boundary without requiring
     # trellis2.modules in the main ComfyUI process
+    print(f"[DEBUG] shape_slat before serialize:", file=sys.stderr)
+    print(f"[DEBUG]   feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
+    print(f"[DEBUG]   coords.shape: {shape_slat.coords.shape}", file=sys.stderr)
+    print(f"[DEBUG]   shape: {shape_slat.shape}", file=sys.stderr)
+    print(f"[DEBUG]   scale: {shape_slat._scale}", file=sys.stderr)
     result = {
         'shape_slat': _serialize_for_ipc(shape_slat),
         'subs': _serialize_for_ipc(subs),
@@ -362,6 +367,11 @@ def run_texture_generation(
     # SparseTensor objects were serialized as dicts for IPC, reconstruct them here
     shape_slat = _deserialize_from_ipc(shape_result['shape_slat'], device)
     subs = _deserialize_from_ipc(shape_result['subs'], device)
+    print(f"[DEBUG] shape_slat after deserialize:", file=sys.stderr)
+    print(f"[DEBUG]   feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
+    print(f"[DEBUG]   coords.shape: {shape_slat.coords.shape}", file=sys.stderr)
+    print(f"[DEBUG]   shape: {shape_slat.shape}", file=sys.stderr)
+    print(f"[DEBUG]   scale: {shape_slat._scale}", file=sys.stderr)
     resolution = shape_result['resolution']
     pipeline_type = shape_result['pipeline_type']
 
