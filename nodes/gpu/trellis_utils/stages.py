@@ -134,11 +134,32 @@ def run_conditioning(
         img_np = (image.cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
     pil_image = Image.fromarray(img_np)
 
-    # Process mask
-    if mask.dim() == 3:
-        mask_np = mask[0].cpu().numpy()
-    else:
-        mask_np = mask.cpu().numpy()
+    # Process mask - handle various input formats and ensure 2D grayscale
+    mask_np = mask.cpu().numpy()
+
+    # Handle 4D [B, H, W, C] format (e.g., IMAGE passed as MASK)
+    if mask_np.ndim == 4:
+        mask_np = mask_np[0]  # Remove batch → [H, W, C]
+
+    # Handle 3D format - either [B, H, W] or [H, W, C]
+    if mask_np.ndim == 3:
+        if mask_np.shape[-1] in (1, 2, 3, 4):  # Likely [H, W, C]
+            mask_np = mask_np[..., 0]  # Take first channel → [H, W]
+        else:  # Likely [B, H, W]
+            mask_np = mask_np[0]  # Remove batch → [H, W]
+
+    # Handle 2D with channel dim after squeeze (e.g., [W, C] from squeezed [1, 1, W, C])
+    # This catches cases like (1042, 3) where 3 is channels, not width
+    if mask_np.ndim == 2 and mask_np.shape[-1] in (1, 2, 3, 4) and mask_np.shape[0] > 10:
+        # Last dim looks like channels (small) and first dim looks like spatial (large)
+        mask_np = mask_np[..., 0]  # Take first channel
+
+    # Ensure we have at least 2D
+    if mask_np.ndim == 1:
+        mask_np = mask_np[np.newaxis, :]  # Add height dimension
+
+    if mask_np.ndim != 2:
+        raise ValueError(f"Mask must be 2D after processing, got shape {mask_np.shape}")
 
     # Resize mask to match image if needed
     if mask_np.shape[:2] != (pil_image.height, pil_image.width):
