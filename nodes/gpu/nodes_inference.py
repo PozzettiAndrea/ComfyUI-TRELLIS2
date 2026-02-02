@@ -118,7 +118,9 @@ Returns:
         import trimesh as Trimesh
         from trellis_utils import run_shape_generation
 
-        shape_result = run_shape_generation(
+        # run_shape_generation returns (file_ref, vertices, faces)
+        # file_ref is passed to downstream nodes, vertices/faces used for Trimesh
+        shape_result, vertices, faces = run_shape_generation(
             model_config=model_config,
             conditioning=conditioning,
             seed=seed,
@@ -131,8 +133,8 @@ Returns:
 
         # Create trimesh from vertices/faces
         tri_mesh = Trimesh.Trimesh(
-            vertices=shape_result['mesh_vertices'],
-            faces=shape_result['mesh_faces'],
+            vertices=vertices,
+            faces=faces,
             process=False
         )
 

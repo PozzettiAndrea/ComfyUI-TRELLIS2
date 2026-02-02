@@ -7,6 +7,9 @@ These run inside the isolated subprocess.
 
 import sys
 import gc
+import os
+import tempfile
+import uuid
 from fractions import Fraction
 from pathlib import Path
 from typing import Dict, Any, Tuple, Optional, List
@@ -17,6 +20,36 @@ from PIL import Image
 
 from .lazy_manager import get_model_manager
 from .helpers import smart_crop_square
+
+
+# Disk-based tensor serialization for IPC
+_TRELLIS2_TEMP_DIR = None
+
+
+def _get_temp_dir():
+    """Get or create temp directory for tensor files."""
+    global _TRELLIS2_TEMP_DIR
+    if _TRELLIS2_TEMP_DIR is None:
+        _TRELLIS2_TEMP_DIR = tempfile.mkdtemp(prefix='trellis2_')
+        print(f"[TRELLIS2] Created temp dir: {_TRELLIS2_TEMP_DIR}", file=sys.stderr)
+    return _TRELLIS2_TEMP_DIR
+
+
+def _save_to_disk(data: dict, prefix: str) -> dict:
+    """Save tensor dict to disk, return reference dict."""
+    path = os.path.join(_get_temp_dir(), f'{prefix}_{uuid.uuid4().hex[:8]}.pt')
+    torch.save(data, path)
+    print(f"[TRELLIS2] Saved {prefix} to {path}", file=sys.stderr)
+    return {'_tensor_file': path}
+
+
+def _load_from_disk(ref: Any) -> Any:
+    """Load tensor dict from disk reference, or return as-is if not a reference."""
+    if isinstance(ref, dict) and '_tensor_file' in ref:
+        path = ref['_tensor_file']
+        print(f"[TRELLIS2] Loading from {path}", file=sys.stderr)
+        return torch.load(path, weights_only=False)
+    return ref
 
 
 def _sparse_tensor_to_dict(st) -> Dict[str, Any]:
@@ -207,8 +240,11 @@ def run_conditioning(
     preprocessed_np = np.array(pil_rgb).astype(np.float32) / 255.0
     preprocessed_tensor = torch.from_numpy(preprocessed_np).unsqueeze(0)
 
+    # Save conditioning to disk for IPC
+    conditioning_ref = _save_to_disk(conditioning, 'conditioning')
+
     print(f"[TRELLIS2] Conditioning extracted", file=sys.stderr)
-    return conditioning, preprocessed_tensor
+    return conditioning_ref, preprocessed_tensor
 
 
 def run_shape_generation(
@@ -241,6 +277,9 @@ def run_shape_generation(
     print(f"[TRELLIS2] Running shape generation (seed={seed})...", file=sys.stderr)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load conditioning from disk if needed
+    conditioning = _load_from_disk(conditioning)
 
     # Move conditioning to device
     cond_on_device = {
@@ -325,8 +364,12 @@ def run_shape_generation(
     # Unload shape pipeline
     manager.unload_shape_pipeline()
 
+    # Save result to disk for IPC
+    result_ref = _save_to_disk(result, 'shape_result')
+
     print(f"[TRELLIS2] Shape generated: {len(vertices)} verts, {len(faces)} faces", file=sys.stderr)
-    return result
+    # Return file reference plus mesh data for Trimesh creation in node
+    return result_ref, vertices, faces
 
 
 def run_texture_generation(
@@ -356,6 +399,10 @@ def run_texture_generation(
     print(f"[TRELLIS2] Running texture generation (seed={seed})...", file=sys.stderr)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load conditioning and shape_result from disk if needed
+    conditioning = _load_from_disk(conditioning)
+    shape_result = _load_from_disk(shape_result)
 
     # Move conditioning to device
     cond_on_device = {
