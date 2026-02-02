@@ -1,4 +1,5 @@
 """Export nodes for TRELLIS.2 3D meshes - runs in GPU subprocess."""
+import json
 import os
 from datetime import datetime
 
@@ -12,8 +13,7 @@ class Trellis2ExportGLB:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "trimesh": ("TRIMESH",),
-                "voxelgrid": ("TRELLIS2_VOXELGRID",),
+                "voxelgrid_path": ("STRING", {"forceInput": True}),
             },
             "optional": {
                 "decimation_target": ("INT", {"default": 500000, "min": 10000, "max": 2000000, "step": 10000}),
@@ -32,8 +32,7 @@ class Trellis2ExportGLB:
 Export mesh to GLB format with PBR materials baked from voxel data.
 
 Parameters:
-- trimesh: The 3D mesh geometry
-- voxelgrid: VoxelGrid with PBR attributes
+- voxelgrid_path: Path to .npz file containing voxelgrid data
 - decimation_target: Target face count for mesh simplification
 - texture_size: Resolution of baked textures (512-4096)
 - remesh: Enable mesh cleaning/remeshing
@@ -42,47 +41,39 @@ Parameters:
 Output GLB is saved to ComfyUI output folder.
 """
 
-    def export(self, trimesh, voxelgrid, decimation_target=500000, texture_size=2048, remesh=True, filename_prefix="trellis2"):
+    def export(self, voxelgrid_path, decimation_target=500000, texture_size=2048, remesh=True, filename_prefix="trellis2"):
         import torch
         import numpy as np
         import o_voxel
 
-        # Check if voxelgrid has PBR attributes
-        if 'attrs' not in voxelgrid:
-            raise ValueError("VoxelGrid does not have PBR attributes. Use a voxelgrid from TRELLIS.2 generation.")
+        # Load voxelgrid from .npz file
+        print(f"[TRELLIS2] Loading voxelgrid from: {voxelgrid_path}")
+        data = np.load(voxelgrid_path, allow_pickle=False)
+
+        coords = data['coords']
+        attrs = data['attrs']
+        voxel_size = float(data['voxel_size'][0])
+        vertices = data['vertices']
+        faces = data['faces']
+        layout = json.loads(str(data['layout']))
 
         print(f"[TRELLIS2] Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
-        # Get tensors from dict
+        # Move to GPU
         device = torch.device('cuda')
-        vertices = voxelgrid['original_vertices']
-        if isinstance(vertices, np.ndarray):
-            vertices = torch.from_numpy(vertices)
-        vertices = vertices.to(device)
-
-        faces = voxelgrid['original_faces']
-        if isinstance(faces, np.ndarray):
-            faces = torch.from_numpy(faces)
-        faces = faces.to(device).int()  # Ensure faces is int
-
-        attr_volume = voxelgrid['attrs']
-        if isinstance(attr_volume, np.ndarray):
-            attr_volume = torch.from_numpy(attr_volume)
-        attr_volume = attr_volume.to(device)
-
-        coords = voxelgrid['coords']
-        if isinstance(coords, np.ndarray):
-            coords = torch.from_numpy(coords)
-        coords = coords.to(device)
+        vertices = torch.from_numpy(vertices).to(device)
+        faces = torch.from_numpy(faces).to(device).int()
+        attrs = torch.from_numpy(attrs).to(device)
+        coords = torch.from_numpy(coords).to(device)
 
         # Generate GLB using o_voxel
         glb = o_voxel.postprocess.to_glb(
             vertices=vertices,
             faces=faces,
-            attr_volume=attr_volume,
+            attr_volume=attrs,
             coords=coords,
-            attr_layout=voxelgrid['layout'],
-            voxel_size=voxelgrid['voxel_size'],
+            attr_layout=layout,
+            voxel_size=voxel_size,
             aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
             decimation_target=decimation_target,
             texture_size=texture_size,
@@ -93,7 +84,7 @@ Output GLB is saved to ComfyUI output folder.
         )
 
         # Clean up GPU tensors
-        del vertices, faces, attr_volume, coords
+        del vertices, faces, attrs, coords
         torch.cuda.empty_cache()
 
         # Generate filename with timestamp
