@@ -63,7 +63,7 @@ Output GLB is saved to ComfyUI output folder.
         faces = voxelgrid['original_faces']
         if isinstance(faces, np.ndarray):
             faces = torch.from_numpy(faces)
-        faces = faces.to(device)
+        faces = faces.to(device).int()  # Ensure faces is int
 
         attr_volume = voxelgrid['attrs']
         if isinstance(attr_volume, np.ndarray):
