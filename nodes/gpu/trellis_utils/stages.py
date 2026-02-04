@@ -72,7 +72,7 @@ def _dict_to_sparse_tensor(d: Dict[str, Any], device: torch.device):
     Reconstruct a SparseTensor from a serialized dict.
     Must be called within the isolated environment where trellis2 is available.
     """
-    from trellis2.modules.sparse import SparseTensor
+    from ..trellis2.modules.sparse import SparseTensor
 
     feats = d['feats'].to(device)
     coords = d['coords'].to(device)
@@ -172,14 +172,14 @@ def run_conditioning(
 
     # Handle 4D [B, H, W, C] format (e.g., IMAGE passed as MASK)
     if mask_np.ndim == 4:
-        mask_np = mask_np[0]  # Remove batch → [H, W, C]
+        mask_np = mask_np[0]  # Remove batch -> [H, W, C]
 
     # Handle 3D format - either [B, H, W] or [H, W, C]
     if mask_np.ndim == 3:
         if mask_np.shape[-1] in (1, 2, 3, 4):  # Likely [H, W, C]
-            mask_np = mask_np[..., 0]  # Take first channel → [H, W]
+            mask_np = mask_np[..., 0]  # Take first channel -> [H, W]
         else:  # Likely [B, H, W]
-            mask_np = mask_np[0]  # Remove batch → [H, W]
+            mask_np = mask_np[0]  # Remove batch -> [H, W]
 
     # Handle 2D with channel dim after squeeze (e.g., [W, C] from squeezed [1, 1, W, C])
     # This catches cases like (1042, 3) where 3 is channels, not width
@@ -394,7 +394,7 @@ def run_texture_generation(
         Dict with textured mesh data
     """
     import cumesh as CuMesh
-    from trellis2.representations.mesh import Mesh
+    from ..trellis2.representations.mesh import Mesh
 
     print(f"[TRELLIS2] Running texture generation (seed={seed})...", file=sys.stderr)
 
