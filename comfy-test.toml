@@ -1,10 +1,13 @@
 [test]
-levels = "all"
+levels = ["syntax", "install", "registration", "instantiation", "static_capture", "execution"]
 
 [test.workflows]
+timeout = 300
+cpu = []
 gpu = "all"
 
 [test.platforms]
 linux = true
+macos = false
 windows = true
 windows_portable = true

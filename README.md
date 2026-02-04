@@ -1,5 +1,7 @@
 # ComfyUI-TRELLIS2
 
+**[View Workflow Gallery](https://pozzettiandrea.github.io/ComfyUI-TRELLIS2/)**
+
 ComfyUI custom nodes for [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) - Microsoft's state-of-the-art image-to-3D generation model.
 
 Generate high-quality 3D meshes with PBR (Physically Based Rendering) materials from a single image.
@@ -26,10 +28,6 @@ https://github.com/user-attachments/assets/e28e4a74-b119-4303-8e30-63361f26aa88
 
 All dependencies should theoretically install through wheel by running install.py!
 This node was made for comfyui-manager install, but you can also pip install requirements and "python install.py" manually.
-
-## Notes
-
-The video render nodes will be implemented soon! Not yet working.
 
 ## Manual Model Download
 

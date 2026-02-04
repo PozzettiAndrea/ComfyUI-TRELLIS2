@@ -1,52 +1,24 @@
-"""
-ComfyUI-TRELLIS2: TRELLIS.2 Image-to-3D nodes for ComfyUI
+"""ComfyUI-TRELLIS2 Nodes."""
 
-Main nodes (run in main ComfyUI environment):
-- nodes_loader: Model config loading
-- nodes_export: GLB/mesh export
-- nodes_unwrap: UV unwrapping
+from .nodes_loader import NODE_CLASS_MAPPINGS as loader_mappings
+from .nodes_loader import NODE_DISPLAY_NAME_MAPPINGS as loader_display
+from .nodes_export import NODE_CLASS_MAPPINGS as export_mappings
+from .nodes_export import NODE_DISPLAY_NAME_MAPPINGS as export_display
+from .nodes_unwrap import NODE_CLASS_MAPPINGS as unwrap_mappings
+from .nodes_unwrap import NODE_DISPLAY_NAME_MAPPINGS as unwrap_display
+from .gpu import NODE_CLASS_MAPPINGS as gpu_mappings
+from .gpu import NODE_DISPLAY_NAME_MAPPINGS as gpu_display
 
-GPU nodes (run in isolated environment):
-- gpu/nodes_inference: DinoV3 conditioning, shape/texture generation
-- gpu/nodes_video: Video generation
-"""
+NODE_CLASS_MAPPINGS = {
+    **loader_mappings,
+    **export_mappings,
+    **unwrap_mappings,
+    **gpu_mappings,
+}
 
-import os
-
-# Only do imports when NOT running under pytest
-if 'PYTEST_CURRENT_TEST' not in os.environ:
-    from .nodes_loader import (
-        NODE_CLASS_MAPPINGS as LOADER_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as LOADER_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-
-    from .nodes_export import (
-        NODE_CLASS_MAPPINGS as EXPORT_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as EXPORT_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-
-    from .nodes_unwrap import (
-        NODE_CLASS_MAPPINGS as UNWRAP_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as UNWRAP_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-
-    # Main nodes only (GPU nodes are wrapped via comfy_env.wrap_isolated_nodes)
-    NODE_CLASS_MAPPINGS = {
-        **LOADER_NODE_CLASS_MAPPINGS,
-        **EXPORT_NODE_CLASS_MAPPINGS,
-        **UNWRAP_NODE_CLASS_MAPPINGS,
-    }
-
-    NODE_DISPLAY_NAME_MAPPINGS = {
-        **LOADER_NODE_DISPLAY_NAME_MAPPINGS,
-        **EXPORT_NODE_DISPLAY_NAME_MAPPINGS,
-        **UNWRAP_NODE_DISPLAY_NAME_MAPPINGS,
-    }
-else:
-    NODE_CLASS_MAPPINGS = {}
-    NODE_DISPLAY_NAME_MAPPINGS = {}
-
-__all__ = [
-    'NODE_CLASS_MAPPINGS',
-    'NODE_DISPLAY_NAME_MAPPINGS',
-]
+NODE_DISPLAY_NAME_MAPPINGS = {
+    **loader_display,
+    **export_display,
+    **unwrap_display,
+    **gpu_display,
+}
