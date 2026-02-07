@@ -11,6 +11,7 @@ safetensors = "*"
 timm = "*"
 psutil = "*"
 comfy-aimdo = "*"
+trimesh = { version = "*", extras = ["easy"] }
 
 # ML utilities
 kornia = "*"
@@ -22,11 +23,14 @@ zstandard = "*"
 pillow = ">=9.0.0"
 opencv-python-headless = "*"
 
+# Image/video (for export/unwrap)
+imageio = ">=2.0.0"
+imageio-ffmpeg = ">=0.4.0"
+
 # General
 numpy = ">=1.21.0"
 easydict = "*"
 tqdm = "*"
-trimesh = { version = "*", extras = ["easy"] }
 plyfile = "*"
 
 [target.linux-64.pypi-dependencies]

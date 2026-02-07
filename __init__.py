@@ -1,9 +1,13 @@
 """ComfyUI-TRELLIS2: Microsoft TRELLIS.2 Image-to-3D nodes for ComfyUI."""
 
-from comfy_env import wrap_nodes
-from .nodes import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+import sys
 
-wrap_nodes()
+print("[geompack] loading...", file=sys.stderr, flush=True)
+from comfy_env import register_nodes
+print("[geompack] calling register_nodes", file=sys.stderr, flush=True)
+
+NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS = register_nodes()
+
 
 WEB_DIRECTORY = "./web"
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
