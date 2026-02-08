@@ -393,7 +393,6 @@ def run_texture_generation(
     Returns:
         Dict with textured mesh data
     """
-    import cumesh as CuMesh
     from ..trellis2.representations.mesh import Mesh
 
     print(f"[TRELLIS2] Running texture generation (seed={seed})...", file=sys.stderr)
@@ -461,38 +460,15 @@ def run_texture_generation(
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     print(f"[TRELLIS2] Texture generation peak VRAM: {peak_mem:.0f} MB", file=sys.stderr)
     mesh = textured_meshes[0]
-    mesh.simplify(16777216)
+    mesh.simplify(16777216)  # Light cleanup of degenerate geometry
 
-    # Get PBR layout from pipeline
     pbr_layout = pipeline.pbr_attr_layout
 
-    # Convert mesh to outputs
-    # Unify face orientations
-    cumesh = CuMesh.CuMesh()
-    cumesh.init(mesh.vertices, mesh.faces.int())
-    cumesh.unify_face_orientations()
-    unified_verts, unified_faces = cumesh.read()
-
-    vertices = unified_verts.cpu().numpy().astype(np.float32)
-    faces = unified_faces.cpu().numpy()
-    del cumesh, unified_verts, unified_faces
-
-    # Coordinate conversion
-    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
-
-    # Get voxel grid data
-    coords = mesh.coords.cpu().numpy().astype(np.float32)
-    attrs = mesh.attrs.cpu().numpy()  # (L, 6) in [-1, 1]
-    voxel_size = mesh.voxel_size
-
     result = {
-        'mesh_vertices': vertices,
-        'mesh_faces': faces,
-        'voxel_coords': coords,
-        'voxel_attrs': attrs,
-        'voxel_size': voxel_size,
+        'voxel_coords': mesh.coords.cpu().numpy().astype(np.float32),
+        'voxel_attrs': mesh.attrs.cpu().numpy(),
+        'voxel_size': mesh.voxel_size,
         'pbr_layout': pbr_layout,
-        # Keep original mesh data for rasterization
         'original_vertices': mesh.vertices.cpu(),
         'original_faces': mesh.faces.cpu(),
     }
@@ -502,5 +478,6 @@ def run_texture_generation(
     gc.collect()
     torch.cuda.empty_cache()
 
-    print(f"[TRELLIS2] Texture generated: {len(vertices)} verts, {len(coords)} voxels", file=sys.stderr)
+    coords = result['voxel_coords']
+    print(f"[TRELLIS2] Texture generated: {mesh.vertices.shape[0]} verts, {len(coords)} voxels", file=sys.stderr)
     return result
