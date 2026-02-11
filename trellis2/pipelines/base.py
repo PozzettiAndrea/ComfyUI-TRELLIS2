@@ -91,18 +91,20 @@ class Pipeline:
 
         for i, (k, v) in enumerate(model_items, 1):
             print(f"[ComfyUI-TRELLIS2] Loading model [{i}/{total_models}]: {k}...")
-            try:
-                _models[k] = models.from_pretrained(
-                    f"{path}/{v}",
-                    disk_offload_manager=disk_offload_manager,
-                    model_key=k
-                )
-            except Exception as e:
-                _models[k] = models.from_pretrained(
-                    v,
-                    disk_offload_manager=disk_offload_manager,
-                    model_key=k
-                )
+            # Check if v is already a full HuggingFace path (org/repo/file pattern)
+            # Full paths have 3+ parts; relative paths like "ckpts/model" have only 2
+            v_parts = v.split('/')
+            if len(v_parts) >= 3 and not v.startswith('ckpts/'):
+                # Already a full path (e.g., "microsoft/TRELLIS-image-large/ckpts/...")
+                model_path = v
+            else:
+                # Relative path, prepend the base repo
+                model_path = f"{path}/{v}"
+            _models[k] = models.from_pretrained(
+                model_path,
+                disk_offload_manager=disk_offload_manager,
+                model_key=k
+            )
             print(f"[ComfyUI-TRELLIS2] Loaded {k} successfully")
 
         new_pipeline = Pipeline(_models, disk_offload_manager=disk_offload_manager)
