@@ -98,19 +98,20 @@ WHEEL_DIRS = {
 # Different repos use different naming conventions
 FLASH_ATTN_SOURCES = [
     {
+        # mjun0812 v0.7.2 has Linux wheels with cu128
+        "name": "mjun0812",
+        "base_url": "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download",
+        "versions": [("2.8.3", "v0.7.2"), ("2.7.4", "v0.7.2"), ("2.6.3", "v0.7.2")],
+        # Format: flash_attn-{ver}+cu{cuda}torch{torch}-cp{py}-cp{py}-{platform}.whl
+        "format": "simple",
+        "platforms": ["win_amd64", "linux_x86_64"],
+    },
+    {
         "name": "bdashore3",
         "base_url": "https://github.com/bdashore3/flash-attention/releases/download",
         "versions": [("2.8.3", "v2.8.3")],
         # Format: flash_attn-{ver}+cu{cuda}torch{torch}.0cxx11abiFALSE-cp{py}-cp{py}-{platform}.whl
         "format": "cxx11abi",
-        "platforms": ["win_amd64", "linux_x86_64"],
-    },
-    {
-        "name": "mjun0812",
-        "base_url": "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download",
-        "versions": [("2.8.3", "v0.4.19"), ("2.7.4.post1", "v0.4.19")],
-        # Format: flash_attn-{ver}+cu{cuda}torch{torch}-cp{py}-cp{py}-{platform}.whl
-        "format": "simple",
         "platforms": ["win_amd64", "linux_x86_64"],
     },
     {
