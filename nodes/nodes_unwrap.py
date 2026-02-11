@@ -491,7 +491,7 @@ Parameters:
 
 
 class Trellis2ExportGLB:
-    """All-in-one: load voxelgrid NPZ → simplify → UV unwrap → bake PBR → export GLB."""
+    """All-in-one: load voxelgrid NPZ -> simplify -> UV unwrap -> bake PBR -> export GLB."""
 
     @classmethod
     def INPUT_TYPES(s):
