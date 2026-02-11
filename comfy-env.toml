@@ -17,11 +17,13 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
     cumesh = "0.0.1"
     o_voxel = "0.0.1"
     nvdiffrec_render = "0.0.1"
-    sageattention = "2.2.0"  # Fast attention for dense ops (2-5x faster than flash_attn)
     flash-attn = "2.8.3"     # Required for sparse attention (varlen ops)
 
     [trellis2.packages]
     requirements = [
+        # Platform-specific
+        "triton-windows>=3.5.0; sys_platform == 'win32'",
+
         # HuggingFace
         "huggingface_hub>=0.20.0,<1.0.0",
         "hf_transfer",
