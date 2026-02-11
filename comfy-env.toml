@@ -16,11 +16,11 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
 
     [trellis2.cuda]
     # CUDA extensions - resolved automatically by comfy-env
-    nvdiffrast = "0.4.0"
-    flex_gemm = "0.0.1"
-    cumesh = "0.0.1"
-    o_voxel = "0.0.1"
-    nvdiffrec_render = "0.0.1"
+    nvdiffrast = "*"
+    flex_gemm = "*"
+    cumesh = "*"
+    o_voxel = "*"
+    nvdiffrec_render = "*"
     flash-attn = "2.8.3"     # Required for sparse attention (varlen ops)
 
     [trellis2.packages]
