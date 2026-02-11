@@ -39,8 +39,21 @@ def try_install_media_feature_pack():
 
     print("[ComfyUI-TRELLIS2] Checking Media Feature Pack (required for OpenCV)...")
 
+    # First, check if already installed (without needing elevation)
     try:
-        # Try to install Media Feature Pack
+        check_result = subprocess.run(
+            ["powershell", "-Command",
+             "Get-WindowsCapability -Online -Name 'Media.MediaFeaturePack*' | Select-Object -ExpandProperty State"],
+            capture_output=True, text=True, timeout=60
+        )
+        if "Installed" in check_result.stdout:
+            print("[ComfyUI-TRELLIS2] [OK] Media Feature Pack already installed")
+            return True
+    except Exception:
+        pass  # Continue with installation attempt
+
+    try:
+        # Try non-elevated first (in case we already have admin rights)
         result = subprocess.run(
             ["DISM", "/Online", "/Add-Capability",
              "/CapabilityName:Media.MediaFeaturePack~~~~0.0.1.0"],
@@ -54,12 +67,42 @@ def try_install_media_feature_pack():
             print("[ComfyUI-TRELLIS2] [OK] Media Feature Pack already installed")
             return True
         elif result.returncode == 740:
-            # Requires elevation
-            print("[ComfyUI-TRELLIS2] [WARNING] Administrator privileges required")
-            print("[ComfyUI-TRELLIS2] Please run the following command as Administrator:")
-            print('    DISM /Online /Add-Capability /CapabilityName:Media.MediaFeaturePack~~~~0.0.1.0')
-            print("[ComfyUI-TRELLIS2] Or install via Settings > Apps > Optional features > Add a feature")
-            return False
+            # Requires elevation - use PowerShell to trigger UAC prompt
+            print("[ComfyUI-TRELLIS2] Requesting administrator privileges for Media Feature Pack...")
+            try:
+                # Use Start-Process -Verb RunAs to trigger UAC elevation
+                ps_command = (
+                    "Start-Process -FilePath 'dism.exe' "
+                    "-ArgumentList '/Online', '/Add-Capability', "
+                    "'/CapabilityName:Media.MediaFeaturePack~~~~0.0.1.0' "
+                    "-Verb RunAs -Wait -PassThru | Select-Object -ExpandProperty ExitCode"
+                )
+                elevated_result = subprocess.run(
+                    ["powershell", "-Command", ps_command],
+                    capture_output=True, text=True, timeout=600
+                )
+
+                exit_code = elevated_result.stdout.strip()
+                if exit_code == "0" or exit_code == "87":
+                    print("[ComfyUI-TRELLIS2] [OK] Media Feature Pack installed (reboot may be required)")
+                    return True
+                elif "canceled" in elevated_result.stderr.lower() or elevated_result.returncode != 0:
+                    print("[ComfyUI-TRELLIS2] [WARNING] UAC prompt was declined or failed")
+                    print("[ComfyUI-TRELLIS2] Please install manually via:")
+                    print("    Settings > Apps > Optional features > Add a feature > Media Feature Pack")
+                    return False
+                else:
+                    print(f"[ComfyUI-TRELLIS2] [WARNING] DISM returned code {exit_code}")
+                    return False
+
+            except subprocess.TimeoutExpired:
+                print("[ComfyUI-TRELLIS2] [WARNING] Installation timed out (may still be running)")
+                return False
+            except Exception as e:
+                print(f"[ComfyUI-TRELLIS2] [WARNING] UAC elevation failed: {e}")
+                print("[ComfyUI-TRELLIS2] Please install manually via:")
+                print("    Settings > Apps > Optional features > Add a feature > Media Feature Pack")
+                return False
         else:
             print(f"[ComfyUI-TRELLIS2] [WARNING] DISM returned code {result.returncode}")
             if result.stderr:
