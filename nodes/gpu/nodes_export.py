@@ -57,6 +57,11 @@ Output GLB is saved to ComfyUI output folder.
         faces = data['faces']
         layout = json.loads(str(data['layout']))
 
+        # Convert list [start, end] back to slice objects (JSON can't serialize slices)
+        for key in layout:
+            if isinstance(layout[key], list) and len(layout[key]) == 2:
+                layout[key] = slice(layout[key][0], layout[key][1])
+
         print(f"[TRELLIS2] Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
         # Move to GPU
