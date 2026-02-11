@@ -1,0 +1,52 @@
+# TRELLIS2 - Environment Configuration
+# Run: comfy-env install
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ISOLATED ENVIRONMENT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[trellis2]
+python = "3.10"
+cuda_version = "auto"      # 12.8 for Turing+, 12.4 for Pascal
+pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
+
+    [trellis2.cuda]
+    # CUDA extensions - resolved automatically by comfyui-envmanager
+    nvdiffrast = "0.4.0"
+    flex_gemm = "0.0.1"
+    cumesh = "0.0.1"
+    o_voxel = "0.0.1"
+    nvdiffrec_render = "0.0.1"
+
+    [trellis2.packages]
+    requirements = [
+        # HuggingFace
+        "huggingface_hub>=0.20.0,<1.0.0",
+        "hf_transfer",
+        "hf_xet",
+        "transformers>=4.56.0",
+        "safetensors",
+
+        # Image processing
+        "pillow>=9.0.0",
+        "opencv-python-headless",
+        "kornia",
+        "imageio>=2.0.0",
+        "imageio-ffmpeg>=0.4.0",
+
+        # 3D processing
+        "trimesh>=3.0.0",
+        "plyfile",
+
+        # ML utilities
+        "timm",
+        "lpips",
+        "einops",
+
+        # General
+        "numpy>=1.21.0",
+        "easydict",
+        "tqdm",
+        "zstandard",
+        "setuptools",
+    ]
