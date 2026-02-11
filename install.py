@@ -159,7 +159,7 @@ def ensure_comfyui_envmanager():
         print("[TRELLIS2] Installing comfyui-envmanager package...")
         try:
             subprocess.check_call([
-                sys.executable, "-m", "pip", "install", "comfyui-envmanager>=0.0.10"
+                sys.executable, "-m", "pip", "install", "comfyui-envmanager>=0.0.11"
             ])
             return True
         except subprocess.CalledProcessError as e:
