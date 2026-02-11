@@ -490,6 +490,98 @@ Parameters:
         return (result,)
 
 
+class Trellis2ExportGLB:
+    """All-in-one: load voxelgrid NPZ → simplify → UV unwrap → bake PBR → export GLB."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "voxelgrid_path": ("STRING",),
+            },
+            "optional": {
+                "decimation_target": ("INT", {"default": 500000, "min": 1000, "max": 5000000, "step": 1000}),
+                "texture_size": ("INT", {"default": 2048, "min": 512, "max": 8192, "step": 512}),
+                "remesh": ("BOOLEAN", {"default": True}),
+                "filename_prefix": ("STRING", {"default": "trellis2"}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("glb_path",)
+    FUNCTION = "export_glb"
+    CATEGORY = "TRELLIS2"
+    OUTPUT_NODE = True
+    DESCRIPTION = """
+All-in-one textured GLB export from voxelgrid data.
+
+Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
+1. Simplifies the mesh to decimation_target faces
+2. UV unwraps
+3. Bakes PBR textures (base_color, metallic, roughness) from voxel data
+4. Exports textured GLB to ComfyUI output folder
+
+Parameters:
+- voxelgrid_path: Path to .npz file from Shape to Textured Mesh
+- decimation_target: Target face count after simplification
+- texture_size: Resolution of baked PBR textures
+- remesh: Apply remeshing for cleaner topology before simplification
+- filename_prefix: Output filename prefix
+"""
+
+    def export_glb(
+        self,
+        voxelgrid_path,
+        decimation_target=500000,
+        texture_size=2048,
+        remesh=True,
+        filename_prefix="trellis2",
+    ):
+        import json
+        import torch
+        from o_voxel.postprocess import to_glb
+
+        print(f"[TRELLIS2] ExportGLB: loading {voxelgrid_path}")
+        data = np.load(voxelgrid_path, allow_pickle=True)
+
+        vertices = torch.from_numpy(data['vertices'].astype(np.float32)).cuda()
+        faces = torch.from_numpy(data['faces'].astype(np.int32)).cuda()
+        coords = torch.from_numpy(data['coords'].astype(np.float32)).cuda()
+        attrs = torch.from_numpy(data['attrs'].astype(np.float32)).cuda()
+        voxel_size = data['voxel_size']
+
+        layout_raw = json.loads(str(data['layout']))
+        attr_layout = {k: slice(v[0], v[1]) for k, v in layout_raw.items()}
+
+        print(f"[TRELLIS2] {vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
+
+        textured_mesh = to_glb(
+            vertices=vertices,
+            faces=faces,
+            attr_volume=attrs,
+            coords=coords,
+            attr_layout=attr_layout,
+            aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
+            voxel_size=float(voxel_size[0]) if hasattr(voxel_size, '__len__') else float(voxel_size),
+            decimation_target=decimation_target,
+            texture_size=texture_size,
+            remesh=remesh,
+            remesh_band=1,
+            remesh_project=0,
+            verbose=True,
+        )
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{filename_prefix}_{timestamp}.glb"
+        output_dir = folder_paths.get_output_directory()
+        output_path = os.path.join(output_dir, filename)
+
+        textured_mesh.export(output_path, file_type='glb')
+        print(f"[TRELLIS2] GLB exported: {output_path}")
+
+        return (output_path,)
+
+
 class Trellis2ExportTrimesh:
     """Export trimesh to file (GLB, OBJ, PLY, etc.).
 
@@ -539,6 +631,7 @@ NODE_CLASS_MAPPINGS = {
     "Trellis2Simplify": Trellis2Simplify,
     "Trellis2UVUnwrap": Trellis2UVUnwrap,
     "Trellis2RasterizePBR": Trellis2RasterizePBR,
+    "Trellis2ExportGLB": Trellis2ExportGLB,
     "Trellis2ExportTrimesh": Trellis2ExportTrimesh,
 }
 
@@ -546,5 +639,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2Simplify": "TRELLIS.2 Simplify Mesh",
     "Trellis2UVUnwrap": "TRELLIS.2 UV Unwrap",
     "Trellis2RasterizePBR": "TRELLIS.2 Rasterize PBR",
+    "Trellis2ExportGLB": "TRELLIS.2 Export GLB",
     "Trellis2ExportTrimesh": "TRELLIS.2 Export Trimesh",
 }
