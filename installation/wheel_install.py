@@ -89,13 +89,9 @@ def get_direct_wheel_urls(package_config):
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
     package_name = package_config["name"]
 
-    # Build wheel URL with new naming: {package}-{version}+cu{cuda}torch{mm}-cpXX-cpXX-{platform}.whl
+    # Build wheel URL with naming: {package}-{version}+cu{cuda}torch{mm}-cpXX-cpXX-{platform}.whl
     # cuda_suffix is already "cu128", so we just add "torch{mm}"
-    # Windows wheels have duplicated CUDA suffix due to PowerShell -replace bug in wheel build workflows
-    if platform == "win_amd64":
-        wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-{platform}.whl"
-    else:
-        wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
     wheel_url = f"{wheel_release_base}/{wheel_dir}/{wheel_name}"
 
     return [wheel_url]
@@ -118,7 +114,8 @@ def try_install_from_direct_url(package_config):
 
         try:
             result = subprocess.run([
-                sys.executable, "-m", "pip", "install", "--no-deps", wheel_url
+                sys.executable, "-m", "pip", "install",
+                "--no-deps", "--force-reinstall", "--no-cache-dir", wheel_url
             ], capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
@@ -176,9 +173,11 @@ def try_install_from_wheel(package_name, wheel_index_url, import_name=None):
     try:
         # Use --no-index to ONLY look at our wheel index, not PyPI
         # Use --no-deps to avoid pulling in dependencies (we manage them ourselves)
+        # Use --force-reinstall --no-cache-dir to ensure fresh wheel installation
         # This avoids conflicts with similarly-named packages on PyPI
         result = subprocess.run([
             sys.executable, "-m", "pip", "install", "--no-deps",
+            "--force-reinstall", "--no-cache-dir",
             package_name, "--no-index", "--find-links", wheel_index_with_subdir
         ], capture_output=True, text=True, timeout=300)
 
