@@ -554,15 +554,30 @@ def try_install_from_wheel(package_name, wheel_index_url, import_name=None):
 
     py_ver = get_python_version()
     wheel_suffix = get_wheel_cuda_suffix()
-    print(f"[ComfyUI-TRELLIS2] Looking for {package_name} wheel (Python {py_ver}, {wheel_suffix or 'unknown CUDA'})")
-    print(f"[ComfyUI-TRELLIS2] Wheel index: {wheel_index_url}")
+
+    if not wheel_suffix:
+        print(f"[ComfyUI-TRELLIS2] No matching CUDA suffix for {package_name}")
+        return False
+
+    # Build the subdirectory URL for this CUDA/torch version
+    # e.g., https://pozzettiandrea.github.io/ovoxel-wheels/cu128-torch280/
+    torch_ver, _ = get_torch_info()
+    if torch_ver:
+        torch_parts = torch_ver.split('.')[:2]
+        torch_tag = f"{torch_parts[0]}{torch_parts[1]}0"  # "2.8" -> "280"
+        wheel_index_with_subdir = f"{wheel_index_url.rstrip('/')}/{wheel_suffix}-torch{torch_tag}/"
+    else:
+        wheel_index_with_subdir = wheel_index_url
+
+    print(f"[ComfyUI-TRELLIS2] Looking for {package_name} wheel (Python {py_ver}, {wheel_suffix})")
+    print(f"[ComfyUI-TRELLIS2] Wheel index: {wheel_index_with_subdir}")
 
     try:
         # Use --no-index to ONLY look at our wheel index, not PyPI
         # This avoids conflicts with similarly-named packages on PyPI
         result = subprocess.run([
             sys.executable, "-m", "pip", "install",
-            package_name, "--no-index", "--find-links", wheel_index_url
+            package_name, "--no-index", "--find-links", wheel_index_with_subdir
         ], capture_output=True, text=True, timeout=300)
 
         if result.returncode == 0:
