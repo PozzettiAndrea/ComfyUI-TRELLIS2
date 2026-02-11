@@ -6,19 +6,19 @@ from .nodes_export import NODE_CLASS_MAPPINGS as export_mappings
 from .nodes_export import NODE_DISPLAY_NAME_MAPPINGS as export_display
 from .nodes_unwrap import NODE_CLASS_MAPPINGS as unwrap_mappings
 from .nodes_unwrap import NODE_DISPLAY_NAME_MAPPINGS as unwrap_display
-from .gpu import NODE_CLASS_MAPPINGS as gpu_mappings
-from .gpu import NODE_DISPLAY_NAME_MAPPINGS as gpu_display
+from .nodes_inference import NODE_CLASS_MAPPINGS as inference_mappings
+from .nodes_inference import NODE_DISPLAY_NAME_MAPPINGS as inference_display
 
 NODE_CLASS_MAPPINGS = {
     **loader_mappings,
     **export_mappings,
     **unwrap_mappings,
-    **gpu_mappings,
+    **inference_mappings,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     **loader_display,
     **export_display,
     **unwrap_display,
-    **gpu_display,
+    **inference_display,
 }
