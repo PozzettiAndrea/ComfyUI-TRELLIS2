@@ -93,9 +93,15 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         new_pipeline.shape_slat_normalization = args['shape_slat_normalization']
         new_pipeline.tex_slat_normalization = args['tex_slat_normalization']
 
-        new_pipeline.image_cond_model = getattr(image_feature_extractor, args['image_cond_model']['name'])(**args['image_cond_model']['args'])
-        new_pipeline.rembg_model = getattr(rembg, args['rembg_model']['name'])(**args['rembg_model']['args'])
-        
+        # Only load image conditioning models when loading full pipeline (models_to_load is None)
+        # When loading shape-only or texture-only, conditioning is provided externally via DinoV3 node
+        if models_to_load is None:
+            new_pipeline.image_cond_model = getattr(image_feature_extractor, args['image_cond_model']['name'])(**args['image_cond_model']['args'])
+            new_pipeline.rembg_model = getattr(rembg, args['rembg_model']['name'])(**args['rembg_model']['args'])
+        else:
+            new_pipeline.image_cond_model = None
+            new_pipeline.rembg_model = None
+
         new_pipeline.low_vram = args.get('low_vram', True)
         new_pipeline.default_pipeline_type = args.get('default_pipeline_type', '1024_cascade')
         new_pipeline.pbr_attr_layout = {
@@ -112,7 +118,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         self._device = device
         if not self.low_vram:
             super().to(device)
-            self.image_cond_model.to(device)
+            if self.image_cond_model is not None:
+                self.image_cond_model.to(device)
             if self.rembg_model is not None:
                 self.rembg_model.to(device)
 
