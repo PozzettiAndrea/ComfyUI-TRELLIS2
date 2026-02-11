@@ -10,7 +10,7 @@ from .trellis2_config import Trellis2ModelConfig
 RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
 
 # Attention backend options
-ATTN_BACKENDS = ['auto', 'flash_attn', 'xformers', 'sdpa']
+ATTN_BACKENDS = ['auto', 'sageattn', 'flash_attn', 'xformers', 'sdpa']
 
 
 class LoadTrellis2Models:
@@ -43,8 +43,9 @@ Resolution modes:
 - 1536_cascade: Highest resolution output
 
 Attention backend:
-- auto: Auto-detect best available (flash_attn > xformers > sdpa)
-- flash_attn: FlashAttention (fastest, requires flash_attn package)
+- auto: Auto-detect best available (sageattn > flash_attn > xformers > sdpa)
+- sageattn: SageAttention (fastest, 2-5x faster than flash_attn)
+- flash_attn: FlashAttention (requires flash_attn package)
 - xformers: Memory-efficient attention (requires xformers package)
 - sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
 """
