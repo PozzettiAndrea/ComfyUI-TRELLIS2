@@ -18,6 +18,9 @@ class Trellis2PreprocessImage:
                 "pipeline": ("TRELLIS2_PIPELINE",),
                 "image": ("IMAGE",),
             },
+            "optional": {
+                "mask": ("MASK",),
+            },
         }
 
     RETURN_TYPES = ("IMAGE",)
@@ -28,19 +31,41 @@ class Trellis2PreprocessImage:
 Preprocess image for TRELLIS.2 generation.
 
 This node:
-- Removes background if no alpha channel present (uses BiRefNet)
+- If mask provided: uses mask as alpha (skips BiRefNet)
+- If no mask: removes background automatically (uses BiRefNet)
 - Crops to object bounding box
-- Prepares image for 3D generation
+- Premultiplies alpha (RGB * alpha)
 
-Input should ideally be an RGBA image with transparent background,
-or an RGB image (background will be removed automatically).
+Output is an RGB image ready for 3D generation.
 """
 
-    def preprocess(self, pipeline, image):
+    def preprocess(self, pipeline, image, mask=None):
         pipe = pipeline["pipeline"]
 
         # Convert ComfyUI tensor to PIL
         pil_image = tensor_to_pil(image)
+
+        # If mask provided, apply it as alpha channel
+        if mask is not None:
+            # Convert mask tensor to numpy
+            if mask.dim() == 3:
+                mask_np = mask[0].cpu().numpy()
+            else:
+                mask_np = mask.cpu().numpy()
+
+            # Resize mask to match image if needed
+            if mask_np.shape[:2] != (pil_image.height, pil_image.width):
+                mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
+                mask_pil = mask_pil.resize((pil_image.width, pil_image.height), Image.LANCZOS)
+                mask_np = np.array(mask_pil) / 255.0
+
+            # Apply mask as alpha channel
+            pil_image = pil_image.convert('RGB')
+            img_np = np.array(pil_image)
+            alpha = (mask_np * 255).astype(np.uint8)
+            rgba = np.dstack([img_np, alpha])
+            pil_image = Image.fromarray(rgba, 'RGBA')
+            logger.info("Applied mask as alpha channel")
 
         # Use pipeline's preprocessing
         processed = pipe.preprocess_image(pil_image)
@@ -62,6 +87,7 @@ class Trellis2ImageTo3D:
                 "image": ("IMAGE",),
             },
             "optional": {
+                "mask": ("MASK",),
                 "sampler_params": ("TRELLIS2_SAMPLER_PARAMS",),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1}),
                 "resolution": (["512", "1024", "1536"], {"default": "1024"}),
@@ -79,10 +105,11 @@ Generate a 3D mesh with PBR materials from a single image.
 Parameters:
 - pipeline: The loaded TRELLIS.2 pipeline
 - image: Input image (RGB or RGBA)
+- mask: Optional mask (white=foreground, black=background). If provided, skips auto background removal.
 - sampler_params: Optional custom sampling parameters
 - seed: Random seed for reproducibility
 - resolution: Output resolution (512, 1024, or 1536)
-- preprocess_image: Whether to preprocess (remove background, crop)
+- preprocess_image: Whether to preprocess (crop to object). Auto bg removal skipped if mask provided.
 
 Returns:
 - mesh: The generated 3D mesh with PBR materials
@@ -93,6 +120,7 @@ Returns:
         self,
         pipeline,
         image,
+        mask=None,
         sampler_params=None,
         seed=0,
         resolution="1024",
@@ -102,6 +130,29 @@ Returns:
 
         # Convert ComfyUI tensor to PIL
         pil_image = tensor_to_pil(image)
+
+        # If mask provided, apply it as alpha channel
+        if mask is not None:
+            # Convert mask tensor to numpy (ComfyUI masks are [H,W] or [B,H,W])
+            if mask.dim() == 3:
+                mask_np = mask[0].cpu().numpy()
+            else:
+                mask_np = mask.cpu().numpy()
+
+            # Resize mask to match image if needed
+            if mask_np.shape[:2] != (pil_image.height, pil_image.width):
+                from PIL import Image as PILImage
+                mask_pil = PILImage.fromarray((mask_np * 255).astype(np.uint8))
+                mask_pil = mask_pil.resize((pil_image.width, pil_image.height), PILImage.LANCZOS)
+                mask_np = np.array(mask_pil) / 255.0
+
+            # Apply mask as alpha channel
+            pil_image = pil_image.convert('RGB')
+            img_np = np.array(pil_image)
+            alpha = (mask_np * 255).astype(np.uint8)
+            rgba = np.dstack([img_np, alpha])
+            pil_image = Image.fromarray(rgba, 'RGBA')
+            logger.info("Applied mask as alpha channel")
 
         # Determine pipeline type based on resolution
         pipeline_type = {

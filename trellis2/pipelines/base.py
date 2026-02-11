@@ -19,14 +19,19 @@ class Pipeline:
             model.eval()
 
     @staticmethod
-    def from_pretrained(path: str) -> "Pipeline":
+    def from_pretrained(path: str, models_to_load: list = None) -> "Pipeline":
         """
         Load a pretrained model.
+
+        Args:
+            path: Path to the model (local or HuggingFace repo)
+            models_to_load: Optional list of model keys to load. If None, loads all models.
         """
         import os
         import json
         is_local = os.path.exists(f"{path}/pipeline.json")
 
+        print(f"[ComfyUI-TRELLIS2] Loading pipeline config from {'local' if is_local else 'HuggingFace'}...")
         if is_local:
             config_file = f"{path}/pipeline.json"
         else:
@@ -37,14 +42,26 @@ class Pipeline:
             args = json.load(f)['args']
 
         _models = {}
-        for k, v in args['models'].items():
+        # Filter to only load requested models
+        model_items = [(k, v) for k, v in args['models'].items()
+                       if models_to_load is None or k in models_to_load]
+        total_models = len(model_items)
+
+        if models_to_load:
+            skipped = len(args['models']) - total_models
+            print(f"[ComfyUI-TRELLIS2] Loading {total_models} models (skipping {skipped} not needed for this resolution)")
+
+        for i, (k, v) in enumerate(model_items, 1):
+            print(f"[ComfyUI-TRELLIS2] Loading model [{i}/{total_models}]: {k}...")
             try:
                 _models[k] = models.from_pretrained(f"{path}/{v}")
             except Exception as e:
                 _models[k] = models.from_pretrained(v)
+            print(f"[ComfyUI-TRELLIS2] Loaded {k} successfully")
 
         new_pipeline = Pipeline(_models)
         new_pipeline._pretrained_args = args
+        print(f"[ComfyUI-TRELLIS2] All {total_models} models loaded!")
         return new_pipeline
 
     @property

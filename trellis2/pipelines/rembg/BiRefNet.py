@@ -4,12 +4,23 @@ import torch
 from torchvision import transforms
 from PIL import Image
 
+# Remap gated models to public alternatives
+RMBG_MODEL_REMAP = {
+    "briaai/RMBG-2.0": "ZhengPeng7/BiRefNet",
+}
+
 
 class BiRefNet:
     def __init__(self, model_name: str = "ZhengPeng7/BiRefNet"):
+        # Remap gated models to public reuploads
+        actual_model_name = RMBG_MODEL_REMAP.get(model_name, model_name)
+        if actual_model_name != model_name:
+            print(f"[ComfyUI-TRELLIS2] Remapping {model_name} -> {actual_model_name}")
+        print(f"[ComfyUI-TRELLIS2] Loading BiRefNet model: {actual_model_name}...")
         self.model = AutoModelForImageSegmentation.from_pretrained(
-            model_name, trust_remote_code=True
+            actual_model_name, trust_remote_code=True
         )
+        print(f"[ComfyUI-TRELLIS2] BiRefNet model loaded successfully")
         self.model.eval()
         self.transform_image = transforms.Compose(
             [
