@@ -97,7 +97,7 @@ Output GLB is saved to ComfyUI output folder.
         output_dir = folder_paths.get_output_directory()
         output_path = os.path.join(output_dir, filename)
 
-        glb.export(output_path, extension_webp=True)
+        glb.export(output_path, extension_webp=False)
 
         logger.info(f"GLB exported to: {output_path}")
 

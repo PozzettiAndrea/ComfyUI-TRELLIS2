@@ -1,4 +1,5 @@
 from typing import *
+import os
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
@@ -16,6 +17,22 @@ from PIL import Image
 DINOV3_MODEL_REMAP = {
     "facebook/dinov3-vitl16-pretrain-lvd1689m": "PIA-SPACE-LAB/dinov3-vitl-pretrain-lvd1689m",
 }
+
+
+def _is_offline_mode() -> bool:
+    """Check if offline mode is enabled via HF_HUB_OFFLINE environment variable."""
+    return os.environ.get("HF_HUB_OFFLINE", "0") == "1"
+
+
+def _is_model_cached(model_name: str, cache_dir: str) -> bool:
+    """Check if a HuggingFace model is already cached locally."""
+    try:
+        from huggingface_hub import try_to_load_from_cache
+        from huggingface_hub.constants import _CACHED_NO_EXIST
+        cached = try_to_load_from_cache(model_name, "config.json", cache_dir=cache_dir)
+        return cached is not None and cached != _CACHED_NO_EXIST
+    except Exception:
+        return False
 
 
 class DinoV2FeatureExtractor:
@@ -80,12 +97,19 @@ class DinoV3FeatureExtractor:
 
         # Use ComfyUI models directory for cache
         import folder_paths
-        import os
         cache_dir = os.path.join(folder_paths.models_dir, "dinov3")
         os.makedirs(cache_dir, exist_ok=True)
 
-        print(f"[ComfyUI-TRELLIS2] Loading DINOv3 model: {actual_model_name}...")
-        self.model = DINOv3ViTModel.from_pretrained(actual_model_name, cache_dir=cache_dir)
+        # Use local_files_only if model is cached or offline mode is enabled
+        local_files_only = _is_offline_mode() or _is_model_cached(actual_model_name, cache_dir)
+        if local_files_only:
+            print(f"[ComfyUI-TRELLIS2] Loading DINOv3 model from cache: {actual_model_name}...")
+        else:
+            print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...")
+
+        self.model = DINOv3ViTModel.from_pretrained(
+            actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
+        )
         print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         self.model.eval()
         self.image_size = image_size

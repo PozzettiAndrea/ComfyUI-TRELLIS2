@@ -9,6 +9,9 @@ from .utils import logger
 # Resolution modes
 RESOLUTION_MODES = ['512', '1024', '1024_cascade', '1536_cascade']
 
+# Attention backend options
+ATTN_BACKENDS = ['auto', 'flash_attn', 'xformers', 'sdpa']
+
 # Shape models needed for each resolution mode
 SHAPE_MODELS_BY_RESOLUTION = {
     '512': [
@@ -72,6 +75,7 @@ class LoadTrellis2ShapeModel:
             },
             "optional": {
                 "keep_model_loaded": ("BOOLEAN", {"default": False}),
+                "attn_backend": (ATTN_BACKENDS, {"default": "auto"}),
             }
         }
 
@@ -98,14 +102,28 @@ Memory options:
   and reloaded directly from disk to GPU. Zero RAM usage but ~2-3s reload time.
 - keep_model_loaded=True: Models stay on GPU between uses. Faster but uses VRAM.
 
+Attention backend:
+- auto: Auto-detect best available (flash_attn > xformers > sdpa)
+- flash_attn: FlashAttention (fastest, requires flash_attn package)
+- xformers: Memory-efficient attention (requires xformers package)
+- sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
+
 Connect to "Image to Shape" node for geometry generation.
 """
 
-    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False):
+    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False, attn_backend="auto"):
+        # Set attention backend before loading models
+        if attn_backend != "auto":
+            from ..trellis2.modules.attention import config as dense_config
+            from ..trellis2.modules.sparse import config as sparse_config
+            dense_config.set_backend(attn_backend)
+            sparse_config.set_attn_backend(attn_backend)
+            logger.info(f"Attention backend set to: {attn_backend}")
+
         device = mm.get_torch_device()
         model = 'microsoft/TRELLIS.2-4B'
 
-        logger.info(f"Loading TRELLIS.2 shape pipeline (resolution={resolution})")
+        logger.info(f"Loading TRELLIS.2 shape pipeline (resolution={resolution}, attn_backend={attn_backend})")
 
         from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
@@ -154,6 +172,7 @@ class LoadTrellis2TextureModel:
             },
             "optional": {
                 "keep_model_loaded": ("BOOLEAN", {"default": False}),
+                "attn_backend": (ATTN_BACKENDS, {"default": "auto"}),
             }
         }
 
@@ -180,10 +199,24 @@ Memory options:
   and reloaded directly from disk to GPU. Zero RAM usage but ~2-3s reload time.
 - keep_model_loaded=True: Models stay on GPU between uses. Faster but uses VRAM.
 
+Attention backend:
+- auto: Auto-detect best available (flash_attn > xformers > sdpa)
+- flash_attn: FlashAttention (fastest, requires flash_attn package)
+- xformers: Memory-efficient attention (requires xformers package)
+- sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
+
 Connect to "Shape to Textured Mesh" node for PBR material generation.
 """
 
-    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False):
+    def loadmodel(self, resolution='1024_cascade', keep_model_loaded=False, attn_backend="auto"):
+        # Set attention backend before loading models
+        if attn_backend != "auto":
+            from ..trellis2.modules.attention import config as dense_config
+            from ..trellis2.modules.sparse import config as sparse_config
+            dense_config.set_backend(attn_backend)
+            sparse_config.set_attn_backend(attn_backend)
+            logger.info(f"Attention backend set to: {attn_backend}")
+
         device = mm.get_torch_device()
         model = 'microsoft/TRELLIS.2-4B'
 

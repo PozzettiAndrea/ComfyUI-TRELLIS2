@@ -372,9 +372,9 @@ class SparseTensor(VarLenTensor):
         # Lazy import of sparse tensor backend
         if self.SparseTensorData is None:
             import importlib
-            if config.CONV == 'torchsparse':
+            if config.get_conv_backend() == 'torchsparse':
                 self.SparseTensorData = importlib.import_module('torchsparse').SparseTensor
-            elif config.CONV == 'spconv':
+            elif config.get_conv_backend() == 'spconv':
                 self.SparseTensorData = importlib.import_module('spconv.pytorch').SparseConvTensor
                 
         method_id = 0
@@ -395,9 +395,9 @@ class SparseTensor(VarLenTensor):
                 shape = kwargs['shape']
                 del kwargs['shape']
 
-            if config.CONV == 'torchsparse':
+            if config.get_conv_backend() == 'torchsparse':
                 self.data = self.SparseTensorData(feats, coords, **kwargs)
-            elif config.CONV == 'spconv':
+            elif config.get_conv_backend() == 'spconv':
                 spatial_shape = list(coords.max(0)[0] + 1)
                 self.data = self.SparseTensorData(feats.reshape(feats.shape[0], -1), coords, spatial_shape[1:], spatial_shape[0], **kwargs)
                 self.data._features = feats
@@ -421,7 +421,7 @@ class SparseTensor(VarLenTensor):
         self._scale = kwargs.get('scale', (Fraction(1, 1), Fraction(1, 1), Fraction(1, 1)))
         self._spatial_cache = kwargs.get('spatial_cache', {})
 
-        if config.DEBUG:
+        if config.get_debug():
             try:
                 assert self.feats.shape[0] == self.coords.shape[0], f"Invalid feats shape: {self.feats.shape}, coords shape: {self.coords.shape}"
                 assert self.shape == self.__cal_shape(self.feats, self.coords), f"Invalid shape: {self.shape}"
@@ -502,36 +502,36 @@ class SparseTensor(VarLenTensor):
 
     @property
     def feats(self) -> torch.Tensor:
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             return self.data.F
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             return self.data.features
         else:
             return self.data['feats']
     
     @feats.setter
     def feats(self, value: torch.Tensor):
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             self.data.F = value
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             self.data.features = value
         else:
             self.data['feats'] = value
 
     @property
     def coords(self) -> torch.Tensor:
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             return self.data.C
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             return self.data.indices
         else:
             return self.data['coords']
         
     @coords.setter
     def coords(self, value: torch.Tensor):
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             self.data.C = value
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             self.data.indices = value
         else:
             self.data['coords'] = value
@@ -641,7 +641,7 @@ class SparseTensor(VarLenTensor):
         return sparse_unbind(self, dim)
 
     def replace(self, feats: torch.Tensor, coords: Optional[torch.Tensor] = None) -> 'SparseTensor':
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             new_data = self.SparseTensorData(
                 feats=feats,
                 coords=self.data.coords if coords is None else coords,
@@ -649,7 +649,7 @@ class SparseTensor(VarLenTensor):
                 spatial_range=self.data.spatial_range,
             )
             new_data._caches = self.data._caches
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             new_data = self.SparseTensorData(
                 self.data.features.reshape(self.data.features.shape[0], -1),
                 self.data.indices,
@@ -682,9 +682,9 @@ class SparseTensor(VarLenTensor):
         return new_tensor
     
     def to_dense(self) -> torch.Tensor:
-        if config.CONV == 'torchsparse':
+        if config.get_conv_backend() == 'torchsparse':
             return self.data.dense()
-        elif config.CONV == 'spconv':
+        elif config.get_conv_backend() == 'spconv':
             return self.data.dense()
         else:
             spatial_shape = self.spatial_shape
