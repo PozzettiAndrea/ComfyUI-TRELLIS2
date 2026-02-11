@@ -81,10 +81,12 @@ TEXTURE_MODELS_BY_RESOLUTION = {
     ],
     '1024_cascade': [
         'tex_slat_decoder',
+        'tex_slat_flow_model_512',  # Fallback when 1024 conditioning not available
         'tex_slat_flow_model_1024',
     ],
     '1536_cascade': [
         'tex_slat_decoder',
+        'tex_slat_flow_model_512',  # Fallback when 1024 conditioning not available
         'tex_slat_flow_model_1024',
     ],
 }
