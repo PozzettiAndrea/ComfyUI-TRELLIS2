@@ -458,7 +458,7 @@ Parameters:
             ], axis=-1)),
             metallicFactor=1.0,
             roughnessFactor=1.0,
-            alphaMode='OPAQUE',
+            alphaMode='BLEND',
         )
 
         # Build result
