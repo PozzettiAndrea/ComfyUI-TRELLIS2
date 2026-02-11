@@ -1,12 +1,16 @@
 """Export nodes for TRELLIS.2 3D meshes."""
 import os
+import sys
+import logging
 import numpy as np
 from datetime import datetime
 
 import folder_paths
 
 from comfy_env import isolated
-from .utils import logger
+
+# Create logger for non-isolated classes (can't use relative import due to isolated subprocess)
+logger = logging.getLogger("[TRELLIS2]")
 
 
 @isolated(env="trellis2", import_paths=[".", ".."])

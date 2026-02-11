@@ -12,6 +12,9 @@ RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
 # Attention backend options
 ATTN_BACKENDS = ['auto', 'sageattn', 'flash_attn', 'xformers', 'sdpa']
 
+# VRAM usage modes
+VRAM_MODES = ['keep_loaded', 'cpu_offload', 'disk_offload']
+
 
 class LoadTrellis2Models:
     """Load TRELLIS.2 models for 3D generation."""
@@ -24,6 +27,7 @@ class LoadTrellis2Models:
             },
             "optional": {
                 "attn_backend": (ATTN_BACKENDS, {"default": "auto"}),
+                "vram_mode": (VRAM_MODES, {"default": "keep_loaded"}),
             }
         }
 
@@ -48,15 +52,21 @@ Attention backend:
 - flash_attn: FlashAttention (requires flash_attn package)
 - xformers: Memory-efficient attention (requires xformers package)
 - sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
+
+VRAM mode:
+- keep_loaded: Keep all models in VRAM (fastest, ~12GB VRAM)
+- cpu_offload: Offload unused models to CPU RAM (~3-4GB VRAM, ~15-25% slower)
+- disk_offload: Delete unused models, reload from disk (~3GB VRAM & CPU RAM, ~2-3x slower)
 """
 
-    def load_models(self, resolution='1024_cascade', attn_backend="auto"):
+    def load_models(self, resolution='1024_cascade', attn_backend="auto", vram_mode="keep_loaded"):
         # Create lightweight config object
         # Actual model loading happens in @isolated subprocess methods
         config = Trellis2ModelConfig(
             model_name="microsoft/TRELLIS.2-4B",
             resolution=resolution,
             attn_backend=attn_backend,
+            vram_mode=vram_mode,
         )
         return (config,)
 
