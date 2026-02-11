@@ -447,8 +447,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             List[SparseTensor]: The decoded texture voxels
         """
         decoder = self._load_model('tex_slat_decoder')
+        decoder.low_vram = not self.keep_model_loaded
         ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
         self._unload_model('tex_slat_decoder')
+        decoder.low_vram = False
         return ret
     
     @torch.no_grad()
