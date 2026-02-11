@@ -71,8 +71,15 @@ class DinoV3FeatureExtractor:
         if actual_model_name != model_name:
             print(f"[ComfyUI-TRELLIS2] Remapping {model_name} -> {actual_model_name}")
         self.model_name = model_name
+
+        # Use ComfyUI models directory for cache
+        import folder_paths
+        import os
+        cache_dir = os.path.join(folder_paths.models_dir, "dinov3")
+        os.makedirs(cache_dir, exist_ok=True)
+
         print(f"[ComfyUI-TRELLIS2] Loading DINOv3 model: {actual_model_name}...")
-        self.model = DINOv3ViTModel.from_pretrained(actual_model_name)
+        self.model = DINOv3ViTModel.from_pretrained(actual_model_name, cache_dir=cache_dir)
         print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         self.model.eval()
         self.image_size = image_size
