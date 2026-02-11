@@ -79,6 +79,8 @@ WHEEL_CUDA_MAP = {
     ("12.6", "2.8"): "cu128",
     ("12.8", "2.8"): "cu128",
     ("12.8", "2.9"): "cu128",
+    ("12.9", "2.8"): "cu128",  # CUDA 12.9 can use 12.8 wheels
+    ("12.9", "2.9"): "cu128",
 }
 
 # Map (CUDA major.minor, PyTorch major.minor) -> wheel subdirectory
@@ -89,6 +91,8 @@ WHEEL_DIRS = {
     ("12.6", "2.8"): "cu126-torch280",
     ("12.8", "2.8"): "cu128-torch280",
     ("12.8", "2.9"): "cu128-torch291",
+    ("12.9", "2.8"): "cu128-torch280",  # CUDA 12.9 uses 12.8 wheels
+    ("12.9", "2.9"): "cu128-torch291",
 }
 
 
@@ -547,14 +551,19 @@ def try_install_from_direct_url(package_config):
                     # ABI mismatch - wheel installed but can't be imported
                     return False
             else:
-                if result.stderr and "404" in result.stderr:
-                    continue  # Try next URL
-                elif result.stderr and ("not found" in result.stderr.lower() or "no such file" in result.stderr.lower()):
-                    continue  # Try next URL
+                # Log the actual error so we can debug
+                error_msg = result.stderr[:300] if result.stderr else result.stdout[:300] if result.stdout else "unknown error"
+                if "404" in error_msg or "not found" in error_msg.lower() or "no such file" in error_msg.lower():
+                    print(f"[ComfyUI-TRELLIS2] Wheel not found at URL")
+                    continue
+                else:
+                    print(f"[ComfyUI-TRELLIS2] pip install failed: {error_msg}")
+                    continue
         except subprocess.TimeoutExpired:
             print(f"[ComfyUI-TRELLIS2] Download timed out")
             continue
         except Exception as e:
+            print(f"[ComfyUI-TRELLIS2] Exception during install: {e}")
             continue
 
     print(f"[ComfyUI-TRELLIS2] No wheel found at any URL for {package_name}")
