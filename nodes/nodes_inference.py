@@ -290,9 +290,19 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 
     def get_conditioning(self, dinov3, image, mask, include_1024=True, background_color="black"):
         device = dinov3["device"]
-        model = dinov3["model"]
-        low_vram = dinov3["low_vram"]
+        keep_model_loaded = dinov3.get("keep_model_loaded", False)
         bg_color = self.BACKGROUND_COLORS.get(background_color, (128, 128, 128))
+
+        # Lazy load DinoV3 if not already loaded
+        if dinov3["model"] is None:
+            from ..trellis2.modules import image_feature_extractor
+            logger.info("Lazy loading DinoV3 feature extractor...")
+            dinov3["model"] = image_feature_extractor.DinoV3FeatureExtractor(
+                model_name=dinov3["model_name"]
+            )
+            logger.info("DinoV3 loaded successfully")
+
+        model = dinov3["model"]
 
         # Convert ComfyUI tensor to PIL
         pil_image = tensor_to_pil(image)
@@ -321,10 +331,11 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 
         logger.info("Extracting DinoV3 conditioning...")
 
+        # Move model to device for inference
+        model.to(device)
+
         # Get 512px conditioning
         model.image_size = 512
-        if low_vram:
-            model.to(device)
         cond_512 = model([pil_image])
 
         # Get 1024px conditioning if requested
@@ -333,8 +344,11 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
             model.image_size = 1024
             cond_1024 = model([pil_image])
 
-        if low_vram:
+        # Offload if not keeping model loaded
+        if not keep_model_loaded:
             model.cpu()
+            dinov3["model"] = None  # Allow garbage collection
+            logger.info("DinoV3 offloaded")
 
         # Create negative conditioning
         neg_cond = torch.zeros_like(cond_512)
@@ -370,7 +384,6 @@ class Trellis2ImageToShape:
             },
             "optional": {
                 "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for reproducible generation"}),
-                "resolution": (["512", "1024", "1536"], {"default": "1024", "tooltip": "Output mesh resolution. Higher = more detail but slower"}),
                 # Sparse Structure Sampler
                 "ss_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Sparse structure CFG scale. Higher = stronger adherence to input image"}),
                 "ss_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Sparse structure sampling steps. More steps = better quality but slower"}),
@@ -391,10 +404,9 @@ This node generates shape geometry (no texture/PBR).
 Connect shape_slat and subs to "Shape to Textured Mesh" for PBR materials.
 
 Parameters:
-- shape_pipeline: The loaded shape models
+- shape_pipeline: The loaded shape models (resolution is set in Load Shape Model node)
 - conditioning: DinoV3 conditioning from "Get Conditioning" node
 - seed: Random seed for reproducibility
-- resolution: Output resolution (512, 1024, or 1536)
 - ss_*: Sparse structure sampling parameters
 - shape_*: Shape latent sampling parameters
 
@@ -409,20 +421,43 @@ Returns:
         shape_pipeline,
         conditioning,
         seed=0,
-        resolution="1024",
         ss_guidance_strength=7.5,
         ss_sampling_steps=12,
         shape_guidance_strength=7.5,
         shape_sampling_steps=12,
     ):
-        pipe = shape_pipeline["pipeline"]
+        # Lazy load shape pipeline if not already loaded
+        if shape_pipeline["pipeline"] is None:
+            from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
-        # Determine pipeline type based on resolution
-        pipeline_type = {
-            "512": "512",
-            "1024": "1024_cascade",
-            "1536": "1536_cascade",
-        }[resolution]
+            keep_model_loaded = shape_pipeline["keep_model_loaded"]
+            device = shape_pipeline["device"]
+
+            logger.info(f"Lazy loading shape pipeline...")
+            pipe = Trellis2ImageTo3DPipeline.from_pretrained(
+                shape_pipeline["model_name"],
+                models_to_load=shape_pipeline["models_to_load"],
+                enable_disk_offload=not keep_model_loaded
+            )
+            pipe.keep_model_loaded = keep_model_loaded
+            pipe.default_pipeline_type = shape_pipeline["resolution"]
+
+            # Move to device (only if keeping models loaded)
+            if keep_model_loaded:
+                if device.type == 'cuda':
+                    pipe.cuda()
+                else:
+                    pipe.to(device)
+            else:
+                pipe._device = device
+
+            shape_pipeline["pipeline"] = pipe
+            logger.info("Shape pipeline loaded successfully")
+        else:
+            pipe = shape_pipeline["pipeline"]
+
+        # Get pipeline type from loaded model (set in Load Models node)
+        pipeline_type = shape_pipeline["resolution"]
 
         # Build sampler params
         sampler_params = {
@@ -436,7 +471,7 @@ Returns:
             },
         }
 
-        logger.info(f"Generating 3D shape (resolution={resolution}, seed={seed})")
+        logger.info(f"Generating 3D shape (pipeline_type={pipeline_type}, seed={seed})")
 
         # Run shape generation (returns mesh, shape_slat, subs, resolution)
         meshes, shape_slat, subs, res = pipe.run_shape(
@@ -466,6 +501,13 @@ Returns:
 
         # subs stays on GPU as-is (list of SparseTensors)
         # Don't clean up - texture node needs these!
+
+        # Offload shape models if not keeping loaded (texture node will load its own)
+        if not shape_pipeline["keep_model_loaded"]:
+            shape_pipeline["pipeline"] = None  # Allow garbage collection
+            gc.collect()
+            torch.cuda.empty_cache()
+            logger.info("Shape pipeline offloaded")
 
         return (shape_slat_dict, subs, tri_mesh)
 
