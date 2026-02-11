@@ -1,18 +1,11 @@
 [test]
 name = "ComfyUI-TRELLIS2"
+levels = ["syntax", "install", "registration", "instantiation", "validation"]
 
-[test.verification]
-expected_nodes = [
-    "LoadTrellis2Models",
-    "Trellis2RemoveBackground",
-    "Trellis2GetConditioning",
-    "Trellis2ImageToShape",
-    "Trellis2ShapeToTexturedMesh",
-    "Trellis2ExportGLB",
-    "Trellis2RenderPreview",
-    "Trellis2RenderVideo",
-    "Trellis2Simplify",
-    "Trellis2UVUnwrap",
-    "Trellis2RasterizePBR",
-    "Trellis2ExportTrimesh",
+[test.workflows]
+files = [
+    "workflows/geometry_only.json",
+    "workflows/geometry_texture.json",
+    "workflows/remove_background.json",
 ]
+timeout = 120
