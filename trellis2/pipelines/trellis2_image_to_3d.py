@@ -462,7 +462,16 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             resolution (int): The resolution of the output.
         """
         meshes, subs = self.decode_shape_slat(shape_slat, resolution)
+
+        # Clear GPU cache before texture decoding
+        torch.cuda.empty_cache()
+
         tex_voxels = self.decode_tex_slat(tex_slat, subs)
+
+        # Delete subs immediately after use to free GPU memory
+        del subs
+        torch.cuda.empty_cache()
+
         out_mesh = []
         for m, v in zip(meshes, tex_voxels):
             m.fill_holes()
@@ -608,9 +617,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             shape_slat, tex_slat_sampler_params
         )
 
+        # Clear GPU cache before decode
+        torch.cuda.empty_cache()
+
         # Decode both shape and texture
         out_mesh = self.decode_latent(shape_slat, tex_slat, resolution)
 
+        # Delete tex_slat after use
+        del tex_slat
         torch.cuda.empty_cache()
         return out_mesh
 

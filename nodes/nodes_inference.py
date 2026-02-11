@@ -69,15 +69,19 @@ def mesh_with_voxel_to_outputs(mesh_obj, pbr_layout):
 
     voxel_grid = VoxelGrid(encoding)
 
-    # Attach PBR attributes
-    voxel_grid.pbr_attrs = mesh_obj.attrs  # Sparse tensor features
-    voxel_grid.pbr_coords = mesh_obj.coords  # Sparse coordinates
+    # Attach PBR attributes - move to CPU to free GPU memory
+    # They'll be moved back to GPU during export if needed
+    voxel_grid.pbr_attrs = mesh_obj.attrs.cpu() if hasattr(mesh_obj.attrs, 'cpu') else mesh_obj.attrs
+    voxel_grid.pbr_coords = mesh_obj.coords.cpu() if hasattr(mesh_obj.coords, 'cpu') else mesh_obj.coords
     voxel_grid.pbr_layout = pbr_layout  # {'base_color': slice(0,3), ...}
     voxel_grid.pbr_voxel_size = mesh_obj.voxel_size
 
-    # Store original vertices for BVH lookup during texture baking
-    voxel_grid.original_vertices = mesh_obj.vertices
-    voxel_grid.original_faces = mesh_obj.faces
+    # Store original vertices for BVH lookup during texture baking - move to CPU
+    voxel_grid.original_vertices = mesh_obj.vertices.cpu() if hasattr(mesh_obj.vertices, 'cpu') else mesh_obj.vertices
+    voxel_grid.original_faces = mesh_obj.faces.cpu() if hasattr(mesh_obj.faces, 'cpu') else mesh_obj.faces
+
+    # Clear GPU cache after moving tensors to CPU
+    torch.cuda.empty_cache()
 
     return tri_mesh, voxel_grid
 
@@ -402,6 +406,9 @@ Returns:
 
         # Simplify mesh (nvdiffrast limit)
         mesh.simplify(16777216)
+
+        # Clear GPU cache after mesh simplification
+        torch.cuda.empty_cache()
 
         logger.info("PBR textures generated successfully")
 

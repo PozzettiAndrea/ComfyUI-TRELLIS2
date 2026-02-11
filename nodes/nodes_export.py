@@ -60,16 +60,22 @@ Output GLB is saved to ComfyUI output folder.
 
         logger.info(f"Exporting GLB (decimation={decimation_target}, texture={texture_size}, remesh={remesh})")
 
-        # Use original vertices/faces from voxelgrid (in original coordinate system)
-        vertices = voxelgrid.original_vertices
-        faces = voxelgrid.original_faces
+        # Move tensors to GPU for o_voxel processing
+        device = torch.device('cuda')
+        vertices = voxelgrid.original_vertices.to(device) if hasattr(voxelgrid.original_vertices, 'to') else voxelgrid.original_vertices
+        faces = voxelgrid.original_faces.to(device) if hasattr(voxelgrid.original_faces, 'to') else voxelgrid.original_faces
+        attr_volume = voxelgrid.pbr_attrs.to(device) if hasattr(voxelgrid.pbr_attrs, 'to') else voxelgrid.pbr_attrs
+        coords = voxelgrid.pbr_coords.to(device) if hasattr(voxelgrid.pbr_coords, 'to') else voxelgrid.pbr_coords
+
+        # Clear cache before large allocation
+        torch.cuda.empty_cache()
 
         # Generate GLB using o_voxel
         glb = o_voxel.postprocess.to_glb(
             vertices=vertices,
             faces=faces,
-            attr_volume=voxelgrid.pbr_attrs,
-            coords=voxelgrid.pbr_coords,
+            attr_volume=attr_volume,
+            coords=coords,
             attr_layout=voxelgrid.pbr_layout,
             grid_size=max(voxelgrid.shape),
             aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
@@ -80,6 +86,10 @@ Output GLB is saved to ComfyUI output folder.
             remesh_project=0,
             use_tqdm=True,
         )
+
+        # Immediately clean up GPU tensors after export
+        del vertices, faces, attr_volume, coords
+        torch.cuda.empty_cache()
 
         # Generate filename with timestamp
         now = datetime.now()
