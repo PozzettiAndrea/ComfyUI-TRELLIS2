@@ -1,10 +1,7 @@
-"""ComfyUI-TRELLIS2: Microsoft TRELLIS.2 Image-to-3D nodes for ComfyUI."""
-
 import sys
-
-print("[geompack] loading...", file=sys.stderr, flush=True)
+print("[trellis2] loading...", file=sys.stderr, flush=True)
 from comfy_env import register_nodes
-print("[geompack] calling register_nodes", file=sys.stderr, flush=True)
+print("[trellis2] calling register_nodes", file=sys.stderr, flush=True)
 
 NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS = register_nodes()
 
