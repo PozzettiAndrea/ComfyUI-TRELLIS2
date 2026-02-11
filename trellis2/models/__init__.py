@@ -35,6 +35,19 @@ def __getattr__(name):
     return globals()[name]
 
 
+def _get_trellis2_models_dir():
+    """Get the ComfyUI/models/trellis2 directory."""
+    import os
+    try:
+        import folder_paths
+        models_dir = os.path.join(folder_paths.models_dir, "trellis2")
+    except ImportError:
+        # Fallback if folder_paths not available
+        models_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "models", "trellis2")
+    os.makedirs(models_dir, exist_ok=True)
+    return models_dir
+
+
 def from_pretrained(path: str, **kwargs):
     """
     Load a model from a pretrained checkpoint.
@@ -46,21 +59,47 @@ def from_pretrained(path: str, **kwargs):
     """
     import os
     import json
+    import shutil
     from safetensors.torch import load_file
+
+    # Check if it's a direct local path
     is_local = os.path.exists(f"{path}.json") and os.path.exists(f"{path}.safetensors")
 
     if is_local:
         config_file = f"{path}.json"
         model_file = f"{path}.safetensors"
     else:
-        from huggingface_hub import hf_hub_download
+        # Parse HuggingFace path
         path_parts = path.split('/')
         repo_id = f'{path_parts[0]}/{path_parts[1]}'
         model_name = '/'.join(path_parts[2:])
-        print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} config...")
-        config_file = hf_hub_download(repo_id, f"{model_name}.json")
-        print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} weights...")
-        model_file = hf_hub_download(repo_id, f"{model_name}.safetensors")
+
+        # Check if cached in ComfyUI/models/trellis2
+        models_dir = _get_trellis2_models_dir()
+        local_config = os.path.join(models_dir, f"{model_name}.json")
+        local_weights = os.path.join(models_dir, f"{model_name}.safetensors")
+
+        # Create subdirectories if needed
+        os.makedirs(os.path.dirname(local_config), exist_ok=True)
+
+        if os.path.exists(local_config) and os.path.exists(local_weights):
+            print(f"[ComfyUI-TRELLIS2]   Loading {model_name} from local cache...")
+            config_file = local_config
+            model_file = local_weights
+        else:
+            from huggingface_hub import hf_hub_download
+            print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} config...")
+            hf_config = hf_hub_download(repo_id, f"{model_name}.json")
+            print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} weights...")
+            hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
+
+            # Copy to local cache
+            print(f"[ComfyUI-TRELLIS2]   Caching to {models_dir}...")
+            shutil.copy2(hf_config, local_config)
+            shutil.copy2(hf_weights, local_weights)
+
+            config_file = local_config
+            model_file = local_weights
 
     with open(config_file, 'r') as f:
         config = json.load(f)
