@@ -7,8 +7,9 @@ These run inside the isolated subprocess.
 
 import sys
 import gc
+from fractions import Fraction
 from pathlib import Path
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, List
 
 import torch
 import numpy as np
@@ -16,6 +17,73 @@ from PIL import Image
 
 from .lazy_manager import get_model_manager
 from .helpers import smart_crop_square
+
+
+def _sparse_tensor_to_dict(st) -> Dict[str, Any]:
+    """
+    Convert a SparseTensor to a serializable dict.
+    This allows SparseTensor to cross IPC boundaries without requiring
+    trellis2.modules in the receiving process.
+    """
+    return {
+        '_type': 'SparseTensor',
+        'feats': st.feats.cpu(),
+        'coords': st.coords.cpu(),
+        'shape': tuple(st.shape) if st.shape else None,
+        'scale': tuple((s.numerator, s.denominator) for s in st._scale),
+    }
+
+
+def _dict_to_sparse_tensor(d: Dict[str, Any], device: torch.device):
+    """
+    Reconstruct a SparseTensor from a serialized dict.
+    Must be called within the isolated environment where trellis2 is available.
+    """
+    from trellis2.modules.sparse import SparseTensor
+
+    feats = d['feats'].to(device)
+    coords = d['coords'].to(device)
+    shape = torch.Size(d['shape']) if d['shape'] else None
+    scale = tuple(Fraction(n, den) for n, den in d['scale'])
+
+    return SparseTensor(feats=feats, coords=coords, shape=shape, scale=scale)
+
+
+def _serialize_for_ipc(obj: Any) -> Any:
+    """
+    Recursively convert SparseTensor objects to serializable dicts.
+    """
+    # Check if it's a SparseTensor by checking for the characteristic attributes
+    if hasattr(obj, 'feats') and hasattr(obj, 'coords') and hasattr(obj, '_scale'):
+        return _sparse_tensor_to_dict(obj)
+    elif isinstance(obj, list):
+        return [_serialize_for_ipc(x) for x in obj]
+    elif isinstance(obj, tuple):
+        return tuple(_serialize_for_ipc(x) for x in obj)
+    elif isinstance(obj, dict):
+        return {k: _serialize_for_ipc(v) for k, v in obj.items()}
+    elif isinstance(obj, torch.Tensor):
+        return obj.cpu()
+    else:
+        return obj
+
+
+def _deserialize_from_ipc(obj: Any, device: torch.device) -> Any:
+    """
+    Recursively reconstruct SparseTensor objects from serialized dicts.
+    """
+    if isinstance(obj, dict) and obj.get('_type') == 'SparseTensor':
+        return _dict_to_sparse_tensor(obj, device)
+    elif isinstance(obj, list):
+        return [_deserialize_from_ipc(x, device) for x in obj]
+    elif isinstance(obj, tuple):
+        return tuple(_deserialize_from_ipc(x, device) for x in obj)
+    elif isinstance(obj, dict):
+        return {k: _deserialize_from_ipc(v, device) for k, v in obj.items()}
+    elif isinstance(obj, torch.Tensor):
+        return obj.to(device)
+    else:
+        return obj
 
 
 def run_conditioning(
@@ -205,17 +273,19 @@ def run_shape_generation(
     # Coordinate system conversion (Y-up to Z-up) for output mesh
     vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
 
-    # Pack results - keep shape_slat and subs on CPU for serialization
+    # Pack results - serialize SparseTensor objects to dicts for IPC
+    # This allows the result to cross the subprocess boundary without requiring
+    # trellis2.modules in the main ComfyUI process
     result = {
-        'shape_slat': shape_slat.cpu(),
-        'subs': [s.cpu() if hasattr(s, 'cpu') else s for s in subs],
+        'shape_slat': _serialize_for_ipc(shape_slat),
+        'subs': _serialize_for_ipc(subs),
         'mesh_vertices': vertices,  # numpy, coordinate-converted for output
         'mesh_faces': faces,        # numpy, for output
         'resolution': res,
         'pipeline_type': model_config.resolution,
         # Raw mesh data for texture stage reconstruction (CPU tensors, original coords)
-        'raw_mesh_vertices': raw_mesh_vertices,
-        'raw_mesh_faces': raw_mesh_faces,
+        'raw_mesh_vertices': raw_mesh_vertices.cpu(),
+        'raw_mesh_faces': raw_mesh_faces.cpu(),
     }
 
     # Unload shape pipeline
@@ -259,9 +329,10 @@ def run_texture_generation(
         for k, v in conditioning.items()
     }
 
-    # Move shape data to device
-    shape_slat = shape_result['shape_slat'].to(device)
-    subs = [s.to(device) if hasattr(s, 'to') else s for s in shape_result['subs']]
+    # Deserialize and move shape data to device
+    # SparseTensor objects were serialized as dicts for IPC, reconstruct them here
+    shape_slat = _deserialize_from_ipc(shape_result['shape_slat'], device)
+    subs = _deserialize_from_ipc(shape_result['subs'], device)
     resolution = shape_result['resolution']
     pipeline_type = shape_result['pipeline_type']
 
