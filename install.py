@@ -454,8 +454,8 @@ def verify_package_import(import_name, package_name):
 
 def get_direct_wheel_urls(package_config):
     """
-    Build direct wheel URLs from GitHub releases.
-    Returns list of URLs to try (new format first, then old format).
+    Build direct wheel URL from GitHub releases.
+    Uses static WHEEL_DIRS mapping for reliable URL construction.
     """
     wheel_release_base = package_config.get("wheel_release_base")
     wheel_version = package_config.get("wheel_version")
@@ -473,25 +473,15 @@ def get_direct_wheel_urls(package_config):
     if not wheel_dir:
         return []
 
-    cuda_suffix = get_wheel_cuda_suffix()
-    if not cuda_suffix:
-        return []
-
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
     package_name = package_config["name"]
 
-    urls = []
+    # Build wheel URL: {release_base}/{wheel_dir}/{package}-{version}-cpXX-cpXX-{platform}.whl
+    wheel_name = f"{package_name}-{wheel_version}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    wheel_url = f"{wheel_release_base}/{wheel_dir}/{wheel_name}"
 
-    # New format: tag=cu128-torch291, wheel=package-version-cpXX-cpXX-platform.whl (no cuda suffix)
-    new_wheel = f"{package_name}-{wheel_version}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-    urls.append(f"{wheel_release_base}/{wheel_dir}/{new_wheel}")
-
-    # Old format: tag=cu128, wheel=package-version+cu128-cpXX-cpXX-platform.whl (with cuda suffix)
-    old_wheel = f"{package_name}-{wheel_version}+{cuda_suffix}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-    urls.append(f"{wheel_release_base}/{cuda_suffix}/{old_wheel}")
-
-    return urls
+    return [wheel_url]
 
 
 def get_flash_attn_wheel_urls():
@@ -830,13 +820,12 @@ def install_cuda_package(package_config):
             return True
         # Fall through to compilation
     else:
-        # Try 1: wheel index (pip --find-links)
-        if wheel_index and try_install_from_wheel(name, wheel_index, import_name):
+        # Try 1: direct GitHub release URL (most reliable - bypasses pip index parsing)
+        if try_install_from_direct_url(package_config):
             return True
 
-        # Try 2: direct GitHub release URL
-        print(f"[ComfyUI-TRELLIS2] Trying direct GitHub release URL...")
-        if try_install_from_direct_url(package_config):
+        # Try 2: wheel index as fallback (pip --find-links)
+        if wheel_index and try_install_from_wheel(name, wheel_index, import_name):
             return True
 
     # Try 3: compile from source
