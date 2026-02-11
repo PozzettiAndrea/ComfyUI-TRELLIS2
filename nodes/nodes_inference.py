@@ -254,7 +254,7 @@ class Trellis2GetConditioning:
             },
             "optional": {
                 "include_1024": ("BOOLEAN", {"default": True}),
-                "background_color": (["gray", "black", "white"], {"default": "gray"}),
+                "background_color": (["black", "gray", "white"], {"default": "black"}),
             },
         }
 
@@ -287,7 +287,7 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
         "white": (255, 255, 255),
     }
 
-    def get_conditioning(self, dinov3, image, mask, include_1024=True, background_color="gray"):
+    def get_conditioning(self, dinov3, image, mask, include_1024=True, background_color="black"):
         device = dinov3["device"]
         model = dinov3["model"]
         low_vram = dinov3["low_vram"]
