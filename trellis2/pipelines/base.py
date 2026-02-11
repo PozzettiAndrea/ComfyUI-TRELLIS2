@@ -151,9 +151,8 @@ class Pipeline:
             if safetensors_path:
                 # Config is same path with .json extension
                 config_path = safetensors_path.replace('.safetensors', '')
-                print(f"[ComfyUI-TRELLIS2] Reloading {model_key} from disk...")
-                model = models.from_pretrained(config_path)
-                model.to(device)
+                print(f"[ComfyUI-TRELLIS2] Reloading {model_key} from disk directly to {device}...")
+                model = models.from_pretrained(config_path, device=str(device))
                 model.eval()
                 self.models[model_key] = model
                 print(f"[ComfyUI-TRELLIS2] {model_key} reloaded to {device}")

@@ -572,11 +572,11 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 max_num_tokens
             )
 
-        # Decode shape only (no texture)
-        meshes, _ = self.decode_shape_slat(shape_slat, res)
+        # Decode shape (keep subs for texture generation)
+        meshes, subs = self.decode_shape_slat(shape_slat, res)
 
         torch.cuda.empty_cache()
-        return meshes, shape_slat, res
+        return meshes, shape_slat, subs, res
 
     @torch.no_grad()
     def run_texture(
@@ -631,6 +631,83 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # Delete tex_slat after use
         del tex_slat
         torch.cuda.empty_cache()
+        return out_mesh
+
+    @torch.no_grad()
+    def run_texture_with_subs(
+        self,
+        cond: dict,
+        shape_slat: SparseTensor,
+        subs: List[SparseTensor],
+        meshes: List[Mesh],
+        resolution: int,
+        seed: int = 42,
+        tex_slat_sampler_params: dict = {},
+        pipeline_type: Optional[str] = None,
+    ) -> List[MeshWithVoxel]:
+        """
+        Run texture generation using pre-computed subs (no shape re-decode).
+
+        This is faster than run_texture() because it skips shape decoder inference.
+
+        Args:
+            cond (dict): The conditioning dict with 'cond_512', 'cond_1024' (optional), 'neg_cond'.
+            shape_slat (SparseTensor): The shape latent from run_shape().
+            subs (List[SparseTensor]): The substructures from run_shape().
+            meshes (List[Mesh]): The meshes from run_shape().
+            resolution (int): The resolution from run_shape().
+            seed (int): The random seed.
+            tex_slat_sampler_params (dict): Additional parameters for the texture SLat sampler.
+            pipeline_type (str): The type of the pipeline.
+
+        Returns:
+            List of MeshWithVoxel with PBR attributes.
+        """
+        pipeline_type = pipeline_type or self.default_pipeline_type
+
+        # Validate texture models
+        if pipeline_type == '512':
+            assert 'tex_slat_flow_model_512' in self.models, "No 512 resolution texture SLat flow model found."
+            tex_model_key = 'tex_slat_flow_model_512'
+            tex_cond = {'cond': cond['cond_512'], 'neg_cond': cond['neg_cond']}
+        else:
+            assert 'tex_slat_flow_model_1024' in self.models, "No 1024 resolution texture SLat flow model found."
+            tex_model_key = 'tex_slat_flow_model_1024'
+            tex_cond = {'cond': cond['cond_1024'], 'neg_cond': cond['neg_cond']}
+
+        torch.manual_seed(seed)
+
+        # Sample texture latent
+        tex_slat = self.sample_tex_slat(
+            tex_cond, tex_model_key,
+            shape_slat, tex_slat_sampler_params
+        )
+
+        # Clear GPU cache before decode
+        torch.cuda.empty_cache()
+
+        # Decode texture using pre-computed subs (skip shape decoder!)
+        tex_voxels = self.decode_tex_slat(tex_slat, subs)
+
+        # Delete tex_slat after use
+        del tex_slat
+        torch.cuda.empty_cache()
+
+        # Combine meshes with texture voxels
+        out_mesh = []
+        for m, v in zip(meshes, tex_voxels):
+            m.fill_holes()
+            out_mesh.append(
+                MeshWithVoxel(
+                    m.vertices, m.faces,
+                    origin=[-0.5, -0.5, -0.5],
+                    voxel_size=1 / resolution,
+                    coords=v.coords[:, 1:],
+                    attrs=v.feats,
+                    voxel_shape=torch.Size([*v.shape, *v.spatial_shape]),
+                    layout=self.pbr_attr_layout
+                )
+            )
         return out_mesh
 
     @torch.no_grad()

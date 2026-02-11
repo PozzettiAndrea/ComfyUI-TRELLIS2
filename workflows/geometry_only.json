@@ -1,0 +1,530 @@
+{
+  "id": "993ef16b-b850-4a37-8e99-cdfe9b8651d3",
+  "revision": 0,
+  "last_node_id": 89,
+  "last_link_id": 136,
+  "nodes": [
+    {
+      "id": 29,
+      "type": "LoadTrellis2DinoV3",
+      "pos": [
+        -368.64410866013964,
+        45.76235385898068
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "dinov3",
+          "type": "TRELLIS2_DINOV3",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TRELLIS2",
+        "ver": "1873571a55232310f0464bed8ca17d3f1436e952",
+        "Node name for S&R": "LoadTrellis2DinoV3",
+        "aux_id": "PozzettiAndrea/ComfyUI-TRELLIS2"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 11,
+      "type": "InvertMask",
+      "pos": [
+        -193.65179494509184,
+        522.0597912589249
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            15,
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.5.1",
+        "Node name for S&R": "InvertMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "MaskPreview",
+      "pos": [
+        -200.29025594023426,
+        600.077399388618
+      ],
+      "size": [
+        140,
+        246
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.5.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 32,
+      "type": "LoadTrellis2ShapeModel",
+      "pos": [
+        -47.05765642213647,
+        34.10742859806472
+      ],
+      "size": [
+        295.2232421875,
+        82
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "shape_pipeline",
+          "type": "TRELLIS2_SHAPE_PIPELINE",
+          "links": [
+            119
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TRELLIS2",
+        "ver": "1873571a55232310f0464bed8ca17d3f1436e952",
+        "Node name for S&R": "LoadTrellis2ShapeModel",
+        "aux_id": "PozzettiAndrea/ComfyUI-TRELLIS2"
+      },
+      "widgets_values": [
+        "1024_cascade",
+        false
+      ]
+    },
+    {
+      "id": 28,
+      "type": "Trellis2GetConditioning",
+      "pos": [
+        -27.48926861281149,
+        260.1538788523733
+      ],
+      "size": [
+        282.31015625,
+        98
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "dinov3",
+          "type": "TRELLIS2_DINOV3",
+          "link": 37
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 42
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "TRELLIS2_CONDITIONING",
+          "links": [
+            118
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TRELLIS2",
+        "ver": "1873571a55232310f0464bed8ca17d3f1436e952",
+        "Node name for S&R": "Trellis2GetConditioning",
+        "aux_id": "PozzettiAndrea/ComfyUI-TRELLIS2"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        -370.05066743827155,
+        173.18005738811723
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            42
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.5.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "T.png",
+        "image"
+      ]
+    },
+    {
+      "id": 65,
+      "type": "Trellis2ImageToShape",
+      "pos": [
+        280.11419432747346,
+        50.467656037828476
+      ],
+      "size": [
+        308.890625,
+        242
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "shape_pipeline",
+          "type": "TRELLIS2_SHAPE_PIPELINE",
+          "link": 119
+        },
+        {
+          "name": "conditioning",
+          "type": "TRELLIS2_CONDITIONING",
+          "link": 118
+        }
+      ],
+      "outputs": [
+        {
+          "name": "shape_slat",
+          "type": "TRELLIS2_SHAPE_SLAT",
+          "links": null
+        },
+        {
+          "name": "subs",
+          "type": "TRELLIS2_SUBS",
+          "links": null
+        },
+        {
+          "name": "mesh",
+          "type": "TRIMESH",
+          "links": [
+            134
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TRELLIS2",
+        "ver": "c7089ebab7c126ac3c0829f27f359d549de56bf6",
+        "Node name for S&R": "Trellis2ImageToShape"
+      },
+      "widgets_values": [
+        261620082,
+        "randomize",
+        "1024",
+        7.5,
+        12,
+        7.5,
+        12
+      ]
+    },
+    {
+      "id": 87,
+      "type": "GeomPackRemesh",
+      "pos": [
+        324.9394138646338,
+        517.2312960952976
+      ],
+      "size": [
+        210,
+        126
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "trimesh",
+          "type": "TRIMESH",
+          "link": 135
+        }
+      ],
+      "outputs": [
+        {
+          "name": "remeshed_mesh",
+          "type": "TRIMESH",
+          "links": [
+            136
+          ]
+        },
+        {
+          "name": "info",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geometrypack",
+        "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
+        "Node name for S&R": "GeomPackRemesh"
+      },
+      "widgets_values": [
+        "cumesh",
+        1,
+        3,
+        "true",
+        1,
+        500000,
+        1,
+        5000,
+        "true",
+        0
+      ]
+    },
+    {
+      "id": 69,
+      "type": "GeomPackPreviewMeshVTK",
+      "pos": [
+        626.2970951950282,
+        37.71403615932569
+      ],
+      "size": [
+        512,
+        722
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "trimesh",
+          "shape": 7,
+          "type": "TRIMESH",
+          "link": 136
+        },
+        {
+          "name": "voxelgrid",
+          "shape": 7,
+          "type": "VOXELGRID",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfyui-geometrypack",
+        "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
+        "Node name for S&R": "GeomPackPreviewMeshVTK"
+      },
+      "widgets_values": [
+        "fields",
+        ""
+      ]
+    },
+    {
+      "id": 86,
+      "type": "GeomPackFillHoles",
+      "pos": [
+        328.6201185851923,
+        361.678745894136
+      ],
+      "size": [
+        210,
+        102
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mesh",
+          "type": "TRIMESH",
+          "link": 134
+        }
+      ],
+      "outputs": [
+        {
+          "name": "filled_mesh",
+          "type": "TRIMESH",
+          "links": [
+            135
+          ]
+        },
+        {
+          "name": "info",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geometrypack",
+        "ver": "df6bf3d73d0dda9c6ad7428eb58a00dc8cbaf6ed",
+        "Node name for S&R": "GeomPackFillHoles"
+      },
+      "widgets_values": [
+        "cumesh",
+        0.03,
+        1000
+      ]
+    }
+  ],
+  "links": [
+    [
+      13,
+      1,
+      1,
+      11,
+      0,
+      "MASK"
+    ],
+    [
+      15,
+      11,
+      0,
+      10,
+      0,
+      "MASK"
+    ],
+    [
+      37,
+      29,
+      0,
+      28,
+      0,
+      "TRELLIS2_DINOV3"
+    ],
+    [
+      41,
+      11,
+      0,
+      28,
+      2,
+      "MASK"
+    ],
+    [
+      42,
+      1,
+      0,
+      28,
+      1,
+      "IMAGE"
+    ],
+    [
+      118,
+      28,
+      0,
+      65,
+      1,
+      "TRELLIS2_CONDITIONING"
+    ],
+    [
+      119,
+      32,
+      0,
+      65,
+      0,
+      "TRELLIS2_SHAPE_PIPELINE"
+    ],
+    [
+      134,
+      65,
+      2,
+      86,
+      0,
+      "TRIMESH"
+    ],
+    [
+      135,
+      86,
+      0,
+      87,
+      0,
+      "TRIMESH"
+    ],
+    [
+      136,
+      87,
+      0,
+      69,
+      0,
+      "TRIMESH"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6855477887646165,
+      "offset": [
+        858.0060097292856,
+        315.8531611458321
+      ]
+    },
+    "frontendVersion": "1.34.9",
+    "workflowRendererVersion": "LG"
+  },
+  "version": 0.4
+}
