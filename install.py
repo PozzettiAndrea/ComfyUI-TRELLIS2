@@ -232,10 +232,10 @@ def is_package_installed(import_name):
         return False
 
 
-def get_direct_wheel_url(package_config):
+def get_direct_wheel_urls(package_config):
     """
-    Build a direct wheel URL from GitHub releases.
-    Returns URL string or None if not available.
+    Build direct wheel URLs from GitHub releases.
+    Returns list of URLs to try (new format first, then old format).
     """
     wheel_release_base = package_config.get("wheel_release_base")
     wheel_version = package_config.get("wheel_version")
@@ -243,24 +243,39 @@ def get_direct_wheel_url(package_config):
 
     # flash_attn uses different URL building
     if wheel_type == "flash_attn":
-        return None  # Handled by get_flash_attn_wheel_urls
+        return []  # Handled by get_flash_attn_wheel_urls
 
     if not wheel_release_base or not wheel_version:
-        return None
+        return []
 
     cuda_suffix = get_wheel_cuda_suffix()
     if not cuda_suffix:
-        return None
+        return []
+
+    torch_ver, _ = get_torch_info()
+    if not torch_ver:
+        return []
 
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
-
-    # Build wheel filename: package-version+cuda-cpXX-cpXX-platform.whl
     package_name = package_config["name"]
-    wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
 
-    # Release tag is typically the CUDA suffix (e.g., cu124, cu128)
-    return f"{wheel_release_base}/{cuda_suffix}/{wheel_name}"
+    # Extract torch major.minor for release tag (e.g., "2.8.0" -> "280")
+    torch_parts = torch_ver.split('.')[:2]
+    torch_tag = f"{torch_parts[0]}{torch_parts[1]}0"  # "2.8" -> "280"
+
+    urls = []
+
+    # New format: tag=cu128-torch280, wheel=package-version-cpXX-cpXX-platform.whl (no cuda suffix)
+    new_tag = f"{cuda_suffix}-torch{torch_tag}"
+    new_wheel = f"{package_name}-{wheel_version}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    urls.append(f"{wheel_release_base}/{new_tag}/{new_wheel}")
+
+    # Old format: tag=cu128, wheel=package-version+cu128-cpXX-cpXX-platform.whl (with cuda suffix)
+    old_wheel = f"{package_name}-{wheel_version}+{cuda_suffix}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    urls.append(f"{wheel_release_base}/{cuda_suffix}/{old_wheel}")
+
+    return urls
 
 
 def get_flash_attn_wheel_urls():
@@ -298,36 +313,40 @@ def get_flash_attn_wheel_urls():
 
 def try_install_from_direct_url(package_config):
     """
-    Try installing a package from a direct GitHub release wheel URL.
+    Try installing a package from direct GitHub release wheel URLs.
+    Tries multiple URL formats (new torch-versioned first, then old).
     Returns True if successful, False otherwise.
     """
-    wheel_url = get_direct_wheel_url(package_config)
-    if not wheel_url:
+    urls = get_direct_wheel_urls(package_config)
+    if not urls:
         return False
 
     package_name = package_config["name"]
-    print(f"[ComfyUI-TRELLIS2] Trying direct wheel URL: {wheel_url}")
 
-    try:
-        result = subprocess.run([
-            sys.executable, "-m", "pip", "install", wheel_url
-        ], capture_output=True, text=True, timeout=300)
+    for wheel_url in urls:
+        print(f"[ComfyUI-TRELLIS2] Trying: {wheel_url}")
 
-        if result.returncode == 0:
-            print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from direct wheel URL")
-            return True
-        else:
-            if result.stderr and "404" in result.stderr:
-                print(f"[ComfyUI-TRELLIS2] Wheel not found at URL (404)")
-            elif result.stderr:
-                print(f"[ComfyUI-TRELLIS2] Direct URL install failed: {result.stderr[:200]}")
-            return False
-    except subprocess.TimeoutExpired:
-        print(f"[ComfyUI-TRELLIS2] Direct URL install timed out")
-        return False
-    except Exception as e:
-        print(f"[ComfyUI-TRELLIS2] Direct URL install error: {e}")
-        return False
+        try:
+            result = subprocess.run([
+                sys.executable, "-m", "pip", "install", wheel_url
+            ], capture_output=True, text=True, timeout=300)
+
+            if result.returncode == 0:
+                print(f"[ComfyUI-TRELLIS2] [OK] Installed {package_name} from wheel")
+                return True
+            else:
+                if result.stderr and "404" in result.stderr:
+                    continue  # Try next URL
+                elif result.stderr and ("not found" in result.stderr.lower() or "no such file" in result.stderr.lower()):
+                    continue  # Try next URL
+        except subprocess.TimeoutExpired:
+            print(f"[ComfyUI-TRELLIS2] Download timed out")
+            continue
+        except Exception as e:
+            continue
+
+    print(f"[ComfyUI-TRELLIS2] No wheel found at any URL for {package_name}")
+    return False
 
 
 def try_install_from_wheel(package_name, wheel_index_url):
