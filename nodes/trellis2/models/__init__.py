@@ -65,7 +65,6 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     """
     import os
     import json
-    import shutil
     from safetensors.torch import load_file
 
     # Check if it's a direct local path
@@ -93,16 +92,12 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
             config_file = local_config
             model_file = local_weights
         else:
+            # Download directly to models folder (no intermediate HF cache)
             from huggingface_hub import hf_hub_download
             print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
-            hf_config = hf_hub_download(repo_id, f"{model_name}.json")
+            hf_hub_download(repo_id, f"{model_name}.json", local_dir=models_dir)
             print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
-            hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
-
-            # Copy to local models folder
-            print(f"[TRELLIS2]   Caching to {models_dir}...", file=sys.stderr, flush=True)
-            shutil.copy2(hf_config, local_config)
-            shutil.copy2(hf_weights, local_weights)
+            hf_hub_download(repo_id, f"{model_name}.safetensors", local_dir=models_dir)
 
             config_file = local_config
             model_file = local_weights

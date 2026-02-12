@@ -38,8 +38,15 @@ def from_pretrained(path: str):
     if is_local:
         config_file = f"{path}/pipeline.json"
     else:
-        from huggingface_hub import hf_hub_download
-        config_file = hf_hub_download(path, "pipeline.json")
+        from .base import _get_trellis2_models_dir
+        models_dir = _get_trellis2_models_dir()
+        cached_config = os.path.join(models_dir, "pipeline.json")
+        if os.path.exists(cached_config):
+            config_file = cached_config
+        else:
+            from huggingface_hub import hf_hub_download
+            hf_hub_download(path, "pipeline.json", local_dir=models_dir)
+            config_file = cached_config
 
     with open(config_file, 'r') as f:
         config = json.load(f)
