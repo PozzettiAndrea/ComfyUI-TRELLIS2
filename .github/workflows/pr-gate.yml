@@ -1,0 +1,13 @@
+name: PR Gate
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  gate:
+    uses: PozzettiAndrea/comfy-test/.github/workflows/pr-gate.yml@main
+    with:
+      test-workflow-name: "Workflow Tests"
