@@ -1,6 +1,12 @@
 # ComfyUI-TRELLIS2
 
-**[View Workflow Gallery](https://pozzettiandrea.github.io/ComfyUI-TRELLIS2/)**
+<div align="center">
+<a href="https://pozzettiandrea.github.io/ComfyUI-TRELLIS2/">
+<img src="https://pozzettiandrea.github.io/ComfyUI-TRELLIS2/gallery-preview.png" alt="Workflow Test Gallery" width="800">
+</a>
+<br>
+<b><a href="https://pozzettiandrea.github.io/ComfyUI-TRELLIS2/">View Live Test Gallery →</a></b>
+</div>
 
 ComfyUI custom nodes for [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) - Microsoft's state-of-the-art image-to-3D generation model.
 

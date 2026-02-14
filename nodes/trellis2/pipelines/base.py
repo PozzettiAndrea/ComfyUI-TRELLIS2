@@ -55,7 +55,6 @@ class Pipeline:
         """
         import os
         import json
-        import shutil
 
         is_local = os.path.exists(f"{path}/pipeline.json")
 
@@ -72,9 +71,7 @@ class Pipeline:
         else:
             from huggingface_hub import hf_hub_download
             print(f"[TRELLIS2] Downloading pipeline config from HuggingFace...", file=sys.stderr, flush=True)
-            hf_config = hf_hub_download(path, "pipeline.json")
-            # Cache it
-            shutil.copy2(hf_config, cached_config)
+            hf_hub_download(path, "pipeline.json", local_dir=models_dir)
             config_file = cached_config
 
         with open(config_file, 'r') as f:
@@ -142,7 +139,6 @@ class Pipeline:
         This downloads files if needed but does NOT load them into GPU memory.
         """
         import os
-        import shutil
 
         # Parse the path to determine if local or HuggingFace
         path_parts = model_path.split('/')
@@ -165,17 +161,12 @@ class Pipeline:
             # Already cached
             return local_weights
 
-        # Download from HuggingFace
+        # Download directly to models folder (no intermediate HF cache)
         from huggingface_hub import hf_hub_download
         print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
-        hf_config = hf_hub_download(repo_id, f"{model_name}.json")
+        hf_hub_download(repo_id, f"{model_name}.json", local_dir=models_dir)
         print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
-        hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
-
-        # Copy to local models folder
-        print(f"[TRELLIS2]   Caching to {models_dir}...", file=sys.stderr, flush=True)
-        shutil.copy2(hf_config, local_config)
-        shutil.copy2(hf_weights, local_weights)
+        hf_hub_download(repo_id, f"{model_name}.safetensors", local_dir=models_dir)
 
         return local_weights
 
