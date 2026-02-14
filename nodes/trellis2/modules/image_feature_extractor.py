@@ -174,24 +174,13 @@ class DinoV3FeatureExtractor:
             self.model = _load_dinov3_from_safetensors(local_safetensors)
             print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         else:
-            # Priority 2: Use HuggingFace (cache or download)
-            local_files_only = _is_offline_mode() or _is_model_cached(actual_model_name, cache_dir)
-            if local_files_only:
-                print(f"[ComfyUI-TRELLIS2] Loading DINOv3 from HF cache: {actual_model_name}...")
-            else:
-                print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...")
-                print(f"[ComfyUI-TRELLIS2] TIP: For cleaner storage, download model.safetensors directly to {cache_dir}/")
-
-            # Suppress verbose weight loading progress bars
-            import transformers
-            old_verbosity = transformers.logging.get_verbosity()
-            transformers.logging.set_verbosity_error()
-            try:
-                self.model = DINOv3ViTModel.from_pretrained(
-                    actual_model_name, cache_dir=cache_dir, local_files_only=local_files_only
-                )
-            finally:
-                transformers.logging.set_verbosity(old_verbosity)
+            # Priority 2: Download safetensors directly to models/dinov3/
+            # (avoids HF cache structure that _find_local_safetensors can't find)
+            from huggingface_hub import hf_hub_download
+            print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...", file=sys.stderr, flush=True)
+            hf_hub_download(actual_model_name, "model.safetensors", local_dir=cache_dir)
+            local_safetensors = os.path.join(cache_dir, "model.safetensors")
+            self.model = _load_dinov3_from_safetensors(local_safetensors)
             print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
 
         self.model.eval()
