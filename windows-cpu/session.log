@@ -1,0 +1,243 @@
+[00:00] Crash dump logging enabled: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test\crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] Setting up Windows isolation...
+[00:00]   Isolated TEMP: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp
+[00:00]   Isolation active
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Setting up ComfyUI...
+[00:00] Cloning ComfyUI (latest)...
+[00:00] Running: git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI
+[00:02] Creating virtual environment...
+[00:02] Running: C:\hostedtoolcache\windows\Python\3.13.11\x64\python.exe -m venv C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv
+[00:07] Installing uv into venv...
+[00:07] Running: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Scripts\python.exe -m pip install uv
+[00:09]   Collecting uv
+[00:09]     Using cached uv-0.9.27-py3-none-win_amd64.whl.metadata (12 kB)
+[00:09]   Using cached uv-0.9.27-py3-none-win_amd64.whl (23.4 MB)
+[00:09]   Installing collected packages: uv
+[00:09]   Successfully installed uv-0.9.27
+[00:09] Installing PyTorch (CPU)...
+[00:09] Running: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Scripts\python.exe -m uv pip install torch==2.8.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+[01:01] Installing ComfyUI requirements...
+[01:01] Running: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Scripts\python.exe -m uv pip install -r C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\requirements.txt
+[01:29] Installing custom node...
+[01:29] Copying ComfyUI-TRELLIS2 to custom_nodes/...
+[01:29] Installing node requirements...
+[01:29] Running: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Scripts\python.exe -m uv pip install -r C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
+[01:30] Running install.py...
+[01:30] Running: C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Scripts\python.exe C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
+[04:03]   Installing 1 node dependencies...
+[04:03]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[04:03]     Warning: Failed to install ComfyUI-GeometryPack: Failed to clone https://github.com/PozzettiAndrea/ComfyUI-GeometryPack: Cloning into 'C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-GeometryPack'...
+[04:03]   Updating files:  15% (899/5666)
+[04:03]   Updating files:  16% (907/5666)
+[04:03]   Updating files:  17% (964/5666)
+[04:03]   Updating files:  18% (1020/5666)
+[04:03]   Updating files:  19% (1077/5666)
+[04:03]   Updating files:  20% (1134/5666)
+[04:03]   Updating files:  21% (1190/5666)
+[04:03]   Updating files:  22% (1247/5666)
+[04:03]   Updating files:  23% (1304/5666)
+[04:03]   Updating files:  24% (1360/5666)
+[04:03]   Updating files:  25% (1417/5666)
+[04:03]   Updating files:  26% (1474/5666)
+[04:03]   Updating files:  27% (1530/5666)
+[04:03]   Updating files:  28% (1587/5666)
+[04:03]   Updating files:  28% (1624/5666)
+[04:03]   Updating files:  29% (1644/5666)
+[04:03]   Updating files:  30% (1700/5666)
+[04:03]   error: unable to create file build_vtk_bundle/node_modules/@kitware/vtk.js/_virtual/rollup-plugin-worker-loader__module_Sources/Interaction/Widgets/PiecewiseGaussianWidget/ComputeHistogram.worker.js: Filename too long
+[04:03]   Updating files:  31% (1757/5666)
+[04:03]   Updating files:  32% (1814/5666)
+[04:03]   Updating files:  33% (1870/5666)
+[04:03]   Updating files:  34% (1927/5666)
+[04:03]   Updating files:  35% (1984/5666)
+[04:03]   Updating files:  36% (2040/5666)
+[04:03]   Updating files:  37% (2097/5666)
+[04:03]   Updating files:  38% (2154/5666)
+[04:03]   Updating files:  39% (2210/5666)
+[04:03]   Updating files:  40% (2267/5666)
+[04:03]   Updating files:  41% (2324/5666)
+[04:03]   Updating files:  42% (2380/5666)
+[04:03]   Updating files:  43% (2437/5666)
+[04:03]   Updating files:  44% (2494/5666)
+[04:03]   Updating files:  45% (2550/5666)
+[04:03]   Updating files:  45% (2606/5666)
+[04:03]   Updating files:  46% (2607/5666)
+[04:03]   Updating files:  47% (2664/5666)
+[04:03]   Updating files:  48% (2720/5666)
+[04:03]   Updating files:  49% (2777/5666)
+[04:03]   Updating files:  50% (2833/5666)
+[04:03]   Updating files:  51% (2890/5666)
+[04:03]   Updating files:  52% (2947/5666)
+[04:03]   Updating files:  53% (3003/5666)
+[04:03]   Updating files:  54% (3060/5666)
+[04:03]   Updating files:  55% (3117/5666)
+[04:03]   Updating files:  56% (3173/5666)
+[04:03]   Updating files:  57% (3230/5666)
+[04:03]   Updating files:  58% (3287/5666)
+[04:03]   Updating files:  59% (3343/5666)
+[04:03]   Updating files:  60% (3400/5666)
+[04:03]   Updating files:  61% (3457/5666)
+[04:03]   Updating files:  62% (3513/5666)
+[04:03]   Updating files:  63% (3570/5666)
+[04:03]   Updating files:  64% (3627/5666)
+[04:03]   Updating files:  65% (3683/5666)
+[04:03]   Updating files:  66% (3740/5666)
+[04:03]   Updating files:  67% (3797/5666)
+[04:03]   Updating files:  68% (3853/5666)
+[04:03]   Updating files:  68% (3901/5666)
+[04:03]   Updating files:  69% (3910/5666)
+[04:03]   Updating files:  70% (3967/5666)
+[04:03]   Updating files:  71% (4023/5666)
+[04:03]   Updating files:  72% (4080/5666)
+[04:03]   Updating files:  73% (4137/5666)
+[04:03]   Updating files:  74% (4193/5666)
+[04:03]   Updating files:  75% (4250/5666)
+[04:03]   Updating files:  76% (4307/5666)
+[04:03]   Updating files:  77% (4363/5666)
+[04:03]   Updating files:  78% (4420/5666)
+[04:03]   Updating files:  79% (4477/5666)
+[04:03]   Updating files:  80% (4533/5666)
+[04:03]   Updating files:  81% (4590/5666)
+[04:03]   Updating files:  82% (4647/5666)
+[04:03]   Updating files:  83% (4703/5666)
+[04:03]   Updating files:  83% (4717/5666)
+[04:03]   Updating files:  84% (4760/5666)
+[04:03]   Updating files:  85% (4817/5666)
+[04:03]   Updating files:  86% (4873/5666)
+[04:03]   Updating files:  87% (4930/5666)
+[04:03]   Updating files:  88% (4987/5666)
+[04:03]   Updating files:  89% (5043/5666)
+[04:03]   Updating files:  90% (5100/5666)
+[04:03]   Updating files:  91% (5157/5666)
+[04:03]   Updating files:  92% (5213/5666)
+[04:03]   Updating files:  93% (5270/5666)
+[04:03]   Updating files:  94% (5327/5666)
+[04:03]   Updating files:  95% (5383/5666)
+[04:03]   Updating files:  96% (5440/5666)
+[04:03]   Updating files:  96% (5463/5666)
+[04:03]   Updating files:  97% (5497/5666)
+[04:03]   Updating files:  98% (5553/5666)
+[04:03]   Updating files:  99% (5610/5666)
+[04:03]   Updating files: 100% (5666/5666)
+[04:03]   Updating files: 100% (5666/5666), done.
+[04:03]   fatal: unable to checkout working tree
+[04:03]   warning: Clone succeeded, but checkout failed.
+[04:03]   You can inspect what was checked out with 'git status'
+[04:03]   and retry with 'git restore --source=HEAD :/'
+[04:03]   No packages to install
+[04:03]   
+[04:03]   [isolated] Installing: nodes\gpu
+[04:03]   Detected CUDA 12.8 -> PyTorch 2.8
+[04:03]   Pixi not found, downloading...
+[04:03]   Installed pixi to: C:\Users\runneradmin\.local\bin\pixi.exe
+[04:03]   Generated C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\pixi.toml
+[04:03]   Running pixi install...
+[04:03]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[04:03]     Installing nvdiffrast
+[04:03]     Installing flex_gemm
+[04:03]     Installing cumesh
+[04:03]     Installing o_voxel
+[04:03]     Installing nvdiffrec_render
+[04:03]     Installing flash-attn
+[04:03]   CUDA package install failed for flash-attn:
+[04:03]     error: subprocess-exited-with-error
+[04:03]     
+[04:03]     Getting requirements to build wheel did not run successfully.
+[04:03]     exit code: 1
+[04:03]     
+[04:03]     [25 lines of output]
+[04:03]     C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+[04:03]       warn(
+[04:03]     Traceback (most recent call last):
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+[04:03]         main()
+[04:03]         ~~~~^^
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+[04:03]         json_out["return_val"] = hook(**hook_input["kwargs"])
+[04:03]                                  ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+[04:03]         return hook(config_settings)
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+[04:03]         return self._get_build_requires(config_settings, requirements=[])
+[04:03]                ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+[04:03]         self.run_setup()
+[04:03]         ~~~~~~~~~~~~~~^^
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+[04:03]         super().run_setup(setup_script=setup_script)
+[04:03]         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[04:03]       File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+[04:03]         exec(code, locals())
+[04:03]         ~~~~^^^^^^^^^^^^^^^^
+[04:03]       File "<string>", line 22, in <module>
+[04:03]     ModuleNotFoundError: No module named 'torch'
+[04:03]     [end of output]
+[04:03]     
+[04:03]     note: This error originates from a subprocess, and is likely not a problem with pip.
+[04:03]   ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+[04:03] Command failed with code 1
+[04:03] stderr: Traceback (most recent call last):
+  File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py", line 2, in <module>
+    install()
+    ~~~~~~~^^
+  File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Lib\site-packages\comfy_env\install.py", line 74, in install
+    _install_isolated_subdirs(node_dir, log, dry_run)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Lib\site-packages\comfy_env\install.py", line 318, in _install_isolated_subdirs
+    pixi_install(sub_cfg, sub_dir, log)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\venv\Lib\site-packages\comfy_env\pixi\core.py", line 356, in pixi_install
+    raise RuntimeError(f"CUDA package install failed: {result.stderr}")
+RuntimeError: CUDA package install failed:   error: subprocess-exited-with-error
+  
+  Getting requirements to build wheel did not run successfully.
+  exit code: 1
+  
+  [25 lines of output]
+  C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+    warn(
+  Traceback (most recent call last):
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+      main()
+      ~~~~^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+      json_out["return_val"] = hook(**hook_input["kwargs"])
+                               ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+      return hook(config_settings)
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+      return self._get_build_requires(config_settings, requirements=[])
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+      self.run_setup()
+      ~~~~~~~~~~~~~~^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+      super().run_setup(setup_script=setup_script)
+      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\comfy_test_x92fc7io\temp\pip-build-env-wzxvsvg5\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+      exec(code, locals())
+      ~~~~^^^^^^^^^^^^^^^^
+    File "<string>", line 22, in <module>
+  ModuleNotFoundError: No module named 'torch'
+  [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+
+
+[04:37] Tearing down Windows isolation...
+[04:37]   Environment restored
+[04:37]   Isolation torn down
+[04:37] 
+windows: FAILED (unexpected error)
+[04:37] Error: Command '['C:\\Users\\runneradmin\\AppData\\Local\\Temp\\comfy_test_x92fc7io\\venv\\Scripts\\python.exe', 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\comfy_test_x92fc7io\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\install.py']' returned non-zero exit status 1.

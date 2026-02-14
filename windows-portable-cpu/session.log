@@ -1,0 +1,211 @@
+[00:00] Crash dump logging enabled: D:\a\ComfyUI-TRELLIS2\ComfyUI-TRELLIS2\.comfy-test\crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Setting up ComfyUI...
+[00:00] Fetching latest release version...
+[00:00] Latest version: v0.11.0
+[00:00] Downloading portable ComfyUI from https://github.com/comfyanonymous/ComfyUI/releases/download/v0.11.0/ComfyUI_windows_portable_nvidia.7z...
+[00:02]   Downloaded: 10%
+[00:03]   Downloaded: 20%
+[00:04]   Downloaded: 30%
+[00:05]   Downloaded: 40%
+[00:06]   Downloaded: 50%
+[00:07]   Downloaded: 60%
+[00:07]   Downloaded: 70%
+[00:08]   Downloaded: 80%
+[00:09]   Downloaded: 90%
+[00:10]   Downloaded: 100%
+[00:10] Downloaded to C:\Users\runneradmin\.comfy-test\cache\portable\ComfyUI_portable_v0.11.0.7z
+[00:10] Extracting to cache: C:\Users\runneradmin\.comfy-test\cache\portable\ComfyUI_portable_v0.11.0
+[00:10] Extracting ComfyUI_portable_v0.11.0.7z...
+[00:10] Using 7z: 7z
+[02:09] Extracted to C:\Users\runneradmin\.comfy-test\cache\portable\ComfyUI_portable_v0.11.0
+[02:09] Extracting to: C:\Users\runneradmin\Desktop\portabletest
+[02:09] Extracting ComfyUI_portable_v0.11.0.7z...
+[02:09] Using 7z: 7z
+[04:30] Extracted to C:\Users\runneradmin\Desktop\portabletest
+[04:30] Installing custom node...
+[04:30] Copying ComfyUI-TRELLIS2 to custom_nodes/...
+[04:31] Installing node requirements...
+[04:31] Running: C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\python_embeded\python.exe -m pip install -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
+[04:42]   Collecting comfy-env>=0.0.11 (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[04:42]     Downloading comfy_env-0.1.1-py3-none-any.whl.metadata (6.9 kB)
+[04:42]   Collecting trimesh>=3.0.0 (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 5))
+[04:42]     Downloading trimesh-4.11.1-py3-none-any.whl.metadata (13 kB)
+[04:42]   Collecting plyfile (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 6))
+[04:42]     Downloading plyfile-1.1.3-py3-none-any.whl.metadata (43 kB)
+[04:42]   Collecting imageio>=2.0.0 (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 9))
+[04:42]     Downloading imageio-2.37.2-py3-none-any.whl.metadata (9.7 kB)
+[04:42]   Collecting imageio-ffmpeg>=0.4.0 (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 10))
+[04:42]     Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl.metadata (1.5 kB)
+[04:42]   Requirement already satisfied: pillow>=9.0.0 in c:\users\runneradmin\desktop\portabletest\comfyui_windows_portable\python_embeded\lib\site-packages (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 11)) (12.1.0)
+[04:42]   Requirement already satisfied: numpy>=1.21.0 in c:\users\runneradmin\desktop\portabletest\comfyui_windows_portable\python_embeded\lib\site-packages (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 14)) (2.4.1)
+[04:42]   Collecting easydict (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 15))
+[04:42]     Downloading easydict-1.13-py3-none-any.whl.metadata (4.2 kB)
+[04:42]   Requirement already satisfied: tqdm in c:\users\runneradmin\desktop\portabletest\comfyui_windows_portable\python_embeded\lib\site-packages (from -r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16)) (4.67.1)
+[04:42]   Collecting tomli-w>=1.0.0 (from comfy-env>=0.0.11->-r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[04:42]     Downloading tomli_w-1.2.0-py3-none-any.whl.metadata (5.7 kB)
+[04:42]   Collecting uv>=0.4.0 (from comfy-env>=0.0.11->-r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 2))
+[04:42]     Using cached uv-0.9.27-py3-none-win_amd64.whl.metadata (12 kB)
+[04:42]   Requirement already satisfied: colorama in c:\users\runneradmin\desktop\portabletest\comfyui_windows_portable\python_embeded\lib\site-packages (from tqdm->-r C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt (line 16)) (0.4.6)
+[04:42]   Downloading comfy_env-0.1.1-py3-none-any.whl (68 kB)
+[04:42]   Downloading trimesh-4.11.1-py3-none-any.whl (740 kB)
+[04:42]      ---------------------------------------- 740.4/740.4 kB 8.9 MB/s  0:00:00
+[04:42]   Downloading plyfile-1.1.3-py3-none-any.whl (36 kB)
+[04:42]   Downloading imageio-2.37.2-py3-none-any.whl (317 kB)
+[04:42]   Downloading imageio_ffmpeg-0.6.0-py3-none-win_amd64.whl (31.2 MB)
+[04:42]      ---------------------------------------- 31.2/31.2 MB 24.8 MB/s  0:00:01
+[04:42]   Downloading easydict-1.13-py3-none-any.whl (6.8 kB)
+[04:42]   Downloading tomli_w-1.2.0-py3-none-any.whl (6.7 kB)
+[04:42]   Using cached uv-0.9.27-py3-none-win_amd64.whl (23.4 MB)
+[04:42]   Installing collected packages: easydict, uv, trimesh, tomli-w, plyfile, imageio-ffmpeg, imageio, comfy-env
+[04:42]   
+[04:42]   Successfully installed comfy-env-0.1.1 easydict-1.13 imageio-2.37.2 imageio-ffmpeg-0.6.0 plyfile-1.1.3 tomli-w-1.2.0 trimesh-4.11.1 uv-0.9.27
+[04:42] Running install.py...
+[04:42] Running: C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\python_embeded\python.exe C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
+[07:16]   Installing 1 node dependencies...
+[07:16]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[07:16]     Warning: Failed to install ComfyUI-GeometryPack: Failed to clone https://github.com/PozzettiAndrea/ComfyUI-GeometryPack: Cloning into 'C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack'...
+[07:16]   Updating files:   6% (352/5666)
+[07:16]   Updating files:   7% (397/5666)
+[07:16]   Updating files:   8% (454/5666)
+[07:16]   Updating files:   9% (510/5666)
+[07:16]   Updating files:  10% (567/5666)
+[07:16]   Updating files:  11% (624/5666)
+[07:16]   Updating files:  12% (680/5666)
+[07:16]   Updating files:  13% (737/5666)
+[07:16]   Updating files:  14% (794/5666)
+[07:16]   Updating files:  14% (838/5666)
+[07:16]   Updating files:  15% (850/5666)
+[07:16]   Updating files:  16% (907/5666)
+[07:16]   Updating files:  17% (964/5666)
+[07:16]   Updating files:  18% (1020/5666)
+[07:16]   Updating files:  19% (1077/5666)
+[07:16]   Updating files:  20% (1134/5666)
+[07:16]   Updating files:  21% (1190/5666)
+[07:16]   Updating files:  22% (1247/5666)
+[07:16]   Updating files:  23% (1304/5666)
+[07:16]   Updating files:  24% (1360/5666)
+[07:16]   Updating files:  24% (1383/5666)
+[07:16]   Updating files:  25% (1417/5666)
+[07:16]   Updating files:  26% (1474/5666)
+[07:16]   Updating files:  27% (1530/5666)
+[07:16]   Updating files:  28% (1587/5666)
+[07:16]   Updating files:  29% (1644/5666)
+[07:16]   Updating files:  30% (1700/5666)
+[07:16]   fatal: cannot create directory at 'build_vtk_bundle/node_modules/@kitware/vtk.js/_virtual/rollup-plugin-worker-loader__module_Sources/Interaction/Widgets/PiecewiseGaussianWidget': Filename too long
+[07:16]   warning: Clone succeeded, but checkout failed.
+[07:16]   You can inspect what was checked out with 'git status'
+[07:16]   and retry with 'git restore --source=HEAD :/'
+[07:16]   No packages to install
+[07:16]   
+[07:16]   [isolated] Installing: nodes\gpu
+[07:16]   Detected CUDA 12.8 -> PyTorch 2.8
+[07:16]   Pixi not found, downloading...
+[07:16]   Installed pixi to: C:\Users\runneradmin\.local\bin\pixi.exe
+[07:16]   Generated C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\pixi.toml
+[07:16]   Running pixi install...
+[07:16]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[07:16]     Installing nvdiffrast
+[07:16]     Installing flex_gemm
+[07:16]     Installing cumesh
+[07:16]     Installing o_voxel
+[07:16]     Installing nvdiffrec_render
+[07:16]     Installing flash-attn
+[07:16]   CUDA package install failed for flash-attn:
+[07:16]     error: subprocess-exited-with-error
+[07:16]     
+[07:16]     Getting requirements to build wheel did not run successfully.
+[07:16]     exit code: 1
+[07:16]     
+[07:16]     [25 lines of output]
+[07:16]     C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+[07:16]       warn(
+[07:16]     Traceback (most recent call last):
+[07:16]       File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+[07:16]         main()
+[07:16]         ~~~~^^
+[07:16]       File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+[07:16]         json_out["return_val"] = hook(**hook_input["kwargs"])
+[07:16]                                  ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+[07:16]       File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+[07:16]         return hook(config_settings)
+[07:16]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+[07:16]         return self._get_build_requires(config_settings, requirements=[])
+[07:16]                ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[07:16]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+[07:16]         self.run_setup()
+[07:16]         ~~~~~~~~~~~~~~^^
+[07:16]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+[07:16]         super().run_setup(setup_script=setup_script)
+[07:16]         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[07:16]       File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+[07:16]         exec(code, locals())
+[07:16]         ~~~~^^^^^^^^^^^^^^^^
+[07:16]       File "<string>", line 22, in <module>
+[07:16]     ModuleNotFoundError: No module named 'torch'
+[07:16]     [end of output]
+[07:16]     
+[07:16]     note: This error originates from a subprocess, and is likely not a problem with pip.
+[07:16]   ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+[07:16] Command failed with code 1
+[07:16] stderr: Traceback (most recent call last):
+  File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py", line 2, in <module>
+    install()
+    ~~~~~~~^^
+  File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\python_embeded\Lib\site-packages\comfy_env\install.py", line 74, in install
+    _install_isolated_subdirs(node_dir, log, dry_run)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\python_embeded\Lib\site-packages\comfy_env\install.py", line 318, in _install_isolated_subdirs
+    pixi_install(sub_cfg, sub_dir, log)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\python_embeded\Lib\site-packages\comfy_env\pixi\core.py", line 356, in pixi_install
+    raise RuntimeError(f"CUDA package install failed: {result.stderr}")
+RuntimeError: CUDA package install failed:   error: subprocess-exited-with-error
+  
+  Getting requirements to build wheel did not run successfully.
+  exit code: 1
+  
+  [25 lines of output]
+  C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\_vendor\wheel\bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+    warn(
+  Traceback (most recent call last):
+    File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 389, in <module>
+      main()
+      ~~~~^^
+    File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 373, in main
+      json_out["return_val"] = hook(**hook_input["kwargs"])
+                               ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\Desktop\portabletest\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\gpu\.pixi\envs\default\Lib\site-packages\pip\_vendor\pyproject_hooks\_in_process\_in_process.py", line 143, in get_requires_for_build_wheel
+      return hook(config_settings)
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 333, in get_requires_for_build_wheel
+      return self._get_build_requires(config_settings, requirements=[])
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 301, in _get_build_requires
+      self.run_setup()
+      ~~~~~~~~~~~~~~^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 518, in run_setup
+      super().run_setup(setup_script=setup_script)
+      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Users\runneradmin\AppData\Local\Temp\pip-build-env-6x8ba14j\overlay\Lib\site-packages\setuptools\build_meta.py", line 317, in run_setup
+      exec(code, locals())
+      ~~~~^^^^^^^^^^^^^^^^
+    File "<string>", line 22, in <module>
+  ModuleNotFoundError: No module named 'torch'
+  [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+ERROR: Failed to build 'flash-attn' when getting requirements to build wheel
+
+
+[07:16] 
+windows-portable: FAILED (unexpected error)
+[07:16] Error: Command '['C:\\Users\\runneradmin\\Desktop\\portabletest\\ComfyUI_windows_portable\\python_embeded\\python.exe', 'C:\\Users\\runneradmin\\Desktop\\portabletest\\ComfyUI_windows_portable\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\install.py']' returned non-zero exit status 1.
