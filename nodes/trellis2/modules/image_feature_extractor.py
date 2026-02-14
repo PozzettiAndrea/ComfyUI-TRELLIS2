@@ -20,26 +20,27 @@ DINOV3_MODEL_REMAP = {
 }
 
 # Embedded config for DINOv3 ViT-L (avoids needing config.json download)
+# Parameter names must match DINOv3ViTConfig (transformers>=4.56.0) exactly.
 DINOV3_VITL_CONFIG = {
     "hidden_size": 1024,
+    "intermediate_size": 4096,
     "num_hidden_layers": 24,
     "num_attention_heads": 16,
-    "mlp_ratio": 4,
     "hidden_act": "gelu",
-    "hidden_dropout_prob": 0.0,
-    "attention_probs_dropout_prob": 0.0,
+    "attention_dropout": 0.0,
     "initializer_range": 0.02,
     "layer_norm_eps": 1e-6,
     "image_size": 512,
     "patch_size": 16,
     "num_channels": 3,
-    "qkv_bias": True,
+    "query_bias": True,
+    "value_bias": True,
+    "proj_bias": True,
+    "mlp_bias": True,
     "layerscale_value": 1e-5,
     "drop_path_rate": 0.4,
-    "use_swiglu_ffn": True,
+    "use_gated_mlp": False,
     "num_register_tokens": 4,
-    "interpolate_pos_encoding": True,
-    "interpolate_offset": 0.0,
     "model_type": "dinov3_vit",
 }
 
