@@ -65,7 +65,6 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     """
     import os
     import json
-    import shutil
     from safetensors.torch import load_file
 
     # Check if it's a direct local path
@@ -93,16 +92,12 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
             config_file = local_config
             model_file = local_weights
         else:
+            # Download directly to models folder (no intermediate HF cache)
             from huggingface_hub import hf_hub_download
             print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
-            hf_config = hf_hub_download(repo_id, f"{model_name}.json")
+            hf_hub_download(repo_id, f"{model_name}.json", local_dir=models_dir)
             print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
-            hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
-
-            # Copy to local models folder
-            print(f"[TRELLIS2]   Caching to {models_dir}...", file=sys.stderr, flush=True)
-            shutil.copy2(hf_config, local_config)
-            shutil.copy2(hf_weights, local_weights)
+            hf_hub_download(repo_id, f"{model_name}.safetensors", local_dir=models_dir)
 
             config_file = local_config
             model_file = local_weights
@@ -110,16 +105,41 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     with open(config_file, 'r') as f:
         config = json.load(f)
 
+    import torch
+    import torch.nn.init as init
+
     # Auto-detect device: prefer CUDA, fallback to CPU
     if device is None:
-        import torch
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    print(f"[TRELLIS2]   Building model: {config['name']}", file=sys.stderr, flush=True)
-    model = __getattr__(config['name'])(**config['args'], **kwargs)
-    model.to(device)  # Move empty model to GPU before loading weights
+    # Skip ALL random weight initialization during construction:
+    # 1. Monkey-patch initialize_weights (the model-level sweep)
+    # 2. Patch torch.nn.init functions (catches per-layer reset_parameters in
+    #    nn.Linear, nn.LayerNorm, etc.)
+    # All weights are immediately overwritten by safetensors below.
+    model_class = __getattr__(config['name'])
+    _orig_init_weights = getattr(model_class, 'initialize_weights', None)
+    if _orig_init_weights:
+        model_class.initialize_weights = lambda self: None
+
+    _init_funcs = ['normal_', 'kaiming_uniform_', 'uniform_', 'zeros_', 'ones_',
+                   'kaiming_normal_', 'xavier_uniform_', 'xavier_normal_', 'constant_']
+    _orig_inits = {name: getattr(init, name) for name in _init_funcs if hasattr(init, name)}
+    _noop = lambda tensor, *args, **kwargs: tensor
+    for name in _orig_inits:
+        setattr(init, name, _noop)
+
+    try:
+        print(f"[TRELLIS2]   Building model: {config['name']} (skip_init)...", file=sys.stderr, flush=True)
+        model = model_class(**config['args'], **kwargs)
+    finally:
+        for name, fn in _orig_inits.items():
+            setattr(init, name, fn)
+        if _orig_init_weights:
+            model_class.initialize_weights = _orig_init_weights
+    model.to(device)
     print(f"[TRELLIS2]   Loading weights directly to {device}...", file=sys.stderr, flush=True)
-    model.load_state_dict(load_file(model_file, device=device), strict=False)
+    model.load_state_dict(load_file(model_file, device=str(device)), strict=False)
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:
