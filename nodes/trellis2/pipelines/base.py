@@ -44,7 +44,8 @@ class Pipeline:
     def from_pretrained(
         path: str,
         models_to_load: list = None,
-        enable_disk_offload: bool = False
+        enable_disk_offload: bool = False,
+        dtype=None,
     ) -> "Pipeline":
         """
         Load a pretrained model.
@@ -121,12 +122,14 @@ class Pipeline:
                 _models[k] = models.from_pretrained(
                     model_path,
                     disk_offload_manager=disk_offload_manager,
-                    model_key=k
+                    model_key=k,
+                    dtype=dtype,
                 )
                 log.info(f"Loaded {k} successfully")
 
         new_pipeline = Pipeline(_models, disk_offload_manager=disk_offload_manager)
         new_pipeline._pretrained_args = args
+        new_pipeline._dtype = dtype
         if enable_disk_offload:
             log.info(f"All {total_models} models registered for progressive loading!")
         else:
@@ -231,7 +234,7 @@ class Pipeline:
                 config_path = safetensors_path.replace('.safetensors', '')
                 mem_before = torch.cuda.memory_allocated() / 1024**2
                 log.info(f"Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)")
-                model = models.from_pretrained(config_path, device=str(device))
+                model = models.from_pretrained(config_path, device=str(device), dtype=getattr(self, '_dtype', None))
                 model.eval()
                 # Apply low_vram setting if enabled
                 if self.low_vram and hasattr(model, 'low_vram'):

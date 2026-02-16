@@ -38,7 +38,6 @@ def get_birefnet_models_dir():
 # (These import trellis2 modules which require CUDA extensions)
 def _import_subprocess_utils():
     """Lazy import of subprocess utilities."""
-    from .lazy_manager import get_model_manager, LazyModelManager
     from .stages import (
         run_conditioning,
         run_shape_generation,
@@ -50,8 +49,6 @@ def _import_subprocess_utils():
         smart_crop_square,
     )
     return {
-        'get_model_manager': get_model_manager,
-        'LazyModelManager': LazyModelManager,
         'run_conditioning': run_conditioning,
         'run_shape_generation': run_shape_generation,
         'run_texture_generation': run_texture_generation,
