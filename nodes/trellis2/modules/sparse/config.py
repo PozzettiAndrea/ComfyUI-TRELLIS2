@@ -10,7 +10,10 @@ Configure via:
 - ComfyUI: Trellis2Settings node
 """
 from typing import *
+import logging
 import os
+
+log = logging.getLogger("trellis2")
 
 # Lazy initialization - backends detected on first use
 _CONV: Optional[str] = None
@@ -25,10 +28,10 @@ def _detect_available_conv_backend() -> str:
     if env_backend:
         valid_backends = ['none', 'spconv', 'torchsparse', 'flex_gemm']
         if env_backend in valid_backends:
-            print(f"[SPARSE] Using conv backend from SPARSE_CONV_BACKEND env var: {env_backend}")
+            log.info(f"Using conv backend from SPARSE_CONV_BACKEND env var: {env_backend}")
             return env_backend
         else:
-            print(f"[SPARSE] Warning: Invalid SPARSE_CONV_BACKEND '{env_backend}', must be one of {valid_backends}")
+            log.warning(f"Invalid SPARSE_CONV_BACKEND '{env_backend}', must be one of {valid_backends}")
 
     # Auto-detect: try backends in priority order
     backends = ['flex_gemm', 'spconv', 'torchsparse']
@@ -36,23 +39,23 @@ def _detect_available_conv_backend() -> str:
         try:
             if backend == 'flex_gemm':
                 import flex_gemm
-                print(f"[SPARSE] Auto-detected conv backend: flex_gemm")
+                log.info("Auto-detected conv backend: flex_gemm")
                 return backend
             elif backend == 'spconv':
                 import spconv
-                print(f"[SPARSE] Auto-detected conv backend: spconv")
+                log.info("Auto-detected conv backend: spconv")
                 return backend
             elif backend == 'torchsparse':
                 import torchsparse
-                print(f"[SPARSE] Auto-detected conv backend: torchsparse")
+                log.info("Auto-detected conv backend: torchsparse")
                 return backend
         except ImportError:
             continue
         except Exception as e:
-            print(f"[SPARSE] Warning: {backend} import failed: {e}")
+            log.warning(f"{backend} import failed: {e}")
             continue
 
-    print("[SPARSE] No sparse conv backend available, using none")
+    log.info("No sparse conv backend available, using none")
     return 'none'
 
 
@@ -71,21 +74,21 @@ def _detect_available_attn_backend() -> str:
                 try:
                     import flash_attn
                     if not callable(getattr(flash_attn, 'flash_attn_varlen_func', None)):
-                        print(f"[SPARSE] Warning: flash_attn requested but not functional (common on Windows)")
-                        print(f"[SPARSE] Falling back to auto-detection...")
+                        log.warning("flash_attn requested but not functional (common on Windows)")
+                        log.info("Falling back to auto-detection...")
                         env_backend = None
                 except ImportError:
-                    print(f"[SPARSE] Warning: flash_attn requested but not installed")
-                    print(f"[SPARSE] Falling back to auto-detection...")
+                    log.warning("flash_attn requested but not installed")
+                    log.info("Falling back to auto-detection...")
                     env_backend = None
             if env_backend:
-                print(f"[SPARSE] Using attention backend from env var: {env_backend}")
+                log.info(f"Using attention backend from env var: {env_backend}")
                 return env_backend
         elif env_backend == 'naive':
             # naive is valid for dense attention but not for sparse
-            print(f"[SPARSE] Warning: 'naive' backend not supported for sparse attention, auto-detecting...")
+            log.warning("'naive' backend not supported for sparse attention, auto-detecting...")
         else:
-            print(f"[SPARSE] Warning: Invalid sparse attention backend '{env_backend}', must be one of {valid_backends}")
+            log.warning(f"Invalid sparse attention backend '{env_backend}', must be one of {valid_backends}")
 
     # Auto-detect: try backends in priority order
     backends = ['flash_attn', 'xformers', 'sdpa']
@@ -95,26 +98,26 @@ def _detect_available_attn_backend() -> str:
                 import flash_attn
                 # Verify varlen functions work - on Windows flash_attn may import but functions are None
                 if callable(getattr(flash_attn, 'flash_attn_varlen_func', None)):
-                    print(f"[SPARSE] Auto-detected attention backend: flash_attn")
+                    log.info("Auto-detected attention backend: flash_attn")
                     return backend
                 else:
-                    print(f"[SPARSE] flash_attn installed but not functional (common on Windows)")
+                    log.info("flash_attn installed but not functional (common on Windows)")
                     continue
             elif backend == 'xformers':
                 import xformers.ops as xops
                 # Verify BlockDiagonalMask exists (needed for sparse)
                 if hasattr(xops.fmha, 'BlockDiagonalMask'):
-                    print(f"[SPARSE] Auto-detected attention backend: xformers")
+                    log.info("Auto-detected attention backend: xformers")
                     return backend
             elif backend == 'sdpa':
                 # sdpa is built into PyTorch >= 2.0
                 from torch.nn.functional import scaled_dot_product_attention
-                print(f"[SPARSE] Auto-detected attention backend: sdpa")
+                log.info("Auto-detected attention backend: sdpa")
                 return backend
         except ImportError:
             continue
         except Exception as e:
-            print(f"[SPARSE] Warning: {backend} import failed: {e}")
+            log.warning(f"{backend} import failed: {e}")
             continue
 
     raise RuntimeError(
@@ -152,9 +155,9 @@ def set_conv_backend(backend: str) -> None:
         raise ValueError(f"Invalid conv backend '{backend}', must be one of {valid_backends}")
 
     if _CONV is not None and _CONV != backend:
-        print(f"[SPARSE] Changing conv backend from {_CONV} to {backend}")
+        log.info(f"Changing conv backend from {_CONV} to {backend}")
     _CONV = backend
-    print(f"[SPARSE] Conv backend set to: {backend}")
+    log.info(f"Conv backend set to: {backend}")
 
 
 def set_attn_backend(backend: str) -> None:
@@ -170,9 +173,9 @@ def set_attn_backend(backend: str) -> None:
         raise ValueError(f"Invalid attention backend '{backend}', must be one of {valid_backends}")
 
     if _ATTN is not None and _ATTN != backend:
-        print(f"[SPARSE] Changing attention backend from {_ATTN} to {backend}")
+        log.info(f"Changing attention backend from {_ATTN} to {backend}")
     _ATTN = backend
-    print(f"[SPARSE] Attention backend set to: {backend}")
+    log.info(f"Attention backend set to: {backend}")
 
 
 def get_debug() -> bool:

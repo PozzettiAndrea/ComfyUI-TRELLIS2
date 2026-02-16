@@ -1,7 +1,10 @@
 from typing import *
+import logging
 from fractions import Fraction
 import torch
 from . import config
+
+log = logging.getLogger("trellis2")
 
 
 __all__ = [
@@ -203,8 +206,8 @@ class VarLenTensor:
             try:
                 other = torch.broadcast_to(other, self.shape)
                 other = other[self.batch_boardcast_map]
-            except:
-                pass
+            except Exception as e:
+                log.debug("VarLenTensor broadcast failed, using tensor as-is: %s", e)
         if isinstance(other, VarLenTensor):
             other = other.feats
         new_feats = op(self.feats, other)
@@ -436,11 +439,11 @@ class SparseTensor(VarLenTensor):
                 for i in range(self.shape[0]):
                     assert torch.all(self.coords[self.layout[i], 0] == i), f"The data of batch {i} is not contiguous"
             except Exception as e:
-                print('Debugging information:')
-                print(f"- Shape: {self.shape}")
-                print(f"- Layout: {self.layout}")
-                print(f"- Scale: {self._scale}")
-                print(f"- Coords: {self.coords}")
+                log.debug('Debugging information:')
+                log.debug(f"- Shape: {self.shape}")
+                log.debug(f"- Layout: {self.layout}")
+                log.debug(f"- Scale: {self._scale}")
+                log.debug(f"- Coords: {self.coords}")
                 raise e
         
     @staticmethod
@@ -731,8 +734,8 @@ class SparseTensor(VarLenTensor):
             try:
                 other = torch.broadcast_to(other, self.shape)
                 other = other[self.batch_boardcast_map]
-            except:
-                pass
+            except Exception as e:
+                log.debug("SparseTensor broadcast failed, using tensor as-is: %s", e)
         if isinstance(other, VarLenTensor):
             other = other.feats
         new_feats = op(self.feats, other)

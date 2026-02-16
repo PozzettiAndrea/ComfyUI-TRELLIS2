@@ -1,5 +1,7 @@
 import importlib
-import sys
+import logging
+
+log = logging.getLogger("trellis2")
 
 __attributes = {
     # Sparse Structure
@@ -65,7 +67,7 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     """
     import os
     import json
-    from safetensors.torch import load_file
+    import comfy.utils
 
     # Check if it's a direct local path
     is_local = os.path.exists(f"{path}.json") and os.path.exists(f"{path}.safetensors")
@@ -88,15 +90,15 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         os.makedirs(os.path.dirname(local_config), exist_ok=True)
 
         if os.path.exists(local_config) and os.path.exists(local_weights):
-            print(f"[TRELLIS2]   Loading {model_name} from local cache...", file=sys.stderr, flush=True)
+            log.info(f"Loading {model_name} from local cache...")
             config_file = local_config
             model_file = local_weights
         else:
             # Download directly to models folder (no intermediate HF cache)
             from huggingface_hub import hf_hub_download
-            print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
+            log.info(f"Downloading {model_name} config...")
             hf_hub_download(repo_id, f"{model_name}.json", local_dir=models_dir)
-            print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
+            log.info(f"Downloading {model_name} weights (this may take a while)...")
             hf_hub_download(repo_id, f"{model_name}.safetensors", local_dir=models_dir)
 
             config_file = local_config
@@ -106,40 +108,19 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         config = json.load(f)
 
     import torch
-    import torch.nn.init as init
 
-    # Auto-detect device: prefer CUDA, fallback to CPU
+    # Auto-detect device
     if device is None:
-        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        import comfy.model_management
+        device = str(comfy.model_management.get_torch_device())
 
-    # Skip ALL random weight initialization during construction:
-    # 1. Monkey-patch initialize_weights (the model-level sweep)
-    # 2. Patch torch.nn.init functions (catches per-layer reset_parameters in
-    #    nn.Linear, nn.LayerNorm, etc.)
-    # All weights are immediately overwritten by safetensors below.
+    # Build model on meta device (zero memory, no random init)
     model_class = __getattr__(config['name'])
-    _orig_init_weights = getattr(model_class, 'initialize_weights', None)
-    if _orig_init_weights:
-        model_class.initialize_weights = lambda self: None
-
-    _init_funcs = ['normal_', 'kaiming_uniform_', 'uniform_', 'zeros_', 'ones_',
-                   'kaiming_normal_', 'xavier_uniform_', 'xavier_normal_', 'constant_']
-    _orig_inits = {name: getattr(init, name) for name in _init_funcs if hasattr(init, name)}
-    _noop = lambda tensor, *args, **kwargs: tensor
-    for name in _orig_inits:
-        setattr(init, name, _noop)
-
-    try:
-        print(f"[TRELLIS2]   Building model: {config['name']} (skip_init)...", file=sys.stderr, flush=True)
+    log.info(f"Building model: {config['name']} (meta device)...")
+    with torch.device("meta"):
         model = model_class(**config['args'], **kwargs)
-    finally:
-        for name, fn in _orig_inits.items():
-            setattr(init, name, fn)
-        if _orig_init_weights:
-            model_class.initialize_weights = _orig_init_weights
-    model.to(device)
-    print(f"[TRELLIS2]   Loading weights directly to {device}...", file=sys.stderr, flush=True)
-    model.load_state_dict(load_file(model_file, device=str(device)), strict=False)
+    log.info(f"Loading weights directly to {device}...")
+    model.load_state_dict(comfy.utils.load_torch_file(model_file, device=torch.device(device)), strict=False, assign=True)
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:

@@ -1,6 +1,6 @@
 from typing import *
+import logging
 import os
-import sys
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
@@ -13,6 +13,8 @@ except ImportError:
     )
 import numpy as np
 from PIL import Image
+
+log = logging.getLogger("trellis2")
 
 # Remap gated Facebook models to public reuploads
 DINOV3_MODEL_REMAP = {
@@ -85,14 +87,14 @@ def _load_dinov3_from_safetensors(safetensors_path: str) -> DINOv3ViTModel:
     Load DINOv3 ViT-L model from a single safetensors file.
     Uses embedded config to avoid needing config.json.
     """
-    from safetensors.torch import load_file
+    import comfy.utils
 
     # Create model from embedded config
     config = DINOv3ViTConfig(**DINOV3_VITL_CONFIG)
     model = DINOv3ViTModel(config)
 
     # Load weights from safetensors
-    state_dict = load_file(safetensors_path)
+    state_dict = comfy.utils.load_torch_file(safetensors_path)
     model.load_state_dict(state_dict, strict=True)
 
     return model
@@ -159,7 +161,7 @@ class DinoV3FeatureExtractor:
         # Remap gated models to public reuploads
         actual_model_name = DINOV3_MODEL_REMAP.get(model_name, model_name)
         if actual_model_name != model_name:
-            print(f"[ComfyUI-TRELLIS2] Remapping {model_name} -> {actual_model_name}")
+            log.info(f"Remapping {model_name} -> {actual_model_name}")
         self.model_name = model_name
 
         # Use ComfyUI models directory for cache
@@ -168,21 +170,21 @@ class DinoV3FeatureExtractor:
         os.makedirs(cache_dir, exist_ok=True)
 
         # Priority 1: Check for clean local safetensors file
-        print(f"[TRELLIS2] Checking for local DINOv3 safetensors in: {cache_dir}", file=sys.stderr, flush=True)
+        log.info(f"Checking for local DINOv3 safetensors in: {cache_dir}")
         local_safetensors = _find_local_safetensors(cache_dir)
         if local_safetensors:
-            print(f"[TRELLIS2] Loading DINOv3 from local safetensors: {local_safetensors}", file=sys.stderr, flush=True)
+            log.info(f"Loading DINOv3 from local safetensors: {local_safetensors}")
             self.model = _load_dinov3_from_safetensors(local_safetensors)
-            print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
+            log.info("DINOv3 model loaded successfully")
         else:
             # Priority 2: Download safetensors directly to models/dinov3/
             # (avoids HF cache structure that _find_local_safetensors can't find)
             from huggingface_hub import hf_hub_download
-            print(f"[ComfyUI-TRELLIS2] Downloading DINOv3 model: {actual_model_name}...", file=sys.stderr, flush=True)
+            log.info(f"Downloading DINOv3 model: {actual_model_name}...")
             hf_hub_download(actual_model_name, "model.safetensors", local_dir=cache_dir)
             local_safetensors = os.path.join(cache_dir, "model.safetensors")
             self.model = _load_dinov3_from_safetensors(local_safetensors)
-            print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
+            log.info("DINOv3 model loaded successfully")
 
         self.model.eval()
         self.image_size = image_size
