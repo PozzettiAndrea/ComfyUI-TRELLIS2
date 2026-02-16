@@ -76,7 +76,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
     def from_pretrained(
         path: str,
         models_to_load: list = None,
-        enable_disk_offload: bool = False
+        enable_disk_offload: bool = False,
+        dtype=None,
     ) -> "Trellis2ImageTo3DPipeline":
         """
         Load a pretrained model.
@@ -85,9 +86,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             path (str): The path to the model. Can be either local path or a Hugging Face repository.
             models_to_load: Optional list of model keys to load. If None, loads all models.
             enable_disk_offload: If True, enables disk-based model offloading for zero RAM usage.
+            dtype: Optional torch dtype for model weights.
         """
         pipeline = super(Trellis2ImageTo3DPipeline, Trellis2ImageTo3DPipeline).from_pretrained(
-            path, models_to_load, enable_disk_offload=enable_disk_offload
+            path, models_to_load, enable_disk_offload=enable_disk_offload, dtype=dtype
         )
         new_pipeline = Trellis2ImageTo3DPipeline()
         new_pipeline.__dict__ = pipeline.__dict__
@@ -218,7 +220,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         flow_model = self._load_model('sparse_structure_flow_model')
         reso = flow_model.resolution
         in_channels = flow_model.in_channels
-        noise = torch.randn(num_samples, in_channels, reso, reso, reso).to(self.device)
+        noise = torch.randn(num_samples, in_channels, reso, reso, reso, device=self.device, dtype=getattr(self, '_dtype', None))
         sampler_params = {**self.sparse_structure_sampler_params, **sampler_params}
         z_s = self.sparse_structure_sampler.sample(
             flow_model,
@@ -233,14 +235,22 @@ class Trellis2ImageTo3DPipeline(Pipeline):
 
         # Decode sparse structure latent
         decoder = self._load_model('sparse_structure_decoder')
-        decoded = decoder(z_s) > 0
-        del z_s, decoder  # Free tensors and local model reference
+        log.info(f"[DEBUG] z_s shape={z_s.shape}, dtype={z_s.dtype}, min={z_s.min().item():.4f}, max={z_s.max().item():.4f}, mean={z_s.mean().item():.4f}")
+        raw_decoded = decoder(z_s)
+        log.info(f"[DEBUG] raw_decoded shape={raw_decoded.shape}, dtype={raw_decoded.dtype}, min={raw_decoded.min().item():.4f}, max={raw_decoded.max().item():.4f}, mean={raw_decoded.mean().item():.4f}")
+        log.info(f"[DEBUG] raw_decoded > 0: {(raw_decoded > 0).sum().item()} / {raw_decoded.numel()} voxels")
+        log.info(f"[DEBUG] raw_decoded > -0.1: {(raw_decoded > -0.1).sum().item()} / {raw_decoded.numel()} voxels")
+        decoded = raw_decoded > 0
+        del z_s, raw_decoded, decoder  # Free tensors and local model reference
         self._unload_model('sparse_structure_decoder')
 
+        log.info(f"[DEBUG] decoded (before pool) shape={decoded.shape}, occupied={decoded.sum().item()}")
         if resolution != decoded.shape[2]:
             ratio = decoded.shape[2] // resolution
             decoded = torch.nn.functional.max_pool3d(decoded.float(), ratio, ratio, 0) > 0.5
+            log.info(f"[DEBUG] decoded (after pool) shape={decoded.shape}, occupied={decoded.sum().item()}")
         coords = torch.argwhere(decoded)[:, [0, 2, 3, 4]].int()
+        log.info(f"[DEBUG] coords shape={coords.shape}")
         del decoded  # Free decoded tensor
         gc.collect()
         comfy.model_management.soft_empty_cache()
@@ -266,7 +276,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # Sample structured latent
         flow_model = self._load_model(model_key)
         noise = SparseTensor(
-            feats=torch.randn(coords.shape[0], flow_model.in_channels).to(self.device),
+            feats=torch.randn(coords.shape[0], flow_model.in_channels, device=self.device, dtype=getattr(self, '_dtype', None)),
             coords=coords,
         )
         sampler_params = {**self.shape_slat_sampler_params, **sampler_params}
@@ -281,8 +291,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         del noise, flow_model
         self._unload_model(model_key)
 
-        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
-        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(slat.device)
+        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(device=slat.device, dtype=self._dtype)
+        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(device=slat.device, dtype=self._dtype)
         slat = slat * std + mean
 
         return slat
@@ -316,7 +326,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # LR pass
         flow_model_lr = self._load_model(model_key_lr)
         noise = SparseTensor(
-            feats=torch.randn(coords.shape[0], flow_model_lr.in_channels).to(self.device),
+            feats=torch.randn(coords.shape[0], flow_model_lr.in_channels, device=self.device, dtype=getattr(self, '_dtype', None)),
             coords=coords,
         )
         sampler_params = {**self.shape_slat_sampler_params, **sampler_params}
@@ -341,8 +351,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         mem_after_lr = torch.cuda.memory_allocated() / 1024**2
         log.info(f"After LR cleanup: {mem_after_lr:.0f} MB")
 
-        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
-        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(slat.device)
+        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(device=slat.device, dtype=self._dtype)
+        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(device=slat.device, dtype=self._dtype)
         slat = slat * std + mean
 
         # Upsample
@@ -400,7 +410,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         coords = coords_cpu.to(self.device)
         del coords_cpu, hr_coords_cpu
         noise = SparseTensor(
-            feats=torch.randn(coords.shape[0], flow_model.in_channels).to(self.device),
+            feats=torch.randn(coords.shape[0], flow_model.in_channels, device=self.device, dtype=getattr(self, '_dtype', None)),
             coords=coords,
         )
         sampler_params = {**self.shape_slat_sampler_params, **sampler_params}
@@ -415,8 +425,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         del noise, coords, cond, flow_model
         self._unload_model(model_key)
 
-        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
-        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(slat.device)
+        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(device=slat.device, dtype=self._dtype)
+        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(device=slat.device, dtype=self._dtype)
         slat = slat * std + mean
 
         return slat, hr_resolution
@@ -465,15 +475,15 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         log.debug(f"sample_tex_slat input:")
         log.debug(f"  shape_slat.feats.shape: {shape_slat.feats.shape}")
         log.debug(f"  shape_slat.shape: {shape_slat.shape}")
-        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(shape_slat.device)
-        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(shape_slat.device)
+        std = torch.tensor(self.shape_slat_normalization['std'])[None].to(device=shape_slat.device, dtype=self._dtype)
+        mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(device=shape_slat.device, dtype=self._dtype)
         log.debug(f"  mean.shape: {mean.shape}")
         log.debug(f"  std.shape: {std.shape}")
         shape_slat = (shape_slat - mean) / std
 
         flow_model = self._load_model(model_key)
         in_channels = flow_model.in_channels if isinstance(flow_model, nn.Module) else flow_model[0].in_channels
-        noise = shape_slat.replace(feats=torch.randn(shape_slat.coords.shape[0], in_channels - shape_slat.feats.shape[1]).to(self.device))
+        noise = shape_slat.replace(feats=torch.randn(shape_slat.coords.shape[0], in_channels - shape_slat.feats.shape[1], device=self.device, dtype=getattr(self, '_dtype', None)))
         sampler_params = {**self.tex_slat_sampler_params, **sampler_params}
         slat = self.tex_slat_sampler.sample(
             flow_model,
@@ -487,8 +497,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         del noise, flow_model
         self._unload_model(model_key)
 
-        std = torch.tensor(self.tex_slat_normalization['std'])[None].to(slat.device)
-        mean = torch.tensor(self.tex_slat_normalization['mean'])[None].to(slat.device)
+        std = torch.tensor(self.tex_slat_normalization['std'])[None].to(device=slat.device, dtype=self._dtype)
+        mean = torch.tensor(self.tex_slat_normalization['mean'])[None].to(device=slat.device, dtype=self._dtype)
         slat = slat * std + mean
 
         return slat
@@ -570,18 +580,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
     ) -> Tuple[List[Mesh], SparseTensor, int]:
         """
         Run shape generation only (no texture).
-
-        Args:
-            cond (dict): The conditioning dict with 'cond_512', 'cond_1024' (optional), 'neg_cond'.
-            num_samples (int): The number of samples to generate.
-            seed (int): The random seed.
-            sparse_structure_sampler_params (dict): Additional parameters for the sparse structure sampler.
-            shape_slat_sampler_params (dict): Additional parameters for the shape SLat sampler.
-            pipeline_type (str): The type of the pipeline. Options: '512', '1024', '1024_cascade', '1536_cascade'.
-            max_num_tokens (int): The maximum number of tokens to use.
-
-        Returns:
-            Tuple of (meshes, shape_slat, resolution)
         """
         pipeline_type = pipeline_type or self.default_pipeline_type
 

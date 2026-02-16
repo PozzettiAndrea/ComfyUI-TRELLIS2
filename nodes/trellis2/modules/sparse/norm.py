@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from ..utils import manual_cast
 from . import VarLenTensor
 from . import config
@@ -18,10 +19,12 @@ class SparseGroupNorm(nn.GroupNorm):
 
     def forward(self, input: VarLenTensor) -> VarLenTensor:
         nfeats = torch.zeros_like(input.feats)
+        w = self.weight.to(input.feats.dtype) if self.weight is not None else None
+        b = self.bias.to(input.feats.dtype) if self.bias is not None else None
         for k in range(input.shape[0]):
             bfeats = input.feats[input.layout[k]]
             bfeats = bfeats.permute(1, 0).reshape(1, input.shape[1], -1)
-            bfeats = super().forward(bfeats)
+            bfeats = F.group_norm(bfeats, self.num_groups, w, b, self.eps)
             bfeats = bfeats.reshape(input.shape[1], -1).permute(1, 0)
             nfeats[input.layout[k]] = bfeats
         return input.replace(nfeats)
@@ -33,10 +36,12 @@ class SparseLayerNorm(nn.LayerNorm):
 
     def forward(self, input: VarLenTensor) -> VarLenTensor:
         nfeats = torch.zeros_like(input.feats)
+        w = self.weight.to(input.feats.dtype) if self.weight is not None else None
+        b = self.bias.to(input.feats.dtype) if self.bias is not None else None
         for k in range(input.shape[0]):
             bfeats = input.feats[input.layout[k]]
             bfeats = bfeats.permute(1, 0).reshape(1, input.shape[1], -1)
-            bfeats = super().forward(bfeats)
+            bfeats = F.layer_norm(bfeats, self.normalized_shape, w, b, self.eps)
             bfeats = bfeats.reshape(input.shape[1], -1).permute(1, 0)
             nfeats[input.layout[k]] = bfeats
         return input.replace(nfeats)
