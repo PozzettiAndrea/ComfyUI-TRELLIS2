@@ -2,6 +2,7 @@ from typing import *
 import logging
 from fractions import Fraction
 import torch
+import comfy.model_management
 from . import config
 
 log = logging.getLogger("trellis2")
@@ -150,7 +151,8 @@ class VarLenTensor:
         return self.replace(new_feats)
     
     def cuda(self) -> 'VarLenTensor':
-        new_feats = self.feats.cuda()
+        device = comfy.model_management.get_torch_device()
+        new_feats = self.feats.to(device)
         return self.replace(new_feats)
 
     def half(self) -> 'VarLenTensor':
@@ -626,8 +628,9 @@ class SparseTensor(VarLenTensor):
         return self.replace(new_feats, new_coords)
     
     def cuda(self) -> 'SparseTensor':
-        new_feats = self.feats.cuda()
-        new_coords = self.coords.cuda()
+        device = comfy.model_management.get_torch_device()
+        new_feats = self.feats.to(device)
+        new_coords = self.coords.to(device)
         return self.replace(new_feats, new_coords)
 
     def half(self) -> 'SparseTensor':

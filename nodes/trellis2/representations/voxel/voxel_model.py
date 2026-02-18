@@ -1,17 +1,20 @@
 from typing import Dict
 import torch
+import comfy.model_management
 
 
 class Voxel:
     def __init__(
-            self, 
+            self,
             origin: list,
             voxel_size: float,
             coords: torch.Tensor = None,
             attrs: torch.Tensor = None,
             layout: Dict = {},
-            device: torch.device = 'cuda'
+            device: torch.device = None
         ):
+        if device is None:
+            device = comfy.model_management.get_torch_device()
         self.origin = torch.tensor(origin, dtype=torch.float32, device=device)
         self.voxel_size = voxel_size
         self.coords = coords

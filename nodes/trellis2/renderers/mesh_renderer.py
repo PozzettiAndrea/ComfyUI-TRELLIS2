@@ -40,10 +40,14 @@ class MeshRenderer:
     Args:
         rendering_options (dict): Rendering options.
         """
-    def __init__(self, rendering_options={}, device='cuda'):
+    def __init__(self, rendering_options={}, device=None):
         if 'dr' not in globals():
             import nvdiffrast.torch as dr
-        
+
+        if device is None:
+            import comfy.model_management
+            device = comfy.model_management.get_torch_device()
+
         self.rendering_options = edict({
             "resolution": None,
             "near": None,

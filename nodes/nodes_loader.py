@@ -76,20 +76,22 @@ Attention backend:
 
         log.info(f"Resolved precision: {precision} -> {dtype}")
 
-        # Setup attention backend
-        if attn_backend != "auto":
-            try:
-                from .trellis2.modules.attention import config as dense_config
-                from .trellis2.modules.sparse import config as sparse_config
-                dense_config.set_backend(attn_backend)
-                # Sparse attention doesn't support sageattn
-                if attn_backend in ('flash_attn', 'xformers', 'sdpa'):
-                    sparse_config.set_attn_backend(attn_backend)
-                log.info(f"Attention backend set to: {attn_backend}")
-            except Exception as e:
-                log.warning(f"Could not set attention backend '{attn_backend}': {e}")
-        else:
-            log.info("Attention backend: auto (will detect on first use)")
+        # Setup attention backend via comfy-attn
+        try:
+            import comfy_attn
+            # Map TRELLIS2 backend names to comfy-attn names
+            backend_map = {
+                'auto': 'auto',
+                'sageattn': 'sage',
+                'flash_attn': 'flash_attn',
+                'xformers': 'sdpa',
+                'sdpa': 'sdpa',
+            }
+            comfy_name = backend_map.get(attn_backend, 'auto')
+            label = comfy_attn.set_backend(comfy_name)
+            log.info(f"Attention backend set to: {label} (requested: {attn_backend})")
+        except Exception as e:
+            log.warning(f"Could not set attention backend '{attn_backend}': {e}")
 
         # Store dtype as string for JSON-safe IPC across isolation boundary
         dtype_str = {torch.bfloat16: "bf16", torch.float16: "fp16", torch.float32: "fp32"}[dtype]

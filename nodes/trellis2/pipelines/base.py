@@ -197,7 +197,7 @@ class Pipeline:
                 model.to(device)
 
     def cuda(self) -> None:
-        self.to(torch.device("cuda"))
+        self.to(comfy.model_management.get_torch_device())
 
     def cpu(self) -> None:
         self.to(torch.device("cpu"))

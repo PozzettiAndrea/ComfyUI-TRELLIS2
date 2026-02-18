@@ -1,23 +1,23 @@
 """
-Sparse operations configuration with lazy detection.
+Sparse operations configuration.
 
-Attention supports: 'flash_attn', 'xformers', 'sdpa'
-Convolution supports: 'none', 'spconv', 'torchsparse', 'flex_gemm'
+Attention: delegates to comfy-attn for backend detection and dispatch.
+Convolution: kept as-is (spconv, torchsparse, flex_gemm).
 
 Configure via:
-- Environment variables: SPARSE_ATTN_BACKEND, SPARSE_CONV_BACKEND, ATTN_BACKEND (fallback)
-- Runtime: set_attn_backend('sdpa') or set_conv_backend('flex_gemm') before first use
+- Environment variables: SPARSE_CONV_BACKEND
+- Runtime: set_conv_backend('flex_gemm') before first use
 - ComfyUI: Trellis2Settings node
 """
 from typing import *
 import logging
 import os
+import comfy_attn
 
 log = logging.getLogger("trellis2")
 
-# Lazy initialization - backends detected on first use
+# Lazy initialization - conv backend detected on first use
 _CONV: Optional[str] = None
-_ATTN: Optional[str] = None
 _DEBUG: bool = False
 
 
@@ -59,73 +59,6 @@ def _detect_available_conv_backend() -> str:
     return 'none'
 
 
-def _detect_available_attn_backend() -> str:
-    """Try to import attention backends in priority order, return first available."""
-    # Check sparse-specific env var first, then fall back to general ATTN_BACKEND
-    env_backend = os.environ.get('SPARSE_ATTN_BACKEND')
-    if env_backend is None:
-        env_backend = os.environ.get('ATTN_BACKEND')
-
-    if env_backend:
-        valid_backends = ['flash_attn', 'xformers', 'sdpa']
-        if env_backend in valid_backends:
-            # Verify the requested backend actually works
-            if env_backend == 'flash_attn':
-                try:
-                    import flash_attn
-                    if not callable(getattr(flash_attn, 'flash_attn_varlen_func', None)):
-                        log.warning("flash_attn requested but not functional (common on Windows)")
-                        log.info("Falling back to auto-detection...")
-                        env_backend = None
-                except ImportError:
-                    log.warning("flash_attn requested but not installed")
-                    log.info("Falling back to auto-detection...")
-                    env_backend = None
-            if env_backend:
-                log.info(f"Using attention backend from env var: {env_backend}")
-                return env_backend
-        elif env_backend == 'naive':
-            # naive is valid for dense attention but not for sparse
-            log.warning("'naive' backend not supported for sparse attention, auto-detecting...")
-        else:
-            log.warning(f"Invalid sparse attention backend '{env_backend}', must be one of {valid_backends}")
-
-    # Auto-detect: try backends in priority order
-    backends = ['flash_attn', 'xformers', 'sdpa']
-    for backend in backends:
-        try:
-            if backend == 'flash_attn':
-                import flash_attn
-                # Verify varlen functions work - on Windows flash_attn may import but functions are None
-                if callable(getattr(flash_attn, 'flash_attn_varlen_func', None)):
-                    log.info("Auto-detected attention backend: flash_attn")
-                    return backend
-                else:
-                    log.info("flash_attn installed but not functional (common on Windows)")
-                    continue
-            elif backend == 'xformers':
-                import xformers.ops as xops
-                # Verify BlockDiagonalMask exists (needed for sparse)
-                if hasattr(xops.fmha, 'BlockDiagonalMask'):
-                    log.info("Auto-detected attention backend: xformers")
-                    return backend
-            elif backend == 'sdpa':
-                # sdpa is built into PyTorch >= 2.0
-                from torch.nn.functional import scaled_dot_product_attention
-                log.info("Auto-detected attention backend: sdpa")
-                return backend
-        except ImportError:
-            continue
-        except Exception as e:
-            log.warning(f"{backend} import failed: {e}")
-            continue
-
-    raise RuntimeError(
-        "[SPARSE] No attention backend available for sparse operations! "
-        "Please install one of: flash_attn, xformers, or use PyTorch >= 2.0 for sdpa"
-    )
-
-
 def get_conv_backend() -> str:
     """Get current conv backend, detecting on first call."""
     global _CONV
@@ -135,11 +68,8 @@ def get_conv_backend() -> str:
 
 
 def get_attn_backend() -> str:
-    """Get current attention backend, detecting on first call."""
-    global _ATTN
-    if _ATTN is None:
-        _ATTN = _detect_available_attn_backend()
-    return _ATTN
+    """Get current attention backend (delegates to comfy-attn)."""
+    return comfy_attn.get_varlen_backend()
 
 
 def set_conv_backend(backend: str) -> None:
@@ -162,20 +92,15 @@ def set_conv_backend(backend: str) -> None:
 
 def set_attn_backend(backend: str) -> None:
     """
-    Set attention backend explicitly. Can be called before or after first use.
+    Set attention backend (delegates to comfy-attn).
 
     Args:
         backend: One of 'flash_attn', 'xformers', 'sdpa'
     """
-    global _ATTN
-    valid_backends = ['flash_attn', 'xformers', 'sdpa']
-    if backend not in valid_backends:
-        raise ValueError(f"Invalid attention backend '{backend}', must be one of {valid_backends}")
-
-    if _ATTN is not None and _ATTN != backend:
-        log.info(f"Changing attention backend from {_ATTN} to {backend}")
-    _ATTN = backend
-    log.info(f"Attention backend set to: {backend}")
+    # comfy-attn handles varlen backend detection automatically;
+    # this is kept for backward compat but is a no-op since varlen
+    # backend is auto-detected on first dispatch call.
+    log.info(f"Sparse attn backend request: {backend} (comfy-attn handles automatically)")
 
 
 def get_debug() -> bool:
@@ -187,5 +112,3 @@ def set_debug(debug: bool) -> None:
     """Enable or disable debug mode."""
     global _DEBUG
     _DEBUG = debug
-
-
