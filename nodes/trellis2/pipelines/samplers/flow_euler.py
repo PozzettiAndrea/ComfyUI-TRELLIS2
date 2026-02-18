@@ -78,17 +78,6 @@ class FlowEulerSampler(Sampler):
         """
         pred_x_0, pred_eps, pred_v = self._get_model_prediction(model, x_t, t, cond, **kwargs)
         pred_x_prev = x_t - (t - t_prev) * pred_v
-        if not hasattr(self, '_debug_step'):
-            self._debug_step = 0
-        if self._debug_step < 3:
-            import logging
-            _log = logging.getLogger("trellis2")
-            _log.warning(f"[SAMPLER] step={self._debug_step} t={t:.4f} t_prev={t_prev:.4f} "
-                        f"x_t: min={x_t.min():.4f} max={x_t.max():.4f} | "
-                        f"pred_v: min={pred_v.min():.4f} max={pred_v.max():.4f} | "
-                        f"pred_x_prev: min={pred_x_prev.min():.4f} max={pred_x_prev.max():.4f} | "
-                        f"pred_x_0: min={pred_x_0.min():.4f} max={pred_x_0.max():.4f}")
-        self._debug_step += 1
         return edict({"pred_x_prev": pred_x_prev, "pred_x_0": pred_x_0})
 
     @torch.no_grad()
@@ -105,7 +94,7 @@ class FlowEulerSampler(Sampler):
     ):
         """
         Generate samples from the model using Euler method.
-        
+
         Args:
             model: The model to sample from.
             noise: The initial noise tensor.
@@ -122,6 +111,9 @@ class FlowEulerSampler(Sampler):
             - 'pred_x_t': a list of prediction of x_t.
             - 'pred_x_0': a list of prediction of x_0.
         """
+        import comfy.utils
+        pbar = comfy.utils.ProgressBar(steps)
+
         sample = noise
         t_seq = np.linspace(1, 0, steps + 1)
         t_seq = rescale_t * t_seq / (1 + (rescale_t - 1) * t_seq)
@@ -133,6 +125,7 @@ class FlowEulerSampler(Sampler):
             sample = out.pred_x_prev
             ret.pred_x_t.append(out.pred_x_prev)
             ret.pred_x_0.append(out.pred_x_0)
+            pbar.update(1)
         ret.samples = sample
         return ret
 

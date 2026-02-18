@@ -23,6 +23,97 @@ log = logging.getLogger("trellis2")
 from .helpers import smart_crop_square
 
 _DTYPE_MAP = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}
+
+
+def _enable_lowvram_cast(model: torch.nn.Module) -> None:
+    """Swap leaf modules to comfy.ops.disable_weight_init versions for lowvram support.
+
+    ComfyUI's ModelPatcher can only partially-load modules that have the
+    ``comfy_cast_weights`` attribute (from CastWeightBiasOp).  Native ComfyUI models
+    use ``comfy.ops.disable_weight_init.*`` layers, but third-party models use plain
+    ``torch.nn.*``.  This function retroactively swaps ``__class__`` on every leaf
+    module so that ModelPatcher's lowvram layer-streaming works transparently.
+
+    Also installs forward pre-hooks on non-leaf modules that own direct parameters
+    or buffers (e.g. cls_token, pos_embed on ViT) so they get moved to the input
+    device on-the-fly during lowvram inference.
+    """
+    try:
+        from comfy.ops import disable_weight_init
+    except ImportError:
+        return
+
+    _CLASS_MAP = {
+        torch.nn.Linear: disable_weight_init.Linear,
+        torch.nn.Conv1d: disable_weight_init.Conv1d,
+        torch.nn.Conv2d: disable_weight_init.Conv2d,
+        torch.nn.Conv3d: disable_weight_init.Conv3d,
+        torch.nn.GroupNorm: disable_weight_init.GroupNorm,
+        torch.nn.LayerNorm: disable_weight_init.LayerNorm,
+        torch.nn.ConvTranspose2d: disable_weight_init.ConvTranspose2d,
+        torch.nn.ConvTranspose1d: disable_weight_init.ConvTranspose1d,
+        torch.nn.Embedding: disable_weight_init.Embedding,
+    }
+
+    cast_count = 0
+    for _name, module in model.named_modules():
+        comfy_cls = _CLASS_MAP.get(type(module))
+        if comfy_cls is not None:
+            module.__class__ = comfy_cls
+            cast_count += 1
+
+    hook_count = 0
+    for _name, module in model.named_modules():
+        if hasattr(module, 'comfy_cast_weights'):
+            continue
+        direct_params = list(module.named_parameters(recurse=False))
+        direct_bufs = list(module.named_buffers(recurse=False))
+        if not direct_params and not direct_bufs:
+            continue
+
+        def _move_orphans_hook(mod, args, kwargs=None):
+            device = None
+            for a in args:
+                if isinstance(a, torch.Tensor):
+                    device = a.device
+                    break
+                if hasattr(a, 'feats') and isinstance(a.feats, torch.Tensor):
+                    device = a.feats.device
+                    break
+            if device is None and kwargs:
+                for v in kwargs.values():
+                    if isinstance(v, torch.Tensor):
+                        device = v.device
+                        break
+                    if hasattr(v, 'feats') and isinstance(v.feats, torch.Tensor):
+                        device = v.feats.device
+                        break
+            if device is None:
+                for p in mod.parameters():
+                    if p.device.type == 'cuda':
+                        device = p.device
+                        break
+            if device is None:
+                return
+            for _, p in mod.named_parameters(recurse=False):
+                if p.data.device != device:
+                    p.data = p.data.to(device)
+            for _, b in mod.named_buffers(recurse=False):
+                if b.device != device:
+                    b.data = b.data.to(device)
+
+        module.register_forward_pre_hook(_move_orphans_hook, with_kwargs=True)
+        hook_count += 1
+
+    # If model.device is a read-only property (e.g. HuggingFace PreTrainedModel),
+    # shadow it so ModelPatcher can set model.device during load/unload.
+    for klass in type(model).__mro__:
+        if 'device' in klass.__dict__ and isinstance(klass.__dict__['device'], property):
+            model.__class__ = type(type(model).__name__, (type(model),), {'device': None})
+            break
+
+    if cast_count or hook_count:
+        log.debug("Enabled lowvram: %d cast modules, %d orphan-param hooks", cast_count, hook_count)
 # Noise/conditioning stay float32 for sampling loop stability (error accumulation over 12 steps).
 # Model weights are bf16 for memory savings. torch.autocast handles per-op precision:
 # matmuls/convs/attention run on bf16 tensor cores, norms stay float32.
@@ -200,7 +291,9 @@ def run_conditioning(
     Returns:
         Tuple of (conditioning_dict, preprocessed_image_tensor)
     """
+    import comfy.utils
     log.info("Running conditioning...")
+    pbar = comfy.utils.ProgressBar(3)
 
     # Background color mapping
     bg_colors = {
@@ -262,29 +355,40 @@ def run_conditioning(
     # Smart crop
     pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
 
-    # Load DinoV3 directly and extract features
+    # Load DinoV3 and wrap in ModelPatcher for ComfyUI VRAM management
+    import comfy.model_patcher
     from ..trellis2.modules import image_feature_extractor
     log.info("Loading DinoV3 feature extractor...")
     dinov3_model = image_feature_extractor.DinoV3FeatureExtractor(
         model_name="facebook/dinov3-vitl16-pretrain-lvd1689m"
     )
-    dinov3_model.to(device)
-    log.info("DinoV3 loaded")
+    _enable_lowvram_cast(dinov3_model.model)
+    offload_device = comfy.model_management.unet_offload_device()
+    dinov3_patcher = comfy.model_patcher.ModelPatcher(
+        dinov3_model.model,
+        load_device=device,
+        offload_device=offload_device,
+    )
+    comfy.model_management.load_models_gpu([dinov3_patcher])
+    log.info("DinoV3 loaded via ModelPatcher")
 
     # Get 512px conditioning
     dinov3_model.image_size = 512
     cond_512 = dinov3_model([pil_image])
+    pbar.update(1)
 
     # Get 1024px conditioning if requested
     cond_1024 = None
     if include_1024:
         dinov3_model.image_size = 1024
         cond_1024 = dinov3_model([pil_image])
+    pbar.update(1)
 
-    # Unload DinoV3 immediately
-    del dinov3_model
+    # Unload DinoV3
+    del dinov3_patcher, dinov3_model
     gc.collect()
     comfy.model_management.soft_empty_cache()
+    pbar.update(1)
     log.info("DinoV3 offloaded")
 
     # Create negative conditioning
@@ -334,9 +438,11 @@ def run_shape_generation(
         Dict with shape_slat, subs, mesh_vertices, mesh_faces, resolution, pipeline_type
         Plus raw_mesh_vertices/faces for texture stage reconstruction
     """
+    import comfy.utils
     import cumesh as CuMesh
 
     log.info(f"Running shape generation (seed={seed})...")
+    pbar = comfy.utils.ProgressBar(3)
 
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
@@ -369,6 +475,7 @@ def run_shape_generation(
     pipeline._device = device
     pipeline._dtype = compute_dtype  # noise and normalization tensors
     log.info("Shape pipeline ready")
+    pbar.update(1)
 
     # Build sampler params
     sampler_params = {
@@ -395,6 +502,7 @@ def run_shape_generation(
         )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Shape generation peak VRAM: {peak_mem:.0f} MB")
+    pbar.update(1)
     mesh = meshes[0]
     mesh.fill_holes()
 
@@ -436,6 +544,7 @@ def run_shape_generation(
     del pipeline
     gc.collect()
     comfy.model_management.soft_empty_cache()
+    pbar.update(1)
     log.info("Shape pipeline offloaded")
 
     # Save result to disk for IPC
@@ -466,9 +575,11 @@ def run_texture_generation(
     Returns:
         Dict with textured mesh data
     """
+    import comfy.utils
     from ..trellis2.representations.mesh import Mesh
 
     log.info(f"Running texture generation (seed={seed})...")
+    pbar = comfy.utils.ProgressBar(3)
 
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
@@ -515,6 +626,7 @@ def run_texture_generation(
     pipeline._device = device
     pipeline._dtype = compute_dtype  # noise and normalization tensors
     log.info("Texture pipeline ready")
+    pbar.update(1)
 
     # Build sampler params
     sampler_params = {
@@ -539,6 +651,7 @@ def run_texture_generation(
         )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Texture generation peak VRAM: {peak_mem:.0f} MB")
+    pbar.update(1)
     mesh = textured_meshes[0]
     mesh.simplify(16777216)  # Light cleanup of degenerate geometry
 
@@ -557,6 +670,7 @@ def run_texture_generation(
     del pipeline
     gc.collect()
     comfy.model_management.soft_empty_cache()
+    pbar.update(1)
     log.info("Texture pipeline offloaded")
 
     coords = result['voxel_coords']
