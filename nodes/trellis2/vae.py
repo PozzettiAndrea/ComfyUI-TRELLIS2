@@ -262,18 +262,11 @@ class SparseStructureDecoder(nn.Module):
         pass
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        import sys
-        print(f"[TRELLIS2 SS_DEC] input: dtype={x.dtype}, shape={x.shape}", file=sys.stderr)
         h = self.input_layer(x)
-        print(f"[TRELLIS2 SS_DEC] after input_layer: dtype={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
-
         h = self.middle_block(h)
-        print(f"[TRELLIS2 SS_DEC] after middle_block: dtype={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         for block in self.blocks:
             h = block(h)
-
         h = self.out_layer(h)
-        print(f"[TRELLIS2 SS_DEC] output: dtype={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         return h
 
 
@@ -796,7 +789,6 @@ class SparseUnetVaeDecoder(nn.Module):
         assert guide_subs is None or self.pred_subdiv == False, "Only decoders with pred_subdiv=False can be used with guide_subs"
         assert return_subs == False or self.pred_subdiv == True, "Only decoders with pred_subdiv=True can be used with return_subs"
 
-        print(f"[TRELLIS2 SPARSE_DEC] input: feats={x.feats.dtype}, shape={x.feats.shape}", file=sys.stderr)
         h = self.from_latent(x)
         subs_gt = []
         subs = []
@@ -814,7 +806,6 @@ class SparseUnetVaeDecoder(nn.Module):
                     h = block(h)
         h = h.replace(F.layer_norm(h.feats, h.feats.shape[-1:]))
         h = self.output_layer(h)
-        print(f"[TRELLIS2 SPARSE_DEC] output: feats={h.feats.dtype}, min={h.feats.min().item():.4f}, max={h.feats.max().item():.4f}", file=sys.stderr)
         if self.training and self.pred_subdiv:
             return h, subs_gt, subs
         else:
