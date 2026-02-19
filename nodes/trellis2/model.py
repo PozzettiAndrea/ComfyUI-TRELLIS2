@@ -1726,6 +1726,7 @@ class SparseStructureFlowModel(nn.Module):
 
         h = x.view(*x.shape[:2], -1).permute(0, 2, 1).contiguous()
 
+        transformer_options = transformer_options.copy()
         patches_replace = transformer_options.get("patches_replace", {})
         blocks_replace = patches_replace.get("dit", {})
 
@@ -2018,6 +2019,7 @@ class SLatFlowModel(nn.Module):
         if self.share_mod:
             t_emb = self.adaLN_modulation(t_emb)
 
+        transformer_options = transformer_options.copy()
         patches_replace = transformer_options.get("patches_replace", {})
         blocks_replace = patches_replace.get("dit", {})
 

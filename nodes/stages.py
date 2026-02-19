@@ -7,8 +7,6 @@ Each stage loads models, runs inference, and cleans up.
 import gc
 import logging
 import os
-import tempfile
-import uuid
 from fractions import Fraction
 from pathlib import Path
 from typing import Dict, Any, Tuple, Optional, List
@@ -77,38 +75,6 @@ TEXTURE_RESOLUTION_MAP = {
     '1536_cascade': '1024_cascade',
 }
 
-
-# Disk-based tensor serialization for IPC
-_TRELLIS2_TEMP_DIR = None
-
-
-def _get_temp_dir():
-    """Get or create temp directory for tensor files."""
-    global _TRELLIS2_TEMP_DIR
-    if _TRELLIS2_TEMP_DIR is None:
-        _TRELLIS2_TEMP_DIR = tempfile.mkdtemp(prefix='trellis2_')
-        log.info(f"Created temp dir: {_TRELLIS2_TEMP_DIR}")
-    return _TRELLIS2_TEMP_DIR
-
-
-def _save_to_disk(data: dict, prefix: str) -> dict:
-    """Save tensor dict to disk, return reference dict."""
-    path = os.path.join(_get_temp_dir(), f'{prefix}_{uuid.uuid4().hex[:8]}.pt')
-    torch.save(data, path)
-    log.info(f"Saved {prefix} to {path}")
-    return {'_tensor_file': path}
-
-
-def _load_from_disk(ref: Any) -> Any:
-    """Load tensor dict from disk reference, or return as-is if not a reference."""
-    if isinstance(ref, dict) and '_tensor_file' in ref:
-        path = ref['_tensor_file']
-        log.info(f"Loading from {path}")
-        # Safe loading: these files contain only tensors and basic Python types (dicts, lists, tuples)
-        # saved by _save_to_disk() for IPC between pipeline stages
-        import comfy.utils
-        return comfy.utils.load_torch_file(path)
-    return ref
 
 
 def _sparse_tensor_to_dict(st) -> Dict[str, Any]:
@@ -312,11 +278,8 @@ def run_conditioning(
     preprocessed_np = np.array(pil_rgb).astype(np.float32) / 255.0
     preprocessed_tensor = torch.from_numpy(preprocessed_np).unsqueeze(0)
 
-    # Save conditioning to disk for IPC
-    conditioning_ref = _save_to_disk(conditioning, 'conditioning')
-
     log.info("Conditioning extracted")
-    return conditioning_ref, preprocessed_tensor
+    return conditioning, preprocessed_tensor
 
 
 def run_shape_generation(
@@ -353,9 +316,6 @@ def run_shape_generation(
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
     resolution = model_config["resolution"]
-
-    # Load conditioning from disk if needed
-    conditioning = _load_from_disk(conditioning)
 
     # Move conditioning to device — keep float32 for sampling loop stability
     cond_on_device = {
@@ -448,11 +408,8 @@ def run_shape_generation(
     pbar.update(1)
     log.info("Shape pipeline offloaded")
 
-    # Save result to disk for IPC
-    result_ref = _save_to_disk(result, 'shape_result')
-
     log.info(f"Shape generated: {len(vertices)} verts, {len(faces)} faces")
-    return result_ref, vertices, faces
+    return result, vertices, faces
 
 
 def run_texture_generation(
@@ -485,10 +442,6 @@ def run_texture_generation(
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
     resolution = model_config["resolution"]
-
-    # Load conditioning and shape_result from disk if needed
-    conditioning = _load_from_disk(conditioning)
-    shape_result = _load_from_disk(shape_result)
 
     # Move conditioning to device — keep float32 for sampling loop stability
     cond_on_device = {
