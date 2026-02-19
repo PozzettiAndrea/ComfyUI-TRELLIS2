@@ -1,15 +1,16 @@
 from typing import *
 import gc
 import logging
+import sys
 import torch
 import torch.nn as nn
 import numpy as np
 from PIL import Image
 from .base import Pipeline
 from . import samplers, rembg
-from ..modules.sparse import SparseTensor
-from ..modules import image_feature_extractor
-from ..representations import Mesh, MeshWithVoxel
+from ..trellis2.sparse import SparseTensor
+from ..trellis2 import dinov3 as image_feature_extractor
+from ..trellis2.vae import Mesh, MeshWithVoxel
 import comfy.model_management
 
 log = logging.getLogger("trellis2")
@@ -18,20 +19,6 @@ log = logging.getLogger("trellis2")
 class Trellis2ImageTo3DPipeline(Pipeline):
     """
     Pipeline for inferring Trellis2 image-to-3D models.
-
-    Args:
-        models (dict[str, nn.Module]): The models to use in the pipeline.
-        sparse_structure_sampler (samplers.Sampler): The sampler for the sparse structure.
-        shape_slat_sampler (samplers.Sampler): The sampler for the structured latent.
-        tex_slat_sampler (samplers.Sampler): The sampler for the texture latent.
-        sparse_structure_sampler_params (dict): The parameters for the sparse structure sampler.
-        shape_slat_sampler_params (dict): The parameters for the structured latent sampler.
-        tex_slat_sampler_params (dict): The parameters for the texture latent sampler.
-        shape_slat_normalization (dict): The normalization parameters for the structured latent.
-        tex_slat_normalization (dict): The normalization parameters for the texture latent.
-        image_cond_model (Callable): The image conditioning model.
-        rembg_model (Callable): The model for removing background.
-        low_vram (bool): Whether to use low-VRAM mode.
     """
     def __init__(
         self,
@@ -46,7 +33,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         tex_slat_normalization: dict = None,
         image_cond_model: Callable = None,
         rembg_model: Callable = None,
-        low_vram: bool = True,
         default_pipeline_type: str = '1024_cascade',
     ):
         if models is None:
@@ -62,7 +48,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         self.tex_slat_normalization = tex_slat_normalization
         self.image_cond_model = image_cond_model
         self.rembg_model = rembg_model
-        self.low_vram = low_vram
         self.default_pipeline_type = default_pipeline_type
         self.pbr_attr_layout = {
             'base_color': slice(0, 3),
@@ -77,7 +62,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         path: str,
         models_to_load: list = None,
         enable_disk_offload: bool = False,
-        dtype=None,
     ) -> "Trellis2ImageTo3DPipeline":
         """
         Load a pretrained model.
@@ -86,10 +70,9 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             path (str): The path to the model. Can be either local path or a Hugging Face repository.
             models_to_load: Optional list of model keys to load. If None, loads all models.
             enable_disk_offload: If True, enables disk-based model offloading for zero RAM usage.
-            dtype: Optional torch dtype for model weights.
         """
         pipeline = super(Trellis2ImageTo3DPipeline, Trellis2ImageTo3DPipeline).from_pretrained(
-            path, models_to_load, enable_disk_offload=enable_disk_offload, dtype=dtype
+            path, models_to_load, enable_disk_offload=enable_disk_offload
         )
         new_pipeline = Trellis2ImageTo3DPipeline()
         new_pipeline.__dict__ = pipeline.__dict__
@@ -116,7 +99,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             new_pipeline.image_cond_model = None
             new_pipeline.rembg_model = None
 
-        new_pipeline.low_vram = args.get('low_vram', True)
         new_pipeline.default_pipeline_type = args.get('default_pipeline_type', '1024_cascade')
         new_pipeline.pbr_attr_layout = {
             'base_color': slice(0, 3),
@@ -157,11 +139,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             output = input
         else:
             input = input.convert('RGB')
-            if self.low_vram:
-                self.rembg_model.to(self.device)
             output = self.rembg_model(input)
-            if self.low_vram:
-                self.rembg_model.cpu()
         output_np = np.array(output)
         alpha = output_np[:, :, 3]
         bbox = np.argwhere(alpha > 0.8 * 255)
@@ -187,11 +165,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             dict: The conditioning information
         """
         self.image_cond_model.image_size = resolution
-        if self.low_vram:
-            self.image_cond_model.to(self.device)
         cond = self.image_cond_model(image)
-        if self.low_vram:
-            self.image_cond_model.cpu()
         if not include_neg_cond:
             return {'cond': cond}
         neg_cond = torch.zeros_like(cond)
@@ -221,15 +195,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         reso = flow_model.resolution
         in_channels = flow_model.in_channels
         noise = torch.randn(num_samples, in_channels, reso, reso, reso, device=self.device, dtype=getattr(self, '_dtype', None))
+        print(f"[TRELLIS2] SS noise: dtype={noise.dtype}, cond={cond.get('cond', cond).dtype if hasattr(cond.get('cond', cond), 'dtype') else 'N/A'}", file=sys.stderr)
         sampler_params = {**self.sparse_structure_sampler_params, **sampler_params}
-        log.warning(f"[DEBUG] SS noise: dtype={noise.dtype} shape={noise.shape} min={noise.min():.3f} max={noise.max():.3f}")
-        log.warning(f"[DEBUG] SS cond keys={list(cond.keys())}")
-        for k, v in cond.items():
-            if hasattr(v, 'shape'):
-                log.warning(f"[DEBUG] SS cond[{k}]: dtype={v.dtype} shape={v.shape} min={v.min():.4f} max={v.max():.4f} mean={v.mean():.4f}")
-        log.warning(f"[DEBUG] SS sampler_params={sampler_params}")
-        log.warning(f"[DEBUG] SS flow_model.dtype={getattr(flow_model, 'dtype', 'N/A')}")
-        log.warning(f"[DEBUG] SS flow_model params: resolution={flow_model.resolution} in_ch={flow_model.in_channels} model_ch={flow_model.model_channels} cond_ch={flow_model.cond_channels}")
         z_s = self.sparse_structure_sampler.sample(
             flow_model,
             noise,
@@ -238,14 +205,17 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling sparse structure",
         ).samples
+        print(f"[TRELLIS2] SS flow output: dtype={z_s.dtype}, shape={z_s.shape}, min={z_s.min().item():.4f}, max={z_s.max().item():.4f}", file=sys.stderr)
         del noise, flow_model  # Free tensors and local model reference
         self._unload_model('sparse_structure_flow_model')
 
         # Decode sparse structure latent
         decoder = self._load_model('sparse_structure_decoder')
-        log.warning(f"[DEBUG] z_s dtype={z_s.dtype} min={z_s.min().item():.6f} max={z_s.max().item():.6f} mean={z_s.mean().item():.6f}")
-        raw_decoded = decoder(z_s)
-        log.warning(f"[DEBUG] decoded dtype={raw_decoded.dtype} min={raw_decoded.min().item():.4f} max={raw_decoded.max().item():.4f} >0: {(raw_decoded > 0).sum().item()}/{raw_decoded.numel()}")
+        model_dtype = next(decoder.parameters()).dtype
+        print(f"[TRELLIS2] SS decoder: input={z_s.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
+        with torch.autocast('cuda', dtype=model_dtype):
+            raw_decoded = decoder(z_s)
+        print(f"[TRELLIS2] SS decoder output: dtype={raw_decoded.dtype}, min={raw_decoded.min().item():.4f}, max={raw_decoded.max().item():.4f}, positive={int((raw_decoded > 0).sum().item())}/{raw_decoded.numel()}", file=sys.stderr)
         decoded = raw_decoded > 0
         del z_s, raw_decoded, decoder  # Free tensors and local model reference
         self._unload_model('sparse_structure_decoder')
@@ -254,6 +224,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             ratio = decoded.shape[2] // resolution
             decoded = torch.nn.functional.max_pool3d(decoded.float(), ratio, ratio, 0) > 0.5
         coords = torch.argwhere(decoded)[:, [0, 2, 3, 4]].int()
+        print(f"[TRELLIS2] Active voxels: {coords.shape[0]} out of {decoded.numel()}", file=sys.stderr)
         del decoded  # Free decoded tensor
         gc.collect()
         comfy.model_management.soft_empty_cache()
@@ -282,6 +253,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             feats=torch.randn(coords.shape[0], flow_model.in_channels, device=self.device, dtype=getattr(self, '_dtype', None)),
             coords=coords,
         )
+        print(f"[TRELLIS2] Shape SLat noise: feats={noise.feats.dtype}, model_key={model_key}", file=sys.stderr)
         sampler_params = {**self.shape_slat_sampler_params, **sampler_params}
         slat = self.shape_slat_sampler.sample(
             flow_model,
@@ -291,6 +263,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             verbose=True,
             tqdm_desc="Sampling shape SLat",
         ).samples
+        print(f"[TRELLIS2] Shape SLat output: feats={slat.feats.dtype}, min={slat.feats.min().item():.4f}, max={slat.feats.max().item():.4f}", file=sys.stderr)
         del noise, flow_model
         self._unload_model(model_key)
 
@@ -360,8 +333,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
 
         # Upsample
         decoder = self._load_model('shape_slat_decoder')
-        decoder.low_vram = not self.keep_model_loaded
-        hr_coords = decoder.upsample(slat, upsample_times=4)
+        model_dtype = next(decoder.parameters()).dtype
+        print(f"[TRELLIS2] Shape decoder upsample: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
+        with torch.autocast('cuda', dtype=model_dtype):
+            hr_coords = decoder.upsample(slat, upsample_times=4)
 
         # Free LR slat and decoder - not used in HR pass
         del slat, std, mean, decoder
@@ -452,8 +427,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         """
         decoder = self._load_model('shape_slat_decoder')
         decoder.set_resolution(resolution)
-        decoder.low_vram = not self.keep_model_loaded
-        ret = decoder(slat, return_subs=True)
+        model_dtype = next(decoder.parameters()).dtype
+        print(f"[TRELLIS2] Shape decoder: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
+        with torch.autocast('cuda', dtype=model_dtype):
+            ret = decoder(slat, return_subs=True)
         del decoder
         self._unload_model('shape_slat_decoder')
         return ret
@@ -522,8 +499,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             List[SparseTensor]: The decoded texture voxels
         """
         decoder = self._load_model('tex_slat_decoder')
-        decoder.low_vram = not self.keep_model_loaded
-        ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
+        model_dtype = next(decoder.parameters()).dtype
+        print(f"[TRELLIS2] Texture decoder: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
+        with torch.autocast('cuda', dtype=model_dtype):
+            ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
         del decoder
         self._unload_model('tex_slat_decoder')
         return ret
