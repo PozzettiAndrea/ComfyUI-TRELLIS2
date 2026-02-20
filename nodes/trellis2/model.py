@@ -29,7 +29,9 @@ log = logging.getLogger("trellis2")
 # 1. Utilities (from modules/utils.py and modules/spatial.py)
 # =============================================================================
 
-def str_to_dtype(dtype_str: str):
+def str_to_dtype(dtype_str):
+    if isinstance(dtype_str, torch.dtype):
+        return dtype_str
     return {
         'f16': torch.float16,
         'fp16': torch.float16,
@@ -427,20 +429,20 @@ class TransformerBlock(nn.Module):
             operations=operations,
         )
 
-    def _forward(self, x: torch.Tensor, phases: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         h = self.norm1(x)
-        h = self.attn(h, phases=phases)
+        h = self.attn(h, phases=phases, transformer_options=transformer_options)
         x = x + h
         h = self.norm2(x)
         h = self.mlp(h)
         x = x + h
         return x
 
-    def forward(self, x: torch.Tensor, phases: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         if self.use_checkpoint:
-            return torch.utils.checkpoint.checkpoint(self._forward, x, phases, use_reentrant=False)
+            return torch.utils.checkpoint.checkpoint(self._forward, x, phases, transformer_options, use_reentrant=False)
         else:
-            return self._forward(x, phases)
+            return self._forward(x, phases, transformer_options=transformer_options)
 
 
 class TransformerCrossBlock(nn.Module):
@@ -507,23 +509,23 @@ class TransformerCrossBlock(nn.Module):
             operations=operations,
         )
 
-    def _forward(self, x: torch.Tensor, context: torch.Tensor, phases: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def _forward(self, x: torch.Tensor, context: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         h = self.norm1(x)
-        h = self.self_attn(h, phases=phases)
+        h = self.self_attn(h, phases=phases, transformer_options=transformer_options)
         x = x + h
         h = self.norm2(x)
-        h = self.cross_attn(h, context)
+        h = self.cross_attn(h, context, transformer_options=transformer_options)
         x = x + h
         h = self.norm3(x)
         h = self.mlp(h)
         x = x + h
         return x
 
-    def forward(self, x: torch.Tensor, context: torch.Tensor, phases: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, context: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         if self.use_checkpoint:
-            return torch.utils.checkpoint.checkpoint(self._forward, x, context, phases, use_reentrant=False)
+            return torch.utils.checkpoint.checkpoint(self._forward, x, context, phases, transformer_options, use_reentrant=False)
         else:
-            return self._forward(x, context, phases)
+            return self._forward(x, context, phases, transformer_options=transformer_options)
 
 
 # =============================================================================
@@ -1161,20 +1163,20 @@ class SparseTransformerBlock(nn.Module):
             sparse_operations=sparse_operations,
         )
 
-    def _forward(self, x: SparseTensor) -> SparseTensor:
+    def _forward(self, x: SparseTensor, transformer_options={}) -> SparseTensor:
         h = x.replace(self.norm1(x.feats))
-        h = self.attn(h)
+        h = self.attn(h, transformer_options=transformer_options)
         x = x + h
         h = x.replace(self.norm2(x.feats))
         h = self.mlp(h)
         x = x + h
         return x
 
-    def forward(self, x: SparseTensor) -> SparseTensor:
+    def forward(self, x: SparseTensor, transformer_options={}) -> SparseTensor:
         if self.use_checkpoint:
-            return torch.utils.checkpoint.checkpoint(self._forward, x, use_reentrant=False)
+            return torch.utils.checkpoint.checkpoint(self._forward, x, transformer_options, use_reentrant=False)
         else:
-            return self._forward(x)
+            return self._forward(x, transformer_options=transformer_options)
 
 
 class SparseTransformerCrossBlock(nn.Module):
@@ -1243,23 +1245,23 @@ class SparseTransformerCrossBlock(nn.Module):
             sparse_operations=sparse_operations,
         )
 
-    def _forward(self, x: SparseTensor, context: Union[torch.Tensor, VarLenTensor]) -> SparseTensor:
+    def _forward(self, x: SparseTensor, context: Union[torch.Tensor, VarLenTensor], transformer_options={}) -> SparseTensor:
         h = x.replace(self.norm1(x.feats))
-        h = self.self_attn(h)
+        h = self.self_attn(h, transformer_options=transformer_options)
         x = x + h
         h = x.replace(self.norm2(x.feats))
-        h = self.cross_attn(h, context)
+        h = self.cross_attn(h, context, transformer_options=transformer_options)
         x = x + h
         h = x.replace(self.norm3(x.feats))
         h = self.mlp(h)
         x = x + h
         return x
 
-    def forward(self, x: SparseTensor, context: Union[torch.Tensor, VarLenTensor]) -> SparseTensor:
+    def forward(self, x: SparseTensor, context: Union[torch.Tensor, VarLenTensor], transformer_options={}) -> SparseTensor:
         if self.use_checkpoint:
-            return torch.utils.checkpoint.checkpoint(self._forward, x, context, use_reentrant=False)
+            return torch.utils.checkpoint.checkpoint(self._forward, x, context, transformer_options, use_reentrant=False)
         else:
-            return self._forward(x, context)
+            return self._forward(x, context, transformer_options=transformer_options)
 
 
 # =============================================================================
