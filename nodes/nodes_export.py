@@ -7,7 +7,7 @@ from datetime import datetime
 try:
     import folder_paths
 except ImportError:
-    folder_paths = None
+    from . import folder_paths_fallback as folder_paths
 
 # Create logger for non-isolated classes
 logger = logging.getLogger("[TRELLIS2]")

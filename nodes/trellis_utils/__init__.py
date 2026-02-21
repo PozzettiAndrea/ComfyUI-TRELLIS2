@@ -13,10 +13,14 @@ import os
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("[TRELLIS2]")
 
+try:
+    import folder_paths
+except ImportError:
+    from .. import folder_paths_fallback as folder_paths
+
 
 def get_trellis_models_dir():
     """Get the directory for TRELLIS.2 models."""
-    import folder_paths
     models_dir = os.path.join(folder_paths.models_dir, "trellis2")
     os.makedirs(models_dir, exist_ok=True)
     return models_dir
@@ -24,7 +28,6 @@ def get_trellis_models_dir():
 
 def get_dinov3_models_dir():
     """Get the directory for DINOv3 models."""
-    import folder_paths
     models_dir = os.path.join(folder_paths.models_dir, "dinov3")
     os.makedirs(models_dir, exist_ok=True)
     return models_dir
@@ -32,7 +35,6 @@ def get_dinov3_models_dir():
 
 def get_birefnet_models_dir():
     """Get the directory for BiRefNet models."""
-    import folder_paths
     models_dir = os.path.join(folder_paths.models_dir, "birefnet")
     os.makedirs(models_dir, exist_ok=True)
     return models_dir

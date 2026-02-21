@@ -14,7 +14,8 @@ def _get_trellis2_models_dir():
         import folder_paths
         models_dir = os.path.join(folder_paths.models_dir, "trellis2")
     except ImportError:
-        models_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "models", "trellis2")
+        from ... import folder_paths_fallback as folder_paths
+        models_dir = os.path.join(folder_paths.models_dir, "trellis2")
     os.makedirs(models_dir, exist_ok=True)
     return models_dir
 
