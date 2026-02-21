@@ -23,7 +23,6 @@ class FlowEulerSampler(Sampler):
         sigma_min: float,
     ):
         self.sigma_min = sigma_min
-        self._logged_dtype = False
 
     def _eps_to_xstart(self, x_t, t, eps):
         assert x_t.shape == eps.shape
@@ -46,31 +45,23 @@ class FlowEulerSampler(Sampler):
         return ((1 - self.sigma_min) * x_t - x_0) / (self.sigma_min + (1 - self.sigma_min) * t)
 
     def _inference_model(self, model, x_t, t, cond=None, **kwargs):
-        import sys
         t = torch.tensor([1000 * t] * x_t.shape[0], device=x_t.device, dtype=torch.float32)
 
+        # Cast inputs to model dtype (ComfyUI-native pattern: model_base.py:183)
         model_dtype = next(model.parameters()).dtype
-        input_dtype = x_t.feats.dtype if hasattr(x_t, 'feats') else x_t.dtype
-        cond_info = "None"
-        if cond is not None:
-            if hasattr(cond, 'dtype'):
-                cond_info = f"dtype={cond.dtype}, min={cond.min().item():.4f}, max={cond.max().item():.4f}, has_nan={bool(cond.isnan().any())}, has_inf={bool(cond.isinf().any())}"
-            else:
-                cond_info = f"type={type(cond).__name__}"
-        print(f"[TRELLIS2 SAMPLER] input: {input_dtype}, weights: {model_dtype}, autocast({model_dtype}), cond: {cond_info}", file=sys.stderr)
-
-        with torch.autocast('cuda', dtype=model_dtype):
-            out = model(x_t, t, cond, **kwargs)
-
-        # Cast output back to fp32 for sampling loop numerical stability
-        if hasattr(out, 'replace'):
-            out_dtype = out.feats.dtype
-            result = out.replace(feats=out.feats.float())
+        if hasattr(x_t, 'replace'):
+            x_t = x_t.replace(feats=x_t.feats.to(dtype=model_dtype))
         else:
-            out_dtype = out.dtype
-            result = out.float()
-        print(f"[TRELLIS2 SAMPLER] output: {out_dtype} -> cast to fp32", file=sys.stderr)
-        return result
+            x_t = x_t.to(dtype=model_dtype)
+        if cond is not None and hasattr(cond, 'to'):
+            cond = cond.to(dtype=model_dtype)
+
+        out = model(x_t, t, cond, **kwargs)
+
+        # Cast output to fp32 for sampling loop (ComfyUI-native: model_base.py:210)
+        if hasattr(out, 'replace'):
+            return out.replace(feats=out.feats.float())
+        return out.float()
 
     def _get_model_prediction(self, model, x_t, t, cond=None, **kwargs):
         pred_v = self._inference_model(model, x_t, t, cond, **kwargs)
