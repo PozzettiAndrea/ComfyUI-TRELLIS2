@@ -51,7 +51,7 @@ def _get_trellis2_models_dir():
     return models_dir
 
 
-def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None, device=None, **kwargs):
+def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None, device=None, dtype=None, **kwargs):
     """
     Load a model from a pretrained checkpoint.
 
@@ -121,6 +121,10 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         model = model_class(**config['args'], **kwargs)
     log.info(f"Loading weights directly to {device}...")
     model.load_state_dict(comfy.utils.load_torch_file(model_file, device=torch.device(device)), strict=False, assign=True)
+
+    if dtype is not None:
+        model = model.to(dtype=dtype)
+        log.info(f"Model dtype set to {dtype}")
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:
