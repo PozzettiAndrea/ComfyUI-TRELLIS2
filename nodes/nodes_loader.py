@@ -91,11 +91,13 @@ Attention backend:
         else:
             log.info("Attention backend: auto (will detect on first use)")
 
+        # Store dtype as string for JSON-safe IPC across isolation boundary
+        dtype_str = {torch.bfloat16: "bf16", torch.float16: "fp16", torch.float32: "fp32"}[dtype]
         config = {
             "model_name": "microsoft/TRELLIS.2-4B",
             "resolution": resolution,
             "precision": precision,
-            "dtype": dtype,
+            "dtype": dtype_str,
             "attn_backend": attn_backend,
         }
         return (config,)
