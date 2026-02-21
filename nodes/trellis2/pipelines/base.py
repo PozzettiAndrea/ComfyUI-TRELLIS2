@@ -1,10 +1,13 @@
 from typing import *
 import gc
-import sys
+import logging
 import torch
 import torch.nn as nn
 from .. import models
 from ..utils.disk_offload import DiskOffloadManager
+import comfy.model_management
+
+log = logging.getLogger("trellis2")
 
 
 def _get_trellis2_models_dir():
@@ -63,14 +66,14 @@ class Pipeline:
         cached_config = os.path.join(models_dir, "pipeline.json")
 
         if is_local:
-            print(f"[TRELLIS2] Loading pipeline config from local path...", file=sys.stderr, flush=True)
+            log.info("Loading pipeline config from local path...")
             config_file = f"{path}/pipeline.json"
         elif os.path.exists(cached_config):
-            print(f"[TRELLIS2] Loading pipeline config from local cache...", file=sys.stderr, flush=True)
+            log.info("Loading pipeline config from local cache...")
             config_file = cached_config
         else:
             from huggingface_hub import hf_hub_download
-            print(f"[TRELLIS2] Downloading pipeline config from HuggingFace...", file=sys.stderr, flush=True)
+            log.info("Downloading pipeline config from HuggingFace...")
             hf_hub_download(path, "pipeline.json", local_dir=models_dir)
             config_file = cached_config
 
@@ -89,9 +92,9 @@ class Pipeline:
         if models_to_load:
             skipped = len(args['models']) - total_models
             if enable_disk_offload:
-                print(f"[TRELLIS2] Registering {total_models} models for progressive loading (skipping {skipped} not needed)", file=sys.stderr, flush=True)
+                log.info(f"Registering {total_models} models for progressive loading (skipping {skipped} not needed)")
             else:
-                print(f"[TRELLIS2] Loading {total_models} models (skipping {skipped} not needed for this resolution)", file=sys.stderr, flush=True)
+                log.info(f"Loading {total_models} models (skipping {skipped} not needed for this resolution)")
 
         for i, (k, v) in enumerate(model_items, 1):
             # Check if v is already a full HuggingFace path (org/repo/file pattern)
@@ -107,27 +110,27 @@ class Pipeline:
             if enable_disk_offload:
                 # PROGRESSIVE LOADING: Don't load model now, just ensure files are cached
                 # and register path for on-demand loading later
-                print(f"[TRELLIS2] Registering model [{i}/{total_models}]: {k}...", file=sys.stderr, flush=True)
+                log.info(f"Registering model [{i}/{total_models}]: {k}...")
                 safetensors_path = Pipeline._ensure_model_cached(model_path, models_dir)
                 disk_offload_manager.register(k, safetensors_path)
                 _models[k] = None  # Placeholder - will be loaded on-demand
-                print(f"[TRELLIS2] Registered {k} (will load on-demand)", file=sys.stderr, flush=True)
+                log.info(f"Registered {k} (will load on-demand)")
             else:
                 # IMMEDIATE LOADING: Load model to GPU now (original behavior)
-                print(f"[TRELLIS2] Loading model [{i}/{total_models}]: {k}...", file=sys.stderr, flush=True)
+                log.info(f"Loading model [{i}/{total_models}]: {k}...")
                 _models[k] = models.from_pretrained(
                     model_path,
                     disk_offload_manager=disk_offload_manager,
                     model_key=k
                 )
-                print(f"[TRELLIS2] Loaded {k} successfully", file=sys.stderr, flush=True)
+                log.info(f"Loaded {k} successfully")
 
         new_pipeline = Pipeline(_models, disk_offload_manager=disk_offload_manager)
         new_pipeline._pretrained_args = args
         if enable_disk_offload:
-            print(f"[TRELLIS2] All {total_models} models registered for progressive loading!", file=sys.stderr, flush=True)
+            log.info(f"All {total_models} models registered for progressive loading!")
         else:
-            print(f"[TRELLIS2] All {total_models} models loaded!", file=sys.stderr, flush=True)
+            log.info(f"All {total_models} models loaded!")
         return new_pipeline
 
     @staticmethod
@@ -163,9 +166,9 @@ class Pipeline:
 
         # Download directly to models folder (no intermediate HF cache)
         from huggingface_hub import hf_hub_download
-        print(f"[TRELLIS2]   Downloading {model_name} config...", file=sys.stderr, flush=True)
+        log.info(f"Downloading {model_name} config...")
         hf_hub_download(repo_id, f"{model_name}.json", local_dir=models_dir)
-        print(f"[TRELLIS2]   Downloading {model_name} weights (this may take a while)...", file=sys.stderr, flush=True)
+        log.info(f"Downloading {model_name} weights (this may take a while)...")
         hf_hub_download(repo_id, f"{model_name}.safetensors", local_dir=models_dir)
 
         return local_weights
@@ -227,7 +230,7 @@ class Pipeline:
                 # Config is same path with .json extension
                 config_path = safetensors_path.replace('.safetensors', '')
                 mem_before = torch.cuda.memory_allocated() / 1024**2
-                print(f"[TRELLIS2] Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)", file=sys.stderr, flush=True)
+                log.info(f"Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)")
                 model = models.from_pretrained(config_path, device=str(device))
                 model.eval()
                 # Apply low_vram setting if enabled
@@ -239,9 +242,9 @@ class Pipeline:
                     for block in model.blocks:
                         if hasattr(block, 'use_checkpoint'):
                             block.use_checkpoint = True
-                    print(f"[TRELLIS2] {model_key} checkpointing enabled", file=sys.stderr, flush=True)
+                    log.info(f"{model_key} checkpointing enabled")
                 mem_after = torch.cuda.memory_allocated() / 1024**2
-                print(f"[TRELLIS2] {model_key} loaded (VRAM after: {mem_after:.0f} MB)", file=sys.stderr, flush=True)
+                log.info(f"{model_key} loaded (VRAM after: {mem_after:.0f} MB)")
         elif model is not None:
             # Model exists, just move to device if needed
             model.to(device)
@@ -262,12 +265,12 @@ class Pipeline:
         if model is not None:
             mem_before = torch.cuda.memory_allocated() / 1024**2
             reserved_before = torch.cuda.memory_reserved() / 1024**2
-            print(f"[TRELLIS2] Unloading {model_key}... (allocated: {mem_before:.0f} MB, reserved: {reserved_before:.0f} MB)", file=sys.stderr, flush=True)
+            log.info(f"Unloading {model_key}... (allocated: {mem_before:.0f} MB, reserved: {reserved_before:.0f} MB)")
             # Delete the model entirely
             self.models[model_key] = None
             del model
             gc.collect()
-            torch.cuda.empty_cache()
+            comfy.model_management.soft_empty_cache()
             mem_after = torch.cuda.memory_allocated() / 1024**2
             reserved_after = torch.cuda.memory_reserved() / 1024**2
-            print(f"[TRELLIS2] {model_key} unloaded (allocated: {mem_after:.0f} MB, reserved: {reserved_after:.0f} MB)", file=sys.stderr, flush=True)
+            log.info(f"{model_key} unloaded (allocated: {mem_after:.0f} MB, reserved: {reserved_after:.0f} MB)")

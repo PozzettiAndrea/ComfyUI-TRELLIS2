@@ -2,11 +2,10 @@
 TRELLIS2 pipeline stages.
 
 Each stage loads models, runs inference, and optionally unloads.
-These run inside the isolated subprocess.
 """
 
-import sys
 import gc
+import logging
 import os
 import tempfile
 import uuid
@@ -16,7 +15,10 @@ from typing import Dict, Any, Tuple, Optional, List
 
 import torch
 import numpy as np
+import comfy.model_management
 from PIL import Image
+
+log = logging.getLogger("trellis2")
 
 from .lazy_manager import get_model_manager
 from .helpers import smart_crop_square
@@ -31,7 +33,7 @@ def _get_temp_dir():
     global _TRELLIS2_TEMP_DIR
     if _TRELLIS2_TEMP_DIR is None:
         _TRELLIS2_TEMP_DIR = tempfile.mkdtemp(prefix='trellis2_')
-        print(f"[TRELLIS2] Created temp dir: {_TRELLIS2_TEMP_DIR}", file=sys.stderr)
+        log.info(f"Created temp dir: {_TRELLIS2_TEMP_DIR}")
     return _TRELLIS2_TEMP_DIR
 
 
@@ -39,7 +41,7 @@ def _save_to_disk(data: dict, prefix: str) -> dict:
     """Save tensor dict to disk, return reference dict."""
     path = os.path.join(_get_temp_dir(), f'{prefix}_{uuid.uuid4().hex[:8]}.pt')
     torch.save(data, path)
-    print(f"[TRELLIS2] Saved {prefix} to {path}", file=sys.stderr)
+    log.info(f"Saved {prefix} to {path}")
     return {'_tensor_file': path}
 
 
@@ -47,8 +49,10 @@ def _load_from_disk(ref: Any) -> Any:
     """Load tensor dict from disk reference, or return as-is if not a reference."""
     if isinstance(ref, dict) and '_tensor_file' in ref:
         path = ref['_tensor_file']
-        print(f"[TRELLIS2] Loading from {path}", file=sys.stderr)
-        return torch.load(path, weights_only=False)
+        log.info(f"Loading from {path}")
+        # Safe loading: these files contain only tensors and basic Python types (dicts, lists, tuples)
+        # saved by _save_to_disk() for IPC between pipeline stages
+        return torch.load(path, weights_only=True)
     return ref
 
 
@@ -139,7 +143,7 @@ def run_conditioning(
     Returns:
         Tuple of (conditioning_dict, preprocessed_image_tensor)
     """
-    print(f"[TRELLIS2] Running conditioning...", file=sys.stderr)
+    log.info("Running conditioning...")
 
     # Background color mapping
     bg_colors = {
@@ -150,7 +154,7 @@ def run_conditioning(
     bg_color = bg_colors.get(background_color, (128, 128, 128))
 
     # Get device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = comfy.model_management.get_torch_device()
 
     # Get model manager
     manager = get_model_manager(
@@ -243,7 +247,7 @@ def run_conditioning(
     # Save conditioning to disk for IPC
     conditioning_ref = _save_to_disk(conditioning, 'conditioning')
 
-    print(f"[TRELLIS2] Conditioning extracted", file=sys.stderr)
+    log.info("Conditioning extracted")
     return conditioning_ref, preprocessed_tensor
 
 
@@ -274,9 +278,9 @@ def run_shape_generation(
     """
     import cumesh as CuMesh
 
-    print(f"[TRELLIS2] Running shape generation (seed={seed})...", file=sys.stderr)
+    log.info(f"Running shape generation (seed={seed})...")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = comfy.model_management.get_torch_device()
 
     # Load conditioning from disk if needed
     conditioning = _load_from_disk(conditioning)
@@ -318,7 +322,7 @@ def run_shape_generation(
         **sampler_params
     )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
-    print(f"[TRELLIS2] Shape generation peak VRAM: {peak_mem:.0f} MB", file=sys.stderr)
+    log.info(f"Shape generation peak VRAM: {peak_mem:.0f} MB")
     mesh = meshes[0]
     mesh.fill_holes()
 
@@ -344,11 +348,11 @@ def run_shape_generation(
     # Pack results - serialize SparseTensor objects to dicts for IPC
     # This allows the result to cross the subprocess boundary without requiring
     # trellis2.modules in the main ComfyUI process
-    print(f"[DEBUG] shape_slat before serialize:", file=sys.stderr)
-    print(f"[DEBUG]   feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
-    print(f"[DEBUG]   coords.shape: {shape_slat.coords.shape}", file=sys.stderr)
-    print(f"[DEBUG]   shape: {shape_slat.shape}", file=sys.stderr)
-    print(f"[DEBUG]   scale: {shape_slat._scale}", file=sys.stderr)
+    log.debug(f"shape_slat before serialize:")
+    log.debug(f"  feats.shape: {shape_slat.feats.shape}")
+    log.debug(f"  coords.shape: {shape_slat.coords.shape}")
+    log.debug(f"  shape: {shape_slat.shape}")
+    log.debug(f"  scale: {shape_slat._scale}")
     result = {
         'shape_slat': _serialize_for_ipc(shape_slat),
         'subs': _serialize_for_ipc(subs),
@@ -367,7 +371,7 @@ def run_shape_generation(
     # Save result to disk for IPC
     result_ref = _save_to_disk(result, 'shape_result')
 
-    print(f"[TRELLIS2] Shape generated: {len(vertices)} verts, {len(faces)} faces", file=sys.stderr)
+    log.info(f"Shape generated: {len(vertices)} verts, {len(faces)} faces")
     # Return file reference plus mesh data for Trimesh creation in node
     return result_ref, vertices, faces
 
@@ -395,9 +399,9 @@ def run_texture_generation(
     """
     from ..trellis2.representations.mesh import Mesh
 
-    print(f"[TRELLIS2] Running texture generation (seed={seed})...", file=sys.stderr)
+    log.info(f"Running texture generation (seed={seed})...")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = comfy.model_management.get_torch_device()
 
     # Load conditioning and shape_result from disk if needed
     conditioning = _load_from_disk(conditioning)
@@ -413,11 +417,11 @@ def run_texture_generation(
     # SparseTensor objects were serialized as dicts for IPC, reconstruct them here
     shape_slat = _deserialize_from_ipc(shape_result['shape_slat'], device)
     subs = _deserialize_from_ipc(shape_result['subs'], device)
-    print(f"[DEBUG] shape_slat after deserialize:", file=sys.stderr)
-    print(f"[DEBUG]   feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
-    print(f"[DEBUG]   coords.shape: {shape_slat.coords.shape}", file=sys.stderr)
-    print(f"[DEBUG]   shape: {shape_slat.shape}", file=sys.stderr)
-    print(f"[DEBUG]   scale: {shape_slat._scale}", file=sys.stderr)
+    log.debug(f"shape_slat after deserialize:")
+    log.debug(f"  feats.shape: {shape_slat.feats.shape}")
+    log.debug(f"  coords.shape: {shape_slat.coords.shape}")
+    log.debug(f"  shape: {shape_slat.shape}")
+    log.debug(f"  scale: {shape_slat._scale}")
     resolution = shape_result['resolution']
     pipeline_type = shape_result['pipeline_type']
 
@@ -458,7 +462,7 @@ def run_texture_generation(
         **sampler_params
     )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
-    print(f"[TRELLIS2] Texture generation peak VRAM: {peak_mem:.0f} MB", file=sys.stderr)
+    log.info(f"Texture generation peak VRAM: {peak_mem:.0f} MB")
     mesh = textured_meshes[0]
     mesh.simplify(16777216)  # Light cleanup of degenerate geometry
 
@@ -476,8 +480,8 @@ def run_texture_generation(
     # Cleanup
     manager.unload_texture_pipeline()
     gc.collect()
-    torch.cuda.empty_cache()
+    comfy.model_management.soft_empty_cache()
 
     coords = result['voxel_coords']
-    print(f"[TRELLIS2] Texture generated: {mesh.vertices.shape[0]} verts, {len(coords)} voxels", file=sys.stderr)
+    log.info(f"Texture generated: {mesh.vertices.shape[0]} verts, {len(coords)} voxels")
     return result

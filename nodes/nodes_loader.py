@@ -1,7 +1,7 @@
 """Model loading nodes for TRELLIS.2.
 
 This returns a lightweight config object - actual model loading
-happens inside @isolated subprocess methods.
+happens inside node methods.
 """
 
 # Config is now a plain dict for serialization compatibility
@@ -26,6 +26,10 @@ class LoadTrellis2Models:
                 "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
+                "precision": (["auto", "bf16", "fp16", "fp32"], {
+                    "default": "auto",
+                    "tooltip": "Model precision. auto: best for your GPU (bf16 on Ampere+, fp16 on Volta/Turing, fp32 on older)."
+                }),
                 "attn_backend": (ATTN_BACKENDS, {"default": "flash_attn"}),
                 "vram_mode": (VRAM_MODES, {"default": "keep_loaded"}),
             }
@@ -39,7 +43,7 @@ class LoadTrellis2Models:
 Load TRELLIS.2 model configuration for image-to-3D generation.
 
 This node creates a configuration object that inference nodes use
-to load models on-demand inside isolated subprocess environments.
+to load models on-demand.
 
 Resolution modes:
 - 512: Fast, lower quality
@@ -58,11 +62,12 @@ VRAM mode:
 - disk_offload: Delete unused models, reload from disk (~3GB VRAM & CPU RAM, ~2-3x slower)
 """
 
-    def load_models(self, resolution='1024_cascade', attn_backend="flash_attn", vram_mode="keep_loaded"):
+    def load_models(self, resolution='1024_cascade', precision="auto", attn_backend="flash_attn", vram_mode="keep_loaded"):
         # Return plain dict - serializes natively across process boundaries
         config = {
             "model_name": "microsoft/TRELLIS.2-4B",
             "resolution": resolution,
+            "precision": precision,
             "attn_backend": attn_backend,
             "vram_mode": vram_mode,
         }

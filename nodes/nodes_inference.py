@@ -1,7 +1,6 @@
-"""Inference nodes for TRELLIS.2 Image-to-3D generation.
-
-All GPU inference runs inside isolated subprocess.
-"""
+"""Inference nodes for TRELLIS.2 Image-to-3D generation."""
+import logging
+log = logging.getLogger("trellis2")
 
 
 class Trellis2GetConditioning:
@@ -229,7 +228,7 @@ Returns:
             faces=texture_result['original_faces'],
             layout=json.dumps(layout_serializable),
         )
-        print(f"[TRELLIS2] Voxelgrid saved to: {voxelgrid_npz_path}")
+        log.info(f"Voxelgrid saved to: {voxelgrid_npz_path}")
 
         return ("", voxelgrid_npz_path)
 
@@ -288,7 +287,7 @@ Returns:
 
         # Load or reuse cached model
         if Trellis2RemoveBackground._model is None:
-            print("[TRELLIS2] Loading BiRefNet model for background removal...")
+            log.info("Loading BiRefNet model for background removal...")
             Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
             if not low_vram:
                 Trellis2RemoveBackground._model.to(device)
@@ -302,7 +301,7 @@ Returns:
             img_np = (image.cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
         pil_image = Image.fromarray(img_np)
 
-        print("[TRELLIS2] Removing background...")
+        log.info("Removing background...")
 
         if low_vram:
             model.to(device)
@@ -313,7 +312,7 @@ Returns:
         if low_vram:
             model.cpu()
             gc.collect()
-            torch.cuda.empty_cache()
+            mm.soft_empty_cache()
 
         # Extract mask from alpha channel
         output_np = np.array(output)
@@ -322,7 +321,7 @@ Returns:
         # Convert mask to ComfyUI format (B, H, W)
         mask_tensor = torch.tensor(mask_np).unsqueeze(0)
 
-        print("[TRELLIS2] Background removed successfully")
+        log.info("Background removed successfully")
 
         # Return original image + mask
         return (image, mask_tensor)
