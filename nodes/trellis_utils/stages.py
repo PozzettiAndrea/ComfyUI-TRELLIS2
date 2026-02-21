@@ -23,6 +23,11 @@ log = logging.getLogger("trellis2")
 from .helpers import smart_crop_square
 
 _DTYPE_MAP = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}
+# Noise/conditioning stay float32 for sampling loop stability (error accumulation over 12 steps).
+# Model weights are bf16 for memory savings. torch.autocast handles per-op precision:
+# matmuls/convs/attention run on bf16 tensor cores, norms stay float32.
+_DEFAULT_DTYPE = torch.float32
+_MODEL_DTYPE = torch.bfloat16
 
 
 # Shape models needed for each resolution mode
@@ -333,33 +338,35 @@ def run_shape_generation(
     log.info(f"Running shape generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
-    dtype = _DTYPE_MAP.get(model_config.get("dtype"), torch.bfloat16)
+    compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
+    model_dtype = _MODEL_DTYPE            # model weights
     resolution = model_config["resolution"]
 
     # Load conditioning from disk if needed
     conditioning = _load_from_disk(conditioning)
 
-    # Move conditioning to device and dtype
+    # Move conditioning to device — keep float32 for sampling loop stability
     cond_on_device = {
-        k: v.to(device=device, dtype=dtype) if isinstance(v, torch.Tensor) else v
+        k: v.to(device=device, dtype=compute_dtype) if isinstance(v, torch.Tensor) else v
         for k, v in conditioning.items()
     }
 
-    # Load shape pipeline directly
+    # Load shape pipeline
     from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
     shape_models = SHAPE_MODELS_BY_RESOLUTION.get(
         resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade']
     )
 
-    log.info("Loading shape pipeline...")
+    log.info(f"Loading shape pipeline (model_dtype={model_dtype}, compute_dtype={compute_dtype})...")
     pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
         model_config["model_name"],
         models_to_load=shape_models,
-        dtype=dtype,
+        dtype=model_dtype,
     )
     pipeline.default_pipeline_type = resolution
     pipeline._device = device
+    pipeline._dtype = compute_dtype  # noise and normalization tensors
     log.info("Shape pipeline ready")
 
     # Build sampler params
@@ -374,15 +381,17 @@ def run_shape_generation(
         },
     }
 
-    # Run shape generation
+    # autocast: bf16 tensor cores for matmuls/convs/attention, float32 for norms
+    # manual_cast() becomes no-op under autocast (by design)
     torch.cuda.reset_peak_memory_stats()
-    meshes, shape_slat, subs, res = pipeline.run_shape(
-        cond_on_device,
-        seed=seed,
-        pipeline_type=resolution,
-        max_num_tokens=max_num_tokens,
-        **sampler_params
-    )
+    with torch.autocast('cuda', dtype=model_dtype, enabled=model_dtype is not None):
+        meshes, shape_slat, subs, res = pipeline.run_shape(
+            cond_on_device,
+            seed=seed,
+            pipeline_type=resolution,
+            max_num_tokens=max_num_tokens,
+            **sampler_params
+        )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Shape generation peak VRAM: {peak_mem:.0f} MB")
     mesh = meshes[0]
@@ -461,27 +470,23 @@ def run_texture_generation(
     log.info(f"Running texture generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
-    dtype = _DTYPE_MAP.get(model_config.get("dtype"), torch.bfloat16)
+    compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
+    model_dtype = _MODEL_DTYPE            # model weights
     resolution = model_config["resolution"]
 
     # Load conditioning and shape_result from disk if needed
     conditioning = _load_from_disk(conditioning)
     shape_result = _load_from_disk(shape_result)
 
-    # Move conditioning to device and dtype
+    # Move conditioning to device — keep float32 for sampling loop stability
     cond_on_device = {
-        k: v.to(device=device, dtype=dtype) if isinstance(v, torch.Tensor) else v
+        k: v.to(device=device, dtype=compute_dtype) if isinstance(v, torch.Tensor) else v
         for k, v in conditioning.items()
     }
 
     # Deserialize and move shape data to device
     shape_slat = _deserialize_from_ipc(shape_result['shape_slat'], device)
     subs = _deserialize_from_ipc(shape_result['subs'], device)
-    log.debug(f"shape_slat after deserialize:")
-    log.debug(f"  feats.shape: {shape_slat.feats.shape}")
-    log.debug(f"  coords.shape: {shape_slat.coords.shape}")
-    log.debug(f"  shape: {shape_slat.shape}")
-    log.debug(f"  scale: {shape_slat._scale}")
     pipeline_type = shape_result['pipeline_type']
 
     # Reconstruct Mesh objects from saved data
@@ -491,7 +496,7 @@ def run_texture_generation(
     mesh.fill_holes()
     meshes = [mesh]
 
-    # Load texture pipeline directly
+    # Load texture pipeline
     from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
     texture_resolution = TEXTURE_RESOLUTION_MAP.get(resolution, '1024_cascade')
@@ -499,14 +504,15 @@ def run_texture_generation(
         resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade']
     )
 
-    log.info("Loading texture pipeline...")
+    log.info(f"Loading texture pipeline (model_dtype={model_dtype}, compute_dtype={compute_dtype})...")
     pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
         model_config["model_name"],
         models_to_load=texture_models,
-        dtype=dtype,
+        dtype=model_dtype,
     )
     pipeline.default_pipeline_type = texture_resolution
     pipeline._device = device
+    pipeline._dtype = compute_dtype  # noise and normalization tensors
     log.info("Texture pipeline ready")
 
     # Build sampler params
@@ -517,18 +523,19 @@ def run_texture_generation(
         },
     }
 
-    # Run texture generation
+    # autocast: bf16 tensor cores for matmuls/convs/attention, float32 for norms
     torch.cuda.reset_peak_memory_stats()
-    textured_meshes = pipeline.run_texture_with_subs(
-        cond_on_device,
-        shape_slat,
-        subs,
-        meshes,
-        shape_result['resolution'],
-        seed=seed,
-        pipeline_type=pipeline_type,
-        **sampler_params
-    )
+    with torch.autocast('cuda', dtype=model_dtype, enabled=model_dtype is not None):
+        textured_meshes = pipeline.run_texture_with_subs(
+            cond_on_device,
+            shape_slat,
+            subs,
+            meshes,
+            shape_result['resolution'],
+            seed=seed,
+            pipeline_type=pipeline_type,
+            **sampler_params
+        )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Texture generation peak VRAM: {peak_mem:.0f} MB")
     mesh = textured_meshes[0]

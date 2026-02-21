@@ -185,7 +185,9 @@ class SparseStructureEncoder(nn.Module):
 
     def forward(self, x: torch.Tensor, sample_posterior: bool = False, return_raw: bool = False) -> torch.Tensor:
         h = self.input_layer(x)
-        h = h.type(self.dtype)
+        # Cast to match weight dtype (may differ from self.dtype if model.to() was called)
+        weight_dtype = next(self.blocks.parameters()).dtype
+        h = h.type(weight_dtype)
 
         for block in self.blocks:
             h = block(h)
@@ -294,9 +296,11 @@ class SparseStructureDecoder(nn.Module):
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         h = self.input_layer(x)
-        
-        h = h.type(self.dtype)
-                
+
+        # Cast to match weight dtype (may differ from self.dtype if model.to() was called)
+        weight_dtype = next(self.middle_block.parameters()).dtype
+        h = h.type(weight_dtype)
+
         h = self.middle_block(h)
         for block in self.blocks:
             h = block(h)

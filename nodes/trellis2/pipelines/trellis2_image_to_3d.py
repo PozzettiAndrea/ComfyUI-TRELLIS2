@@ -222,6 +222,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         in_channels = flow_model.in_channels
         noise = torch.randn(num_samples, in_channels, reso, reso, reso, device=self.device, dtype=getattr(self, '_dtype', None))
         sampler_params = {**self.sparse_structure_sampler_params, **sampler_params}
+        log.warning(f"[DEBUG] SS noise: dtype={noise.dtype} shape={noise.shape} min={noise.min():.3f} max={noise.max():.3f}")
+        log.warning(f"[DEBUG] SS cond keys={list(cond.keys())}")
+        for k, v in cond.items():
+            if hasattr(v, 'shape'):
+                log.warning(f"[DEBUG] SS cond[{k}]: dtype={v.dtype} shape={v.shape} min={v.min():.4f} max={v.max():.4f} mean={v.mean():.4f}")
+        log.warning(f"[DEBUG] SS sampler_params={sampler_params}")
+        log.warning(f"[DEBUG] SS flow_model.dtype={getattr(flow_model, 'dtype', 'N/A')}")
+        log.warning(f"[DEBUG] SS flow_model params: resolution={flow_model.resolution} in_ch={flow_model.in_channels} model_ch={flow_model.model_channels} cond_ch={flow_model.cond_channels}")
         z_s = self.sparse_structure_sampler.sample(
             flow_model,
             noise,
@@ -235,22 +243,17 @@ class Trellis2ImageTo3DPipeline(Pipeline):
 
         # Decode sparse structure latent
         decoder = self._load_model('sparse_structure_decoder')
-        log.info(f"[DEBUG] z_s shape={z_s.shape}, dtype={z_s.dtype}, min={z_s.min().item():.4f}, max={z_s.max().item():.4f}, mean={z_s.mean().item():.4f}")
+        log.warning(f"[DEBUG] z_s dtype={z_s.dtype} min={z_s.min().item():.6f} max={z_s.max().item():.6f} mean={z_s.mean().item():.6f}")
         raw_decoded = decoder(z_s)
-        log.info(f"[DEBUG] raw_decoded shape={raw_decoded.shape}, dtype={raw_decoded.dtype}, min={raw_decoded.min().item():.4f}, max={raw_decoded.max().item():.4f}, mean={raw_decoded.mean().item():.4f}")
-        log.info(f"[DEBUG] raw_decoded > 0: {(raw_decoded > 0).sum().item()} / {raw_decoded.numel()} voxels")
-        log.info(f"[DEBUG] raw_decoded > -0.1: {(raw_decoded > -0.1).sum().item()} / {raw_decoded.numel()} voxels")
+        log.warning(f"[DEBUG] decoded dtype={raw_decoded.dtype} min={raw_decoded.min().item():.4f} max={raw_decoded.max().item():.4f} >0: {(raw_decoded > 0).sum().item()}/{raw_decoded.numel()}")
         decoded = raw_decoded > 0
         del z_s, raw_decoded, decoder  # Free tensors and local model reference
         self._unload_model('sparse_structure_decoder')
 
-        log.info(f"[DEBUG] decoded (before pool) shape={decoded.shape}, occupied={decoded.sum().item()}")
         if resolution != decoded.shape[2]:
             ratio = decoded.shape[2] // resolution
             decoded = torch.nn.functional.max_pool3d(decoded.float(), ratio, ratio, 0) > 0.5
-            log.info(f"[DEBUG] decoded (after pool) shape={decoded.shape}, occupied={decoded.sum().item()}")
         coords = torch.argwhere(decoded)[:, [0, 2, 3, 4]].int()
-        log.info(f"[DEBUG] coords shape={coords.shape}")
         del decoded  # Free decoded tensor
         gc.collect()
         comfy.model_management.soft_empty_cache()

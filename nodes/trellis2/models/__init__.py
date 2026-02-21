@@ -134,11 +134,18 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
 
     if dtype is not None:
         model = model.to(dtype=dtype)
-        # Update model's internal dtype so manual_cast uses the actual compute dtype
-        # (model config may say float32, but we've converted weights to bf16/fp16)
-        if hasattr(model, 'dtype') and isinstance(getattr(model, 'dtype', None), torch.dtype):
+        # Sync model.dtype with weight dtype so manual_cast() uses matching precision.
+        # model.dtype is a plain attribute (not a parameter) — model.to() doesn't touch it.
+        if hasattr(model, 'dtype'):
             model.dtype = dtype
-        log.info(f"Model dtype set to {dtype}")
+        log.info(f"Model {config['name']}: weights={dtype}, model.dtype={getattr(model, 'dtype', 'N/A')}")
+
+    # Recompute derived buffers (e.g., RoPE phases) AFTER dtype conversion.
+    # These are computed from model config, not stored in checkpoints.
+    # Must run after model.to(dtype) because that destroys complex buffers.
+    if hasattr(model, '_post_load'):
+        model._post_load(torch.device(device))
+        log.info(f"Recomputed derived buffers for {config['name']}")
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:

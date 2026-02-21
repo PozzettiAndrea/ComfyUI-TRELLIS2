@@ -393,7 +393,9 @@ class SparseUnetVaeEncoder(nn.Module):
 
     def forward(self, x: sp.SparseTensor, sample_posterior=False, return_raw=False):
         h = self.input_layer(x)
-        h = h.type(self.dtype)
+        # Cast to match weight dtype (may differ from self.dtype if model.to() was called)
+        weight_dtype = next(self.blocks.parameters()).dtype
+        h = h.type(weight_dtype)
         for i, res in enumerate(self.blocks):
             for j, block in enumerate(res):
                 h = block(h)
@@ -517,7 +519,9 @@ class SparseUnetVaeDecoder(nn.Module):
         assert return_subs == False or self.pred_subdiv == True, "Only decoders with pred_subdiv=True can be used with return_subs"
         
         h = self.from_latent(x)
-        h = h.type(self.dtype)
+        # Cast to match weight dtype (may differ from self.dtype if model.to() was called)
+        weight_dtype = next(self.blocks.parameters()).dtype
+        h = h.type(weight_dtype)
         subs_gt = []
         subs = []
         for i, res in enumerate(self.blocks):
@@ -547,7 +551,9 @@ class SparseUnetVaeDecoder(nn.Module):
         assert self.pred_subdiv == True, "Only decoders with pred_subdiv=True can be used with upsampling"
         
         h = self.from_latent(x)
-        h = h.type(self.dtype)
+        # Cast to match weight dtype (may differ from self.dtype if model.to() was called)
+        weight_dtype = next(self.blocks.parameters()).dtype
+        h = h.type(weight_dtype)
         for i, res in enumerate(self.blocks):
             if i == upsample_times:
                 return h.coords

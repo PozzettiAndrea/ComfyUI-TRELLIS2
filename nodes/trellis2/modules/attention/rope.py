@@ -20,7 +20,12 @@ class RotaryPositionEmbedder(nn.Module):
         self.freqs = rope_freq[0] / (rope_freq[1] ** (self.freqs))
         
     def _get_phases(self, indices: torch.Tensor) -> torch.Tensor:
-        self.freqs = self.freqs.to(indices.device)
+        if self.freqs.device.type == 'meta':
+            # Recompute freqs — meta tensors can't be copied
+            freqs = torch.arange(self.freq_dim, dtype=torch.float32, device=indices.device) / self.freq_dim
+            self.freqs = self.rope_freq[0] / (self.rope_freq[1] ** freqs)
+        else:
+            self.freqs = self.freqs.to(indices.device)
         phases = torch.outer(indices, self.freqs)
         phases = torch.polar(torch.ones_like(phases), phases)
         return phases

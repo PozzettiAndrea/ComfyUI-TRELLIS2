@@ -147,6 +147,30 @@ class SparseStructureFlowModel(nn.Module):
         """
         return next(self.parameters()).device
 
+    def _post_load(self, device) -> None:
+        """
+        Recompute derived buffers after weight loading.
+
+        rope_phases (RoPE positional encoding) is computed from model config,
+        not stored in checkpoints. Must be recomputed after meta-device init.
+        """
+        if self.pe_mode == "rope":
+            import logging
+            _log = logging.getLogger("trellis2")
+            pos_embedder = RotaryPositionEmbedder(self.model_channels // self.num_heads, 3)
+            coords = torch.meshgrid(*[torch.arange(self.resolution, device=device) for _ in range(3)], indexing='ij')
+            coords = torch.stack(coords, dim=-1).reshape(-1, 3)
+            new_phases = pos_embedder(coords)
+            _log.warning(f"[_post_load] computed rope_phases: shape={new_phases.shape} dtype={new_phases.dtype} is_complex={new_phases.is_complex()}")
+            _log.warning(f"[_post_load] BEFORE assign: existing rope_phases dtype={self.rope_phases.dtype if self.rope_phases is not None else 'None'} is_complex={self.rope_phases.is_complex() if self.rope_phases is not None else 'N/A'}")
+            self.rope_phases = new_phases
+            _log.warning(f"[_post_load] AFTER assign: rope_phases dtype={self.rope_phases.dtype} is_complex={self.rope_phases.is_complex()}")
+        elif self.pe_mode == "ape":
+            pos_embedder = AbsolutePositionEmbedder(self.model_channels, 3)
+            coords = torch.meshgrid(*[torch.arange(self.resolution, device=device) for _ in range(3)], indexing='ij')
+            coords = torch.stack(coords, dim=-1).reshape(-1, 3)
+            self.pos_emb = pos_embedder(coords)
+
     def convert_to(self, dtype: torch.dtype) -> None:
         """
         Convert the torso of the model to the specified dtype.
@@ -225,6 +249,18 @@ class SparseStructureFlowModel(nn.Module):
     def forward(self, x: torch.Tensor, t: torch.Tensor, cond: torch.Tensor) -> torch.Tensor:
         assert [*x.shape] == [x.shape[0], self.in_channels, *[self.resolution] * 3], \
                 f"Input shape mismatch, got {x.shape}, expected {[x.shape[0], self.in_channels, *[self.resolution] * 3]}"
+
+        if not hasattr(self, '_rope_debug_done'):
+            import logging
+            _log = logging.getLogger("trellis2")
+            if self.rope_phases is not None:
+                rp = self.rope_phases
+                _log.warning(f"[ROPE_DEBUG] rope_phases: shape={rp.shape} dtype={rp.dtype} device={rp.device} "
+                           f"abs_min={rp.abs().min():.6f} abs_max={rp.abs().max():.6f} "
+                           f"all_zero={bool((rp == 0).all())} is_complex={rp.is_complex()}")
+            else:
+                _log.warning("[ROPE_DEBUG] rope_phases is None!")
+            self._rope_debug_done = True
 
         h = x.view(*x.shape[:2], -1).permute(0, 2, 1).contiguous()
 
