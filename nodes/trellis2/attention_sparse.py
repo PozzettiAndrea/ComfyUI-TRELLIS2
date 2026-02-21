@@ -91,6 +91,11 @@ def scaled_dot_product_attention(*args, **kwargs):
 
     heads = q.shape[1]
     attn_fn = optimized_attention_for_device(q.device)
+    global _dense_printed
+    if not _dense_printed:
+        import sys
+        print(f"[TRELLIS2] Dense attention: {attn_fn.__name__}", file=sys.stderr)
+        _dense_printed = True
     out = attn_fn(q, k, v, heads=heads, skip_reshape=True, skip_output_reshape=True, transformer_options=transformer_options)
 
     # ComfyUI [N, H, L, C] -> TRELLIS2 [N, L, H, C]
@@ -103,6 +108,7 @@ def scaled_dot_product_attention(*args, **kwargs):
 
 _varlen_fn = None
 _varlen_backend = None
+_dense_printed = False
 
 
 def _get_gpu_arch():

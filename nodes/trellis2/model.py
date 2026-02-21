@@ -1619,15 +1619,10 @@ class SparseStructureFlowModel(nn.Module):
         not stored in checkpoints. Must be recomputed after meta-device init.
         """
         if self.pe_mode == "rope":
-            _log = logging.getLogger("trellis2")
             pos_embedder = RotaryPositionEmbedder(self.model_channels // self.num_heads, 3)
             coords = torch.meshgrid(*[torch.arange(self.resolution, device=device) for _ in range(3)], indexing='ij')
             coords = torch.stack(coords, dim=-1).reshape(-1, 3)
-            new_phases = pos_embedder(coords)
-            _log.warning(f"[_post_load] computed rope_phases: shape={new_phases.shape} dtype={new_phases.dtype} is_complex={new_phases.is_complex()}")
-            _log.warning(f"[_post_load] BEFORE assign: existing rope_phases dtype={self.rope_phases.dtype if self.rope_phases is not None else 'None'} is_complex={self.rope_phases.is_complex() if self.rope_phases is not None else 'N/A'}")
-            self.rope_phases = new_phases
-            _log.warning(f"[_post_load] AFTER assign: rope_phases dtype={self.rope_phases.dtype} is_complex={self.rope_phases.is_complex()}")
+            self.rope_phases = pos_embedder(coords)
         elif self.pe_mode == "ape":
             pos_embedder = AbsolutePositionEmbedder(self.model_channels, 3)
             coords = torch.meshgrid(*[torch.arange(self.resolution, device=device) for _ in range(3)], indexing='ij')
@@ -1710,19 +1705,8 @@ class SparseStructureFlowModel(nn.Module):
         ).execute(x, t, cond, transformer_options, **kwargs)
 
     def _forward(self, x: torch.Tensor, t: torch.Tensor, cond: torch.Tensor, transformer_options={}, **kwargs) -> torch.Tensor:
-        import sys
         assert [*x.shape] == [x.shape[0], self.in_channels, *[self.resolution] * 3], \
                 f"Input shape mismatch, got {x.shape}, expected {[x.shape[0], self.in_channels, *[self.resolution] * 3]}"
-
-        print(f"[TRELLIS2 SS_FLOW] input: x={x.dtype}, t={t.dtype}, cond={cond.dtype if hasattr(cond, 'dtype') else type(cond)}", file=sys.stderr)
-
-        if not hasattr(self, '_rope_debug_done'):
-            if self.rope_phases is not None:
-                rp = self.rope_phases
-                print(f"[TRELLIS2 SS_FLOW] rope_phases: shape={rp.shape} dtype={rp.dtype} device={rp.device} abs_min={rp.abs().min():.6f} abs_max={rp.abs().max():.6f} all_zero={bool((rp == 0).all())}", file=sys.stderr)
-            else:
-                print("[TRELLIS2 SS_FLOW] rope_phases is None!", file=sys.stderr)
-            self._rope_debug_done = True
 
         h = x.view(*x.shape[:2], -1).permute(0, 2, 1).contiguous()
 
@@ -1731,14 +1715,11 @@ class SparseStructureFlowModel(nn.Module):
         blocks_replace = patches_replace.get("dit", {})
 
         h = self.input_layer(h)
-        print(f"[TRELLIS2 SS_FLOW] after input_layer: h={h.dtype}, has_nan={bool(h.isnan().any())}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         if self.pe_mode == "ape":
             h = h + self.pos_emb[None]
         t_emb = self.t_embedder(t)
-        print(f"[TRELLIS2 SS_FLOW] t_emb: dtype={t_emb.dtype}, has_nan={bool(t_emb.isnan().any())}", file=sys.stderr)
         if self.share_mod:
             t_emb = self.adaLN_modulation(t_emb)
-            print(f"[TRELLIS2 SS_FLOW] t_emb after adaLN_mod: has_nan={bool(t_emb.isnan().any())}", file=sys.stderr)
 
         transformer_options["block_type"] = "cross"
         transformer_options["total_blocks"] = len(self.blocks)
@@ -1759,18 +1740,12 @@ class SparseStructureFlowModel(nn.Module):
                 h = out["x"]
             else:
                 h = block(h, t_emb, cond, self.rope_phases, transformer_options=transformer_options)
-            if bool(h.isnan().any()):
-                print(f"[TRELLIS2 SS_FLOW] NaN after block {i}! h={h.dtype}", file=sys.stderr)
-                break
 
-        print(f"[TRELLIS2 SS_FLOW] pre-layernorm: h={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         h = F.layer_norm(h, h.shape[-1:])
-        print(f"[TRELLIS2 SS_FLOW] post-layernorm: h={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         h = self.out_layer(h)
 
         h = h.permute(0, 2, 1).view(h.shape[0], h.shape[2], *[self.resolution] * 3).contiguous()
 
-        print(f"[TRELLIS2 SS_FLOW] output: dtype={h.dtype}, min={h.min().item():.4f}, max={h.max().item():.4f}", file=sys.stderr)
         return h
 
 
@@ -2007,8 +1982,6 @@ class SLatFlowModel(nn.Module):
         transformer_options={},
         **kwargs
     ) -> SparseTensor:
-        import sys
-        print(f"[TRELLIS2 SLAT_FLOW] input: x.feats={x.feats.dtype}, t={t.dtype}, cond={(cond.dtype if hasattr(cond, 'dtype') else type(cond))}", file=sys.stderr)
         if concat_cond is not None:
             x = sparse_cat([x, concat_cond], dim=-1)
         if isinstance(cond, list):
@@ -2047,11 +2020,8 @@ class SLatFlowModel(nn.Module):
             else:
                 h = block(h, t_emb, cond, transformer_options=transformer_options)
 
-        print(f"[TRELLIS2 SLAT_FLOW] pre-layernorm: feats={h.feats.dtype}, min={h.feats.min().item():.4f}, max={h.feats.max().item():.4f}", file=sys.stderr)
         h = h.replace(F.layer_norm(h.feats, h.feats.shape[-1:]))
-        print(f"[TRELLIS2 SLAT_FLOW] post-layernorm: feats={h.feats.dtype}, min={h.feats.min().item():.4f}, max={h.feats.max().item():.4f}", file=sys.stderr)
         h = self.out_layer(h)
-        print(f"[TRELLIS2 SLAT_FLOW] output: feats={h.feats.dtype}, min={h.feats.min().item():.4f}, max={h.feats.max().item():.4f}", file=sys.stderr)
         return h
 
 
