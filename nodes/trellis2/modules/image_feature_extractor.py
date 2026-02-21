@@ -163,7 +163,10 @@ class DinoV3FeatureExtractor:
         self.model_name = model_name
 
         # Use ComfyUI models directory for cache
-        import folder_paths
+        try:
+            import folder_paths
+        except ImportError:
+            from ... import folder_paths_fallback as folder_paths
         cache_dir = os.path.join(folder_paths.models_dir, "dinov3")
         os.makedirs(cache_dir, exist_ok=True)
 

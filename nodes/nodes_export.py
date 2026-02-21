@@ -4,7 +4,10 @@ import logging
 import numpy as np
 from datetime import datetime
 
-import folder_paths
+try:
+    import folder_paths
+except ImportError:
+    from . import folder_paths_fallback as folder_paths
 
 # Create logger for non-isolated classes
 logger = logging.getLogger("[TRELLIS2]")

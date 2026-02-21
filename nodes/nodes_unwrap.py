@@ -6,7 +6,10 @@ from PIL import Image
 from datetime import datetime
 from pathlib import Path
 
-import folder_paths
+try:
+    import folder_paths
+except ImportError:
+    from . import folder_paths_fallback as folder_paths
 
 from .utils import logger
 
