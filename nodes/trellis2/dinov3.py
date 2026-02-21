@@ -400,11 +400,13 @@ class DinoV3FeatureExtractor:
         hidden_states = self.model.embeddings(image, bool_masked_pos=None)
         position_embeddings = self.model.rope_embeddings(image)
 
+        pbar = comfy.utils.ProgressBar(len(self.model.layer))
         for layer_module in tqdm(self.model.layer, desc="DinoV3 conditioning", ncols=80, leave=False, mininterval=0.5):
             hidden_states = layer_module(
                 hidden_states,
                 position_embeddings=position_embeddings,
             )
+            pbar.update(1)
 
         out = F.layer_norm(hidden_states, hidden_states.shape[-1:])
         return out

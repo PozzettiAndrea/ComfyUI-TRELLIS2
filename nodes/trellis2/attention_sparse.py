@@ -223,7 +223,7 @@ def dispatch_varlen_attention(q, k, v, cu_seqlens_q, cu_seqlens_kv,
     global _varlen_fn, _varlen_backend
     if _varlen_fn is None:
         _varlen_fn, _varlen_backend = _resolve_varlen_backend()
-        import sys; print(f"[TRELLIS2] Attention backend: {_varlen_backend}", file=sys.stderr)
+        import sys; print(f"[TRELLIS2] Sparse attention: {_varlen_backend}", file=sys.stderr)
 
     return _varlen_fn(
         q, k, v, cu_seqlens_q, cu_seqlens_kv, max_seqlen_q, max_seqlen_kv,

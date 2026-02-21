@@ -56,6 +56,15 @@ class FlowEulerSampler(Sampler):
         if cond is not None and hasattr(cond, 'to'):
             cond = cond.to(dtype=model_dtype)
 
+        # Cast kwargs tensors to model dtype (e.g. concat_cond SparseTensor)
+        for key in kwargs:
+            v = kwargs[key]
+            if hasattr(v, 'replace') and hasattr(v, 'feats'):
+                kwargs[key] = v.replace(feats=v.feats.to(dtype=model_dtype))
+            elif hasattr(v, 'dtype') and hasattr(v, 'to'):
+                if v.dtype != torch.int and v.dtype != torch.long:
+                    kwargs[key] = v.to(dtype=model_dtype)
+
         out = model(x_t, t, cond, **kwargs)
 
         # Cast output to fp32 for sampling loop (ComfyUI-native: model_base.py:210)
