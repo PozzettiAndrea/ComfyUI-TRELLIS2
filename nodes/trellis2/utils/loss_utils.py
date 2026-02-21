@@ -40,9 +40,7 @@ def ssim(img1, img2, window_size=11, size_average=True):
     channel = img1.size(-3)
     window = create_window(window_size, channel)
 
-    if img1.is_cuda:
-        window = window.cuda(img1.get_device())
-    window = window.type_as(img1)
+    window = window.to(img1.device).type_as(img1)
 
     return _ssim(img1, img2, window, window_size, channel, size_average)
 
@@ -73,7 +71,9 @@ loss_fn_vgg = None
 def lpips(img1, img2, value_range=(0, 1)):
     global loss_fn_vgg
     if loss_fn_vgg is None:
-        loss_fn_vgg = LPIPS(net='vgg').cuda().eval()
+        import comfy.model_management
+        device = comfy.model_management.get_torch_device()
+        loss_fn_vgg = LPIPS(net='vgg').to(device).eval()
     # normalize to [-1, 1]
     img1 = (img1 - value_range[0]) / (value_range[1] - value_range[0]) * 2 - 1
     img2 = (img2 - value_range[0]) / (value_range[1] - value_range[0]) * 2 - 1

@@ -5,6 +5,7 @@ from transformers import AutoModelForImageSegmentation
 import torch
 from torchvision import transforms
 from PIL import Image
+import comfy.model_management
 
 log = logging.getLogger("trellis2")
 
@@ -62,19 +63,21 @@ class BiRefNet:
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]
         )
-    
+
     def to(self, device: str):
         self.model.to(device)
 
     def cuda(self):
-        self.model.cuda()
+        device = comfy.model_management.get_torch_device()
+        self.model.to(device)
 
     def cpu(self):
         self.model.cpu()
-        
+
     def __call__(self, image: Image.Image) -> Image.Image:
+        device = comfy.model_management.get_torch_device()
         image_size = image.size
-        input_images = self.transform_image(image).unsqueeze(0).to("cuda")
+        input_images = self.transform_image(image).unsqueeze(0).to(device)
         # Prediction
         with torch.no_grad():
             preds = self.model(input_images)[-1].sigmoid().cpu()
@@ -83,4 +86,3 @@ class BiRefNet:
         mask = pred_pil.resize(image_size)
         image.putalpha(mask)
         return image
-    

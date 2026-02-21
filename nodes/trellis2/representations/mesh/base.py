@@ -1,5 +1,6 @@
 from typing import *
 import torch
+import comfy.model_management
 from ..voxel import Voxel
 from flex_gemm.ops.grid_sample import grid_sample_3d
 
@@ -26,15 +27,17 @@ class Mesh:
         )
         
     def cuda(self, non_blocking=False):
-        return self.to('cuda', non_blocking=non_blocking)
+        device = comfy.model_management.get_torch_device()
+        return self.to(device, non_blocking=non_blocking)
         
     def cpu(self):
         return self.to('cpu')
     
     def fill_holes(self, max_hole_perimeter=3e-2):
         import cumesh
-        vertices = self.vertices.cuda()
-        faces = self.faces.cuda()
+        device = comfy.model_management.get_torch_device()
+        vertices = self.vertices.to(device)
+        faces = self.faces.to(device)
 
         mesh = cumesh.CuMesh()
         mesh.init(vertices, faces)
@@ -58,8 +61,9 @@ class Mesh:
         
     def remove_faces(self, face_mask: torch.Tensor):
         import cumesh
-        vertices = self.vertices.cuda()
-        faces = self.faces.cuda()
+        device = comfy.model_management.get_torch_device()
+        vertices = self.vertices.to(device)
+        faces = self.faces.to(device)
 
         mesh = cumesh.CuMesh()
         mesh.init(vertices, faces)
@@ -71,8 +75,9 @@ class Mesh:
         
     def simplify(self, target=1000000, verbose: bool=False, options: dict={}):
         import cumesh
-        vertices = self.vertices.cuda()
-        faces = self.faces.cuda()
+        device = comfy.model_management.get_torch_device()
+        vertices = self.vertices.to(device)
+        faces = self.faces.to(device)
 
         mesh = cumesh.CuMesh()
         mesh.init(vertices, faces)
