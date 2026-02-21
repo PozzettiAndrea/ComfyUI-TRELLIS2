@@ -4,6 +4,9 @@ ComfyUI-native sparse operations for TRELLIS2.
 Mirrors comfy/ops.py: provides `disable_weight_init` and `manual_cast` tiers
 for sparse layers operating on VarLenTensor / SparseTensor.
 
+Also contains sparse conv backend detection and dispatch (spconv, torchsparse,
+flex_gemm) — the authoritative source for all sparse convolution operations.
+
 Usage:
     # In model constructors:
     def __init__(self, ..., dtype=None, device=None, operations=None, sparse_operations=None):
@@ -12,7 +15,9 @@ Usage:
         self.conv = sparse_operations.SparseConv3d(in_ch, out_ch, 3, dtype=dtype, device=device)
 """
 
-import importlib
+import logging
+import math
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,27 +26,315 @@ import comfy.ops
 import comfy.model_management
 from comfy.ops import cast_bias_weight, uncast_bias_weight, CastWeightBiasOp, run_every_op
 
+log = logging.getLogger("trellis2")
 
-# ---------------------------------------------------------------------------
-# Lazy backend loader for sparse convolutions
-# ---------------------------------------------------------------------------
 
-_conv_backends = {}
+# ==========================================================================
+# Conv backend config and detection
+# ==========================================================================
+
+SPCONV_ALGO = 'auto'
+FLEX_GEMM_ALGO = 'masked_implicit_gemm_splitk'
+FLEX_GEMM_HASHMAP_RATIO = 2.0
+
+_CONV = None  # Lazy initialization — detected on first use
+
+
+def _detect_available_conv_backend() -> str:
+    """Try to import conv backends in priority order, return first available."""
+    env_backend = os.environ.get('SPARSE_CONV_BACKEND')
+    if env_backend:
+        valid_backends = ['none', 'spconv', 'torchsparse', 'flex_gemm']
+        if env_backend in valid_backends:
+            log.info(f"Using conv backend from SPARSE_CONV_BACKEND env var: {env_backend}")
+            return env_backend
+        else:
+            log.warning(f"Invalid SPARSE_CONV_BACKEND '{env_backend}', must be one of {valid_backends}")
+
+    backends = ['flex_gemm', 'spconv', 'torchsparse']
+    for backend in backends:
+        try:
+            if backend == 'flex_gemm':
+                import flex_gemm
+                log.info("Auto-detected conv backend: flex_gemm")
+                return backend
+            elif backend == 'spconv':
+                import spconv
+                log.info("Auto-detected conv backend: spconv")
+                return backend
+            elif backend == 'torchsparse':
+                import torchsparse
+                log.info("Auto-detected conv backend: torchsparse")
+                return backend
+        except ImportError:
+            continue
+        except Exception as e:
+            log.warning(f"{backend} import failed: {e}")
+            continue
+
+    log.info("No sparse conv backend available, using none")
+    return 'none'
+
+
+def get_conv_backend() -> str:
+    """Get current conv backend, detecting on first call."""
+    global _CONV
+    if _CONV is None:
+        _CONV = _detect_available_conv_backend()
+    return _CONV
+
+
+def set_conv_backend(backend: str) -> None:
+    """Set conv backend explicitly."""
+    global _CONV
+    valid_backends = ['none', 'spconv', 'torchsparse', 'flex_gemm']
+    if backend not in valid_backends:
+        raise ValueError(f"Invalid conv backend '{backend}', must be one of {valid_backends}")
+    if _CONV is not None and _CONV != backend:
+        log.info(f"Changing conv backend from {_CONV} to {backend}")
+    _CONV = backend
+    log.info(f"Conv backend set to: {backend}")
+
+
+# ==========================================================================
+# Conv backend implementations (lazy-loaded)
+# ==========================================================================
+
+# --- spconv ---
+
+_spconv_mod = None
+
+def _load_spconv():
+    global _spconv_mod
+    if _spconv_mod is None:
+        import spconv.pytorch as _spconv
+        _spconv_mod = _spconv
+    return _spconv_mod
+
+
+def _spconv_conv3d_init(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, padding=None, bias=True, indice_key=None):
+    spconv = _load_spconv()
+    algo = None
+    if SPCONV_ALGO == 'native':
+        algo = spconv.ConvAlgo.Native
+    elif SPCONV_ALGO == 'implicit_gemm':
+        algo = spconv.ConvAlgo.MaskImplicitGemm
+    if stride == 1 and (padding is None):
+        self.conv = spconv.SubMConv3d(in_channels, out_channels, kernel_size, dilation=dilation, bias=bias, indice_key=indice_key, algo=algo)
+    else:
+        self.conv = spconv.SparseConv3d(in_channels, out_channels, kernel_size, stride=stride, dilation=dilation, padding=padding, bias=bias, indice_key=indice_key, algo=algo)
+    self.stride = tuple(stride) if isinstance(stride, (list, tuple)) else (stride, stride, stride)
+    self.padding = padding
+
+
+def _spconv_conv3d_forward(self, x):
+    from .sparse import SparseTensor
+    spconv = _load_spconv()
+    spatial_changed = any(s != 1 for s in self.stride) or (self.padding is not None)
+    new_data = self.conv(x.data)
+    new_shape = [x.shape[0], self.conv.out_channels]
+    new_layout = None if spatial_changed else x.layout
+
+    if spatial_changed and (x.shape[0] != 1):
+        fwd = new_data.indices[:, 0].argsort()
+        bwd = torch.zeros_like(fwd).scatter_(0, fwd, torch.arange(fwd.shape[0], device=fwd.device))
+        sorted_feats = new_data.features[fwd]
+        sorted_coords = new_data.indices[fwd]
+        unsorted_data = new_data
+        new_data = spconv.SparseConvTensor(sorted_feats, sorted_coords, unsorted_data.spatial_shape, unsorted_data.batch_size)
+
+    out = SparseTensor(
+        new_data, shape=torch.Size(new_shape), layout=new_layout,
+        scale=tuple([s * stride for s, stride in zip(x._scale, self.stride)]),
+        spatial_cache=x._spatial_cache,
+    )
+
+    if spatial_changed and (x.shape[0] != 1):
+        out.register_spatial_cache(f'conv_{self.stride}_unsorted_data', unsorted_data)
+        out.register_spatial_cache(f'conv_{self.stride}_sort_bwd', bwd)
+
+    return out
+
+
+def _spconv_inverse_conv3d_init(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, bias=True, indice_key=None):
+    spconv = _load_spconv()
+    self.conv = spconv.SparseInverseConv3d(in_channels, out_channels, kernel_size, bias=bias, indice_key=indice_key)
+    self.stride = tuple(stride) if isinstance(stride, (list, tuple)) else (stride, stride, stride)
+
+
+def _spconv_inverse_conv3d_forward(self, x):
+    from .sparse import SparseTensor
+    spatial_changed = any(s != 1 for s in self.stride)
+    if spatial_changed:
+        data = x.get_spatial_cache(f'conv_{self.stride}_unsorted_data')
+        bwd = x.get_spatial_cache(f'conv_{self.stride}_sort_bwd')
+        data = data.replace_feature(x.feats[bwd])
+    else:
+        data = x.data
+
+    new_data = self.conv(data)
+    new_shape = [x.shape[0], self.conv.out_channels]
+    new_layout = None if spatial_changed else x.layout
+    out = SparseTensor(
+        new_data, shape=torch.Size(new_shape), layout=new_layout,
+        scale=tuple([s // stride for s, stride in zip(x._scale, self.stride)]),
+        spatial_cache=x._spatial_cache,
+    )
+    return out
+
+
+# --- torchsparse ---
+
+_torchsparse_mod = None
+
+def _load_torchsparse():
+    global _torchsparse_mod
+    if _torchsparse_mod is None:
+        import torchsparse as _ts
+        _torchsparse_mod = _ts
+    return _torchsparse_mod
+
+
+def _torchsparse_conv3d_init(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, padding=None, bias=True, indice_key=None):
+    torchsparse = _load_torchsparse()
+    self.conv = torchsparse.nn.Conv3d(in_channels, out_channels, kernel_size, stride, 0, dilation, bias)
+
+
+def _torchsparse_conv3d_forward(self, x):
+    from .sparse import SparseTensor
+    out = self.conv(x.data)
+    new_shape = [x.shape[0], self.conv.out_channels]
+    out = SparseTensor(out, shape=torch.Size(new_shape), layout=x.layout if all(s == 1 for s in self.conv.stride) else None)
+    out._spatial_cache = x._spatial_cache
+    out._scale = tuple([s * stride for s, stride in zip(x._scale, self.conv.stride)])
+    return out
+
+
+def _torchsparse_inverse_conv3d_init(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, bias=True, indice_key=None):
+    torchsparse = _load_torchsparse()
+    self.conv = torchsparse.nn.Conv3d(in_channels, out_channels, kernel_size, stride, 0, dilation, bias, transposed=True)
+
+
+def _torchsparse_inverse_conv3d_forward(self, x):
+    from .sparse import SparseTensor
+    out = self.conv(x.data)
+    new_shape = [x.shape[0], self.conv.out_channels]
+    out = SparseTensor(out, shape=torch.Size(new_shape), layout=x.layout if all(s == 1 for s in self.conv.stride) else None)
+    out._spatial_cache = x._spatial_cache
+    out._scale = tuple([s / stride for s, stride in zip(x._scale, self.conv.stride)])
+    return out
+
+
+# --- flex_gemm ---
+
+_flex_gemm_mod = None
+_flex_gemm_spconv_ops = None
+
+def _load_flex_gemm():
+    global _flex_gemm_mod, _flex_gemm_spconv_ops
+    if _flex_gemm_mod is None:
+        import flex_gemm as _fg
+        from flex_gemm.ops.spconv import sparse_submanifold_conv3d as _ssc
+        _flex_gemm_mod = _fg
+        _flex_gemm_spconv_ops = _ssc
+    return _flex_gemm_mod, _flex_gemm_spconv_ops
+
+
+def _flex_gemm_conv3d_init(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, padding=None, bias=True, indice_key=None):
+    assert stride == 1 and (padding is None), 'Currently flex_gemm implementation only support submanifold sparse convolution (stride=1, padding=None)'
+
+    self.in_channels = in_channels
+    self.out_channels = out_channels
+    self.kernel_size = tuple(kernel_size) if isinstance(kernel_size, (list, tuple)) else (kernel_size, ) * 3
+    self.stride = tuple(stride) if isinstance(stride, (list, tuple)) else (stride, ) * 3
+    self.dilation = tuple(dilation) if isinstance(dilation, (list, tuple)) else (dilation, ) * 3
+
+    self.weight = nn.Parameter(torch.empty((out_channels, in_channels, *self.kernel_size)))
+    if bias:
+        self.bias = nn.Parameter(torch.empty(out_channels))
+    else:
+        self.register_parameter("bias", None)
+
+    torch.nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
+    if self.bias is not None:
+        fan_in, _ = torch.nn.init._calculate_fan_in_and_fan_out(self.weight)
+        if fan_in != 0:
+            bound = 1 / math.sqrt(fan_in)
+            torch.nn.init.uniform_(self.bias, -bound, bound)
+
+    # Permute weight (Co, Ci, Kd, Kh, Kw) -> (Co, Kd, Kh, Kw, Ci)
+    self.weight = nn.Parameter(self.weight.permute(0, 2, 3, 4, 1).contiguous())
+
+
+def _flex_gemm_conv3d_forward(self, x):
+    flex_gemm_mod, sparse_submanifold_conv3d = _load_flex_gemm()
+    flex_gemm_mod.ops.spconv.set_algorithm(FLEX_GEMM_ALGO)
+    flex_gemm_mod.ops.spconv.set_hashmap_ratio(FLEX_GEMM_HASHMAP_RATIO)
+
+    Co, Kd, Kh, Kw, Ci = self.weight.shape
+    neighbor_cache_key = f'SubMConv3d_neighbor_cache_{Kw}x{Kh}x{Kd}_dilation{self.dilation}'
+    neighbor_cache = x.get_spatial_cache(neighbor_cache_key)
+
+    feats = x.feats
+    if feats.dtype != self.weight.dtype:
+        feats = feats.to(self.weight.dtype)
+    out, neighbor_cache_ = sparse_submanifold_conv3d(
+        feats,
+        x.coords,
+        torch.Size([*x.shape, *x.spatial_shape]),
+        self.weight,
+        self.bias,
+        neighbor_cache,
+        self.dilation
+    )
+
+    if neighbor_cache is None:
+        x.register_spatial_cache(neighbor_cache_key, neighbor_cache_)
+
+    out = x.replace(out)
+    return out
+
+
+def _flex_gemm_inverse_conv3d_init(self, *args, **kwargs):
+    raise NotImplementedError('SparseInverseConv3d with flex_gemm is not implemented yet')
+
+
+def _flex_gemm_inverse_conv3d_forward(self, x):
+    raise NotImplementedError('SparseInverseConv3d with flex_gemm is not implemented yet')
+
+
+# --- Dispatch table ---
+
+_conv_backend_dispatch = {
+    'spconv': {
+        'conv3d_init': _spconv_conv3d_init,
+        'conv3d_forward': _spconv_conv3d_forward,
+        'inverse_conv3d_init': _spconv_inverse_conv3d_init,
+        'inverse_conv3d_forward': _spconv_inverse_conv3d_forward,
+    },
+    'torchsparse': {
+        'conv3d_init': _torchsparse_conv3d_init,
+        'conv3d_forward': _torchsparse_conv3d_forward,
+        'inverse_conv3d_init': _torchsparse_inverse_conv3d_init,
+        'inverse_conv3d_forward': _torchsparse_inverse_conv3d_forward,
+    },
+    'flex_gemm': {
+        'conv3d_init': _flex_gemm_conv3d_init,
+        'conv3d_forward': _flex_gemm_conv3d_forward,
+        'inverse_conv3d_init': _flex_gemm_inverse_conv3d_init,
+        'inverse_conv3d_forward': _flex_gemm_inverse_conv3d_forward,
+    },
+}
 
 
 def _get_conv_backend():
-    from .modules.sparse.config import get_conv_backend
     backend = get_conv_backend()
-    if backend not in _conv_backends:
-        _conv_backends[backend] = importlib.import_module(
-            f'.modules.sparse.conv.conv_{backend}', __package__,
-        )
-    return backend, _conv_backends[backend]
+    return backend, _conv_backend_dispatch[backend]
 
 
-# ---------------------------------------------------------------------------
+# ==========================================================================
 # disable_weight_init tier — skip random init, no auto-casting
-# ---------------------------------------------------------------------------
+# ==========================================================================
 
 class disable_weight_init:
 
@@ -51,7 +344,7 @@ class disable_weight_init:
         """Linear that accepts VarLenTensor: extract .feats, run linear, replace."""
 
         def forward_comfy_cast_weights(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 weight, bias, offload = cast_bias_weight(self, input.feats, offloadable=True)
                 out = F.linear(input.feats, weight, bias)
@@ -63,7 +356,7 @@ class disable_weight_init:
             run_every_op()
             if self.comfy_cast_weights or len(self.weight_function) > 0 or len(self.bias_function) > 0:
                 return self.forward_comfy_cast_weights(input)
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 return input.replace(F.linear(input.feats, self.weight, self.bias))
             return super().forward(input)
@@ -85,7 +378,7 @@ class disable_weight_init:
             return nfeats
 
         def forward_comfy_cast_weights(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 weight, bias, offload = cast_bias_weight(self, input.feats, offloadable=True)
                 nfeats = self._sparse_group_norm(
@@ -100,7 +393,7 @@ class disable_weight_init:
             run_every_op()
             if self.comfy_cast_weights or len(self.weight_function) > 0 or len(self.bias_function) > 0:
                 return self.forward_comfy_cast_weights(input)
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 nfeats = self._sparse_group_norm(
                     input.feats, input.layout, input.shape[0], input.shape[1],
@@ -126,7 +419,7 @@ class disable_weight_init:
             return nfeats
 
         def forward_comfy_cast_weights(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 if self.weight is not None:
                     weight, bias, offload = cast_bias_weight(self, input.feats, offloadable=True)
@@ -144,7 +437,7 @@ class disable_weight_init:
             run_every_op()
             if self.comfy_cast_weights or len(self.weight_function) > 0 or len(self.bias_function) > 0:
                 return self.forward_comfy_cast_weights(input)
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 nfeats = self._sparse_layer_norm(
                     input.feats, input.layout, input.shape[0], input.shape[1],
@@ -154,13 +447,12 @@ class disable_weight_init:
             return super().forward(input)
 
     # -- SparseGroupNorm32 / SparseLayerNorm32 ------------------------------
-    # Float32 computation wrappers.
 
     class SparseGroupNorm32(SparseGroupNorm):
         """SparseGroupNorm that computes in float32."""
 
         def forward_comfy_cast_weights(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 orig_dtype = input.feats.dtype
                 input = input.replace(input.feats.float())
@@ -181,7 +473,7 @@ class disable_weight_init:
             run_every_op()
             if self.comfy_cast_weights or len(self.weight_function) > 0 or len(self.bias_function) > 0:
                 return self.forward_comfy_cast_weights(input)
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 orig_dtype = input.feats.dtype
                 feats32 = input.feats.float()
@@ -198,7 +490,7 @@ class disable_weight_init:
         """SparseLayerNorm that computes in float32."""
 
         def forward_comfy_cast_weights(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 orig_dtype = input.feats.dtype
                 input = input.replace(input.feats.float())
@@ -220,7 +512,7 @@ class disable_weight_init:
             run_every_op()
             if self.comfy_cast_weights or len(self.weight_function) > 0 or len(self.bias_function) > 0:
                 return self.forward_comfy_cast_weights(input)
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 orig_dtype = input.feats.dtype
                 feats32 = input.feats.float()
@@ -251,8 +543,8 @@ class disable_weight_init:
                      dilation=1, padding=None, bias=True, indice_key=None,
                      dtype=None, device=None):
             super().__init__()
-            _, backend_mod = _get_conv_backend()
-            backend_mod.sparse_conv3d_init(
+            _, dispatch = _get_conv_backend()
+            dispatch['conv3d_init'](
                 self, in_channels, out_channels, kernel_size,
                 stride, dilation, padding, bias, indice_key,
             )
@@ -267,15 +559,14 @@ class disable_weight_init:
             return self.weight, getattr(self, 'bias', None)
 
         def _forward(self, x):
-            _, backend_mod = _get_conv_backend()
-            return backend_mod.sparse_conv3d_forward(self, x)
+            _, dispatch = _get_conv_backend()
+            return dispatch['conv3d_forward'](self, x)
 
         def forward_comfy_cast_weights(self, x):
             weight_param, bias_param = self._get_weight_bias()
             dtype = x.feats.dtype
             device = x.feats.device
 
-            # Save original data, swap in cast versions
             orig_w = weight_param.data
             weight_param.data = comfy.model_management.cast_to(orig_w, dtype, device)
 
@@ -286,7 +577,6 @@ class disable_weight_init:
 
             out = self._forward(x)
 
-            # Restore originals
             weight_param.data = orig_w
             if bias_param is not None:
                 bias_param.data = orig_b
@@ -311,8 +601,8 @@ class disable_weight_init:
                      dilation=1, bias=True, indice_key=None,
                      dtype=None, device=None):
             super().__init__()
-            _, backend_mod = _get_conv_backend()
-            backend_mod.sparse_inverse_conv3d_init(
+            _, dispatch = _get_conv_backend()
+            dispatch['inverse_conv3d_init'](
                 self, in_channels, out_channels, kernel_size,
                 stride, dilation, bias, indice_key,
             )
@@ -326,8 +616,8 @@ class disable_weight_init:
             return self.weight, getattr(self, 'bias', None)
 
         def _forward(self, x):
-            _, backend_mod = _get_conv_backend()
-            return backend_mod.sparse_inverse_conv3d_forward(self, x)
+            _, dispatch = _get_conv_backend()
+            return dispatch['inverse_conv3d_forward'](self, x)
 
         def forward_comfy_cast_weights(self, x):
             weight_param, bias_param = self._get_weight_bias()
@@ -357,34 +647,32 @@ class disable_weight_init:
             return self._forward(x)
 
     # -- Sparse Activations -------------------------------------------------
-    # These have no learnable parameters, so no casting needed.
-    # Just wrap VarLenTensor → feats → activation → replace.
 
     class SparseReLU(nn.ReLU):
         def forward(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 return input.replace(super().forward(input.feats))
             return super().forward(input)
 
     class SparseSiLU(nn.SiLU):
         def forward(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 return input.replace(super().forward(input.feats))
             return super().forward(input)
 
     class SparseGELU(nn.GELU):
         def forward(self, input):
-            from .modules.sparse.basic import VarLenTensor
+            from .sparse import VarLenTensor
             if isinstance(input, VarLenTensor):
                 return input.replace(super().forward(input.feats))
             return super().forward(input)
 
 
-# ---------------------------------------------------------------------------
+# ==========================================================================
 # manual_cast tier — auto-cast weights to input dtype during forward
-# ---------------------------------------------------------------------------
+# ==========================================================================
 
 class manual_cast(disable_weight_init):
 
@@ -410,7 +698,7 @@ class manual_cast(disable_weight_init):
         comfy_cast_weights = True
 
     class SparseReLU(disable_weight_init.SparseReLU):
-        pass  # No weights to cast
+        pass
 
     class SparseSiLU(disable_weight_init.SparseSiLU):
         pass

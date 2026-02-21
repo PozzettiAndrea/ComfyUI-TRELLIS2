@@ -76,22 +76,14 @@ Attention backend:
 
         log.info(f"Resolved precision: {precision} -> {dtype}")
 
-        # Setup attention backend via comfy-attn
-        try:
-            import comfy_attn
-            # Map TRELLIS2 backend names to comfy-attn names
-            backend_map = {
-                'auto': 'auto',
-                'sageattn': 'sage',
-                'flash_attn': 'flash_attn',
-                'xformers': 'sdpa',
-                'sdpa': 'sdpa',
-            }
-            comfy_name = backend_map.get(attn_backend, 'auto')
-            label = comfy_attn.set_backend(comfy_name)
-            log.info(f"Attention backend set to: {label} (requested: {attn_backend})")
-        except Exception as e:
-            log.warning(f"Could not set attention backend '{attn_backend}': {e}")
+        # Setup attention backend
+        # Dense attention: handled by ComfyUI's optimized_attention_for_device (auto-selects)
+        # Sparse/varlen attention: handled by attention_sparse.py (auto-detects best backend)
+        from .trellis2.model import set_backend as set_dense_backend
+        from .trellis2.sparse import set_attn_backend as set_sparse_backend
+        set_dense_backend(attn_backend)
+        set_sparse_backend(attn_backend)
+        log.info(f"Attention backend configured: {attn_backend}")
 
         # Store dtype as string for JSON-safe IPC across isolation boundary
         dtype_str = {torch.bfloat16: "bf16", torch.float16: "fp16", torch.float32: "fp32"}[dtype]

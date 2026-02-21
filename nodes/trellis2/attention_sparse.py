@@ -50,6 +50,8 @@ def scaled_dot_product_attention(*args, **kwargs):
 
     Returns: [N, L, H, C] tensor.
     """
+    transformer_options = kwargs.pop('transformer_options', {})
+
     arg_names_dict = {
         1: ['qkv'],
         2: ['q', 'kv'],
@@ -89,7 +91,7 @@ def scaled_dot_product_attention(*args, **kwargs):
 
     heads = q.shape[1]
     attn_fn = optimized_attention_for_device(q.device)
-    out = attn_fn(q, k, v, heads=heads, skip_reshape=True, skip_output_reshape=True)
+    out = attn_fn(q, k, v, heads=heads, skip_reshape=True, skip_output_reshape=True, transformer_options=transformer_options)
 
     # ComfyUI [N, H, L, C] -> TRELLIS2 [N, L, H, C]
     return out.permute(0, 2, 1, 3)
@@ -215,7 +217,7 @@ def dispatch_varlen_attention(q, k, v, cu_seqlens_q, cu_seqlens_kv,
     global _varlen_fn, _varlen_backend
     if _varlen_fn is None:
         _varlen_fn, _varlen_backend = _resolve_varlen_backend()
-        log.info("Varlen attention backend: %s", _varlen_backend)
+        import sys; print(f"[TRELLIS2] Attention backend: {_varlen_backend}", file=sys.stderr)
 
     return _varlen_fn(
         q, k, v, cu_seqlens_q, cu_seqlens_kv, max_seqlen_q, max_seqlen_kv,
@@ -237,7 +239,7 @@ def sparse_scaled_dot_product_attention(*args, **kwargs):
 
     Returns VarLenTensor if q is VarLenTensor, else dense [N, L, H, C] tensor.
     """
-    from .modules.sparse.basic import VarLenTensor
+    from .sparse import VarLenTensor
 
     arg_names_dict = {
         1: ['qkv'],
