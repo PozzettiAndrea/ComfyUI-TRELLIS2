@@ -585,8 +585,9 @@ class SparseConvNeXtBlock3d(nn.Module):
                 steps *= 2
                 if steps > 64:
                     raise e
+        feats.add_(x.feats)   # in-place residual: avoids allocating a third [N,C] tensor
         h = h.replace(feats)
-        return h + x
+        return h
 
     def forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         if self.use_checkpoint:
