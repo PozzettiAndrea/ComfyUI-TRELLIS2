@@ -830,7 +830,7 @@ def calc_window_partition(
     mask = seq_lens != 0
     seq_lens = seq_lens[mask]
 
-    # Build cumulative sequence lengths for comfy-attn varlen dispatch
+    # Build cumulative sequence lengths for comfy-sparse-attn varlen dispatch
     cu_seqlens = torch.cat([
         torch.tensor([0], device=tensor.device),
         torch.cumsum(seq_lens, dim=0)
