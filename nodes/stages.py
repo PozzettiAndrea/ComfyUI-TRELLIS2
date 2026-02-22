@@ -189,9 +189,14 @@ def _load_model(model_key, device=None):
 
 def _unload_model(model_key):
     """
-    Signal we're done with this model for now.
-    Don't destroy — let ComfyUI manage GPU↔CPU offloading automatically.
+    Move model weights back to CPU (offload_device) so subsequent load_models_gpu
+    calls can properly manage VRAM — load_models_gpu fast-exits when a model is
+    already in current_loaded_models, so without an explicit offload all models
+    accumulate on GPU.
     """
+    if model_key in _model_patchers:
+        patcher = _model_patchers[model_key]
+        patcher.unpatch_model(device_to=patcher.offload_device)
     comfy.model_management.soft_empty_cache()
 
 
