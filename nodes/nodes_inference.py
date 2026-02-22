@@ -120,16 +120,18 @@ Returns:
 
         # run_shape_generation returns (result_dict, vertices, faces)
         # result_dict is passed to downstream nodes, vertices/faces used for Trimesh
-        shape_result, vertices, faces = run_shape_generation(
-            model_config=model_config,
-            conditioning=conditioning,
-            seed=seed,
-            ss_guidance_strength=ss_guidance_strength,
-            ss_sampling_steps=ss_sampling_steps,
-            shape_guidance_strength=shape_guidance_strength,
-            shape_sampling_steps=shape_sampling_steps,
-            max_num_tokens=max_tokens,
-        )
+        import torch
+        with torch.inference_mode():
+            shape_result, vertices, faces = run_shape_generation(
+                model_config=model_config,
+                conditioning=conditioning,
+                seed=seed,
+                ss_guidance_strength=ss_guidance_strength,
+                ss_sampling_steps=ss_sampling_steps,
+                shape_guidance_strength=shape_guidance_strength,
+                shape_sampling_steps=shape_sampling_steps,
+                max_num_tokens=max_tokens,
+            )
 
         # Create trimesh from vertices/faces
         tri_mesh = Trimesh.Trimesh(
@@ -200,14 +202,16 @@ Returns:
         import numpy as np
         from .stages import run_texture_generation
 
-        texture_result = run_texture_generation(
-            model_config=model_config,
-            conditioning=conditioning,
-            shape_result=shape_result,
-            seed=seed,
-            tex_guidance_strength=tex_guidance_strength,
-            tex_sampling_steps=tex_sampling_steps,
-        )
+        import torch
+        with torch.inference_mode():
+            texture_result = run_texture_generation(
+                model_config=model_config,
+                conditioning=conditioning,
+                shape_result=shape_result,
+                seed=seed,
+                tex_guidance_strength=tex_guidance_strength,
+                tex_sampling_steps=tex_sampling_steps,
+            )
 
         # Create output directory
         cache_dir = '/tmp/trellis2_cache'
