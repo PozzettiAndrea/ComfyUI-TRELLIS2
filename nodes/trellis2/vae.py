@@ -573,21 +573,22 @@ class SparseConvNeXtBlock3d(nn.Module):
 
     def _forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         h = self.conv(x)
-        h = h.replace(self.norm(h.feats))
-        steps = max(1, (h.feats.shape[0] + self.mlp_chunk_size - 1) // self.mlp_chunk_size) if self.low_vram else 1
+        norm_feats = self.norm(h.feats)
+        del h  # free conv output feats before MLP expansion
+        steps = max(1, (norm_feats.shape[0] + self.mlp_chunk_size - 1) // self.mlp_chunk_size) if self.low_vram else 1
         while True:
             try:
-                chunk_size = (h.feats.shape[0] + steps - 1) // steps if steps > 1 else 0
-                feats = _apply_in_chunks(self.mlp, h.feats, chunk_size)
+                chunk_size = (norm_feats.shape[0] + steps - 1) // steps if steps > 1 else 0
+                feats = _apply_in_chunks(self.mlp, norm_feats, chunk_size)
                 break
             except comfy.model_management.OOM_EXCEPTION as e:
                 comfy.model_management.soft_empty_cache(True)
                 steps *= 2
                 if steps > 64:
                     raise e
-        feats.add_(x.feats)   # in-place residual: avoids allocating a third [N,C] tensor
-        h = h.replace(feats)
-        return h
+        del norm_feats  # free norm output before residual add
+        feats.add_(x.feats)  # in-place residual
+        return x.replace(feats)
 
     def forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         if self.use_checkpoint:
