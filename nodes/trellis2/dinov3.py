@@ -272,7 +272,7 @@ def _find_local_safetensors(cache_dir: str) -> Optional[str]:
 def _load_dinov3_from_safetensors(safetensors_path: str) -> DINOv3ViT:
     """
     Load DINOv3 ViT-L model from a single safetensors file.
-    Uses vendored DINOv3ViT (plain nn.Module with comfy-attn baked in).
+    Uses vendored DINOv3ViT (plain nn.Module with comfy-sparse-attn baked in).
     """
     model = DINOv3ViT()
     state_dict = comfy.utils.load_torch_file(safetensors_path)
@@ -371,7 +371,7 @@ class DinoV3FeatureExtractor:
         self.model.eval()
 
         device = comfy.model_management.get_torch_device()
-        log.info(f"DINOv3 ViT-L loaded ({len(list(self.model.layer))} layers, comfy-attn baked in)")
+        log.info(f"DINOv3 ViT-L loaded ({len(list(self.model.layer))} layers, comfy-sparse-attn baked in)")
 
         self.image_size = image_size
         self.transform = transforms.Compose([
