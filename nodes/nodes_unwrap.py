@@ -386,11 +386,18 @@ Parameters:
         orig_tri_verts = orig_vertices[orig_faces[face_id.long()]]
         valid_pos = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
 
+        # Map vertex positions to original mesh for accurate field sampling
+        # (UV unwrap splits vertices at seams, need to map back to original positions)
+        logger.info("Mapping vertices to original mesh...")
+        _, vert_face_id, vert_uvw = bvh.unsigned_distance(vertices_yup, return_uvw=True)
+        vert_orig_tris = orig_vertices[orig_faces[vert_face_id.long()]]
+        vertices_mapped = (vert_orig_tris * vert_uvw.unsqueeze(-1)).sum(dim=1)
+
         # Clean up BVH and intermediate tensors
-        del bvh, face_id, uvw, orig_tri_verts, pos, rast, vertices_yup
+        del bvh, face_id, uvw, orig_tri_verts, vert_face_id, vert_uvw, vert_orig_tris, pos, rast, vertices_yup
         torch.cuda.empty_cache()
 
-        # Sample voxel attributes
+        # Sample voxel attributes for texture
         logger.info("Sampling voxel attributes...")
         attrs = torch.zeros(texture_size, texture_size, attr_volume.shape[1], device='cuda')
         attrs[mask] = grid_sample_3d(
@@ -401,10 +408,20 @@ Parameters:
             mode='trilinear',
         )
 
+        # Sample PBR attributes at mapped vertex positions for GeometryPack fields mode
+        logger.info("Sampling vertex PBR attributes...")
+        vertex_pbr_attrs = grid_sample_3d(
+            attr_volume,
+            torch.cat([torch.zeros_like(coords[:, :1]), coords], dim=-1),
+            shape=torch.Size([1, attr_volume.shape[1], *grid_size.tolist()]),
+            grid=((vertices_mapped - aabb[0]) / voxel_size).reshape(1, -1, 3),
+            mode='trilinear',
+        )[0]  # [N_verts, 6]
+
         logger.info("Building PBR textures...")
 
         # Clean up voxel sampling intermediates
-        del valid_pos, attr_volume, coords
+        del valid_pos, attr_volume, coords, vertices_mapped
         torch.cuda.empty_cache()
 
         mask_np = mask.cpu().numpy()
@@ -421,8 +438,15 @@ Parameters:
         logger.info(f"[DEBUG] Texture roughness: min={roughness.min()}, max={roughness.max()}, mean={roughness.mean():.2f}")
         logger.info(f"[DEBUG] Texture alpha (before inpaint): min={alpha.min()}, max={alpha.max()}, mean={alpha.mean():.2f}")
 
-        # Count pixels with low alpha in valid mask area
+        # In-mask statistics (actual texture values, excluding masked-out pixels)
         alpha_in_mask = alpha[mask_np]
+        metallic_in_mask = metallic[mask_np]
+        roughness_in_mask = roughness[mask_np]
+        bc_in_mask = base_color[mask_np]
+        logger.info(f"[DEBUG] In-mask base_color: min={bc_in_mask.min()}, max={bc_in_mask.max()}, mean={bc_in_mask.mean():.2f}")
+        logger.info(f"[DEBUG] In-mask metallic: min={metallic_in_mask.min()}, max={metallic_in_mask.max()}, mean={metallic_in_mask.mean():.2f}")
+        logger.info(f"[DEBUG] In-mask roughness: min={roughness_in_mask.min()}, max={roughness_in_mask.max()}, mean={roughness_in_mask.mean():.2f}")
+        logger.info(f"[DEBUG] In-mask alpha: min={alpha_in_mask.min()}, max={alpha_in_mask.max()}, mean={alpha_in_mask.mean():.2f}")
         low_alpha_pixels = np.sum(alpha_in_mask < 200)
         zero_alpha_pixels = np.sum(alpha_in_mask == 0)
         logger.info(f"[DEBUG] Pixels with alpha < 200 (in valid mask): {low_alpha_pixels}/{alpha_in_mask.size}")
@@ -470,10 +494,23 @@ Parameters:
             visual=Trimesh.visual.TextureVisuals(uv=trimesh.visual.uv, material=material)
         )
 
-        logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures")
+        # Attach PBR vertex attributes for GeometryPack fields visualization
+        result.vertex_attributes = {}
+        for attr_name, attr_slice in attr_layout.items():
+            values = vertex_pbr_attrs[:, attr_slice].clamp(0, 1).cpu().numpy()
+            if values.shape[1] == 1:
+                # Scalar field (metallic, roughness, alpha)
+                result.vertex_attributes[attr_name] = values[:, 0].astype(np.float32)
+            else:
+                # Vector field (base_color RGB) - store as separate channels
+                result.vertex_attributes[f'{attr_name}_r'] = values[:, 0].astype(np.float32)
+                result.vertex_attributes[f'{attr_name}_g'] = values[:, 1].astype(np.float32)
+                result.vertex_attributes[f'{attr_name}_b'] = values[:, 2].astype(np.float32)
+
+        logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures, {len(result.vertex_attributes)} vertex fields")
 
         # Final cleanup
-        del vertices, faces, uvs, orig_vertices, orig_faces
+        del vertices, faces, uvs, orig_vertices, orig_faces, vertex_pbr_attrs
         gc.collect()
         torch.cuda.empty_cache()
 
