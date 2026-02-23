@@ -9,6 +9,7 @@ from pathlib import Path
 import folder_paths
 
 from .utils import logger
+import comfy.model_management
 
 
 class Trellis2Simplify:
@@ -59,11 +60,13 @@ Parameters:
         import cumesh as CuMesh
         import trimesh as Trimesh
 
-        print(f"[TRELLIS2] Simplify: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces -> {target_face_count} target")
+        logger.info(f"Simplify: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces -> {target_face_count} target")
+
+        device = comfy.model_management.get_torch_device()
 
         # Convert to torch tensors
-        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
-        faces = torch.tensor(trimesh.faces, dtype=torch.int32).cuda()
+        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
+        faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
 
         # Undo coordinate conversion if needed (Z-up back to Y-up)
         vertices_orig = vertices.clone()
@@ -72,12 +75,12 @@ Parameters:
         # Initialize CuMesh
         cumesh = CuMesh.CuMesh()
         cumesh.init(vertices_orig, faces)
-        print(f"[TRELLIS2] Initial: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        logger.info(f"Initial: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Fill holes
         if fill_holes:
             cumesh.fill_holes(max_hole_perimeter=fill_holes_perimeter)
-            print(f"[TRELLIS2] After fill holes: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            logger.info(f"After fill holes: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Optional remesh
         if remesh:
@@ -85,7 +88,7 @@ Parameters:
             bvh = CuMesh.cuBVH(curr_verts, curr_faces)
 
             # Estimate grid parameters
-            aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], device='cuda')
+            aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], device=device)
             center = aabb.mean(dim=0)
             scale = (aabb[1] - aabb[0]).max().item()
             resolution = 512  # Default resolution for remeshing
@@ -100,21 +103,21 @@ Parameters:
                 verbose=True,
                 bvh=bvh,
             ))
-            print(f"[TRELLIS2] After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            logger.info(f"After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
             # Clean up BVH after remesh
             del bvh, curr_verts, curr_faces
 
         # Unify face orientations before simplify
         cumesh.unify_face_orientations()
-        print("[TRELLIS2] Unified face orientations (pre-simplify)")
+        logger.info("Unified face orientations (pre-simplify)")
 
         # Simplify
         cumesh.simplify(target_face_count, verbose=True)
-        print(f"[TRELLIS2] After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        logger.info(f"After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Unify face orientations again after simplify (simplify can break it)
         cumesh.unify_face_orientations()
-        print("[TRELLIS2] Unified face orientations (post-simplify)")
+        logger.info("Unified face orientations (post-simplify)")
 
         # Read result
         out_vertices, out_faces = cumesh.read()
@@ -131,12 +134,12 @@ Parameters:
             process=False
         )
 
-        print(f"[TRELLIS2] Simplify complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
+        logger.info(f"Simplify complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
         # Clean up GPU memory
         del vertices, faces, vertices_orig, out_vertices, out_faces, cumesh
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         return (result,)
 
@@ -188,11 +191,13 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         import cumesh as CuMesh
         import trimesh as Trimesh
 
-        print(f"[TRELLIS2] UV Unwrap: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces")
+        logger.info(f"UV Unwrap: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces")
+
+        device = comfy.model_management.get_torch_device()
 
         # Convert to torch
-        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
-        faces = torch.tensor(trimesh.faces, dtype=torch.int32).cuda()
+        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
+        faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
 
         # Undo coord conversion
         vertices_orig = vertices.clone()
@@ -205,7 +210,7 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         cumesh.init(vertices_orig, faces)
 
         # UV Unwrap
-        print("[TRELLIS2] Unwrapping UVs...")
+        logger.info("Unwrapping UVs...")
         out_vertices, out_faces, out_uvs, out_vmaps = cumesh.uv_unwrap(
             compute_charts_kwargs={
                 "threshold_cone_half_angle_rad": chart_cone_angle_rad,
@@ -223,7 +228,7 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
 
         # Compute normals
         cumesh.compute_vertex_normals()
-        out_normals = cumesh.read_vertex_normals()[out_vmaps.cuda()].cpu().numpy()
+        out_normals = cumesh.read_vertex_normals()[out_vmaps.to(device)].cpu().numpy()
 
         # Convert to Z-up
         out_vertices[:, 1], out_vertices[:, 2] = out_vertices[:, 2].copy(), -out_vertices[:, 1].copy()
@@ -240,12 +245,12 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         # Attach UVs as visual
         result.visual = Trimesh.visual.TextureVisuals(uv=out_uvs)
 
-        print(f"[TRELLIS2] UV Unwrap complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
+        logger.info(f"UV Unwrap complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
         # Clean up GPU memory
         del vertices, faces, vertices_orig, cumesh
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         return (result,)
 
@@ -299,12 +304,14 @@ Parameters:
         if 'attrs' not in voxelgrid:
             raise ValueError("VoxelGrid has no PBR attributes.")
 
-        print(f"[TRELLIS2] Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
+        logger.info(f"Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
+
+        device = comfy.model_management.get_torch_device()
 
         # Get mesh data
-        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
-        faces = torch.tensor(trimesh.faces, dtype=torch.int32).cuda()
-        uvs = torch.tensor(trimesh.visual.uv, dtype=torch.float32).cuda()
+        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
+        faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
+        uvs = torch.tensor(trimesh.visual.uv, dtype=torch.float32).to(device)
 
         # Undo Z-up to Y-up for voxel sampling
         vertices_yup = vertices.clone()
@@ -314,12 +321,12 @@ Parameters:
         attr_volume = voxelgrid['attrs']
         if isinstance(attr_volume, np.ndarray):
             attr_volume = torch.from_numpy(attr_volume)
-        attr_volume = attr_volume.cuda()
+        attr_volume = attr_volume.to(device)
 
         coords = voxelgrid['coords']
         if isinstance(coords, np.ndarray):
             coords = torch.from_numpy(coords)
-        coords = coords.cuda()
+        coords = coords.to(device)
 
         voxel_size = voxelgrid['voxel_size']
         attr_layout = voxelgrid['layout']
@@ -327,32 +334,32 @@ Parameters:
         orig_vertices = voxelgrid['original_vertices']
         if isinstance(orig_vertices, np.ndarray):
             orig_vertices = torch.from_numpy(orig_vertices)
-        orig_vertices = orig_vertices.cuda()
+        orig_vertices = orig_vertices.to(device)
 
         orig_faces = voxelgrid['original_faces']
         if isinstance(orig_faces, np.ndarray):
             orig_faces = torch.from_numpy(orig_faces)
-        orig_faces = orig_faces.cuda()
+        orig_faces = orig_faces.to(device)
 
         # AABB
-        aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device='cuda')
+        aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device=device)
 
         # Grid size
         if voxel_size is not None:
             if isinstance(voxel_size, float):
-                voxel_size = torch.tensor([voxel_size] * 3, device='cuda')
+                voxel_size = torch.tensor([voxel_size] * 3, device=device)
             elif isinstance(voxel_size, (list, tuple, np.ndarray)):
-                voxel_size = torch.tensor(voxel_size, dtype=torch.float32, device='cuda')
+                voxel_size = torch.tensor(voxel_size, dtype=torch.float32, device=device)
             grid_size = ((aabb[1] - aabb[0]) / voxel_size).round().int()
         else:
-            grid_size = torch.tensor([1024, 1024, 1024], dtype=torch.int32, device='cuda')
+            grid_size = torch.tensor([1024, 1024, 1024], dtype=torch.int32, device=device)
             voxel_size = (aabb[1] - aabb[0]) / grid_size
 
         # Build BVH from original mesh for accurate attribute lookup
-        print("[TRELLIS2] Building BVH...")
+        logger.info("Building BVH...")
         bvh = CuMesh.cuBVH(orig_vertices, orig_faces)
 
-        print("[TRELLIS2] Rasterizing in UV space...")
+        logger.info("Rasterizing in UV space...")
 
         # Setup nvdiffrast
         ctx = dr.RasterizeCudaContext()
@@ -364,7 +371,7 @@ Parameters:
             torch.ones_like(uvs[:, :1])
         ], dim=-1).unsqueeze(0)
 
-        rast = torch.zeros((1, texture_size, texture_size, 4), device='cuda', dtype=torch.float32)
+        rast = torch.zeros((1, texture_size, texture_size, 4), device=device, dtype=torch.float32)
 
         # Rasterize in chunks
         chunk_size = 100000
@@ -379,7 +386,7 @@ Parameters:
             del rast_chunk, mask_chunk
 
         del ctx, uvs_rast
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         mask = rast[0, ..., 3] > 0
 
@@ -393,17 +400,17 @@ Parameters:
         valid_pos = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
 
         # Map vertex positions to original mesh
-        print("[TRELLIS2] Mapping vertices to original mesh...")
+        logger.info("Mapping vertices to original mesh...")
         _, vert_face_id, vert_uvw = bvh.unsigned_distance(vertices_yup, return_uvw=True)
         vert_orig_tris = orig_vertices[orig_faces[vert_face_id.long()]]
         vertices_mapped = (vert_orig_tris * vert_uvw.unsqueeze(-1)).sum(dim=1)
 
         del bvh, face_id, uvw, orig_tri_verts, vert_face_id, vert_uvw, vert_orig_tris, pos, rast, vertices_yup
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Sample voxel attributes for texture
-        print("[TRELLIS2] Sampling voxel attributes...")
-        attrs = torch.zeros(texture_size, texture_size, attr_volume.shape[1], device='cuda')
+        logger.info("Sampling voxel attributes...")
+        attrs = torch.zeros(texture_size, texture_size, attr_volume.shape[1], device=device)
         attrs[mask] = grid_sample_3d(
             attr_volume,
             torch.cat([torch.zeros_like(coords[:, :1]), coords], dim=-1),
@@ -413,7 +420,7 @@ Parameters:
         )
 
         # Sample PBR attributes at mapped vertex positions
-        print("[TRELLIS2] Sampling vertex PBR attributes...")
+        logger.info("Sampling vertex PBR attributes...")
         vertex_pbr_attrs = grid_sample_3d(
             attr_volume,
             torch.cat([torch.zeros_like(coords[:, :1]), coords], dim=-1),
@@ -422,10 +429,10 @@ Parameters:
             mode='trilinear',
         )[0]
 
-        print("[TRELLIS2] Building PBR textures...")
+        logger.info("Building PBR textures...")
 
         del valid_pos, attr_volume, coords, vertices_mapped
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         mask_np = mask.cpu().numpy()
 
@@ -437,7 +444,7 @@ Parameters:
 
         del attrs, mask
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Inpaint UV seams
         mask_inv = (~mask_np).astype(np.uint8)
@@ -481,11 +488,11 @@ Parameters:
                 result.vertex_attributes[f'{attr_name}_g'] = values[:, 1].astype(np.float32)
                 result.vertex_attributes[f'{attr_name}_b'] = values[:, 2].astype(np.float32)
 
-        print(f"[TRELLIS2] Rasterize complete: {texture_size}x{texture_size} PBR textures")
+        logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures")
 
         del vertices, faces, uvs, orig_vertices, orig_faces, vertex_pbr_attrs
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         return (result,)
 
@@ -541,19 +548,20 @@ Parameters:
         import torch
         from o_voxel.postprocess import to_glb
 
-        print(f"[TRELLIS2] ExportGLB: loading {voxelgrid_path}")
+        logger.info(f"ExportGLB: loading {voxelgrid_path}")
         data = np.load(voxelgrid_path, allow_pickle=True)
 
-        vertices = torch.from_numpy(data['vertices'].astype(np.float32)).cuda()
-        faces = torch.from_numpy(data['faces'].astype(np.int32)).cuda()
-        coords = torch.from_numpy(data['coords'].astype(np.float32)).cuda()
-        attrs = torch.from_numpy(data['attrs'].astype(np.float32)).cuda()
+        device = comfy.model_management.get_torch_device()
+        vertices = torch.from_numpy(data['vertices'].astype(np.float32)).to(device)
+        faces = torch.from_numpy(data['faces'].astype(np.int32)).to(device)
+        coords = torch.from_numpy(data['coords'].astype(np.float32)).to(device)
+        attrs = torch.from_numpy(data['attrs'].astype(np.float32)).to(device)
         voxel_size = data['voxel_size']
 
         layout_raw = json.loads(str(data['layout']))
         attr_layout = {k: slice(v[0], v[1]) for k, v in layout_raw.items()}
 
-        print(f"[TRELLIS2] {vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
+        logger.info(f"{vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
 
         textured_mesh = to_glb(
             vertices=vertices,
@@ -577,7 +585,7 @@ Parameters:
         output_path = os.path.join(output_dir, filename)
 
         textured_mesh.export(output_path, file_type='glb')
-        print(f"[TRELLIS2] GLB exported: {output_path}")
+        logger.info(f"GLB exported: {output_path}")
 
         return (output_path,)
 

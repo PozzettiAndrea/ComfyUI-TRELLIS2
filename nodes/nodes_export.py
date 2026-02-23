@@ -5,9 +5,10 @@ import numpy as np
 from datetime import datetime
 
 import folder_paths
+import comfy.model_management
 
 # Create logger for non-isolated classes
-logger = logging.getLogger("[TRELLIS2]")
+logger = logging.getLogger("trellis2")
 
 
 class Trellis2RenderPreview:
@@ -227,7 +228,7 @@ Parameters:
 
         logger.info(f"Video saved to: {output_path}")
 
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         return (output_path,)
 

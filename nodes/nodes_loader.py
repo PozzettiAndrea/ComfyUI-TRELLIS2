@@ -1,19 +1,20 @@
 """Model loading nodes for TRELLIS.2.
 
 This returns a lightweight config object - actual model loading
-happens inside @isolated subprocess methods.
+happens inside node methods.
 """
 
-# Config is now a plain dict for serialization compatibility
+import logging
+import torch
+import comfy.model_management as mm
+
+log = logging.getLogger("trellis2")
 
 # Resolution modes (matching original TRELLIS.2)
 RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
 
-# Attention backend options
-ATTN_BACKENDS = ['flash_attn', 'xformers', 'sdpa', 'sageattn']
-
-# VRAM usage modes
-VRAM_MODES = ['keep_loaded', 'cpu_offload', 'disk_offload']
+# Attention backend options (auto detects best available)
+ATTN_BACKENDS = ['auto', 'flash_attn', 'xformers', 'sdpa', 'sageattn']
 
 
 class LoadTrellis2Models:
@@ -26,8 +27,14 @@ class LoadTrellis2Models:
                 "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
-                "attn_backend": (ATTN_BACKENDS, {"default": "flash_attn"}),
-                "vram_mode": (VRAM_MODES, {"default": "keep_loaded"}),
+                "precision": (["auto", "bf16", "fp16", "fp32"], {
+                    "default": "auto",
+                    "tooltip": "Model precision. auto: best for your GPU (bf16 on Ampere+, fp16 on Volta/Turing, fp32 on older)."
+                }),
+                "attn_backend": (ATTN_BACKENDS, {
+                    "default": "auto",
+                    "tooltip": "Attention backend. auto: best available (sageattn > flash_attn > xformers > sdpa)."
+                }),
             }
         }
 
@@ -39,7 +46,7 @@ class LoadTrellis2Models:
 Load TRELLIS.2 model configuration for image-to-3D generation.
 
 This node creates a configuration object that inference nodes use
-to load models on-demand inside isolated subprocess environments.
+to load models on-demand.
 
 Resolution modes:
 - 512: Fast, lower quality
@@ -47,24 +54,45 @@ Resolution modes:
 - 1536_cascade: Highest resolution output
 
 Attention backend:
-- flash_attn: FlashAttention (default, requires flash_attn package)
+- auto: Best available (sageattn > flash_attn > xformers > sdpa)
+- flash_attn: FlashAttention (requires flash_attn package)
 - xformers: Memory-efficient attention (requires xformers package)
 - sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
-- sageattn: SageAttention (not yet implemented)
-
-VRAM mode:
-- keep_loaded: Keep all models in VRAM (fastest, ~12GB VRAM)
-- cpu_offload: Offload unused models to CPU RAM (~3-4GB VRAM, ~15-25% slower)
-- disk_offload: Delete unused models, reload from disk (~3GB VRAM & CPU RAM, ~2-3x slower)
+- sageattn: SageAttention (fastest, requires sageattention package)
 """
 
-    def load_models(self, resolution='1024_cascade', attn_backend="flash_attn", vram_mode="keep_loaded"):
-        # Return plain dict - serializes natively across process boundaries
+    def load_models(self, resolution='1024_cascade', precision="auto", attn_backend="auto", **kwargs):
+        # Resolve precision to actual torch dtype
+        device = mm.get_torch_device()
+        if precision == "auto":
+            if mm.should_use_bf16(device):
+                dtype = torch.bfloat16
+            elif mm.should_use_fp16(device):
+                dtype = torch.float16
+            else:
+                dtype = torch.float32
+        else:
+            dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[precision]
+
+        log.info(f"Resolved precision: {precision} -> {dtype}")
+
+        # Setup attention backend
+        # Dense attention: handled by ComfyUI's optimized_attention_for_device (auto-selects)
+        # Sparse/varlen attention: handled by attention_sparse.py (auto-detects best backend)
+        from .trellis2.model import set_backend as set_dense_backend
+        from .trellis2.sparse import set_attn_backend as set_sparse_backend
+        set_dense_backend(attn_backend)
+        set_sparse_backend(attn_backend)
+        log.info(f"Attention backend configured: {attn_backend}")
+
+        # Store dtype as string for JSON-safe IPC across isolation boundary
+        dtype_str = {torch.bfloat16: "bf16", torch.float16: "fp16", torch.float32: "fp32"}[dtype]
         config = {
             "model_name": "microsoft/TRELLIS.2-4B",
             "resolution": resolution,
+            "precision": precision,
+            "dtype": dtype_str,
             "attn_backend": attn_backend,
-            "vram_mode": vram_mode,
         }
         return (config,)
 

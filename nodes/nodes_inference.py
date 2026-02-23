@@ -1,7 +1,6 @@
-"""Inference nodes for TRELLIS.2 Image-to-3D generation.
-
-All GPU inference runs inside isolated subprocess.
-"""
+"""Inference nodes for TRELLIS.2 Image-to-3D generation."""
+import logging
+log = logging.getLogger("trellis2")
 
 
 class Trellis2GetConditioning:
@@ -16,7 +15,6 @@ class Trellis2GetConditioning:
                 "mask": ("MASK",),
             },
             "optional": {
-                "include_1024": ("BOOLEAN", {"default": True}),
                 "background_color": (["black", "gray", "white"], {"default": "black"}),
             },
         }
@@ -38,14 +36,16 @@ Parameters:
 - model_config: The loaded TRELLIS.2 config
 - image: Input image (RGB)
 - mask: Foreground mask (white=object, black=background)
-- include_1024: Also extract 1024px features (needed for cascade modes)
-
 Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 """
 
-    def get_conditioning(self, model_config, image, mask, include_1024=True, background_color="black"):
+    def get_conditioning(self, model_config, image, mask, background_color="black"):
         # All heavy imports happen inside subprocess
-        from .trellis_utils import run_conditioning
+        from .stages import run_conditioning
+
+        # Auto-detect whether 1024 features are needed from resolution mode
+        resolution = model_config.get("resolution", "1024_cascade")
+        include_1024 = resolution in ("1024_cascade", "1536_cascade", "1024")
 
         conditioning, preprocessed_image = run_conditioning(
             model_config=model_config,
@@ -116,20 +116,22 @@ Returns:
     ):
         # All heavy imports happen inside subprocess
         import trimesh as Trimesh
-        from .trellis_utils import run_shape_generation
+        from .stages import run_shape_generation
 
-        # run_shape_generation returns (file_ref, vertices, faces)
-        # file_ref is passed to downstream nodes, vertices/faces used for Trimesh
-        shape_result, vertices, faces = run_shape_generation(
-            model_config=model_config,
-            conditioning=conditioning,
-            seed=seed,
-            ss_guidance_strength=ss_guidance_strength,
-            ss_sampling_steps=ss_sampling_steps,
-            shape_guidance_strength=shape_guidance_strength,
-            shape_sampling_steps=shape_sampling_steps,
-            max_num_tokens=max_tokens,
-        )
+        # run_shape_generation returns (result_dict, vertices, faces)
+        # result_dict is passed to downstream nodes, vertices/faces used for Trimesh
+        import torch
+        with torch.inference_mode():
+            shape_result, vertices, faces = run_shape_generation(
+                model_config=model_config,
+                conditioning=conditioning,
+                seed=seed,
+                ss_guidance_strength=ss_guidance_strength,
+                ss_sampling_steps=ss_sampling_steps,
+                shape_guidance_strength=shape_guidance_strength,
+                shape_sampling_steps=shape_sampling_steps,
+                max_num_tokens=max_tokens,
+            )
 
         # Create trimesh from vertices/faces
         tri_mesh = Trimesh.Trimesh(
@@ -198,16 +200,18 @@ Returns:
         import os
         import uuid
         import numpy as np
-        from .trellis_utils import run_texture_generation
+        from .stages import run_texture_generation
 
-        texture_result = run_texture_generation(
-            model_config=model_config,
-            conditioning=conditioning,
-            shape_result=shape_result,
-            seed=seed,
-            tex_guidance_strength=tex_guidance_strength,
-            tex_sampling_steps=tex_sampling_steps,
-        )
+        import torch
+        with torch.inference_mode():
+            texture_result = run_texture_generation(
+                model_config=model_config,
+                conditioning=conditioning,
+                shape_result=shape_result,
+                seed=seed,
+                tex_guidance_strength=tex_guidance_strength,
+                tex_sampling_steps=tex_sampling_steps,
+            )
 
         # Create output directory
         cache_dir = '/tmp/trellis2_cache'
@@ -229,7 +233,7 @@ Returns:
             faces=texture_result['original_faces'],
             layout=json.dumps(layout_serializable),
         )
-        print(f"[TRELLIS2] Voxelgrid saved to: {voxelgrid_npz_path}")
+        log.info(f"Voxelgrid saved to: {voxelgrid_npz_path}")
 
         return ("", voxelgrid_npz_path)
 
@@ -282,13 +286,13 @@ Returns:
         import comfy.model_management as mm
 
         # Lazy import rembg from trellis2
-        from .trellis2.pipelines import rembg
+        from . import rembg
 
         device = mm.get_torch_device()
 
         # Load or reuse cached model
         if Trellis2RemoveBackground._model is None:
-            print("[TRELLIS2] Loading BiRefNet model for background removal...")
+            log.info("Loading BiRefNet model for background removal...")
             Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
             if not low_vram:
                 Trellis2RemoveBackground._model.to(device)
@@ -302,7 +306,7 @@ Returns:
             img_np = (image.cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
         pil_image = Image.fromarray(img_np)
 
-        print("[TRELLIS2] Removing background...")
+        log.info("Removing background...")
 
         if low_vram:
             model.to(device)
@@ -313,7 +317,7 @@ Returns:
         if low_vram:
             model.cpu()
             gc.collect()
-            torch.cuda.empty_cache()
+            mm.soft_empty_cache()
 
         # Extract mask from alpha channel
         output_np = np.array(output)
@@ -322,7 +326,7 @@ Returns:
         # Convert mask to ComfyUI format (B, H, W)
         mask_tensor = torch.tensor(mask_np).unsqueeze(0)
 
-        print("[TRELLIS2] Background removed successfully")
+        log.info("Background removed successfully")
 
         # Return original image + mask
         return (image, mask_tensor)
