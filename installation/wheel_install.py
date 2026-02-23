@@ -91,7 +91,11 @@ def get_direct_wheel_urls(package_config):
 
     # Build wheel URL with new naming: {package}-{version}+cu{cuda}torch{mm}-cpXX-cpXX-{platform}.whl
     # cuda_suffix is already "cu128", so we just add "torch{mm}"
-    wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    # Windows wheels have duplicated CUDA suffix due to PowerShell -replace bug in wheel build workflows
+    if platform == "win_amd64":
+        wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-{platform}.whl"
+    else:
+        wheel_name = f"{package_name}-{wheel_version}+{cuda_suffix}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
     wheel_url = f"{wheel_release_base}/{wheel_dir}/{wheel_name}"
 
     return [wheel_url]
