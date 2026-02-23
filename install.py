@@ -42,10 +42,8 @@ def install_cuda_package(package_config):
 
     print(f"\n[ComfyUI-TRELLIS2] Installing {name}...")
 
-    # Check if already installed
-    if is_package_installed(import_name):
-        print(f"[ComfyUI-TRELLIS2] [OK] {name} already installed")
-        return True
+    # Always reinstall to ensure users get the latest fixed wheels
+    # (Previous wheel builds had naming bugs that caused installation failures)
 
     # Check if we have CUDA
     torch_ver, cuda_ver = get_torch_info()
