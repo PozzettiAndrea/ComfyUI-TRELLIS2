@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-14T15:14:12.030472+00:00",
+  "timestamp": "2026-02-23T12:04:11.882399+00:00",
   "platform": "windows_portable",
   "hardware": {
     "os": "Windows-11-10.0.26100-SP0",
@@ -7,7 +7,7 @@
     "gpu": "NVIDIA RTX A4000"
   },
   "summary": {
-    "total": 3,
+    "total": 4,
     "passed": 3,
     "failed": 0
   },
@@ -15,7 +15,7 @@
     {
       "name": "geometry_only",
       "status": "pass",
-      "duration_seconds": 418.47,
+      "duration_seconds": 690.24,
       "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -24,21 +24,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 14.87,
-          "avg": 12.88
+          "peak": 29.98,
+          "avg": 24.21
         },
         "total_ram_gb": 30.0,
-        "samples": 344,
+        "samples": 464,
         "vram": {
-          "peak": 9.27,
-          "avg": 2.9
+          "peak": 5.45,
+          "avg": 2.52
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 578.99,
+      "duration_seconds": 614.92,
       "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -47,21 +47,28 @@
       },
       "resources": {
         "ram": {
-          "peak": 15.85,
-          "avg": 13.12
+          "peak": 29.54,
+          "avg": 25.73
         },
         "total_ram_gb": 30.0,
-        "samples": 468,
+        "samples": 469,
         "vram": {
-          "peak": 9.19,
-          "avg": 2.87
+          "peak": 5.71,
+          "avg": 3.87
         }
       }
     },
     {
+      "name": "mesh_audit",
+      "status": "skipped",
+      "duration_seconds": 0,
+      "error": "Not configured for GPU runner",
+      "hardware": null
+    },
+    {
       "name": "remove_background",
       "status": "pass",
-      "duration_seconds": 357.72,
+      "duration_seconds": 393.4,
       "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -70,14 +77,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 15.22,
-          "avg": 13.09
+          "peak": 27.93,
+          "avg": 19.0
         },
         "total_ram_gb": 30.0,
-        "samples": 297,
+        "samples": 298,
         "vram": {
-          "peak": 9.31,
-          "avg": 2.67
+          "peak": 5.86,
+          "avg": 3.53
         }
       }
     }
