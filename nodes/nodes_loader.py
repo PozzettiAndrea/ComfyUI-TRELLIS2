@@ -1,17 +1,16 @@
 """Model loading nodes for TRELLIS.2."""
-import os
-import sys
 import torch
 
 import comfy.model_management as mm
 import folder_paths
 
-# Add TRELLIS.2 to path if needed
-TRELLIS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "TRELLIS.2")
-if os.path.exists(TRELLIS_PATH) and TRELLIS_PATH not in sys.path:
-    sys.path.insert(0, TRELLIS_PATH)
-
 from .utils import logger
+
+# Available models
+TRELLIS2_MODELS = [
+    'microsoft/TRELLIS.2-4B',
+    'microsoft/TRELLIS-image-large',
+]
 
 
 class DownloadAndLoadTrellis2Model:
@@ -21,14 +20,7 @@ class DownloadAndLoadTrellis2Model:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "model": (
-                    [
-                        'microsoft/TRELLIS.2-4B',
-                    ],
-                    {
-                        "default": 'microsoft/TRELLIS.2-4B'
-                    }
-                ),
+                "model": (TRELLIS2_MODELS, {"default": 'microsoft/TRELLIS.2-4B'}),
             },
             "optional": {
                 "low_vram": ("BOOLEAN", {"default": True}),
@@ -54,13 +46,7 @@ Parameters:
 
         logger.info(f"Loading TRELLIS.2 pipeline: {model}")
 
-        try:
-            from trellis2.pipelines import Trellis2ImageTo3DPipeline
-        except ImportError:
-            raise ImportError(
-                "Could not import trellis2. Please ensure TRELLIS.2 is installed. "
-                "See: https://github.com/microsoft/TRELLIS"
-            )
+        from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
         # Load pipeline from HuggingFace
         pipeline = Trellis2ImageTo3DPipeline.from_pretrained(model)
@@ -89,9 +75,7 @@ class Trellis2SetSamplerParams:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": {
-                "pipeline": ("TRELLIS2_PIPELINE",),
-            },
+            "required": {},
             "optional": {
                 # Sparse Structure Sampler
                 "ss_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1}),
@@ -126,7 +110,6 @@ Three stages:
 
     def configure(
         self,
-        pipeline,
         ss_guidance_strength=7.5,
         ss_guidance_rescale=0.7,
         ss_sampling_steps=12,
