@@ -308,6 +308,24 @@ Parameters:
         orig_vertices = voxelgrid.original_vertices.cuda()
         orig_faces = voxelgrid.original_faces.cuda()
 
+        # DEBUG: Print raw voxel attribute statistics
+        logger.info(f"[DEBUG] attr_volume shape: {attr_volume.shape}")
+        logger.info(f"[DEBUG] attr_layout: {attr_layout}")
+        logger.info(f"[DEBUG] coords shape: {coords.shape}, min: {coords.min(dim=0).values.tolist()}, max: {coords.max(dim=0).values.tolist()}")
+
+        # Check raw attribute ranges
+        for name, slc in attr_layout.items():
+            channel_data = attr_volume[:, slc]
+            logger.info(f"[DEBUG] Raw {name}: min={channel_data.min().item():.4f}, max={channel_data.max().item():.4f}, mean={channel_data.mean().item():.4f}")
+
+        # Count low alpha voxels
+        alpha_slc = attr_layout['alpha']
+        alpha_raw = attr_volume[:, alpha_slc]
+        low_alpha_count = (alpha_raw < 0.5).sum().item()
+        zero_alpha_count = (alpha_raw < 0.01).sum().item()
+        logger.info(f"[DEBUG] Voxels with alpha < 0.5: {low_alpha_count}/{attr_volume.shape[0]}")
+        logger.info(f"[DEBUG] Voxels with alpha < 0.01: {zero_alpha_count}/{attr_volume.shape[0]}")
+
         # AABB
         aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device='cuda')
 
@@ -397,6 +415,19 @@ Parameters:
         roughness = np.clip(attrs[..., attr_layout['roughness']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
         alpha = np.clip(attrs[..., attr_layout['alpha']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
 
+        # DEBUG: Print texture statistics after sampling (before inpaint)
+        logger.info(f"[DEBUG] Texture base_color: min={base_color.min()}, max={base_color.max()}, mean={base_color.mean():.2f}")
+        logger.info(f"[DEBUG] Texture metallic: min={metallic.min()}, max={metallic.max()}, mean={metallic.mean():.2f}")
+        logger.info(f"[DEBUG] Texture roughness: min={roughness.min()}, max={roughness.max()}, mean={roughness.mean():.2f}")
+        logger.info(f"[DEBUG] Texture alpha (before inpaint): min={alpha.min()}, max={alpha.max()}, mean={alpha.mean():.2f}")
+
+        # Count pixels with low alpha in valid mask area
+        alpha_in_mask = alpha[mask_np]
+        low_alpha_pixels = np.sum(alpha_in_mask < 200)
+        zero_alpha_pixels = np.sum(alpha_in_mask == 0)
+        logger.info(f"[DEBUG] Pixels with alpha < 200 (in valid mask): {low_alpha_pixels}/{alpha_in_mask.size}")
+        logger.info(f"[DEBUG] Pixels with alpha == 0 (in valid mask): {zero_alpha_pixels}/{alpha_in_mask.size}")
+
         # Clean up attrs tensor after extraction to CPU
         del attrs, mask
         gc.collect()
@@ -408,6 +439,13 @@ Parameters:
         metallic = cv2.inpaint(metallic, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
         roughness = cv2.inpaint(roughness, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
         alpha = cv2.inpaint(alpha, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
+
+        # DEBUG: Print alpha statistics after inpainting
+        logger.info(f"[DEBUG] Texture alpha (after inpaint): min={alpha.min()}, max={alpha.max()}, mean={alpha.mean():.2f}")
+        low_alpha_final = np.sum(alpha < 200)
+        zero_alpha_final = np.sum(alpha == 0)
+        logger.info(f"[DEBUG] Final texture pixels with alpha < 200: {low_alpha_final}/{alpha.size}")
+        logger.info(f"[DEBUG] Final texture pixels with alpha == 0: {zero_alpha_final}/{alpha.size}")
 
         # Create PBR material
         material = Trimesh.visual.material.PBRMaterial(
