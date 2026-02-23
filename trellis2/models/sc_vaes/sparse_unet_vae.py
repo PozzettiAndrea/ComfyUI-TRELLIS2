@@ -8,6 +8,16 @@ from ...modules import sparse as sp
 from ...modules.norm import LayerNorm32
 
 
+def _apply_in_chunks(module: nn.Module, x: torch.Tensor, chunk_size: int) -> torch.Tensor:
+    if chunk_size <= 0 or x.shape[0] <= chunk_size:
+        return module(x)
+
+    outputs = []
+    for start in range(0, x.shape[0], chunk_size):
+        outputs.append(module(x[start : start + chunk_size]))
+    return torch.cat(outputs, dim=0)
+
+
 class SparseResBlock3d(nn.Module):
     def __init__(
         self,
@@ -272,6 +282,8 @@ class SparseConvNeXtBlock3d(nn.Module):
         super().__init__()
         self.channels = channels
         self.use_checkpoint = use_checkpoint
+        self.low_vram = False
+        self.mlp_chunk_size = 8192
         
         self.norm = LayerNorm32(channels, elementwise_affine=True, eps=1e-6)
         self.conv = sp.SparseConv3d(channels, channels, 3)
@@ -284,9 +296,18 @@ class SparseConvNeXtBlock3d(nn.Module):
     def _forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         h = self.conv(x)
         h = h.replace(self.norm(h.feats))
-        h = h.replace(self.mlp(h.feats))
+        try:
+            if self.low_vram:
+                feats = _apply_in_chunks(self.mlp, h.feats, self.mlp_chunk_size)
+            else:
+                feats = self.mlp(h.feats)
+        except torch.OutOfMemoryError:
+            if h.feats.is_cuda:
+                torch.cuda.empty_cache()
+            feats = _apply_in_chunks(self.mlp, h.feats, self.mlp_chunk_size)
+        h = h.replace(feats)
         return h + x
-    
+     
     def forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         if self.use_checkpoint:
             return torch.utils.checkpoint.checkpoint(self._forward, x, use_reentrant=False)
@@ -418,8 +439,8 @@ class SparseUnetVaeDecoder(nn.Module):
         self.use_fp16 = use_fp16
         self.pred_subdiv = pred_subdiv
         self.dtype = torch.float16 if use_fp16 else torch.float32
-        self.low_vram = False
-        
+        self._low_vram = False
+         
         self.output_layer = sp.SparseLinear(model_channels[-1], out_channels)
         self.from_latent = sp.SparseLinear(latent_channels, model_channels[0])
         
@@ -453,6 +474,22 @@ class SparseUnetVaeDecoder(nn.Module):
         Return the device of the model.
         """
         return next(self.parameters()).device
+
+    @property
+    def low_vram(self) -> bool:
+        return self._low_vram
+
+    @low_vram.setter
+    def low_vram(self, value: bool) -> None:
+        self._low_vram = bool(value)
+        for module in self.modules():
+            if module is self:
+                continue
+            if hasattr(module, "low_vram"):
+                try:
+                    setattr(module, "low_vram", self._low_vram)
+                except Exception:
+                    pass
 
     def convert_to_fp16(self) -> None:
         """
