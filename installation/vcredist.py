@@ -30,18 +30,14 @@ def is_windows_n_edition():
 
 def try_install_media_feature_pack():
     """
-    Install Media Feature Pack for Windows N/KN editions.
-    Required for OpenCV on these editions.
+    Install Media Feature Pack for Windows.
+    Required for OpenCV to work properly.
     Returns True if successful or not needed, False otherwise.
     """
     if sys.platform != "win32":
         return True
 
-    if not is_windows_n_edition():
-        return True  # Not an N edition, not needed
-
-    print("[ComfyUI-TRELLIS2] Windows N/KN edition detected - Media Feature Pack required")
-    print("[ComfyUI-TRELLIS2] Attempting to install Media Feature Pack via DISM...")
+    print("[ComfyUI-TRELLIS2] Checking Media Feature Pack (required for OpenCV)...")
 
     try:
         # Try to install Media Feature Pack
@@ -113,7 +109,7 @@ def try_install_vcredist():
     if sys.platform != "win32":
         return True  # Not needed on non-Windows
 
-    # First, try to install Media Feature Pack for Windows N/KN editions
+    # First, try to install Media Feature Pack (required for OpenCV)
     try_install_media_feature_pack()
 
     print("[ComfyUI-TRELLIS2] Checking Visual C++ Redistributable...")
