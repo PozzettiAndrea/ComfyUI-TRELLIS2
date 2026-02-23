@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-02-14T16:41:13.517113+00:00",
+  "platform": "linux",
+  "hardware": {
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "workflows": [
+    {
+      "name": "geometry_only",
+      "status": "pass",
+      "duration_seconds": 1110.15,
+      "error": null,
+      "hardware": {
+        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 7.26,
+          "avg": 4.56
+        },
+        "total_ram_gb": 14.6,
+        "samples": 592,
+        "vram": {
+          "peak": 8.98,
+          "avg": 2.21
+        }
+      }
+    },
+    {
+      "name": "geometry_texture",
+      "status": "pass",
+      "duration_seconds": 1386.06,
+      "error": null,
+      "hardware": {
+        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 6.82,
+          "avg": 4.25
+        },
+        "total_ram_gb": 14.6,
+        "samples": 824,
+        "vram": {
+          "peak": 8.98,
+          "avg": 2.81
+        }
+      }
+    },
+    {
+      "name": "remove_background",
+      "status": "pass",
+      "duration_seconds": 952.66,
+      "error": null,
+      "hardware": {
+        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 6.16,
+          "avg": 4.16
+        },
+        "total_ram_gb": 14.6,
+        "samples": 583,
+        "vram": {
+          "peak": 8.98,
+          "avg": 2.13
+        }
+      }
+    }
+  ]
+}

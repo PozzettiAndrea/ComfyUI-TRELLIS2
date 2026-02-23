@@ -1,0 +1,136 @@
+[00:00] Crash dump logging enabled: /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test/crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Setting up ComfyUI...
+[00:00] Cloning ComfyUI (latest)...
+[00:00] Running: git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /tmp/comfy_test_5anxr1vp/ComfyUI
+[00:01] Installing ComfyUI requirements...
+[00:01] Running: uv pip install --system -r /tmp/comfy_test_5anxr1vp/ComfyUI/requirements.txt
+[02:43] Installing custom node...
+[02:43] Linking ComfyUI-TRELLIS2 to custom_nodes/...
+[02:43] Installing node requirements...
+[02:43] Running: uv pip install --system -r /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
+[02:44] Running install.py...
+[02:44] Running: /opt/hostedtoolcache/Python/3.13.11/x64/bin/python /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
+[04:36]   Installing 1 node dependencies...
+[04:36]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[04:36]     Running install.py for ComfyUI-GeometryPack...
+[04:36]   No packages to install
+[04:36]   
+[04:36]   [isolated] Installing: nodes/gpu
+[04:36]   Detected CUDA 12.8 -> PyTorch 2.8
+[04:36]   Pixi not found, downloading...
+[04:36]   Installed pixi to: /home/runner/.local/bin/pixi
+[04:36]   Generated /home/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
+[04:36]   Running pixi install...
+[04:36]   Installing CUDA packages: ['nvdiffrast', 'flex_gemm', 'cumesh', 'o_voxel', 'nvdiffrec_render', 'flash-attn']
+[04:36]     Installing nvdiffrast
+[04:36]     Installing flex_gemm
+[04:36]     Installing cumesh
+[04:36]     Installing o_voxel
+[04:36]     Installing nvdiffrec_render
+[04:36]     Installing flash-attn
+[04:36]   CUDA packages installed
+[04:36]   Installation complete!
+[04:36]   
+[04:36]   Installation complete!
+[04:36] Installing 1 node dependency(ies)...
+[04:36]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
+[04:36]   Cloning PozzettiAndrea/ComfyUI-GeometryPack...
+[04:36] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-GeometryPack.git /tmp/comfy_test_5anxr1vp/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[04:38]   Installing ComfyUI-GeometryPack requirements...
+[04:38] Running: uv pip install --system -r /tmp/comfy_test_5anxr1vp/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt
+[04:41] Command failed with code 1
+[04:41] stderr: Using Python 3.13.11 environment at: /opt/hostedtoolcache/Python/3.13.11/x64
+Resolved 74 packages in 1.29s
+   Building pyopengl==3.1.0
+Downloading pyrender (1.2MiB)
+Downloading manifold3d (1.2MiB)
+Downloading vtk (107.1MiB)
+Downloading scikit-image (13.0MiB)
+Downloading lxml (5.0MiB)
+Downloading pymeshfix (2.4MiB)
+Downloading shapely (2.9MiB)
+Downloading pyvista (2.3MiB)
+Downloading pynanoinstantmeshes (1.0MiB)
+Downloading embreex (16.4MiB)
+   Building cgal==5.6.post202402071826
+ Downloaded manifold3d
+ Downloaded pyrender
+ Downloaded pymeshfix
+ Downloaded pynanoinstantmeshes
+ Downloaded shapely
+ Downloaded pyvista
+ Downloaded embreex
+ Downloaded lxml
+ Downloaded scikit-image
+  × Failed to build `cgal==5.6.post202402071826`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `setuptools.build_meta:__legacy__.build_wheel` failed (exit
+      status: 1)
+
+      [stdout]
+      running bdist_wheel
+      running build
+      running build_ext
+      cmake
+      /home/runner/.cache/uv/sdists-v9/pypi/cgal/5.6.post202402071826/J2zoDCJ9fzX1JAWwTo0te/src
+      -DBUILD_JAVA=OFF -DBUILD_PYTHON=ON -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=bdist.linux-x86_64/wheel
+      -DPython_EXECUTABLE=/home/runner/.cache/uv/builds-v0/.tmpYZZbgd/bin/python
+      -DINSTALL_FROM_SETUP=ON -DBoost_DEBUG=TRUE
+
+      [stderr]
+      /home/runner/.cache/uv/builds-v0/.tmpYZZbgd/lib/python3.13/site-packages/setuptools/_vendor/wheel/bdist_wheel.py:4:
+      FutureWarning: The 'wheel' package is no longer the canonical location
+      of the 'bdist_wheel' command, and will be removed in a future release.
+      Please update to setuptools v70.1 or later which contains an integrated
+      version of this command.
+        warn(
+      /home/runner/.cache/uv/builds-v0/.tmpYZZbgd/lib/python3.13/site-packages/setuptools/dist.py:765:
+      SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+
+      
+      ********************************************************************************
+              Please consider removing the following classifiers in favor of a
+      SPDX license expression:
+
+              License :: OSI Approved :: GNU General Public License v3 or
+      later (GPLv3+)
+
+              See
+      https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+      for details.
+      
+      ********************************************************************************
+
+      !!
+        self._finalize_license_expression()
+      CMake Warning:
+        Ignoring extra path from command line:
+
+      
+      "/home/runner/.cache/uv/sdists-v9/pypi/cgal/5.6.post202402071826/J2zoDCJ9fzX1JAWwTo0te/src"
+
+
+      CMake Error: The source directory
+      "/home/runner/.cache/uv/sdists-v9/pypi/cgal/5.6.post202402071826/J2zoDCJ9fzX1JAWwTo0te/src"
+      does not appear to contain CMakeLists.txt.
+      Specify --help for usage, or press the help button on the CMake GUI.
+      error: command '/usr/local/bin/cmake' failed with exit code 1
+
+      hint: This usually indicates a problem with the package or the build
+      environment.
+
+[04:42] 
+linux: FAILED (unexpected error)
+[04:42] Error: Command '['uv', 'pip', 'install', '--system', '-r', '/tmp/comfy_test_5anxr1vp/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt']' returned non-zero exit status 1.

@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-02-23T12:04:11.882399+00:00",
+  "platform": "windows_portable",
+  "hardware": {
+    "os": "Windows-11-10.0.26100-SP0",
+    "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 0
+  },
+  "workflows": [
+    {
+      "name": "geometry_only",
+      "status": "pass",
+      "duration_seconds": 690.24,
+      "error": null,
+      "hardware": {
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 29.98,
+          "avg": 24.21
+        },
+        "total_ram_gb": 30.0,
+        "samples": 464,
+        "vram": {
+          "peak": 5.45,
+          "avg": 2.52
+        }
+      }
+    },
+    {
+      "name": "geometry_texture",
+      "status": "pass",
+      "duration_seconds": 614.92,
+      "error": null,
+      "hardware": {
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 29.54,
+          "avg": 25.73
+        },
+        "total_ram_gb": 30.0,
+        "samples": 469,
+        "vram": {
+          "peak": 5.71,
+          "avg": 3.87
+        }
+      }
+    },
+    {
+      "name": "mesh_audit",
+      "status": "skipped",
+      "duration_seconds": 0,
+      "error": "Not configured for GPU runner",
+      "hardware": null
+    },
+    {
+      "name": "remove_background",
+      "status": "pass",
+      "duration_seconds": 393.4,
+      "error": null,
+      "hardware": {
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
+        "gpu": "NVIDIA RTX A4000"
+      },
+      "resources": {
+        "ram": {
+          "peak": 27.93,
+          "avg": 19.0
+        },
+        "total_ram_gb": 30.0,
+        "samples": 298,
+        "vram": {
+          "peak": 5.86,
+          "avg": 3.53
+        }
+      }
+    }
+  ]
+}
