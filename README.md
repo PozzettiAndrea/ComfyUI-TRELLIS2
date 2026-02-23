@@ -65,6 +65,12 @@ ComfyUI/models/trellis2/
 - DinoV3: `facebook/dinov3-vitl16-pretrain-lvd1689m`
 - BiRefNet: `briaai/RMBG-2.0`
 
+## Community
+
+Questions or feature requests? Open a [Discussion](https://github.com/PozzettiAndrea/ComfyUI-TRELLIS2/discussions) on GitHub.
+
+Join the [Comfy3D Discord](https://discord.gg/PN743tE5) for help, updates, and chat about 3D workflows in ComfyUI.
+
 ## Credits
 
 - [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) by Microsoft Research
