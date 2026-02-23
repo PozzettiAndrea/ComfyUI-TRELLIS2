@@ -9,7 +9,11 @@ Falls back to compilation from source if no wheel is available.
 """
 import subprocess
 import sys
+import os
 from pathlib import Path
+
+# Ensure script directory is in path (for users with outdated installations)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import from modular installation package
 from installation import (

@@ -4,7 +4,6 @@ import torch
 import numpy as np
 from PIL import Image
 import trimesh as Trimesh
-import cumesh as CuMesh
 
 import comfy.model_management as mm
 
@@ -102,6 +101,7 @@ def mesh_to_trimesh(mesh_obj):
 
     Used by Image to Shape node to output untextured mesh for preview/export.
     """
+    import cumesh as CuMesh
     # Unify face orientations using CuMesh
     cumesh = CuMesh.CuMesh()
     cumesh.init(mesh_obj.vertices, mesh_obj.faces.int())
@@ -127,6 +127,7 @@ def mesh_with_voxel_to_outputs(mesh_obj, pbr_layout):
         voxelgrid: dict with sparse PBR data on GPU for Rasterize PBR node
         pointcloud: trimesh.PointCloud with all 6 PBR channels on CPU for debugging
     """
+    import cumesh as CuMesh
     # === TRIMESH OUTPUT ===
     # Unify face orientations using CuMesh (fixes inconsistent winding from dual-grid extraction)
     cumesh = CuMesh.CuMesh()

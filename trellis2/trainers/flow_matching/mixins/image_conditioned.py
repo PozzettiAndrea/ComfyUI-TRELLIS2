@@ -2,7 +2,13 @@ from typing import *
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
-from transformers import DINOv3ViTModel
+try:
+    from transformers import DINOv3ViTModel
+except ImportError:
+    raise ImportError(
+        "DINOv3ViTModel requires transformers>=4.56.0. "
+        "Please upgrade: pip install --upgrade transformers"
+    )
 import numpy as np
 from PIL import Image
 
