@@ -24,21 +24,36 @@ def get_flash_attn_wheel_urls():
     py_major, py_minor = sys.version_info[:2]
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
 
+    # CUDA versions to try - flash_attn repos often don't have cu128, so try cu126 as fallback
+    cuda_versions_to_try = [cuda_mm]
+    if cuda_mm == "128":
+        cuda_versions_to_try.append("126")  # cu126 wheels work on CUDA 12.8
+
+    # Torch versions to try - not all python/cuda combos have wheels for latest torch
+    # e.g., cu128+torch2.8+cp310 doesn't exist but cu128+torch2.7+cp310 does
+    torch_versions_to_try = [torch_mm]
+    if torch_mm == "2.8":
+        torch_versions_to_try.append("2.7")  # torch2.7 wheels are often compatible
+    elif torch_mm == "2.9":
+        torch_versions_to_try.extend(["2.8", "2.7"])
+
     urls = []
     for source in FLASH_ATTN_SOURCES:
         if platform not in source["platforms"]:
             continue
 
         for flash_ver, release_tag in source["versions"]:
-            if source["format"] == "cxx11abi":
-                # bdashore3/oobabooga format: +cu128torch2.8.0cxx11abiFALSE
-                wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}.0cxx11abiFALSE-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-            else:
-                # mjun0812 format: +cu128torch2.8
-                wheel_name = f"flash_attn-{flash_ver}+cu{cuda_mm}torch{torch_mm}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+            for cuda_ver_try in cuda_versions_to_try:
+                for torch_ver_try in torch_versions_to_try:
+                    if source["format"] == "cxx11abi":
+                        # bdashore3/oobabooga format: +cu128torch2.8.0cxx11abiFALSE
+                        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_ver_try}torch{torch_ver_try}.0cxx11abiFALSE-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+                    else:
+                        # mjun0812 format: +cu128torch2.8
+                        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_ver_try}torch{torch_ver_try}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
 
-            url = f"{source['base_url']}/{release_tag}/{wheel_name}"
-            urls.append((url, flash_ver, source["name"]))
+                    url = f"{source['base_url']}/{release_tag}/{wheel_name}"
+                    urls.append((url, flash_ver, source["name"]))
 
     return urls
 
