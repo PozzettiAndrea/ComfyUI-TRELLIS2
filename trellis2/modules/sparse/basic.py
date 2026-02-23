@@ -279,8 +279,13 @@ class VarLenTensor:
         
         if dim is None or 0 in dim:
             return red
-        
-        red = torch.segment_reduce(red, reduce=op, lengths=self.seqlen)
+
+        # segment_reduce lacks full CUDA kernel support (especially for 'prod')
+        # Use CPU fallback only for unsupported ops to avoid performance hit
+        if red.is_cuda and op == 'prod':
+            red = torch.segment_reduce(red.cpu(), reduce=op, lengths=self.seqlen.cpu()).to(red.device)
+        else:
+            red = torch.segment_reduce(red, reduce=op, lengths=self.seqlen)
         return red
     
     def mean(self, dim: Optional[Union[int, Tuple[int,...]]] = None, keepdim: bool = False) -> torch.Tensor:

@@ -2,10 +2,11 @@
 ComfyUI-TRELLIS2: TRELLIS.2 Image-to-3D nodes for ComfyUI
 """
 
-import sys
+import os
 
 # Only do imports when NOT running under pytest
-if 'pytest' not in sys.modules:
+# Use PYTEST_CURRENT_TEST env var which is only set when pytest is actually running tests
+if 'PYTEST_CURRENT_TEST' not in os.environ:
     from .nodes_loader import (
         NODE_CLASS_MAPPINGS as LOADER_NODE_CLASS_MAPPINGS,
         NODE_DISPLAY_NAME_MAPPINGS as LOADER_NODE_DISPLAY_NAME_MAPPINGS,
