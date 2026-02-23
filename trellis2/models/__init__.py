@@ -93,8 +93,8 @@ def from_pretrained(path: str, **kwargs):
             print(f"[ComfyUI-TRELLIS2]   Downloading {model_name} weights...")
             hf_weights = hf_hub_download(repo_id, f"{model_name}.safetensors")
 
-            # Copy to local cache
-            print(f"[ComfyUI-TRELLIS2]   Caching to {models_dir}...")
+            # Copy to local models folder
+            print(f"[ComfyUI-TRELLIS2]   Saving to {models_dir}...")
             shutil.copy2(hf_config, local_config)
             shutil.copy2(hf_weights, local_weights)
 

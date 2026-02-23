@@ -7,10 +7,34 @@ from trimesh.voxel.base import VoxelGrid
 
 import comfy.model_management as mm
 
-from .utils import logger, tensor_to_pil, pil_to_tensor
+from .utils import logger, tensor_to_pil
 
 
-def mesh_with_voxel_to_outputs(mesh_obj, pipeline):
+def mesh_to_trimesh(mesh_obj):
+    """
+    Convert TRELLIS Mesh to trimesh.Trimesh.
+
+    Returns:
+        trimesh: trimesh.Trimesh geometry (GeometryPack compatible)
+    """
+    # Extract geometry as trimesh
+    vertices = mesh_obj.vertices.cpu().numpy()
+    faces = mesh_obj.faces.cpu().numpy()
+
+    # Coordinate system conversion (Y-up to Z-up for compatibility)
+    vertices_converted = vertices.copy()
+    vertices_converted[:, 1], vertices_converted[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
+
+    tri_mesh = Trimesh.Trimesh(
+        vertices=vertices_converted,
+        faces=faces,
+        process=False
+    )
+
+    return tri_mesh
+
+
+def mesh_with_voxel_to_outputs(mesh_obj, pbr_layout):
     """
     Convert TRELLIS MeshWithVoxel to separate TRIMESH and VOXELGRID outputs.
 
@@ -47,7 +71,7 @@ def mesh_with_voxel_to_outputs(mesh_obj, pipeline):
     # Attach PBR attributes
     voxel_grid.pbr_attrs = mesh_obj.attrs  # Sparse tensor features
     voxel_grid.pbr_coords = mesh_obj.coords  # Sparse coordinates
-    voxel_grid.pbr_layout = pipeline.pbr_attr_layout  # {'base_color': slice(0,3), ...}
+    voxel_grid.pbr_layout = pbr_layout  # {'base_color': slice(0,3), ...}
     voxel_grid.pbr_voxel_size = mesh_obj.voxel_size
 
     # Store original vertices for BVH lookup during texture baking
@@ -57,152 +81,175 @@ def mesh_with_voxel_to_outputs(mesh_obj, pipeline):
     return tri_mesh, voxel_grid
 
 
-class Trellis2PreprocessImage:
-    """Preprocess image for TRELLIS.2 (background removal and cropping)."""
+class Trellis2GetConditioning:
+    """Extract image conditioning using DinoV3 for TRELLIS.2."""
 
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "pipeline": ("TRELLIS2_PIPELINE",),
+                "dinov3": ("TRELLIS2_DINOV3",),
                 "image": ("IMAGE",),
+                "mask": ("MASK",),
             },
             "optional": {
-                "mask": ("MASK",),
+                "include_1024": ("BOOLEAN", {"default": True}),
             },
         }
 
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("preprocessed_image",)
-    FUNCTION = "preprocess"
+    RETURN_TYPES = ("TRELLIS2_CONDITIONING",)
+    RETURN_NAMES = ("conditioning",)
+    FUNCTION = "get_conditioning"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
-Preprocess image for TRELLIS.2 generation.
+Preprocess image and extract visual features using DinoV3.
 
-This node:
-- If mask provided: uses mask as alpha (skips BiRefNet)
-- If no mask: removes background automatically (uses BiRefNet)
-- Crops to object bounding box
-- Premultiplies alpha (RGB * alpha)
+This node handles:
+1. Applying mask as alpha channel
+2. Cropping to object bounding box
+3. Alpha premultiplication
+4. DinoV3 feature extraction
 
-Output is an RGB image ready for 3D generation.
+Parameters:
+- dinov3: The loaded DinoV3 model
+- image: Input image (RGB)
+- mask: Foreground mask (white=object, black=background)
+- include_1024: Also extract 1024px features (needed for cascade modes)
+
+Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 """
 
-    def preprocess(self, pipeline, image, mask=None):
-        pipe = pipeline["pipeline"]
+    def get_conditioning(self, dinov3, image, mask, include_1024=True):
+        device = dinov3["device"]
+        model = dinov3["model"]
+        low_vram = dinov3["low_vram"]
 
         # Convert ComfyUI tensor to PIL
         pil_image = tensor_to_pil(image)
 
-        # If mask provided, apply it as alpha channel
-        if mask is not None:
-            # Convert mask tensor to numpy
-            if mask.dim() == 3:
-                mask_np = mask[0].cpu().numpy()
-            else:
-                mask_np = mask.cpu().numpy()
+        # Apply mask as alpha channel
+        if mask.dim() == 3:
+            mask_np = mask[0].cpu().numpy()
+        else:
+            mask_np = mask.cpu().numpy()
 
-            # Resize mask to match image if needed
-            if mask_np.shape[:2] != (pil_image.height, pil_image.width):
-                mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
-                mask_pil = mask_pil.resize((pil_image.width, pil_image.height), Image.LANCZOS)
-                mask_np = np.array(mask_pil) / 255.0
+        # Resize mask to match image if needed
+        if mask_np.shape[:2] != (pil_image.height, pil_image.width):
+            mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
+            mask_pil = mask_pil.resize((pil_image.width, pil_image.height), Image.LANCZOS)
+            mask_np = np.array(mask_pil) / 255.0
 
-            # Apply mask as alpha channel
-            pil_image = pil_image.convert('RGB')
-            img_np = np.array(pil_image)
-            alpha = (mask_np * 255).astype(np.uint8)
-            rgba = np.dstack([img_np, alpha])
-            pil_image = Image.fromarray(rgba, 'RGBA')
-            logger.info("Applied mask as alpha channel")
+        # Apply mask as alpha channel
+        pil_image = pil_image.convert('RGB')
+        img_np = np.array(pil_image)
+        alpha_np = (mask_np * 255).astype(np.uint8)
+        rgba = np.dstack([img_np, alpha_np])
+        pil_image = Image.fromarray(rgba, 'RGBA')
 
-        # Use pipeline's preprocessing
-        processed = pipe.preprocess_image(pil_image)
+        # Crop to bounding box
+        bbox = np.argwhere(alpha_np > 0.8 * 255)
+        if len(bbox) > 0:
+            bbox = np.min(bbox[:, 1]), np.min(bbox[:, 0]), np.max(bbox[:, 1]), np.max(bbox[:, 0])
+            center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+            size = max(bbox[2] - bbox[0], bbox[3] - bbox[1])
+            size = int(size * 1)
+            bbox = center[0] - size // 2, center[1] - size // 2, center[0] + size // 2, center[1] + size // 2
+            pil_image = pil_image.crop(bbox)
 
-        # Convert back to tensor
-        output_tensor = pil_to_tensor(processed)
+        # Premultiply alpha
+        output_np = np.array(pil_image.convert('RGBA')).astype(np.float32) / 255
+        output_np = output_np[:, :, :3] * output_np[:, :, 3:4]
+        pil_image = Image.fromarray((output_np * 255).astype(np.uint8))
 
-        return (output_tensor,)
+        logger.info("Extracting DinoV3 conditioning...")
+
+        # Get 512px conditioning
+        model.image_size = 512
+        if low_vram:
+            model.to(device)
+        cond_512 = model([pil_image])
+
+        # Get 1024px conditioning if requested
+        cond_1024 = None
+        if include_1024:
+            model.image_size = 1024
+            cond_1024 = model([pil_image])
+
+        if low_vram:
+            model.cpu()
+
+        # Create negative conditioning
+        neg_cond = torch.zeros_like(cond_512)
+
+        conditioning = {
+            'cond_512': cond_512,
+            'neg_cond': neg_cond,
+        }
+        if cond_1024 is not None:
+            conditioning['cond_1024'] = cond_1024
+
+        logger.info("DinoV3 conditioning extracted successfully")
+
+        return (conditioning,)
 
 
-class Trellis2ImageTo3D:
-    """Generate 3D mesh from image using TRELLIS.2."""
+class Trellis2ImageToShape:
+    """Generate 3D shape from conditioning using TRELLIS.2."""
 
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "pipeline": ("TRELLIS2_PIPELINE",),
-                "image": ("IMAGE",),
+                "shape_pipeline": ("TRELLIS2_SHAPE_PIPELINE", {"tooltip": "Shape generation models from Load Shape Model node"}),
+                "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node"}),
             },
             "optional": {
-                "mask": ("MASK",),
-                "sampler_params": ("TRELLIS2_SAMPLER_PARAMS",),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1}),
-                "resolution": (["512", "1024", "1536"], {"default": "1024"}),
-                "preprocess_image": ("BOOLEAN", {"default": True}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for reproducible generation"}),
+                "resolution": (["512", "1024", "1536"], {"default": "1024", "tooltip": "Output mesh resolution. Higher = more detail but slower"}),
+                # Sparse Structure Sampler
+                "ss_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Sparse structure CFG scale. Higher = stronger adherence to input image"}),
+                "ss_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Sparse structure sampling steps. More steps = better quality but slower"}),
+                # Shape SLat Sampler
+                "shape_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Shape CFG scale. Higher = stronger adherence to input image"}),
+                "shape_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Shape sampling steps. More steps = better quality but slower"}),
             }
         }
 
-    RETURN_TYPES = ("TRIMESH", "VOXELGRID", "TRELLIS2_LATENT")
-    RETURN_NAMES = ("trimesh", "voxelgrid", "latent")
+    RETURN_TYPES = ("TRIMESH", "TRELLIS2_SHAPE_SLAT")
+    RETURN_NAMES = ("trimesh", "shape_slat")
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
-Generate a 3D mesh with PBR materials from a single image.
+Generate 3D geometry from image conditioning.
+
+This node generates shape only (no texture/PBR).
+Connect shape_slat output to "Shape to Texture" for PBR materials.
 
 Parameters:
-- pipeline: The loaded TRELLIS.2 pipeline
-- image: Input image (RGB or RGBA)
-- mask: Optional mask (white=foreground, black=background). If provided, skips auto background removal.
-- sampler_params: Optional custom sampling parameters
+- shape_pipeline: The loaded shape models
+- conditioning: DinoV3 conditioning from "Get Conditioning" node
 - seed: Random seed for reproducibility
 - resolution: Output resolution (512, 1024, or 1536)
-- preprocess_image: Whether to preprocess (crop to object). Auto bg removal skipped if mask provided.
+- ss_*: Sparse structure sampling parameters
+- shape_*: Shape latent sampling parameters
 
 Returns:
-- trimesh: The generated 3D mesh geometry (GeometryPack compatible)
-- voxelgrid: VoxelGrid with PBR attributes for texture baking
-- latent: Latent codes for further manipulation
+- trimesh: The generated 3D mesh geometry
+- shape_slat: Shape latent for texture generation
 """
 
     def generate(
         self,
-        pipeline,
-        image,
-        mask=None,
-        sampler_params=None,
+        shape_pipeline,
+        conditioning,
         seed=0,
         resolution="1024",
-        preprocess_image=True,
+        ss_guidance_strength=7.5,
+        ss_sampling_steps=12,
+        shape_guidance_strength=7.5,
+        shape_sampling_steps=12,
     ):
-        pipe = pipeline["pipeline"]
-
-        # Convert ComfyUI tensor to PIL
-        pil_image = tensor_to_pil(image)
-
-        # If mask provided, apply it as alpha channel
-        if mask is not None:
-            # Convert mask tensor to numpy (ComfyUI masks are [H,W] or [B,H,W])
-            if mask.dim() == 3:
-                mask_np = mask[0].cpu().numpy()
-            else:
-                mask_np = mask.cpu().numpy()
-
-            # Resize mask to match image if needed
-            if mask_np.shape[:2] != (pil_image.height, pil_image.width):
-                from PIL import Image as PILImage
-                mask_pil = PILImage.fromarray((mask_np * 255).astype(np.uint8))
-                mask_pil = mask_pil.resize((pil_image.width, pil_image.height), PILImage.LANCZOS)
-                mask_np = np.array(mask_pil) / 255.0
-
-            # Apply mask as alpha channel
-            pil_image = pil_image.convert('RGB')
-            img_np = np.array(pil_image)
-            alpha = (mask_np * 255).astype(np.uint8)
-            rgba = np.dstack([img_np, alpha])
-            pil_image = Image.fromarray(rgba, 'RGBA')
-            logger.info("Applied mask as alpha channel")
+        pipe = shape_pipeline["pipeline"]
 
         # Determine pipeline type based on resolution
         pipeline_type = {
@@ -211,54 +258,157 @@ Returns:
             "1536": "1536_cascade",
         }[resolution]
 
-        # Build kwargs
-        kwargs = {
-            "seed": seed,
-            "preprocess_image": preprocess_image,
-            "pipeline_type": pipeline_type,
-            "return_latent": True,
+        # Build sampler params
+        sampler_params = {
+            "sparse_structure_sampler_params": {
+                "steps": ss_sampling_steps,
+                "guidance_strength": ss_guidance_strength,
+            },
+            "shape_slat_sampler_params": {
+                "steps": shape_sampling_steps,
+                "guidance_strength": shape_guidance_strength,
+            },
         }
 
-        # Add sampler params if provided
-        if sampler_params is not None:
-            kwargs.update(sampler_params)
+        logger.info(f"Generating 3D shape (resolution={resolution}, seed={seed})")
 
-        logger.info(f"Generating 3D mesh (resolution={resolution}, seed={seed})")
+        # Run shape generation
+        meshes, shape_slat, res = pipe.run_shape(
+            conditioning,
+            seed=seed,
+            pipeline_type=pipeline_type,
+            **sampler_params
+        )
+        mesh = meshes[0]
 
-        # Run generation
-        outputs, latents = pipe.run(pil_image, **kwargs)
-        mesh = outputs[0]
+        # Fill holes in mesh
+        mesh.fill_holes()
 
-        # Simplify mesh (nvdiffrast limit)
-        mesh.simplify(16777216)
+        logger.info("3D shape generated successfully")
 
-        logger.info("3D mesh generated successfully")
+        # Convert to trimesh
+        tri_mesh = mesh_to_trimesh(mesh)
 
-        # Convert to TRIMESH + VOXELGRID outputs
-        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe)
-
-        # Pack latent for potential reuse
-        shape_slat, tex_slat, res = latents
-        latent_dict = {
-            'shape_slat_feats': shape_slat.feats.cpu().numpy(),
-            'tex_slat_feats': tex_slat.feats.cpu().numpy(),
-            'coords': shape_slat.coords.cpu().numpy(),
-            'res': res,
+        # Pack shape_slat for texture node
+        shape_slat_dict = {
+            'shape_slat_feats': shape_slat.feats.cpu(),
+            'shape_slat_coords': shape_slat.coords.cpu(),
+            'resolution': res,
+            'pipeline_type': pipeline_type,
         }
 
         torch.cuda.empty_cache()
 
-        return (tri_mesh, voxel_grid, latent_dict)
+        return (tri_mesh, shape_slat_dict)
 
 
-class Trellis2DecodeLatent:
-    """Decode latent codes back to mesh."""
+class Trellis2ShapeToTexture:
+    """Generate PBR textures for existing shape using TRELLIS.2."""
 
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "pipeline": ("TRELLIS2_PIPELINE",),
+                "texture_pipeline": ("TRELLIS2_TEXTURE_PIPELINE", {"tooltip": "Texture generation models from Load Texture Model node"}),
+                "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node (same as used for shape)"}),
+                "shape_slat": ("TRELLIS2_SHAPE_SLAT", {"tooltip": "Shape latent from Image to Shape node"}),
+            },
+            "optional": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for texture variation"}),
+                "tex_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Texture CFG scale. Higher = stronger adherence to input image"}),
+                "tex_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Texture sampling steps. More steps = better quality but slower"}),
+            }
+        }
+
+    RETURN_TYPES = ("TRIMESH", "VOXELGRID")
+    RETURN_NAMES = ("trimesh", "voxelgrid")
+    FUNCTION = "generate"
+    CATEGORY = "TRELLIS2"
+    DESCRIPTION = """
+Generate PBR materials for an existing shape.
+
+Takes shape_slat from "Image to Shape" node and generates:
+- base_color (RGB)
+- metallic
+- roughness
+- alpha
+
+Parameters:
+- texture_pipeline: The loaded texture models
+- conditioning: DinoV3 conditioning (same as used for shape)
+- shape_slat: Shape latent from "Image to Shape" node
+- seed: Random seed for texture variation
+- tex_*: Texture sampling parameters
+
+Returns:
+- trimesh: Mesh geometry (same as input shape)
+- voxelgrid: VoxelGrid with PBR attributes for texture baking
+"""
+
+    def generate(
+        self,
+        texture_pipeline,
+        conditioning,
+        shape_slat,
+        seed=0,
+        tex_guidance_strength=7.5,
+        tex_sampling_steps=12,
+    ):
+        pipe = texture_pipeline["pipeline"]
+
+        from ..trellis2.modules.sparse import SparseTensor
+
+        # Reconstruct shape_slat SparseTensor
+        shape_slat_tensor = SparseTensor(
+            feats=shape_slat['shape_slat_feats'].cuda(),
+            coords=shape_slat['shape_slat_coords'].cuda(),
+        )
+        resolution = shape_slat['resolution']
+        pipeline_type = shape_slat['pipeline_type']
+
+        # Build sampler params
+        sampler_params = {
+            "tex_slat_sampler_params": {
+                "steps": tex_sampling_steps,
+                "guidance_strength": tex_guidance_strength,
+            },
+        }
+
+        logger.info(f"Generating PBR textures (seed={seed})")
+
+        # Run texture generation
+        meshes = pipe.run_texture(
+            conditioning,
+            shape_slat_tensor,
+            resolution,
+            seed=seed,
+            pipeline_type=pipeline_type,
+            **sampler_params
+        )
+        mesh = meshes[0]
+
+        # Simplify mesh (nvdiffrast limit)
+        mesh.simplify(16777216)
+
+        logger.info("PBR textures generated successfully")
+
+        # Convert to TRIMESH + VOXELGRID outputs
+        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe.pbr_attr_layout)
+
+        torch.cuda.empty_cache()
+
+        return (tri_mesh, voxel_grid)
+
+
+class Trellis2DecodeLatent:
+    """Decode latent codes back to mesh (legacy support)."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "shape_pipeline": ("TRELLIS2_SHAPE_PIPELINE",),
+                "texture_pipeline": ("TRELLIS2_TEXTURE_PIPELINE",),
                 "latent": ("TRELLIS2_LATENT",),
             },
         }
@@ -268,18 +418,18 @@ class Trellis2DecodeLatent:
     FUNCTION = "decode"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
-Decode latent codes back to a 3D mesh.
+Decode latent codes back to a 3D mesh with textures.
 
-Useful for regenerating mesh from saved latents
-or for experimenting with latent manipulation.
+Useful for regenerating mesh from saved latents.
 
 Returns:
-- trimesh: The decoded mesh geometry (GeometryPack compatible)
+- trimesh: The decoded mesh geometry
 - voxelgrid: VoxelGrid with PBR attributes for texture baking
 """
 
-    def decode(self, pipeline, latent):
-        pipe = pipeline["pipeline"]
+    def decode(self, shape_pipeline, texture_pipeline, latent):
+        shape_pipe = shape_pipeline["pipeline"]
+        tex_pipe = texture_pipeline["pipeline"]
 
         from ..trellis2.modules.sparse import SparseTensor
 
@@ -293,12 +443,12 @@ Returns:
         )
         res = latent['res']
 
-        # Decode
-        mesh = pipe.decode_latent(shape_slat, tex_slat, res)[0]
+        # Use shape pipeline for decoding (it has the decoders)
+        mesh = shape_pipe.decode_latent(shape_slat, tex_slat, res)[0]
         mesh.simplify(16777216)
 
         # Convert to TRIMESH + VOXELGRID outputs
-        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe)
+        tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, shape_pipe.pbr_attr_layout)
 
         torch.cuda.empty_cache()
 
@@ -306,13 +456,15 @@ Returns:
 
 
 NODE_CLASS_MAPPINGS = {
-    "Trellis2PreprocessImage": Trellis2PreprocessImage,
-    "Trellis2ImageTo3D": Trellis2ImageTo3D,
+    "Trellis2GetConditioning": Trellis2GetConditioning,
+    "Trellis2ImageToShape": Trellis2ImageToShape,
+    "Trellis2ShapeToTexture": Trellis2ShapeToTexture,
     "Trellis2DecodeLatent": Trellis2DecodeLatent,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Trellis2PreprocessImage": "TRELLIS.2 Preprocess Image",
-    "Trellis2ImageTo3D": "TRELLIS.2 Image to 3D",
+    "Trellis2GetConditioning": "TRELLIS.2 Get Conditioning",
+    "Trellis2ImageToShape": "TRELLIS.2 Image to Shape",
+    "Trellis2ShapeToTexture": "TRELLIS.2 Shape to Texture",
     "Trellis2DecodeLatent": "TRELLIS.2 Decode Latent",
 }
