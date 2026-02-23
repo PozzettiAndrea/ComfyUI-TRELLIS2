@@ -3,7 +3,7 @@ Installation modules for ComfyUI-TRELLIS2.
 Provides modular installation logic for CUDA extensions.
 """
 
-from .config import PACKAGES, WHEEL_CUDA_MAP, WHEEL_DIRS, FLASH_ATTN_SOURCES
+from .config import PACKAGES, WHEEL_CUDA_MAP, WHEEL_DIRS
 from .detect import (
     get_python_version,
     get_torch_info,
@@ -28,7 +28,7 @@ from .compile import (
     try_compile_from_source,
 )
 from .flash_attn import (
-    get_flash_attn_wheel_urls,
+    find_flash_attn_wheels,
     try_install_flash_attn,
 )
 
@@ -37,7 +37,6 @@ __all__ = [
     "PACKAGES",
     "WHEEL_CUDA_MAP",
     "WHEEL_DIRS",
-    "FLASH_ATTN_SOURCES",
     # Detection
     "get_python_version",
     "get_torch_info",
@@ -58,6 +57,6 @@ __all__ = [
     "clone_and_init_submodules",
     "try_compile_from_source",
     # Flash Attention
-    "get_flash_attn_wheel_urls",
+    "find_flash_attn_wheels",
     "try_install_flash_attn",
 ]

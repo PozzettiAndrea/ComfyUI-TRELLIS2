@@ -1,99 +1,159 @@
 """
 Flash Attention installation for ComfyUI-TRELLIS2.
-Handles finding and installing flash_attn from multiple wheel sources.
+Dynamically queries GitHub API to find matching wheels across all releases.
 """
+import json
+import re
 import subprocess
 import sys
+import urllib.request
 
-from .config import FLASH_ATTN_SOURCES
 from .detect import get_torch_info
 
+# mjun0812's pre-built wheels repository
+GITHUB_API_URL = "https://api.github.com/repos/mjun0812/flash-attention-prebuild-wheels/releases"
 
-def get_flash_attn_wheel_urls():
+
+def find_flash_attn_wheels():
     """
-    Build flash_attn wheel URLs from multiple sources.
-    Returns list of (url, version, source_name) tuples to try in order.
-    Different repos use different naming conventions.
+    Query GitHub API to find flash_attn wheels matching current environment.
+    Returns list of (url, flash_version) tuples, sorted by version (newest first).
     """
     torch_ver, cuda_ver = get_torch_info()
     if not torch_ver or not cuda_ver:
         return []
 
-    cuda_mm = cuda_ver.split('.')[0] + cuda_ver.split('.')[1]  # "12.8" -> "128"
-    torch_mm = '.'.join(torch_ver.split('.')[:2])  # "2.8.0" -> "2.8"
-    py_major, py_minor = sys.version_info[:2]
+    # Build search pattern: cu128torch2.8-cp310-cp310-linux_x86_64
+    cuda_short = cuda_ver.replace(".", "")  # "12.8" -> "128"
+    torch_mm = ".".join(torch_ver.split(".")[:2])  # "2.8.0" -> "2.8"
+    py_ver = f"cp{sys.version_info[0]}{sys.version_info[1]}"
     platform = "linux_x86_64" if sys.platform == "linux" else "win_amd64"
 
-    # CUDA versions to try - flash_attn repos often don't have cu128, so try cu126 as fallback
-    cuda_versions_to_try = [cuda_mm]
-    if cuda_mm == "128":
-        cuda_versions_to_try.append("126")  # cu126 wheels work on CUDA 12.8
+    pattern = f"cu{cuda_short}torch{torch_mm}-{py_ver}-{py_ver}-{platform}"
+    print(f"[ComfyUI-TRELLIS2] Searching for flash_attn wheel: *{pattern}.whl")
 
-    # Torch versions to try - not all python/cuda combos have wheels for latest torch
-    # e.g., cu128+torch2.8+cp310 doesn't exist but cu128+torch2.7+cp310 does
-    torch_versions_to_try = [torch_mm]
-    if torch_mm == "2.8":
-        torch_versions_to_try.append("2.7")  # torch2.7 wheels are often compatible
-    elif torch_mm == "2.9":
-        torch_versions_to_try.extend(["2.8", "2.7"])
+    try:
+        req = urllib.request.Request(
+            GITHUB_API_URL,
+            headers={"User-Agent": "ComfyUI-TRELLIS2"}
+        )
+        with urllib.request.urlopen(req, timeout=30) as response:
+            releases = json.loads(response.read())
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] GitHub API error: {e}")
+        return []
 
-    urls = []
-    for source in FLASH_ATTN_SOURCES:
-        if platform not in source["platforms"]:
-            continue
+    matches = []
+    for release in releases:
+        for asset in release.get("assets", []):
+            name = asset.get("name", "")
+            if pattern in name and name.endswith(".whl"):
+                # Extract flash_attn version from wheel name
+                match = re.match(r"flash_attn-([^+]+)\+", name)
+                if match:
+                    version = match.group(1)
+                    url = asset["browser_download_url"]
+                    matches.append((url, version))
 
-        for flash_ver, release_tag in source["versions"]:
-            for cuda_ver_try in cuda_versions_to_try:
-                for torch_ver_try in torch_versions_to_try:
-                    if source["format"] == "cxx11abi":
-                        # bdashore3/oobabooga format: +cu128torch2.8.0cxx11abiFALSE
-                        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_ver_try}torch{torch_ver_try}.0cxx11abiFALSE-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
-                    else:
-                        # mjun0812 format: +cu128torch2.8
-                        wheel_name = f"flash_attn-{flash_ver}+cu{cuda_ver_try}torch{torch_ver_try}-cp{py_major}{py_minor}-cp{py_major}{py_minor}-{platform}.whl"
+    # Sort by version descending (newest first)
+    # Handle versions like "2.8.3" or "2.7.4.post1"
+    def version_key(item):
+        version = item[1]
+        # Extract numeric parts for sorting
+        parts = re.findall(r'\d+', version)
+        return [int(p) for p in parts[:4]]  # Take up to 4 parts
 
-                    url = f"{source['base_url']}/{release_tag}/{wheel_name}"
-                    urls.append((url, flash_ver, source["name"]))
+    matches.sort(key=version_key, reverse=True)
 
-    return urls
+    if matches:
+        print(f"[ComfyUI-TRELLIS2] Found {len(matches)} matching wheel(s)")
+    else:
+        print(f"[ComfyUI-TRELLIS2] No matching wheels found for pattern: {pattern}")
+
+    return matches
 
 
 def try_install_flash_attn():
     """
     Try installing flash_attn from pre-built wheels.
-    Tries multiple sources (bdashore3, mjun0812, oobabooga) until one works.
+    Queries GitHub API to find matching wheels for current environment.
     Returns True if successful, False otherwise.
     """
-    urls = get_flash_attn_wheel_urls()
-    if not urls:
-        print("[ComfyUI-TRELLIS2] Could not determine flash_attn wheel URL for this environment")
+    wheels = find_flash_attn_wheels()
+
+    if not wheels:
+        print("[ComfyUI-TRELLIS2] No flash_attn wheels found for this environment")
         return False
 
-    for url, version, source in urls:
-        print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version} from {source}...")
+    for url, version in wheels:
+        print(f"[ComfyUI-TRELLIS2] Trying flash_attn {version}...")
         try:
-            result = subprocess.run([
-                sys.executable, "-m", "pip", "install", "--no-deps", url
-            ], capture_output=True, text=True, timeout=300)
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", "--no-deps", url],
+                capture_output=True, text=True, timeout=300
+            )
 
             if result.returncode == 0:
-                print(f"[ComfyUI-TRELLIS2] [OK] Installed flash_attn {version} from {source}")
-                return True
+                # Verify the package can be imported (check for ABI issues)
+                if _verify_flash_attn_import():
+                    print(f"[ComfyUI-TRELLIS2] [OK] Installed flash_attn {version}")
+                    return True
+                else:
+                    # ABI mismatch - uninstall and try next
+                    print(f"[ComfyUI-TRELLIS2] ABI mismatch, trying next wheel...")
+                    _uninstall_flash_attn()
+                    continue
             else:
-                # Check for 404 or other errors
+                # Log error but continue trying
                 error_msg = result.stderr or result.stdout or ""
                 if "404" in error_msg or "not found" in error_msg.lower():
-                    continue  # Try next URL
+                    continue  # Wheel doesn't exist at this URL
                 else:
-                    # Log non-404 errors but continue trying
-                    print(f"[ComfyUI-TRELLIS2] {source} failed: {error_msg[:100]}")
+                    print(f"[ComfyUI-TRELLIS2] pip install failed: {error_msg[:100]}")
                     continue
+
         except subprocess.TimeoutExpired:
-            print(f"[ComfyUI-TRELLIS2] {source} timed out")
+            print(f"[ComfyUI-TRELLIS2] Download timed out")
             continue
         except Exception as e:
-            print(f"[ComfyUI-TRELLIS2] {source} error: {e}")
+            print(f"[ComfyUI-TRELLIS2] Install error: {e}")
             continue
 
-    print("[ComfyUI-TRELLIS2] Could not find flash_attn wheel from any source")
+    print("[ComfyUI-TRELLIS2] Could not install flash_attn from any wheel")
     return False
+
+
+def _verify_flash_attn_import():
+    """
+    Verify flash_attn can be imported without ABI errors.
+    Returns True if import succeeds, False otherwise.
+    """
+    try:
+        # Force reimport by removing from cache
+        if "flash_attn" in sys.modules:
+            del sys.modules["flash_attn"]
+
+        import flash_attn
+        return True
+    except ImportError as e:
+        error_str = str(e)
+        if "undefined symbol" in error_str:
+            print(f"[ComfyUI-TRELLIS2] [WARNING] flash_attn ABI incompatibility: {error_str[:100]}")
+            return False
+        # Other import error
+        print(f"[ComfyUI-TRELLIS2] [WARNING] flash_attn import error: {error_str}")
+        return False
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] [WARNING] flash_attn verification error: {e}")
+        return False
+
+
+def _uninstall_flash_attn():
+    """Uninstall flash_attn package."""
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", "flash-attn"],
+            capture_output=True, timeout=60
+        )
+    except Exception:
+        pass
