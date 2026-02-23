@@ -2,9 +2,15 @@ name: Workflow Tests
 on:
   push:
     branches: [dev]
+    paths-ignore:
+      - '**.md'
+      - 'pyproject.toml'
+      - 'LICENSE'
+      - '.github/workflows/publish.yml'
+      - '.github/workflows/pr-gate.yml'
 
 jobs:
   test:
-    uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@main
+    uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@v0.2.19
     with:
       config-file: "comfy-test.toml"
