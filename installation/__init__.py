@@ -31,6 +31,10 @@ from .flash_attn import (
     find_flash_attn_wheels,
     try_install_flash_attn,
 )
+from .vcredist import (
+    is_vcredist_installed,
+    try_install_vcredist,
+)
 
 __all__ = [
     # Config
@@ -59,4 +63,7 @@ __all__ = [
     # Flash Attention
     "find_flash_attn_wheels",
     "try_install_flash_attn",
+    # VC++ Redistributable (Windows)
+    "is_vcredist_installed",
+    "try_install_vcredist",
 ]
