@@ -189,6 +189,55 @@ def find_cuda_home():
     return None
 
 
+def try_install_cuda_toolkit():
+    """
+    Try to install CUDA toolkit via pip when nvcc is not found.
+    This installs nvidia-cuda-nvcc-cuXX which provides nvcc compiler.
+    Returns True if successful, False otherwise.
+    """
+    print("[ComfyUI-TRELLIS2] CUDA compiler not found, attempting to install via pip...")
+
+    # Get CUDA version from PyTorch
+    try:
+        import torch
+        cuda_ver = torch.version.cuda
+        if not cuda_ver:
+            print("[ComfyUI-TRELLIS2] PyTorch CUDA version not available")
+            return False
+        cuda_major = cuda_ver.split('.')[0]  # "12"
+    except Exception as e:
+        print(f"[ComfyUI-TRELLIS2] Could not detect CUDA version: {e}")
+        return False
+
+    # Install nvidia-cuda-nvcc via pip (provides nvcc compiler)
+    # Also install nvidia-cuda-runtime for development headers
+    packages = [
+        f"nvidia-cuda-nvcc-cu{cuda_major}",
+        f"nvidia-cuda-runtime-cu{cuda_major}",
+    ]
+
+    for pkg in packages:
+        print(f"[ComfyUI-TRELLIS2] Installing {pkg}...")
+        try:
+            result = subprocess.run([
+                sys.executable, "-m", "pip", "install", pkg
+            ], capture_output=True, text=True, timeout=300)
+            if result.returncode != 0:
+                print(f"[ComfyUI-TRELLIS2] Failed to install {pkg}")
+                if result.stderr:
+                    print(f"[ComfyUI-TRELLIS2] Error: {result.stderr[:200]}")
+                return False
+        except subprocess.TimeoutExpired:
+            print(f"[ComfyUI-TRELLIS2] Installation timed out for {pkg}")
+            return False
+        except Exception as e:
+            print(f"[ComfyUI-TRELLIS2] Installation error: {e}")
+            return False
+
+    print("[ComfyUI-TRELLIS2] [OK] CUDA toolkit installed via pip")
+    return True
+
+
 def setup_cuda_environment():
     """Setup CUDA environment variables for compilation."""
     cuda_home = find_cuda_home()
@@ -456,6 +505,11 @@ def try_compile_from_source(package_name, git_url):
 
     # Check for CUDA compiler
     cuda_env = setup_cuda_environment()
+    if not cuda_env:
+        # Try to install CUDA toolkit via pip
+        if try_install_cuda_toolkit():
+            cuda_env = setup_cuda_environment()
+
     if not cuda_env:
         print(f"[ComfyUI-TRELLIS2] CUDA compiler not found, cannot compile {package_name}")
         return False
