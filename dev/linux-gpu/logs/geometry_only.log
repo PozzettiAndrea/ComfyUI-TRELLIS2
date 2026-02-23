@@ -1,0 +1,484 @@
+Capturing execution frames: geometry_only.json
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-warning] WARNING: Multiple instances of Three.js being imported.
+  [ComfyUI] [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui.js" is deprecated and will be removed in v1.34.
+  [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
+  [ComfyUI] [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui/components/buttonGroup.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui/components/buttonGroup.js" is deprecated and will be removed in v1.34.
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui/components/button.js" is deprecated and will be removed in v1.34.
+  [ComfyUI] [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui/components/button.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+  [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  [Console-error] No input!
+  Frame 1 saved (frame_000.jpg, t=0.0s)
+  Validating workflow...
+  [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] Received JSON with keys: ['prompt']
+  Queuing workflow for execution...
+  [ComfyUI] Prompt has 8 nodes
+  [ComfyUI]   Node 1: LoadImage
+  [ComfyUI]     Inputs: {"image": "t_logo.png"}
+  [ComfyUI]   Node 10: MaskPreview
+  [ComfyUI]     Inputs: {"mask": ["11", 0]}
+  [ComfyUI]   Node 11: InvertMask
+  [ComfyUI]     Inputs: {"mask": ["1", 1]}
+  [ComfyUI]   Node 69: GeomPackPreviewMeshVTK
+  [ComfyUI]     Inputs: {"mode": "fields", "preview_vtk": "{\"show_edges\":false,\"camera_state\":\"{\\\"position\\\":[-0.005788042944308294,-0.030483725211761403,-0.31651534276291016],\\\"focalPoint\\\":[0.00001966953277587
+  [ComfyUI]   Node 91: Trellis2GetConditioning
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["92", 0], "image": ["1", 0], "mask": ["11", 0]}
+  [ComfyUI]   Node 92: LoadTrellis2Models
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]   Node 95: Trellis2ImageToShape
+  [ComfyUI]     Inputs: {"seed": 42, "ss_guidance_strength": 7.5, "ss_sampling_steps": 12, "shape_guidance_strength": 7.5, "shape_sampling_steps": 12, "max_tokens": 49152, "model_config": ["92", 0], "conditioning": ["91", 0]
+  [ComfyUI]   Node 96: GeomPackRemeshGPU
+  [ComfyUI]     Inputs: {"target_face_count": 200000, "remesh_band": 1, "report_panel": "false", "trimesh": ["95", 1]}
+  [ComfyUI] Generated prompt_id: 332d2954-f7d8-4c86-b0c1-85979c444a48
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Validation result: valid=True
+  [ComfyUI] === Validation PASSED ===
+  [ComfyUI] got prompt
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.load_models
+  [ComfyUI] [comfy-env] Removed stale socket: /dev/shm/comfy_worker_e83f411294ff.sock
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [comfy-env] Removed stale socket: /dev/shm/comfy_worker_949b74fc0984.sock
+  [ComfyUI] [comfy-env] Removed stale temp dir: /tmp/comfyui_pvenv_ee39g94r
+  [ComfyUI] [comfy-env] Removed stale temp dir: /tmp/comfyui_pvenv__zlq0cp5
+  [ComfyUI] [comfy-env] Removed stale temp dir: /tmp/comfyui_pvenv_yi6d37d5
+  [ComfyUI] [comfy-env] SubprocessWorker: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/bin/python
+  [ComfyUI] [comfy-env] env_vars: {'COMFYUI_BASE': '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI'}
+  [ComfyUI] [ComfyUI-TRELLIS2] python: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/bin/python
+  [ComfyUI] [ComfyUI-TRELLIS2] sys_path sent to worker: ['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2']
+  [ComfyUI] [SubprocessWorker] is_pixi=False, python=/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/bin/python
+  [ComfyUI] [SubprocessWorker] launching cmd=['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/bin/python', '/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py', 'unix:///dev/shm/comfy_worker_97bfda4063de.sock']...
+  [ComfyUI] [SubprocessWorker] PATH has 9 entries:
+  [ComfyUI] [SubprocessWorker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [SubprocessWorker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [3] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [SubprocessWorker]   [5] /usr/local/bin
+  [ComfyUI] [SubprocessWorker]   [6] /usr/bin
+  [ComfyUI] [SubprocessWorker]   [7] /bin
+  [ComfyUI] [SubprocessWorker]   [8] /snap/bin
+  [ComfyUI] [worker] PATH has 9 entries:
+  [ComfyUI] [worker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [worker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [3] /home/shadeform/.local/bin
+  Node executed (1 total), capturing...
+  [ComfyUI] [worker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [worker]   [5] /usr/local/bin
+  [ComfyUI] [worker]   [6] /usr/bin
+  [ComfyUI] [worker]   [7] /bin
+  [ComfyUI] [worker]   [8] /snap/bin
+  Frame 2 saved (frame_001.jpg, t=1.0s)
+  [capture-node] freeze=8ms shot=172ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] ERROR: Failed to import comfy_kitchen, Error: No module named 'comfy_kitchen', fp8 and fp4 support will not be available.
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] WARNING: No comfy kitchen, using old apply_rope functions.
+  [capture-loop] iter=50 t=6.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2GetConditioning.get_conditioning
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 1024, 1024, 3])
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'mask' shape: torch.Size([1, 1024, 1024])
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1024, 1024, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1024, 1024, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1024, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1024, 1024])
+  Frame 3 saved (frame_002.jpg, t=7.6s)
+  [capture-periodic] freeze=3ms shot=146ms unfreeze=3ms saved=True
+  [ComfyUI] [comfy-env] VRAM request: 1.21GB, free before eviction: 49.06GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 49.06GB
+  [capture-loop] iter=100 t=12.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 load: 5.8s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 conditioning: dtype=torch.bfloat16
+  [ComfyUI] 
+  [ComfyUI] DinoV3 conditioning:   0%|                               | 0/24 [00:00<?, ?it/s][worker:ComfyUI-TRELLIS2] [comfy.attention_sparse] Dense attention: attention_sage
+  [ComfyUI] 
+  [ComfyUI] DinoV3 conditioning:   4%|▉                      | 1/24 [00:01<00:38,  1.67s/it]
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 512px extract: 2.0s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] soft_empty_cache: 0.0s
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2ImageToShape.generate
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  Frame 4 saved (frame_003.jpg, t=16.4s)
+  [capture-periodic] freeze=3ms shot=150ms unfreeze=5ms saved=True
+  [capture-loop] iter=150 t=18.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=6
+  [capture-loop] iter=200 t=24.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [capture-loop] iter=250 t=47.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [capture-loop] iter=300 t=65.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  Frame 5 saved (frame_004.jpg, t=65.2s)
+  [ComfyUI] === WATCHDOG TICK 1 ===
+  [capture-periodic] freeze=5ms shot=199ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007490633a1640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000074912e9fd640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00007492baea1640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 42 in _watchdog
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1012 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007492bb929740 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/huggingface_hub/file_download.py", line 633 in xet_get
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/huggingface_hub/file_download.py", line 1727 in _download_to_tmp_and_move
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/huggingface_hub/file_download.py", line 1304 in _hf_hub_download_to_local_dir
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/huggingface_hub/file_download.py", line 994 in hf_hub_download
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/huggingface_hub/utils/_validators.py", line 114 in _inner_fn
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 109 in _init_config
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 756 in run_shape_generation
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 125 in generate
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1143 in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1174 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseStructureFlowModel on CPU: dtype=torch.bfloat16, 0.9s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [ComfyUI] [comfy-env] VRAM request: 2.59GB, free before eviction: 47.41GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 47.41GB
+  [capture-loop] iter=350 t=82.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=8
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_flow_model -> GPU: 14.6s
+  [ComfyUI] 
+  [capture-loop] iter=400 t=88.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] Sampling sparse structure:   0%|                         | 0/12 [00:00<?, ?it/s]
+  [ComfyUI] Sampling sparse structure:   8%|█▍               | 1/12 [00:00<00:06,  1.65it/s]
+  Frame 6 saved (frame_005.jpg, t=89.7s)
+  [capture-periodic] freeze=44ms shot=188ms unfreeze=3ms saved=True
+  [ComfyUI] Sampling sparse structure:  25%|████▎            | 3/12 [00:01<00:04,  2.13it/s]
+  Frame 7 saved (frame_006.jpg, t=92.0s)
+  [ComfyUI] Sampling sparse structure:  42%|███████          | 5/12 [00:02<00:03,  2.25it/s]
+  [capture-periodic] freeze=4ms shot=166ms unfreeze=4ms saved=True
+  [ComfyUI] Sampling sparse structure:  58%|█████████▉       | 7/12 [00:03<00:02,  2.29it/s]
+  [ComfyUI] Sampling sparse structure:  75%|████████████▊    | 9/12 [00:04<00:01,  2.31it/s]
+  [ComfyUI] Sampling sparse structure:  92%|██████████████▋ | 11/12 [00:04<00:00,  2.60it/s]
+  [capture-loop] iter=450 t=95.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=16
+  Frame 8 saved (frame_007.jpg, t=95.4s)
+  [capture-periodic] freeze=12ms shot=294ms unfreeze=9ms saved=True
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseStructureDecoder on CPU: dtype=torch.bfloat16, 2.1s
+  [ComfyUI] [comfy-env] VRAM request: 0.15GB, free before eviction: 47.16GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 47.16GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_decoder -> GPU: 3.4s
+  Frame 9 saved (frame_008.jpg, t=115.2s)
+  [capture-periodic] freeze=3ms shot=164ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SLatFlowModel on CPU: dtype=torch.bfloat16, 1.3s
+  [ComfyUI] [comfy-env] VRAM request: 2.58GB, free before eviction: 47.19GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 47.19GB
+  [capture-loop] iter=500 t=117.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  Frame 10 saved (frame_009.jpg, t=117.7s)
+  [capture-periodic] freeze=3ms shot=172ms unfreeze=6ms saved=True
+  [capture-loop] iter=550 t=123.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_flow_model_512 -> GPU: 7.8s
+  [ComfyUI] 
+  [ComfyUI] Sampling shape SLat:   0%|                               | 0/12 [00:00<?, ?it/s][worker:ComfyUI-TRELLIS2] [33m[comfy-attn] Varlen attention: sage2[0m
+  [ComfyUI] 
+  [ComfyUI] Sampling shape SLat:   8%|█▉                     | 1/12 [00:01<00:12,  1.13s/it]
+  [ComfyUI] Sampling shape SLat:  17%|███▊                   | 2/12 [00:01<00:07,  1.26it/s]
+  [ComfyUI] Sampling shape SLat:  25%|█████▊                 | 3/12 [00:02<00:06,  1.47it/s]
+  Frame 11 saved (frame_010.jpg, t=126.8s)
+  [capture-periodic] freeze=4ms shot=262ms unfreeze=7ms saved=True
+  [ComfyUI] Sampling shape SLat:  33%|███████▋               | 4/12 [00:02<00:05,  1.59it/s]
+  [ComfyUI] Sampling shape SLat:  42%|█████████▌             | 5/12 [00:03<00:04,  1.67it/s]
+  [ComfyUI] Sampling shape SLat:  50%|███████████▌           | 6/12 [00:03<00:03,  1.69it/s]
+  [ComfyUI] Sampling shape SLat:  58%|█████████████▍         | 7/12 [00:04<00:02,  1.71it/s]
+  Frame 12 saved (frame_011.jpg, t=129.1s)
+  [capture-periodic] freeze=3ms shot=205ms unfreeze=3ms saved=True
+  [ComfyUI] Sampling shape SLat:  67%|███████████████▎       | 8/12 [00:05<00:02,  1.73it/s]
+  [capture-loop] iter=600 t=129.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] Sampling shape SLat:  75%|█████████████████▎     | 9/12 [00:05<00:01,  1.75it/s]
+  [ComfyUI] Sampling shape SLat:  92%|████████████████████▏ | 11/12 [00:06<00:00,  2.31it/s]
+  Frame 13 saved (frame_012.jpg, t=131.4s)
+  [capture-periodic] freeze=3ms shot=167ms unfreeze=3ms saved=True
+  [capture-loop] iter=650 t=135.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  Frame 14 saved (frame_013.jpg, t=135.9s)
+  [capture-periodic] freeze=3ms shot=162ms unfreeze=4ms saved=True
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 2 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007490633a1640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000074912e9fd640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00007492baea1640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 42 in _watchdog
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1012 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007492bb929740 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 158 in _load_model
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 511 in _decode_shape_slat
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 825 in run_shape_generation
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 125 in generate
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1143 in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1174 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [capture-loop] iter=700 t=141.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  Frame 15 saved (frame_014.jpg, t=144.7s)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built FlexiDualGridVaeDecoder on CPU: dtype=torch.bfloat16, 9.7s
+  [capture-periodic] freeze=3ms shot=145ms unfreeze=3ms saved=True
+  [ComfyUI] [comfy-env] VRAM request: 0.95GB, free before eviction: 47.13GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 47.13GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_decoder -> GPU: 0.3s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Shape decode (FlexiDualGridVaeDecoder): 1.2s
+  [capture-loop] iter=750 t=147.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=7
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.main.visualization.preview_mesh_vtk.PreviewMeshVTKNode.preview_mesh_vtk
+  [ComfyUI] [comfy-env] SubprocessWorker: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/main/_env_12709f/bin/python
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [comfy-env] env_vars: {'KMP_DUPLICATE_LIB_OK': 'TRUE', 'OMP_NUM_THREADS': '1', 'COMFYUI_BASE': '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI'}
+  [ComfyUI] [ComfyUI-GeometryPack] python: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/main/_env_12709f/bin/python
+  [ComfyUI] [ComfyUI-GeometryPack] sys_path sent to worker: ['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/main/_env_12709f/lib/python3.1/site-packages', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack']
+  [ComfyUI] [SubprocessWorker] is_pixi=False, python=/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/main/_env_12709f/bin/python
+  [ComfyUI] [SubprocessWorker] launching cmd=['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/main/_env_12709f/bin/python', '/tmp/comfyui_pvenv_3q86gr0t/persistent_worker.py', 'unix:///dev/shm/comfy_worker_87fa07a4992a.sock']...
+  [ComfyUI] [SubprocessWorker] PATH has 9 entries:
+  [ComfyUI] [SubprocessWorker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [SubprocessWorker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [3] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [SubprocessWorker]   [5] /usr/local/bin
+  [ComfyUI] [SubprocessWorker]   [6] /usr/bin
+  [ComfyUI] [SubprocessWorker]   [7] /bin
+  [ComfyUI] [SubprocessWorker]   [8] /snap/bin
+  [ComfyUI] [worker] PATH has 9 entries:
+  [ComfyUI] [worker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [worker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [3] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [worker]   [5] /usr/local/bin
+  [ComfyUI] [worker]   [6] /usr/bin
+  [ComfyUI] [worker]   [7] /bin
+  [ComfyUI] [worker]   [8] /snap/bin
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  Frame 16 saved (frame_015.jpg, t=152.1s)
+  [capture-periodic] freeze=3ms shot=153ms unfreeze=5ms saved=True
+  [ComfyUI] [SubprocessWorker] created 1 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [capture-loop] iter=800 t=153.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Preparing preview: Mesh - 1679027 vertices, 3697882 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - hasattr vertex_attributes: True
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - hasattr face_attributes: True
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - vertex_attributes: {}
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - len(vertex_attributes): 0
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - face_attributes: {}
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - len(face_attributes): 0
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - has_vertex_attrs: False
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - has_face_attrs: False
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] DEBUG - has_fields: False
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Mode: fields
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Visual data - has_visual: True, kind: None, texture: False, vertex_colors: False
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Using fields mode - VTP/STL export
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Exported STL to: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/output/preview_vtk_14b14a94.stl
+  [capture-loop] iter=850 t=159.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [PreviewMeshVTK] Fields mode info: watertight=False, volume=None, area=5.871820856810498, no fields
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.gpu.remeshing_gpu.remesh.RemeshGPUNode.remesh
+  [ComfyUI] [comfy-env] SubprocessWorker: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/bin/python
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [comfy-env] env_vars: {'KMP_DUPLICATE_LIB_OK': 'TRUE', 'COMFYUI_BASE': '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI'}
+  [ComfyUI] [ComfyUI-GeometryPack] python: /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/bin/python
+  [ComfyUI] [ComfyUI-GeometryPack] sys_path sent to worker: ['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/lib/python3.1/site-packages', '/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack']
+  [ComfyUI] [SubprocessWorker] is_pixi=False, python=/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/bin/python
+  [ComfyUI] [SubprocessWorker] launching cmd=['/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/bin/python', '/tmp/comfyui_pvenv_h_k9s37x/persistent_worker.py', 'unix:///dev/shm/comfy_worker_393a992eb078.sock']...
+  [ComfyUI] [SubprocessWorker] PATH has 9 entries:
+  [ComfyUI] [SubprocessWorker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [SubprocessWorker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [3] /home/shadeform/.local/bin
+  [ComfyUI] [SubprocessWorker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [SubprocessWorker]   [5] /usr/local/bin
+  [ComfyUI] [SubprocessWorker]   [6] /usr/bin
+  [ComfyUI] [SubprocessWorker]   [7] /bin
+  [ComfyUI] [SubprocessWorker]   [8] /snap/bin
+  [ComfyUI] [worker] PATH has 9 entries:
+  [ComfyUI] [worker]   [0] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [1] /home/shadeform/.nvm/versions/node/v24.13.1/bin
+  [ComfyUI] [worker]   [2] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [3] /home/shadeform/.local/bin
+  [ComfyUI] [worker]   [4] /home/shadeform/.venv/bin
+  [ComfyUI] [worker]   [5] /usr/local/bin
+  [ComfyUI] [worker]   [6] /usr/bin
+  [ComfyUI] [worker]   [7] /bin
+  [ComfyUI] [worker]   [8] /snap/bin
+  [Console-error] No input!
+  Node executed (2 total), capturing...
+  [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  [Console-error] No input!
+  [ComfyUI] [worker:ComfyUI-GeometryPack] ERROR: Failed to import comfy_kitchen, Error: No module named 'comfy_kitchen', fp8 and fp4 support will not be available.
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 1 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  Frame 17 saved (frame_016.jpg, t=164.7s)
+  [capture-node] freeze=442ms shot=931ms unfreeze=5223ms saved=True
+  [capture-loop] iter=900 t=172.2s state={'complete': False, 'error': None, 'executedCount': 2, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-GeometryPack]
+  [ComfyUI] ============================================================
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Backend: cumesh (CUDA)
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Input: 1,679,027 vertices, 3,697,882 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Parameters: target_face_count=200,000, remesh_band=1.0
+  [ComfyUI] [worker:ComfyUI-GeometryPack] ============================================================
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [cumesh_dc_remesh] Input: 1679027 vertices, 3697882 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [cumesh_dc_remesh] Grid resolution: 512, band: 1.0
+  Frame 18 saved (frame_017.jpg, t=173.4s)
+  [capture-periodic] freeze=4ms shot=214ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [cumesh_dc_remesh] Running dual-contouring remesh...
+  [ComfyUI] 
+  [ComfyUI] Building Sparse Grid:   0%|                                                                                                            | 0/5 [00:00<?, ?it/s]
+  [ComfyUI] Building Sparse Grid:  20%|████████████████████                                                                                | 1/5 [00:00<00:00,  9.30it/s]
+  [ComfyUI] Building Sparse Grid: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 27.03it/s]
+  [ComfyUI] [worker:ComfyUI-GeometryPack] Running Dual Contouring...
+  [ComfyUI] /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-GeometryPack/nodes/gpu/_env_6f15f8/lib/python3.1/site-packages/cumesh/remeshing.py:220: UserWarning: Using torch.cross without specifying the dim arg is deprecated.
+  [ComfyUI] Please either pass the dim explicitly or simply use torch.linalg.cross.
+  [ComfyUI] The default value of dim will change to agree with that of linalg.cross in a future release. (Triggered internally at /pytorch/aten/src/ATen/native/Cross.cpp:63.)
+  [ComfyUI]   normals0 = torch.cross(mesh_vertices[atempt_triangles_0[:, 1]] - mesh_vertices[atempt_triangles_0[:, 0]], mesh_vertices[atempt_triangles_0[:, 2]] - mesh_vertices[atempt_triangles_0[:, 0]])
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [cumesh_dc_remesh] After remesh: 2638633 vertices, 5292424 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Skipping pre-simplify unify (mesh too large: 5,292,424 faces)
+  [ComfyUI] 
+  [ComfyUI] Simplifying:   0%|                                                                                                               | 0/5092424 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   0%|                                                                                              | 0/5092424 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   3%|██                                                                          | 135592/5092424 [00:00<00:02, 1696878.94it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   5%|███▍                                                                        | 231540/5092424 [00:00<00:03, 1473894.59it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   5%|███▍                                                                        | 231540/5092424 [00:00<00:03, 1473894.59it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   6%|████▌                                                                       | 302270/5092424 [00:00<00:03, 1473894.59it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   7%|█████▎                                                                      | 355420/5092424 [00:00<00:03, 1473894.59it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   8%|█████▉                                                                       | 396608/5092424 [00:00<00:06, 700062.84it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:   8%|█████▉                                                                       | 396608/5092424 [00:00<00:06, 700062.84it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  14%|███████████▏                                                                 | 738102/5092424 [00:00<00:06, 700062.84it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  21%|███████████████▌                                                           | 1055552/5092424 [00:00<00:02, 1961206.33it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  21%|███████████████▌                                                           | 1055552/5092424 [00:00<00:02, 1961206.33it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  26%|███████████████████▊                                                       | 1346700/5092424 [00:00<00:01, 1961206.33it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  32%|███████████████████████▊                                                   | 1613170/5092424 [00:00<00:01, 1961206.33it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  36%|███████████████████████████▎                                               | 1857330/5092424 [00:00<00:01, 3137576.17it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  36%|███████████████████████████▎                                               | 1857330/5092424 [00:00<00:01, 3137576.17it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  41%|██████████████████████████████▋                                            | 2079450/5092424 [00:00<00:00, 3137576.17it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  45%|█████████████████████████████████▌                                         | 2281150/5092424 [00:00<00:00, 3137576.17it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  48%|████████████████████████████████████▎                                      | 2463938/5092424 [00:00<00:00, 3137576.17it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  52%|██████████████████████████████████████▋                                    | 2628350/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  52%|██████████████████████████████████████▋                                    | 2628350/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  54%|████████████████████████████████████████▊                                  | 2774588/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  57%|██████████████████████████████████████████▊                                | 2904326/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  59%|████████████████████████████████████████████▍                              | 3017708/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  61%|█████████████████████████████████████████████▉                             | 3116746/5092424 [00:00<00:00, 4209210.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  63%|███████████████████████████████████████████████▏                           | 3202522/5092424 [00:00<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  63%|███████████████████████████████████████████████▏                           | 3202522/5092424 [00:00<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  64%|████████████████████████████████████████████████▎                          | 3276738/5092424 [00:00<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  66%|█████████████████████████████████████████████████▏                         | 3339370/5092424 [00:01<00:00, 4571943.71it/s]
+  [capture-loop] iter=950 t=178.2s state={'complete': False, 'error': None, 'executedCount': 2, 'wsState': 1} eval_ms=3
+  [ComfyUI] Simplifying [thres=1.00e-07]:  67%|█████████████████████████████████████████████████▉                         | 3390948/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  67%|██████████████████████████████████████████████████▌                        | 3432966/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  68%|███████████████████████████████████████████████████                        | 3466772/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  69%|███████████████████████████████████████████████████▍                       | 3493604/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  69%|███████████████████████████████████████████████████▊                       | 3515218/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  69%|████████████████████████████████████████████████████                       | 3532744/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  72%|██████████████████████████████████████████████████████▏                    | 3676536/5092424 [00:01<00:00, 4571943.71it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  75%|███████████████████████████████████████████████████████▉                   | 3799188/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  75%|███████████████████████████████████████████████████████▉                   | 3799188/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  77%|█████████████████████████████████████████████████████████▌                 | 3908964/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  79%|███████████████████████████████████████████████████████████                | 4008866/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  81%|████████████████████████████████████████████████████████████▍              | 4100806/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  82%|█████████████████████████████████████████████████████████████▋             | 4185316/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  84%|██████████████████████████████████████████████████████████████▊            | 4263150/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  85%|███████████████████████████████████████████████████████████████▊           | 4334802/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  86%|████████████████████████████████████████████████████████████████▊          | 4400674/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  88%|█████████████████████████████████████████████████████████████████▋         | 4461658/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  89%|██████████████████████████████████████████████████████████████████▌        | 4517658/5092424 [00:01<00:00, 4298197.68it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  90%|███████████████████████████████████████████████████████████████████▎       | 4569352/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  90%|███████████████████████████████████████████████████████████████████▎       | 4569352/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  91%|███████████████████████████████████████████████████████████████████▉       | 4616476/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  91%|████████████████████████████████████████████████████████████████████▌      | 4659256/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  92%|█████████████████████████████████████████████████████████████████████▏     | 4698018/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  93%|█████████████████████████████████████████████████████████████████████▋     | 4732538/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  94%|██████████████████████████████████████████████████████████████████████▏    | 4762822/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  94%|██████████████████████████████████████████████████████████████████████▌    | 4788626/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  94%|██████████████████████████████████████████████████████████████████████▊    | 4810600/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████    | 4828218/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▎   | 4842190/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▍   | 4852892/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▌   | 4861050/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  96%|███████████████████████████████████████████████████████████████████████▋   | 4866830/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  96%|███████████████████████████████████████████████████████████████████████▋   | 4870754/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  96%|████████████████████████████████████████████████████████████████████████▎  | 4906434/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  97%|████████████████████████████████████████████████████████████████████████▋  | 4936966/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  97%|█████████████████████████████████████████████████████████████████████████  | 4964248/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  98%|█████████████████████████████████████████████████████████████████████████▍ | 4988662/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  98%|█████████████████████████████████████████████████████████████████████████▊ | 5010900/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  99%|██████████████████████████████████████████████████████████████████████████ | 5031388/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  99%|██████████████████████████████████████████████████████████████████████████▍| 5050088/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|██████████████████████████████████████████████████████████████████████████▋| 5067340/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|██████████████████████████████████████████████████████████████████████████▊| 5083154/5092424 [00:01<00:00, 5068716.62it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|███████████████████████████████████████████████████████████████████████████| 5092424/5092424 [00:01<00:00, 3703012.20it/s]
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] After simplify: 194,710 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Unified face orientations (post-simplify)
+  [ComfyUI] [worker:ComfyUI-GeometryPack] [Remesh GPU] Output: 97532 vertices (-1581495), 194710 faces (-3503172)
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] Prompt executed in 178.14 seconds
+  Node executed (3 total), capturing...
+  Frame 19 saved (frame_018.jpg, t=178.8s)
+  [capture-node] freeze=4ms shot=195ms unfreeze=3ms saved=True
+  Execution complete (t=179.5s)
+  Captured 19 unique frames over 179.6s
+  [debug] iframes: 1
+  [debug]   iframe[0]: src=http://127.0.0.1:41883/extensions/ComfyUI-GeometryPack/viewer_vtk.html?v=1771873, canvas=535x603, rafFrozen=False
+  [timing] trigger_3d_previews: 0.0s
+  Saved high-quality screenshot: geometry_only_executed.png
+  [timing] final_screenshot: 1.7s
+    Captured 20 video frames
