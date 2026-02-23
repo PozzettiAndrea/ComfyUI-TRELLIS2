@@ -1,0 +1,82 @@
+[00:00] Crash dump logging enabled: /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/.comfy-test/crash_dump.log
+[00:00] 
+[00:00] [1/7] SYNTAX
+[00:00] ----------------------------------------
+[00:00] Found pyproject.toml (modern format)
+[00:00] Found requirements.txt (legacy format)
+[00:00] Unicode check: OK (all characters cp1252-safe)
+[00:00] [SYNTAX] PASSED
+[00:00] 
+[00:00] [2/7] INSTALL
+[00:00] ----------------------------------------
+[00:00] Setting up ComfyUI...
+[00:00] Cloning ComfyUI (latest)...
+[00:00] Running: git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/ComfyUI
+[00:01] Creating virtual environment...
+[00:01] Running: /Library/Frameworks/Python.framework/Versions/3.13/bin/python -m venv /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv
+[00:02] Installing uv into venv...
+[00:02] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python -m pip install uv
+[00:03]   Collecting uv
+[00:03]     Using cached uv-0.9.27-py3-none-macosx_11_0_arm64.whl.metadata (11 kB)
+[00:03]   Using cached uv-0.9.27-py3-none-macosx_11_0_arm64.whl (19.8 MB)
+[00:03]   Installing collected packages: uv
+[00:03]   Successfully installed uv-0.9.27
+[00:03] Installing PyTorch...
+[00:03] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python -m uv pip install torch torchvision torchaudio
+[00:06] Installing ComfyUI requirements...
+[00:06] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python -m uv pip install -r /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/ComfyUI/requirements.txt
+[00:11] Installing custom node...
+[00:11] Linking ComfyUI-TRELLIS2 to custom_nodes/...
+[00:11] Installing node requirements...
+[00:11] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python -m uv pip install -r /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/requirements.txt
+[00:12] Running install.py...
+[00:12] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/install.py
+[01:06]   Installing 1 node dependencies...
+[01:06]     Cloning ComfyUI-GeometryPack from https://github.com/PozzettiAndrea/ComfyUI-GeometryPack...
+[01:06]     Running install.py for ComfyUI-GeometryPack...
+[01:06]   No packages to install
+[01:06]   
+[01:06]   [isolated] Installing: nodes/gpu
+[01:06]   Pixi not found, downloading...
+[01:06]   Installed pixi to: /Users/runner/.local/bin/pixi
+[01:06]   Generated /Users/runner/work/ComfyUI-TRELLIS2/ComfyUI-TRELLIS2/nodes/gpu/pixi.toml
+[01:06]   Running pixi install...
+[01:06]   Installation complete!
+[01:06]   
+[01:06]   Installation complete!
+[01:06] Installing 1 node dependency(ies)...
+[01:06]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
+[01:06]   Cloning PozzettiAndrea/ComfyUI-GeometryPack...
+[01:06] Running: git clone --depth 1 https://github.com/PozzettiAndrea/ComfyUI-GeometryPack.git /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/ComfyUI/custom_nodes/ComfyUI-GeometryPack
+[01:11]   Installing ComfyUI-GeometryPack requirements...
+[01:11] Running: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python -m uv pip install -r /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt
+[01:12] Command failed with code 1
+[01:12] stderr: Using Python 3.13.11 environment at: /private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv
+  × No solution found when resolving dependencies:
+  ╰─▶ Because only the following versions of embreex are available:
+          embreex==2.17.7
+          embreex==2.17.7.post1
+          embreex==2.17.7.post2
+          embreex==2.17.7.post3
+          embreex==2.17.7.post4
+          embreex==2.17.7.post5
+          embreex==2.17.7.post6
+          embreex==2.17.7.post7
+      and embreex<=2.17.7.post5 has no wheels with a matching Python ABI tag
+      (e.g., `cp313`), we can conclude that embreex<=2.17.7.post5 cannot be
+      used.
+      And because embreex>=2.17.7.post6 has no wheels with a matching platform
+      tag (e.g., `macosx_15_0_arm64`) and you require embreex, we can conclude
+      that your requirements are unsatisfiable.
+
+      hint: You require CPython 3.13 (`cp313`), but we only found wheels for
+      `embreex` (v2.17.7.post5) with the following Python ABI tags: `cp36m`,
+      `cp37m`, `cp38`, `cp39`, `cp310`, `cp311`, `cp312`
+
+      hint: Wheels are available for `embreex` (v2.17.7.post7) on the
+      following platforms: `manylinux_2_12_x86_64`, `manylinux_2_28_x86_64`,
+      `manylinux2010_x86_64`, `macosx_10_13_x86_64`, `win_amd64`
+
+[01:16] 
+macos: FAILED (unexpected error)
+[01:16] Error: Command '['/private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/venv/bin/python', '-m', 'uv', 'pip', 'install', '-r', '/private/var/folders/yz/zr09txvs5dn18vt4cn21kzl40000gn/T/comfy_test_7m2vvzm0/ComfyUI/custom_nodes/ComfyUI-GeometryPack/requirements.txt']' returned non-zero exit status 1.

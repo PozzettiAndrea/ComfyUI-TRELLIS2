@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1923; color: #e6edf3; display: flex; flex-direction: column; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #162033; border-bottom: 1px solid #243656; }
+    h1 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    h1 a { color: #e6edf3; text-decoration: none; }
+    h1 a:hover { color: #58a6ff; }
+    .branch-switcher { display: flex; gap: 6px; align-items: center; }
+    .branch-btn { padding: 6px 14px; background: #1c2d44; border: 1px solid #243656; color: #8ba3c1; cursor: pointer; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.15s; }
+    .branch-btn:hover { background: #243656; color: #e6edf3; border-color: #4a6282; }
+    .branch-btn.active { background: #58a6ff; color: #fff; border-color: #58a6ff; }
+    .branch-btn.main.active { background: #3fb950; color: #fff; border-color: #3fb950; }
+    iframe { flex: 1; width: 100%; border: none; background: #0f1923; }
+    .current-branch { color: #8ba3c1; font-size: 0.75rem; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><a href="https://github.com/PozzettiAndrea/ComfyUI-TRELLIS2">PozzettiAndrea/ComfyUI-TRELLIS2 Test Results</a></h1>
+    <div class="branch-switcher">
+      <span class="current-branch">Branch:</span>
+      <div id="branch-tabs"></div>
+    </div>
+  </header>
+  <iframe id="frame" src="about:blank"></iframe>
+  <script>
+    const branches = ["main", "dev"];
+    const tabs = document.getElementById('branch-tabs');
+    const frame = document.getElementById('frame');
+    let activeTab = null;
+
+    function init() {
+      branches.forEach(function(branch) {
+        const btn = document.createElement('button');
+        btn.className = 'branch-btn' + (branch === 'main' ? ' main' : '');
+        btn.textContent = branch;
+        btn.onclick = function() {
+          document.querySelectorAll('.branch-btn').forEach(function(t) { t.classList.remove('active'); });
+          btn.classList.add('active');
+          frame.src = branch + '/index.html';
+          activeTab = branch;
+          history.replaceState(null, '', '#' + branch);
+        };
+        tabs.appendChild(btn);
+
+        const hash = location.hash.slice(1);
+        if (hash === branch || (!activeTab && branch === 'main') || (!activeTab && branches.indexOf('main') === -1 && branch === branches[0])) {
+          btn.click();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
