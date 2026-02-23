@@ -1,4 +1,5 @@
 """Inference nodes for TRELLIS.2 Image-to-3D generation."""
+import gc
 import torch
 import numpy as np
 from PIL import Image
@@ -190,6 +191,10 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 
         logger.info("DinoV3 conditioning extracted successfully")
 
+        # Clean up intermediate tensors
+        gc.collect()
+        torch.cuda.empty_cache()
+
         return (conditioning,)
 
 
@@ -297,6 +302,9 @@ Returns:
             'pipeline_type': pipeline_type,
         }
 
+        # Clean up GPU tensors
+        del shape_slat, meshes, mesh
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (tri_mesh, shape_slat_dict)
@@ -385,6 +393,11 @@ Returns:
             pipeline_type=pipeline_type,
             **sampler_params
         )
+
+        # Clean up shape_slat_tensor immediately after use
+        del shape_slat_tensor
+        torch.cuda.empty_cache()
+
         mesh = meshes[0]
 
         # Simplify mesh (nvdiffrast limit)
@@ -395,6 +408,9 @@ Returns:
         # Convert to TRIMESH + VOXELGRID outputs
         tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, pipe.pbr_attr_layout)
 
+        # Final cleanup
+        del meshes, mesh
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (tri_mesh, voxel_grid)
@@ -445,11 +461,19 @@ Returns:
 
         # Use shape pipeline for decoding (it has the decoders)
         mesh = shape_pipe.decode_latent(shape_slat, tex_slat, res)[0]
+
+        # Clean up latent tensors
+        del shape_slat, tex_slat
+        torch.cuda.empty_cache()
+
         mesh.simplify(16777216)
 
         # Convert to TRIMESH + VOXELGRID outputs
         tri_mesh, voxel_grid = mesh_with_voxel_to_outputs(mesh, shape_pipe.pbr_attr_layout)
 
+        # Final cleanup
+        del mesh
+        gc.collect()
         torch.cuda.empty_cache()
 
         return (tri_mesh, voxel_grid)
