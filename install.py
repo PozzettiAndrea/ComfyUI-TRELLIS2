@@ -131,6 +131,21 @@ def main():
     if wheel_suffix:
         print(f"[ComfyUI-TRELLIS2] Wheel suffix: {wheel_suffix}")
 
+    # Install triton-windows on Windows (required by flex_gemm)
+    if sys.platform == "win32":
+        print("\n[ComfyUI-TRELLIS2] Installing triton-windows (required for flex_gemm)...")
+        try:
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", "triton-windows"],
+                capture_output=True, text=True, timeout=300
+            )
+            if result.returncode == 0:
+                print("[ComfyUI-TRELLIS2] [OK] triton-windows installed")
+            else:
+                print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install failed: {result.stderr[:200] if result.stderr else 'unknown error'}")
+        except Exception as e:
+            print(f"[ComfyUI-TRELLIS2] [WARNING] triton-windows install error: {e}")
+
     # Install requirements.txt first
     print("\n" + "-" * 60)
     install_requirements()
