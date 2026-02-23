@@ -8,10 +8,10 @@ import cumesh as CuMesh
 
 import comfy.model_management as mm
 
-from .utils import logger, tensor_to_pil
+from .utils import logger, tensor_to_pil, pil_to_tensor
 
 
-def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
+def smart_crop_square(pil_image, mask_np, margin_ratio=0.1, background_color=(128, 128, 128)):
     """
     Extract object with margin, pad to square. Leave at native resolution.
     DINOv3 will resize to 512/1024 in image_feature_extractor.py.
@@ -20,9 +20,10 @@ def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
         pil_image: Input RGBA image (after mask applied)
         mask_np: Numpy mask array (H, W), values 0-255
         margin_ratio: Padding around object (default 10%)
+        background_color: RGB tuple for background (default gray to handle dark objects)
 
     Returns:
-        RGB PIL Image - square, with black background
+        RGB PIL Image - square, with specified background color
     """
     # 1. Find object bounding box from mask
     alpha_threshold = 0.8 * 255
@@ -32,7 +33,7 @@ def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
         logger.warning("[smart_crop_square] No object found in mask, returning original image")
         w, h = pil_image.size
         size = max(w, h)
-        canvas = Image.new('RGB', (size, size), (0, 0, 0))
+        canvas = Image.new('RGB', (size, size), background_color)
         canvas.paste(pil_image.convert('RGB'), ((size - w) // 2, (size - h) // 2))
         return canvas
 
@@ -62,9 +63,9 @@ def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
         crop_x2 = crop_x1 + 1
         crop_y2 = crop_y1 + 1
 
-    # 4. Create black canvas and paste cropped region
+    # 4. Create canvas with background color and paste cropped region
     img_w, img_h = pil_image.size
-    canvas = Image.new('RGB', (crop_size, crop_size), (0, 0, 0))
+    canvas = Image.new('RGB', (crop_size, crop_size), background_color)
 
     # Calculate source region (clamp to image bounds)
     src_x1 = max(0, crop_x1)
@@ -79,10 +80,13 @@ def smart_crop_square(pil_image, mask_np, margin_ratio=0.1):
     # Crop source region
     cropped = pil_image.crop((src_x1, src_y1, src_x2, src_y2))
 
-    # 5. Premultiply alpha before pasting (black background)
+    # 5. Alpha blend with background color
     cropped_np = np.array(cropped.convert('RGBA')).astype(np.float32) / 255
-    cropped_np = cropped_np[:, :, :3] * cropped_np[:, :, 3:4]
-    cropped_rgb = Image.fromarray((cropped_np * 255).astype(np.uint8))
+    alpha = cropped_np[:, :, 3:4]
+    bg = np.array(background_color, dtype=np.float32) / 255
+    # Blend: foreground * alpha + background * (1 - alpha)
+    blended = cropped_np[:, :, :3] * alpha + bg * (1 - alpha)
+    cropped_rgb = Image.fromarray((blended * 255).astype(np.uint8))
 
     canvas.paste(cropped_rgb, (dst_x, dst_y))
 
@@ -250,11 +254,12 @@ class Trellis2GetConditioning:
             },
             "optional": {
                 "include_1024": ("BOOLEAN", {"default": True}),
+                "background_color": (["gray", "black", "white"], {"default": "gray"}),
             },
         }
 
-    RETURN_TYPES = ("TRELLIS2_CONDITIONING",)
-    RETURN_NAMES = ("conditioning",)
+    RETURN_TYPES = ("TRELLIS2_CONDITIONING", "IMAGE")
+    RETURN_NAMES = ("conditioning", "preprocessed_image")
     FUNCTION = "get_conditioning"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
@@ -275,10 +280,18 @@ Parameters:
 Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 """
 
-    def get_conditioning(self, dinov3, image, mask, include_1024=True):
+    # Background color mapping
+    BACKGROUND_COLORS = {
+        "black": (0, 0, 0),
+        "gray": (128, 128, 128),
+        "white": (255, 255, 255),
+    }
+
+    def get_conditioning(self, dinov3, image, mask, include_1024=True, background_color="gray"):
         device = dinov3["device"]
         model = dinov3["model"]
         low_vram = dinov3["low_vram"]
+        bg_color = self.BACKGROUND_COLORS.get(background_color, (128, 128, 128))
 
         # Convert ComfyUI tensor to PIL
         pil_image = tensor_to_pil(image)
@@ -302,8 +315,8 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
         rgba = np.dstack([img_np, alpha_np])
         pil_image = Image.fromarray(rgba, 'RGBA')
 
-        # Smart crop: extract object with 10% margin, pad to square, premultiply alpha
-        pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1)
+        # Smart crop: extract object with 10% margin, pad to square, blend with background
+        pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
 
         logger.info("Extracting DinoV3 conditioning...")
 
@@ -334,11 +347,14 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 
         logger.info("DinoV3 conditioning extracted successfully")
 
+        # Convert preprocessed image to tensor for debug output
+        preprocessed_tensor = pil_to_tensor(pil_image)
+
         # Clean up intermediate tensors
         gc.collect()
         torch.cuda.empty_cache()
 
-        return (conditioning,)
+        return (conditioning, preprocessed_tensor)
 
 
 class Trellis2ImageToShape:
