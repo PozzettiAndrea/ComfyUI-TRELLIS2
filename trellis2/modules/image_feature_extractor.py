@@ -6,6 +6,11 @@ from transformers import DINOv3ViTModel
 import numpy as np
 from PIL import Image
 
+# Remap gated Facebook models to public reuploads
+DINOV3_MODEL_REMAP = {
+    "facebook/dinov3-vitl16-pretrain-lvd1689m": "PIA-SPACE-LAB/dinov3-vitl-pretrain-lvd1689m",
+}
+
 
 class DinoV2FeatureExtractor:
     """
@@ -61,8 +66,14 @@ class DinoV3FeatureExtractor:
     Feature extractor for DINOv3 models.
     """
     def __init__(self, model_name: str, image_size=512):
+        # Remap gated models to public reuploads
+        actual_model_name = DINOV3_MODEL_REMAP.get(model_name, model_name)
+        if actual_model_name != model_name:
+            print(f"[ComfyUI-TRELLIS2] Remapping {model_name} -> {actual_model_name}")
         self.model_name = model_name
-        self.model = DINOv3ViTModel.from_pretrained(model_name)
+        print(f"[ComfyUI-TRELLIS2] Loading DINOv3 model: {actual_model_name}...")
+        self.model = DINOv3ViTModel.from_pretrained(actual_model_name)
+        print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         self.model.eval()
         self.image_size = image_size
         self.transform = transforms.Compose([
