@@ -10,7 +10,7 @@ from .trellis2_config import Trellis2ModelConfig
 RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
 
 # Attention backend options
-ATTN_BACKENDS = ['auto', 'sageattn', 'flash_attn', 'xformers', 'sdpa']
+ATTN_BACKENDS = ['flash_attn', 'xformers', 'sdpa', 'sageattn']
 
 # VRAM usage modes
 VRAM_MODES = ['keep_loaded', 'cpu_offload', 'disk_offload']
@@ -26,7 +26,7 @@ class LoadTrellis2Models:
                 "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
             },
             "optional": {
-                "attn_backend": (ATTN_BACKENDS, {"default": "auto"}),
+                "attn_backend": (ATTN_BACKENDS, {"default": "flash_attn"}),
                 "vram_mode": (VRAM_MODES, {"default": "keep_loaded"}),
             }
         }
@@ -47,11 +47,10 @@ Resolution modes:
 - 1536_cascade: Highest resolution output
 
 Attention backend:
-- auto: Auto-detect best available (sageattn > flash_attn > xformers > sdpa)
-- sageattn: SageAttention (fastest, 2-5x faster than flash_attn)
-- flash_attn: FlashAttention (requires flash_attn package)
+- flash_attn: FlashAttention (default, requires flash_attn package)
 - xformers: Memory-efficient attention (requires xformers package)
 - sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
+- sageattn: SageAttention (not yet implemented)
 
 VRAM mode:
 - keep_loaded: Keep all models in VRAM (fastest, ~12GB VRAM)
@@ -59,7 +58,7 @@ VRAM mode:
 - disk_offload: Delete unused models, reload from disk (~3GB VRAM & CPU RAM, ~2-3x slower)
 """
 
-    def load_models(self, resolution='1024_cascade', attn_backend="auto", vram_mode="keep_loaded"):
+    def load_models(self, resolution='1024_cascade', attn_backend="flash_attn", vram_mode="keep_loaded"):
         # Create lightweight config object
         # Actual model loading happens in @isolated subprocess methods
         config = Trellis2ModelConfig(
