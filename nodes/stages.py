@@ -49,6 +49,7 @@ TEXTURE_RESOLUTION_MAP = {
 _pipeline_config = None      # Parsed pipeline.json['args']
 _model_paths = {}            # {model_key: local_safetensors_path}
 _model_patchers = {}         # {model_key: ModelPatcher}
+_post_loaded = set()         # Keys of models that have had _post_load called
 _dinov3_model = None         # DinoV3FeatureExtractor wrapper (cached across calls)
 
 
@@ -115,10 +116,12 @@ def _load_model(model_key, device=None):
     """
     Load a model using ComfyUI-native pattern.
 
-    First call: build model on CPU, load weights, wrap in ModelPatcher.
-    Subsequent calls: just call load_models_gpu (model already in RAM).
+    First call: build model on CPU, wrap in ModelPatcher (no GPU load yet).
+    Every call: load_models_gpu moves weights to GPU and auto-offloads other
+    models if VRAM is tight — this fires correctly because _unload_model
+    calls unpatch_model() so the patcher is always "off GPU" between uses.
     """
-    import time
+    import time, sys
     import comfy.model_patcher
     import comfy.utils
 
@@ -140,7 +143,7 @@ def _load_model(model_key, device=None):
         from .trellis2 import _get_model_class
         model_class = _get_model_class(config['name'])
 
-        # Load state dict to CPU (ComfyUI-native: no device arg = CPU)
+        # Load state dict to CPU
         sd = comfy.utils.load_torch_file(safetensors_path)
         pbar.update(1)
 
@@ -154,7 +157,7 @@ def _load_model(model_key, device=None):
                 if sd[k].is_floating_point():
                     sd[k] = sd[k].to(weight_dtype)
 
-        # Build model, assign=True: state dict tensors become parameters directly (no copy)
+        # Build model on CPU — assign=True: sd tensors become parameters directly (no copy)
         model = model_class(**config['args'])
         model.load_state_dict(sd, strict=False, assign=True)
         del sd
@@ -162,29 +165,29 @@ def _load_model(model_key, device=None):
         model.eval()
         pbar.update(1)
 
-        # Wrap in ModelPatcher — model starts on CPU (offload_device)
+        # Wrap in ModelPatcher — stays on CPU; load_models_gpu below handles GPU transfer
         patcher = comfy.model_patcher.ModelPatcher(
             model, load_device=device, offload_device=offload_device,
         )
         _model_patchers[model_key] = patcher
-
-        # First load: move to GPU, then compute derived tensors (e.g. RoPE phases)
-        comfy.model_management.load_models_gpu([patcher])
-        if hasattr(model, '_post_load'):
-            model._post_load(torch.device(device))
         pbar.update(1)
 
         elapsed = time.perf_counter() - t0
-        import sys
-        print(f"[TRELLIS2] Loaded {config['name']}: dtype={weight_dtype}, device={device}, {elapsed:.1f}s", file=sys.stderr)
-    else:
-        t0 = time.perf_counter()
-        comfy.model_management.load_models_gpu([_model_patchers[model_key]])
-        elapsed = time.perf_counter() - t0
-        import sys
-        print(f"[TRELLIS2] Reloaded {model_key} to GPU: {elapsed:.1f}s", file=sys.stderr)
+        print(f"[TRELLIS2] Built {config['name']} on CPU: dtype={weight_dtype}, {elapsed:.1f}s", file=sys.stderr)
 
-    return _model_patchers[model_key].model
+    # Always: load to GPU via ComfyUI VRAM management (offloads other models if needed)
+    t0 = time.perf_counter()
+    comfy.model_management.load_models_gpu([_model_patchers[model_key]])
+    elapsed = time.perf_counter() - t0
+    print(f"[TRELLIS2] {model_key} → GPU: {elapsed:.1f}s", file=sys.stderr)
+
+    # Run _post_load once (needs GPU; computes RoPE phases etc.)
+    model = _model_patchers[model_key].model
+    if model_key not in _post_loaded and hasattr(model, '_post_load'):
+        model._post_load(torch.device(device))
+        _post_loaded.add(model_key)
+
+    return model
 
 
 def _unload_model(model_key):
