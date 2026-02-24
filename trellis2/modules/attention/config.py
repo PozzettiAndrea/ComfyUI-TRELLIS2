@@ -1,12 +1,14 @@
 """
 Attention backend configuration with lazy detection.
 
-Supports: 'flash_attn', 'xformers', 'sdpa', 'naive'
-Priority: flash_attn -> xformers -> sdpa -> naive
+Supports: 'sageattn', 'flash_attn', 'xformers', 'sdpa', 'naive'
+Priority: sageattn -> flash_attn -> xformers -> sdpa -> naive
+
+sageattn is 2-5x faster than flash_attn with quantized kernels.
 
 Configure via:
 - Environment variable: ATTN_BACKEND
-- Runtime: set_backend('sdpa') before first use
+- Runtime: set_backend('sageattn') before first use
 - ComfyUI: Trellis2Settings node
 """
 from typing import *
@@ -22,10 +24,19 @@ def _detect_available_backend() -> str:
     # Check env var first
     env_backend = os.environ.get('ATTN_BACKEND')
     if env_backend:
-        valid_backends = ['flash_attn', 'xformers', 'sdpa', 'naive']
+        valid_backends = ['sageattn', 'flash_attn', 'xformers', 'sdpa', 'naive']
         if env_backend in valid_backends:
             # Verify the requested backend actually works
-            if env_backend == 'flash_attn':
+            if env_backend == 'sageattn':
+                try:
+                    from sageattention import sageattn
+                    print(f"[ATTENTION] Using backend from ATTN_BACKEND env var: sageattn")
+                    return env_backend
+                except ImportError:
+                    print(f"[ATTENTION] Warning: ATTN_BACKEND=sageattn but sageattention not installed")
+                    print(f"[ATTENTION] Falling back to auto-detection...")
+                    env_backend = None
+            elif env_backend == 'flash_attn':
                 try:
                     import flash_attn
                     if not callable(getattr(flash_attn, 'flash_attn_func', None)):
@@ -43,10 +54,15 @@ def _detect_available_backend() -> str:
             print(f"[ATTENTION] Warning: Invalid ATTN_BACKEND '{env_backend}', must be one of {valid_backends}")
 
     # Auto-detect: try backends in priority order
-    backends = ['flash_attn', 'xformers', 'sdpa']
+    # sageattn is fastest (2-5x faster than flash_attn), then flash_attn, xformers, sdpa
+    backends = ['sageattn', 'flash_attn', 'xformers', 'sdpa']
     for backend in backends:
         try:
-            if backend == 'flash_attn':
+            if backend == 'sageattn':
+                from sageattention import sageattn
+                print(f"[ATTENTION] Auto-detected backend: sageattn")
+                return backend
+            elif backend == 'flash_attn':
                 import flash_attn
                 # Verify it actually works - on Windows flash_attn may import but functions are None
                 if callable(getattr(flash_attn, 'flash_attn_func', None)):
@@ -89,10 +105,10 @@ def set_backend(backend: str) -> None:
     Set backend explicitly. Can be called before or after first use.
 
     Args:
-        backend: One of 'flash_attn', 'xformers', 'sdpa', 'naive'
+        backend: One of 'sageattn', 'flash_attn', 'xformers', 'sdpa', 'naive'
     """
     global _BACKEND
-    valid_backends = ['flash_attn', 'xformers', 'sdpa', 'naive']
+    valid_backends = ['sageattn', 'flash_attn', 'xformers', 'sdpa', 'naive']
     if backend not in valid_backends:
         raise ValueError(f"Invalid backend '{backend}', must be one of {valid_backends}")
 
