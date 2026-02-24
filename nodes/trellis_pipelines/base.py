@@ -3,20 +3,22 @@ import gc
 import logging
 import torch
 import torch.nn as nn
-from .. import models
-from ..utils.disk_offload import DiskOffloadManager
+from ..trellis2 import from_pretrained as _model_from_pretrained
 import comfy.model_management
 
 log = logging.getLogger("trellis2")
 
 
-def _is_sparse_model(model: nn.Module) -> bool:
-    """Check if model uses sparse operations (incompatible with lowvram per-layer streaming)."""
-    for m in model.modules():
-        cls_name = type(m).__name__
-        if cls_name.startswith('Sparse') and cls_name != 'SparseTensor':
-            return True
-    return False
+class DiskOffloadManager:
+    """Tracks model paths so we can delete and recreate models on demand."""
+    def __init__(self):
+        self.model_paths: Dict[str, str] = {}
+
+    def register(self, key: str, safetensors_path: str) -> None:
+        self.model_paths[key] = safetensors_path
+
+    def get_path(self, key: str) -> Optional[str]:
+        return self.model_paths.get(key)
 
 
 def _get_trellis2_models_dir():
@@ -26,7 +28,7 @@ def _get_trellis2_models_dir():
         import folder_paths
         models_dir = os.path.join(folder_paths.models_dir, "trellis2")
     except ImportError:
-        models_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "models", "trellis2")
+        models_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "models", "trellis2")
     os.makedirs(models_dir, exist_ok=True)
     return models_dir
 
@@ -55,7 +57,6 @@ class Pipeline:
         path: str,
         models_to_load: list = None,
         enable_disk_offload: bool = False,
-        dtype=None,
     ) -> "Pipeline":
         """
         Load a pretrained model.
@@ -129,17 +130,15 @@ class Pipeline:
             else:
                 # IMMEDIATE LOADING: Load model to GPU now (original behavior)
                 log.info(f"Loading model [{i}/{total_models}]: {k}...")
-                _models[k] = models.from_pretrained(
+                _models[k] = _model_from_pretrained(
                     model_path,
                     disk_offload_manager=disk_offload_manager,
                     model_key=k,
-                    dtype=dtype,
                 )
                 log.info(f"Loaded {k} successfully")
 
         new_pipeline = Pipeline(_models, disk_offload_manager=disk_offload_manager)
         new_pipeline._pretrained_args = args
-        new_pipeline._dtype = dtype
         if enable_disk_offload:
             log.info(f"All {total_models} models registered for progressive loading!")
         else:
@@ -212,18 +211,6 @@ class Pipeline:
     def cpu(self) -> None:
         self.to(torch.device("cpu"))
 
-    @property
-    def low_vram(self) -> bool:
-        return getattr(self, '_low_vram', False)
-
-    @low_vram.setter
-    def low_vram(self, value: bool) -> None:
-        self._low_vram = value
-        # Propagate to all loaded models
-        for model in self.models.values():
-            if model is not None and hasattr(model, 'low_vram'):
-                model.low_vram = value
-
     def _load_model(self, model_key: str, device: torch.device = None) -> nn.Module:
         """
         Load a model to GPU via ModelPatcher for ComfyUI VRAM management.
@@ -245,10 +232,8 @@ class Pipeline:
                 config_path = safetensors_path.replace('.safetensors', '')
                 mem_before = torch.cuda.memory_allocated() / 1024**2
                 log.info(f"Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)")
-                model = models.from_pretrained(config_path, device='cpu', dtype=getattr(self, '_dtype', None))
+                model = _model_from_pretrained(config_path, device='cpu')
                 model.eval()
-                if self.low_vram and hasattr(model, 'low_vram'):
-                    model.low_vram = True
                 self.models[model_key] = model
                 if not self.keep_model_loaded and hasattr(model, 'blocks'):
                     for block in model.blocks:
@@ -262,14 +247,11 @@ class Pipeline:
             # Wrap in ModelPatcher if not already wrapped
             if model_key not in self._model_patchers:
                 offload_device = comfy.model_management.unet_offload_device()
-                if not _is_sparse_model(model):
-                    from ...trellis_utils.stages import _enable_lowvram_cast
-                    _enable_lowvram_cast(model)
                 patcher = comfy.model_patcher.ModelPatcher(
                     model, load_device=device, offload_device=offload_device,
                 )
                 self._model_patchers[model_key] = patcher
-                log.info(f"{model_key} wrapped in ModelPatcher (sparse={_is_sparse_model(model)})")
+                log.info(f"{model_key} wrapped in ModelPatcher")
 
             comfy.model_management.load_models_gpu([self._model_patchers[model_key]])
 

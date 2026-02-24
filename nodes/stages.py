@@ -22,103 +22,10 @@ log = logging.getLogger("trellis2")
 
 from .helpers import smart_crop_square
 
-_DTYPE_MAP = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}
 
-
-def _enable_lowvram_cast(model: torch.nn.Module) -> None:
-    """Swap leaf modules to comfy.ops.disable_weight_init versions for lowvram support.
-
-    ComfyUI's ModelPatcher can only partially-load modules that have the
-    ``comfy_cast_weights`` attribute (from CastWeightBiasOp).  Native ComfyUI models
-    use ``comfy.ops.disable_weight_init.*`` layers, but third-party models use plain
-    ``torch.nn.*``.  This function retroactively swaps ``__class__`` on every leaf
-    module so that ModelPatcher's lowvram layer-streaming works transparently.
-
-    Also installs forward pre-hooks on non-leaf modules that own direct parameters
-    or buffers (e.g. cls_token, pos_embed on ViT) so they get moved to the input
-    device on-the-fly during lowvram inference.
-    """
-    try:
-        from comfy.ops import disable_weight_init
-    except ImportError:
-        return
-
-    _CLASS_MAP = {
-        torch.nn.Linear: disable_weight_init.Linear,
-        torch.nn.Conv1d: disable_weight_init.Conv1d,
-        torch.nn.Conv2d: disable_weight_init.Conv2d,
-        torch.nn.Conv3d: disable_weight_init.Conv3d,
-        torch.nn.GroupNorm: disable_weight_init.GroupNorm,
-        torch.nn.LayerNorm: disable_weight_init.LayerNorm,
-        torch.nn.ConvTranspose2d: disable_weight_init.ConvTranspose2d,
-        torch.nn.ConvTranspose1d: disable_weight_init.ConvTranspose1d,
-        torch.nn.Embedding: disable_weight_init.Embedding,
-    }
-
-    cast_count = 0
-    for _name, module in model.named_modules():
-        comfy_cls = _CLASS_MAP.get(type(module))
-        if comfy_cls is not None:
-            module.__class__ = comfy_cls
-            cast_count += 1
-
-    hook_count = 0
-    for _name, module in model.named_modules():
-        if hasattr(module, 'comfy_cast_weights'):
-            continue
-        direct_params = list(module.named_parameters(recurse=False))
-        direct_bufs = list(module.named_buffers(recurse=False))
-        if not direct_params and not direct_bufs:
-            continue
-
-        def _move_orphans_hook(mod, args, kwargs=None):
-            device = None
-            for a in args:
-                if isinstance(a, torch.Tensor):
-                    device = a.device
-                    break
-                if hasattr(a, 'feats') and isinstance(a.feats, torch.Tensor):
-                    device = a.feats.device
-                    break
-            if device is None and kwargs:
-                for v in kwargs.values():
-                    if isinstance(v, torch.Tensor):
-                        device = v.device
-                        break
-                    if hasattr(v, 'feats') and isinstance(v.feats, torch.Tensor):
-                        device = v.feats.device
-                        break
-            if device is None:
-                for p in mod.parameters():
-                    if p.device.type == 'cuda':
-                        device = p.device
-                        break
-            if device is None:
-                return
-            for _, p in mod.named_parameters(recurse=False):
-                if p.data.device != device:
-                    p.data = p.data.to(device)
-            for _, b in mod.named_buffers(recurse=False):
-                if b.device != device:
-                    b.data = b.data.to(device)
-
-        module.register_forward_pre_hook(_move_orphans_hook, with_kwargs=True)
-        hook_count += 1
-
-    # If model.device is a read-only property (e.g. HuggingFace PreTrainedModel),
-    # shadow it so ModelPatcher can set model.device during load/unload.
-    for klass in type(model).__mro__:
-        if 'device' in klass.__dict__ and isinstance(klass.__dict__['device'], property):
-            model.__class__ = type(type(model).__name__, (type(model),), {'device': None})
-            break
-
-    if cast_count or hook_count:
-        log.debug("Enabled lowvram: %d cast modules, %d orphan-param hooks", cast_count, hook_count)
 # Noise/conditioning stay float32 for sampling loop stability (error accumulation over 12 steps).
-# Model weights are bf16 for memory savings. torch.autocast handles per-op precision:
-# matmuls/convs/attention run on bf16 tensor cores, norms stay float32.
+# Model weights stay in safetensors dtype; manual_cast handles per-layer casting.
 _DEFAULT_DTYPE = torch.float32
-_MODEL_DTYPE = torch.bfloat16
 
 
 # Shape models needed for each resolution mode
@@ -224,7 +131,7 @@ def _dict_to_sparse_tensor(d: Dict[str, Any], device: torch.device):
     Reconstruct a SparseTensor from a serialized dict.
     Must be called within the isolated environment where trellis2 is available.
     """
-    from ..trellis2.modules.sparse import SparseTensor
+    from .trellis2.sparse import SparseTensor
 
     feats = d['feats'].to(device)
     coords = d['coords'].to(device)
@@ -357,12 +264,11 @@ def run_conditioning(
 
     # Load DinoV3 and wrap in ModelPatcher for ComfyUI VRAM management
     import comfy.model_patcher
-    from ..trellis2.modules import image_feature_extractor
+    from .trellis2 import dinov3 as image_feature_extractor
     log.info("Loading DinoV3 feature extractor...")
     dinov3_model = image_feature_extractor.DinoV3FeatureExtractor(
         model_name="facebook/dinov3-vitl16-pretrain-lvd1689m"
     )
-    _enable_lowvram_cast(dinov3_model.model)
     offload_device = comfy.model_management.unet_offload_device()
     dinov3_patcher = comfy.model_patcher.ModelPatcher(
         dinov3_model.model,
@@ -446,7 +352,6 @@ def run_shape_generation(
 
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
-    model_dtype = _MODEL_DTYPE            # model weights
     resolution = model_config["resolution"]
 
     # Load conditioning from disk if needed
@@ -459,17 +364,16 @@ def run_shape_generation(
     }
 
     # Load shape pipeline
-    from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+    from .trellis_pipelines import Trellis2ImageTo3DPipeline
 
     shape_models = SHAPE_MODELS_BY_RESOLUTION.get(
         resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade']
     )
 
-    log.info(f"Loading shape pipeline (model_dtype={model_dtype}, compute_dtype={compute_dtype})...")
+    log.info(f"Loading shape pipeline (compute_dtype={compute_dtype})...")
     pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
         model_config["model_name"],
         models_to_load=shape_models,
-        dtype=model_dtype,
     )
     pipeline.default_pipeline_type = resolution
     pipeline._device = device
@@ -489,17 +393,14 @@ def run_shape_generation(
         },
     }
 
-    # autocast: bf16 tensor cores for matmuls/convs/attention, float32 for norms
-    # manual_cast() becomes no-op under autocast (by design)
     torch.cuda.reset_peak_memory_stats()
-    with torch.autocast('cuda', dtype=model_dtype, enabled=model_dtype is not None):
-        meshes, shape_slat, subs, res = pipeline.run_shape(
-            cond_on_device,
-            seed=seed,
-            pipeline_type=resolution,
-            max_num_tokens=max_num_tokens,
-            **sampler_params
-        )
+    meshes, shape_slat, subs, res = pipeline.run_shape(
+        cond_on_device,
+        seed=seed,
+        pipeline_type=resolution,
+        max_num_tokens=max_num_tokens,
+        **sampler_params
+    )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Shape generation peak VRAM: {peak_mem:.0f} MB")
     pbar.update(1)
@@ -576,14 +477,13 @@ def run_texture_generation(
         Dict with textured mesh data
     """
     import comfy.utils
-    from ..trellis2.representations.mesh import Mesh
+    from .trellis2.vae import Mesh
 
     log.info(f"Running texture generation (seed={seed})...")
     pbar = comfy.utils.ProgressBar(3)
 
     device = comfy.model_management.get_torch_device()
     compute_dtype = _DEFAULT_DTYPE        # float32 — noise, conditioning, sampling loop
-    model_dtype = _MODEL_DTYPE            # model weights
     resolution = model_config["resolution"]
 
     # Load conditioning and shape_result from disk if needed
@@ -609,18 +509,17 @@ def run_texture_generation(
     meshes = [mesh]
 
     # Load texture pipeline
-    from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+    from .trellis_pipelines import Trellis2ImageTo3DPipeline
 
     texture_resolution = TEXTURE_RESOLUTION_MAP.get(resolution, '1024_cascade')
     texture_models = TEXTURE_MODELS_BY_RESOLUTION.get(
         resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade']
     )
 
-    log.info(f"Loading texture pipeline (model_dtype={model_dtype}, compute_dtype={compute_dtype})...")
+    log.info(f"Loading texture pipeline (compute_dtype={compute_dtype})...")
     pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
         model_config["model_name"],
         models_to_load=texture_models,
-        dtype=model_dtype,
     )
     pipeline.default_pipeline_type = texture_resolution
     pipeline._device = device
@@ -636,19 +535,17 @@ def run_texture_generation(
         },
     }
 
-    # autocast: bf16 tensor cores for matmuls/convs/attention, float32 for norms
     torch.cuda.reset_peak_memory_stats()
-    with torch.autocast('cuda', dtype=model_dtype, enabled=model_dtype is not None):
-        textured_meshes = pipeline.run_texture_with_subs(
-            cond_on_device,
-            shape_slat,
-            subs,
-            meshes,
-            shape_result['resolution'],
-            seed=seed,
-            pipeline_type=pipeline_type,
-            **sampler_params
-        )
+    textured_meshes = pipeline.run_texture_with_subs(
+        cond_on_device,
+        shape_slat,
+        subs,
+        meshes,
+        shape_result['resolution'],
+        seed=seed,
+        pipeline_type=pipeline_type,
+        **sampler_params
+    )
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Texture generation peak VRAM: {peak_mem:.0f} MB")
     pbar.update(1)
