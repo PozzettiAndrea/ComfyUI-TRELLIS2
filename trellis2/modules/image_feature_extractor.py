@@ -1,5 +1,6 @@
 from typing import *
 import os
+import sys
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
@@ -166,9 +167,10 @@ class DinoV3FeatureExtractor:
         os.makedirs(cache_dir, exist_ok=True)
 
         # Priority 1: Check for clean local safetensors file
+        print(f"[TRELLIS2] Checking for local DINOv3 safetensors in: {cache_dir}", file=sys.stderr, flush=True)
         local_safetensors = _find_local_safetensors(cache_dir)
         if local_safetensors:
-            print(f"[ComfyUI-TRELLIS2] Loading DINOv3 from local safetensors: {os.path.basename(local_safetensors)}")
+            print(f"[TRELLIS2] Loading DINOv3 from local safetensors: {local_safetensors}", file=sys.stderr, flush=True)
             self.model = _load_dinov3_from_safetensors(local_safetensors)
             print(f"[ComfyUI-TRELLIS2] DINOv3 model loaded successfully")
         else:
