@@ -159,8 +159,8 @@ class Trellis2ShapeToTexturedMesh:
             }
         }
 
-    RETURN_TYPES = ("TRIMESH", "TRELLIS2_VOXELGRID", "TRIMESH")
-    RETURN_NAMES = ("trimesh", "voxelgrid", "pbr_pointcloud")
+    RETURN_TYPES = ("TRIMESH", "TRELLIS2_VOXELGRID", "STRING")
+    RETURN_NAMES = ("trimesh", "voxelgrid", "pbr_pointcloud_path")
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
@@ -216,11 +216,14 @@ Returns:
         )
 
         # Create voxel grid dict for Rasterize PBR node
+        # Convert slices to tuples for JSON serialization across IPC
+        pbr_layout = texture_result['pbr_layout']
+        layout_serializable = {k: (v.start, v.stop) for k, v in pbr_layout.items()}
         voxel_grid = {
             'coords': texture_result['voxel_coords'],
             'attrs': texture_result['voxel_attrs'],
             'voxel_size': texture_result['voxel_size'],
-            'layout': texture_result['pbr_layout'],
+            'layout': layout_serializable,
             'original_vertices': texture_result['original_vertices'],
             'original_faces': texture_result['original_faces'],
         }
@@ -229,7 +232,7 @@ Returns:
         coords = texture_result['voxel_coords']
         attrs = texture_result['voxel_attrs']
         voxel_size = texture_result['voxel_size']
-        pbr_layout = texture_result['pbr_layout']
+        # pbr_layout already extracted above (with slice objects for local use)
 
         # Convert voxel indices to world positions
         point_positions = coords * voxel_size
@@ -251,12 +254,19 @@ Returns:
         colors_alpha = (attrs_normalized[:, alpha_slice] * 255).clip(0, 255).astype(np.uint8)
         colors_rgba = np.concatenate([colors_rgb, colors_alpha], axis=1)
 
+        # Save debug pointcloud to file (avoids IPC serialization issues)
+        import os
+        import uuid
         pointcloud = Trimesh.PointCloud(
             vertices=point_positions,
             colors=colors_rgba
         )
+        temp_dir = '/tmp/trellis2_debug'
+        os.makedirs(temp_dir, exist_ok=True)
+        pointcloud_path = os.path.join(temp_dir, f'pbr_pointcloud_{uuid.uuid4().hex[:8]}.glb')
+        pointcloud.export(pointcloud_path)
 
-        return (tri_mesh, voxel_grid, pointcloud)
+        return (tri_mesh, voxel_grid, pointcloud_path)
 
 
 class Trellis2RemoveBackground:
