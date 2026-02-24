@@ -105,16 +105,21 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     with open(config_file, 'r') as f:
         config = json.load(f)
 
+    import torch
+
     # Auto-detect device: prefer CUDA, fallback to CPU
     if device is None:
-        import torch
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    print(f"[TRELLIS2]   Building model: {config['name']}", file=sys.stderr, flush=True)
-    model = __getattr__(config['name'])(**config['args'], **kwargs)
-    model.to(device)  # Move empty model to GPU before loading weights
+    print(f"[TRELLIS2]   Building model: {config['name']} (skip_init)...", file=sys.stderr, flush=True)
+    # Construct on meta device: creates the layer graph with zero-cost placeholder
+    # tensors, skipping the expensive random weight initialization (~3 min for 1.3B models).
+    # The weights are immediately replaced by safetensors below, so random init is wasted.
+    with torch.device('meta'):
+        model = __getattr__(config['name'])(**config['args'], **kwargs)
     print(f"[TRELLIS2]   Loading weights directly to {device}...", file=sys.stderr, flush=True)
-    model.load_state_dict(load_file(model_file, device=device), strict=False)
+    # assign=True swaps meta tensors for real safetensors tensors (no copy)
+    model.load_state_dict(load_file(model_file, device=str(device)), assign=True, strict=False)
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:
