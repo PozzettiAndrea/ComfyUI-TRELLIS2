@@ -282,7 +282,7 @@ Returns:
         import comfy.model_management as mm
 
         # Lazy import rembg from trellis2
-        from .trellis_pipelines import rembg
+        from . import rembg
 
         device = mm.get_torch_device()
 

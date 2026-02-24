@@ -389,31 +389,24 @@ class DinoV3FeatureExtractor:
         self.model.cpu()
 
     def extract_features(self, image: torch.Tensor) -> torch.Tensor:
-        import sys
         # Use ComfyUI-native dtype detection: bf16 if GPU supports it, else fp32.
         # fp16 is NOT allowed — DINOv3 ViT-L overflows at layer 1 in fp16.
+        import sys
+        from tqdm import tqdm
         device = comfy.model_management.get_torch_device()
         compute_dtype = comfy.model_management.vae_dtype(device, allowed_dtypes=[torch.bfloat16])
+        print(f"[TRELLIS2] DinoV3 conditioning: dtype={compute_dtype}", file=sys.stderr)
         image = image.to(dtype=compute_dtype)
-        print(f"[TRELLIS2 DINOV3] input: dtype={image.dtype} (vae_dtype chose {compute_dtype}), shape={image.shape}, min={image.min().item():.4f}, max={image.max().item():.4f}, has_nan={bool(image.isnan().any())}", file=sys.stderr)
         hidden_states = self.model.embeddings(image, bool_masked_pos=None)
-        print(f"[TRELLIS2 DINOV3] after embeddings: dtype={hidden_states.dtype}, has_nan={bool(hidden_states.isnan().any())}, min={hidden_states.min().item():.4f}, max={hidden_states.max().item():.4f}", file=sys.stderr)
         position_embeddings = self.model.rope_embeddings(image)
-        cos, sin = position_embeddings
-        print(f"[TRELLIS2 DINOV3] rope: cos dtype={cos.dtype} has_nan={bool(cos.isnan().any())}, sin dtype={sin.dtype} has_nan={bool(sin.isnan().any())}", file=sys.stderr)
 
-        for i, layer_module in enumerate(self.model.layer):
+        for layer_module in tqdm(self.model.layer, desc="DinoV3 conditioning", ncols=80, leave=False, mininterval=0.5):
             hidden_states = layer_module(
                 hidden_states,
                 position_embeddings=position_embeddings,
             )
-            if bool(hidden_states.isnan().any()):
-                print(f"[TRELLIS2 DINOV3] NaN after layer {i}! dtype={hidden_states.dtype}", file=sys.stderr)
-                break
 
-        print(f"[TRELLIS2 DINOV3] pre-layernorm: dtype={hidden_states.dtype}, has_nan={bool(hidden_states.isnan().any())}, min={hidden_states.min().item():.4f}, max={hidden_states.max().item():.4f}", file=sys.stderr)
         out = F.layer_norm(hidden_states, hidden_states.shape[-1:])
-        print(f"[TRELLIS2 DINOV3] output: dtype={out.dtype}, has_nan={bool(out.isnan().any())}, min={out.min().item():.4f}, max={out.max().item():.4f}", file=sys.stderr)
         return out
 
     @torch.no_grad()
@@ -439,10 +432,6 @@ class DinoV3FeatureExtractor:
         else:
             raise ValueError(f"Unsupported type of image: {type(image)}")
 
-        import sys
-        print(f"[TRELLIS2 DINOV3] raw image: dtype={image.dtype}, shape={image.shape}, min={image.min().item():.4f}, max={image.max().item():.4f}", file=sys.stderr)
         image = self.transform(image).to(device).float()
-        print(f"[TRELLIS2 DINOV3] after transform: dtype={image.dtype}, min={image.min().item():.4f}, max={image.max().item():.4f}", file=sys.stderr)
         features = self.extract_features(image)
-        print(f"[TRELLIS2 DINOV3] final features: dtype={features.dtype}, has_nan={bool(features.isnan().any())}", file=sys.stderr)
         return features
