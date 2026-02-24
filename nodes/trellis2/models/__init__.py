@@ -106,21 +106,35 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
         config = json.load(f)
 
     import torch
+    import torch.nn.init as init
 
     # Auto-detect device: prefer CUDA, fallback to CPU
     if device is None:
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    # Skip initialize_weights — it fills every parameter with random values (~3 min
-    # for 1.3B models) that are immediately overwritten by safetensors below.
+    # Skip ALL random weight initialization during construction:
+    # 1. Monkey-patch initialize_weights (the model-level sweep)
+    # 2. Patch torch.nn.init functions (catches per-layer reset_parameters in
+    #    nn.Linear, nn.LayerNorm, etc.)
+    # All weights are immediately overwritten by safetensors below.
     model_class = __getattr__(config['name'])
     _orig_init_weights = getattr(model_class, 'initialize_weights', None)
     if _orig_init_weights:
         model_class.initialize_weights = lambda self: None
+
+    _init_funcs = ['normal_', 'kaiming_uniform_', 'uniform_', 'zeros_', 'ones_',
+                   'kaiming_normal_', 'xavier_uniform_', 'xavier_normal_', 'constant_']
+    _orig_inits = {name: getattr(init, name) for name in _init_funcs if hasattr(init, name)}
+    _noop = lambda tensor, *args, **kwargs: tensor
+    for name in _orig_inits:
+        setattr(init, name, _noop)
+
     try:
         print(f"[TRELLIS2]   Building model: {config['name']} (skip_init)...", file=sys.stderr, flush=True)
         model = model_class(**config['args'], **kwargs)
     finally:
+        for name, fn in _orig_inits.items():
+            setattr(init, name, fn)
         if _orig_init_weights:
             model_class.initialize_weights = _orig_init_weights
     model.to(device)
