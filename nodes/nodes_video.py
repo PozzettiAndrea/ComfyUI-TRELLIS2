@@ -146,7 +146,7 @@ The generated shape provides a consistent topology for animated texture generati
 
 @isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2AnimatedTexture:
-    """Generate animated PBR textures from video conditioning on shared shape."""
+    """Sample texture latents from video conditioning - saves to disk for separate decoding."""
 
     @classmethod
     def INPUT_TYPES(s):
@@ -174,26 +174,24 @@ class Trellis2AnimatedTexture:
             }
         }
 
-    RETURN_TYPES = ("TRELLIS2_ANIMATION",)
-    RETURN_NAMES = ("animation",)
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("slat_folder",)
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2/Video"
+    OUTPUT_NODE = True
     DESCRIPTION = """
-Generate animated PBR textures on a shared shape structure.
+Sample texture latents for animated 3D and save to disk.
 
-This node generates per-frame texture attributes (base_color, metallic,
-roughness, alpha) on the shared voxel coordinates from the shape.
+This node samples texture latents for keyframes and saves them to a folder.
+The latents can then be decoded and exported by the DecodeAndExport node.
+
+Separating sampling and decoding avoids GPU memory issues on large meshes.
 
 The keyframe_interval controls the speed vs quality tradeoff:
-- 1: Generate unique texture for every frame (slowest, most accurate)
-- 10: Generate every 10th frame, interpolate between (9x faster)
-- Higher values = faster but less accurate
+- 1: Sample texture for every frame (slowest, most accurate)
+- 10: Sample every 10th frame, interpolate between (9x faster)
 
-Interpolation modes:
-- slerp: Spherical linear interpolation - smoother, preserves magnitude
-- linear: Direct linear interpolation - faster, may have artifacts
-
-Output is an animation sequence that can be exported to GLB/OBJ sequence.
+Output is a folder path containing the texture latents.
 """
 
     def generate(
@@ -209,7 +207,7 @@ Output is an animation sequence that can be exported to GLB/OBJ sequence.
     ):
         from utils.video_stages import run_animated_texture_generation
 
-        animation = run_animated_texture_generation(
+        result = run_animated_texture_generation(
             model_config=model_config,
             video_conditioning=video_conditioning,
             shape_result=shape_result,
@@ -220,11 +218,71 @@ Output is an animation sequence that can be exported to GLB/OBJ sequence.
             interpolation_mode=interpolation_mode,
         )
 
-        return (animation,)
+        return (result['slat_folder'],)
+
+
+@isolated(env="trellis2", import_paths=[".", ".."])
+class Trellis2DecodeAndExport:
+    """Decode texture latents and export to GLB files."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model_config": ("TRELLIS2_MODEL_CONFIG",),
+                "slat_folder": ("STRING", {"forceInput": True}),
+                "output_folder": ("STRING", {"default": "output/animation"}),
+            },
+            "optional": {
+                "decimation_target": ("INT", {"default": 100000, "min": 10000, "max": 1000000, "step": 10000}),
+                "texture_size": ("INT", {"default": 2048, "min": 512, "max": 4096, "step": 512}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("output_folder",)
+    FUNCTION = "decode_and_export"
+    CATEGORY = "TRELLIS2/Video"
+    OUTPUT_NODE = True
+    DESCRIPTION = """
+Decode texture latents and export to GLB sequence.
+
+This node loads texture latents from disk, decodes them, interpolates
+between keyframes, and exports each frame as a GLB file.
+
+Run this in a SEPARATE execution from texture sampling to ensure
+full GPU memory is available for decoding.
+
+Parameters:
+- slat_folder: Folder containing texture latents from AnimatedTexture node
+- output_folder: Where to save the GLB files
+- decimation_target: Target triangle count per frame
+- texture_size: Texture resolution for GLB export
+"""
+
+    def decode_and_export(
+        self,
+        model_config,
+        slat_folder,
+        output_folder,
+        decimation_target=100000,
+        texture_size=2048,
+    ):
+        from utils.video_stages import run_decode_and_export
+
+        result = run_decode_and_export(
+            model_config=model_config,
+            slat_folder=slat_folder,
+            output_folder=output_folder,
+            decimation_target=decimation_target,
+            texture_size=texture_size,
+        )
+
+        return (result['output_folder'],)
 
 
 class Trellis2ExportAnimation:
-    """Export animated 3D sequence to files."""
+    """DEPRECATED - Use Trellis2DecodeAndExport instead."""
 
     @classmethod
     def INPUT_TYPES(s):
@@ -357,12 +415,14 @@ NODE_CLASS_MAPPINGS = {
     "Trellis2VideoConditioning": Trellis2VideoConditioning,
     "Trellis2VideoToShape": Trellis2VideoToShape,
     "Trellis2AnimatedTexture": Trellis2AnimatedTexture,
-    "Trellis2ExportAnimation": Trellis2ExportAnimation,
+    "Trellis2DecodeAndExport": Trellis2DecodeAndExport,
+    "Trellis2ExportAnimation": Trellis2ExportAnimation,  # Deprecated
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2VideoConditioning": "TRELLIS.2 Video Conditioning",
     "Trellis2VideoToShape": "TRELLIS.2 Video to Shape",
-    "Trellis2AnimatedTexture": "TRELLIS.2 Animated Texture",
-    "Trellis2ExportAnimation": "TRELLIS.2 Export Animation",
+    "Trellis2AnimatedTexture": "TRELLIS.2 Sample Textures",
+    "Trellis2DecodeAndExport": "TRELLIS.2 Decode & Export",
+    "Trellis2ExportAnimation": "TRELLIS.2 Export Animation (Deprecated)",
 }
