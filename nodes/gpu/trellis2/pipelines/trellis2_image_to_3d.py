@@ -460,8 +460,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             sampler_params (dict): Additional parameters for the sampler.
         """
         # Sample structured latent
+        import sys
+        print(f"[DEBUG] sample_tex_slat input:", file=sys.stderr)
+        print(f"[DEBUG]   shape_slat.feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
+        print(f"[DEBUG]   shape_slat.shape: {shape_slat.shape}", file=sys.stderr)
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(shape_slat.device)
         mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(shape_slat.device)
+        print(f"[DEBUG]   mean.shape: {mean.shape}", file=sys.stderr)
+        print(f"[DEBUG]   std.shape: {std.shape}", file=sys.stderr)
         shape_slat = (shape_slat - mean) / std
 
         flow_model = self._load_model(model_key)
