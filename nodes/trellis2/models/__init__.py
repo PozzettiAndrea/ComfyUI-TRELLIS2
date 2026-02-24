@@ -120,6 +120,8 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     print(f"[TRELLIS2]   Loading weights directly to {device}...", file=sys.stderr, flush=True)
     # assign=True swaps meta tensors for real safetensors tensors (no copy)
     model.load_state_dict(load_file(model_file, device=str(device)), assign=True, strict=False)
+    # bf16 safetensors → float32: bf16 is storage compression, model runs in float32
+    model.float()
 
     # Register with disk offload manager if provided
     if disk_offload_manager is not None:
