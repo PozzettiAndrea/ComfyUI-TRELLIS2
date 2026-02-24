@@ -1,12 +1,13 @@
 """
 Helper utilities for TRELLIS2 nodes.
-
-These run inside the isolated subprocess.
 """
 
+import logging
 import numpy as np
 from PIL import Image
 import torch
+
+log = logging.getLogger("trellis2")
 
 
 def tensor_to_pil(tensor: torch.Tensor) -> Image.Image:
@@ -75,7 +76,7 @@ def smart_crop_square(
 
     if len(bbox_coords) == 0:
         # No object found, return as-is (fallback)
-        print("[TRELLIS2] Warning: No object found in mask, returning original image")
+        log.warning("No object found in mask, returning original image")
         w, h = pil_image.size
         size = max(w, h)
         canvas = Image.new('RGB', (size, size), background_color)

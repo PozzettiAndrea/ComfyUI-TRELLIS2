@@ -1,9 +1,5 @@
 """
 TRELLIS2 utility modules.
-
-Contains both:
-- Host-process utilities (logger, model directories)
-- Subprocess utilities imported inside @isolated methods
 """
 
 import logging
@@ -11,7 +7,7 @@ import os
 
 # Setup logger for host process
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("[TRELLIS2]")
+logger = logging.getLogger("trellis2")
 
 
 def get_trellis_models_dir():

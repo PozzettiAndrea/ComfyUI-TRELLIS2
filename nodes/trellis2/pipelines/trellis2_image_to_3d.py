@@ -1,5 +1,6 @@
 from typing import *
 import gc
+import logging
 import torch
 import torch.nn as nn
 import numpy as np
@@ -9,6 +10,9 @@ from . import samplers, rembg
 from ..modules.sparse import SparseTensor
 from ..modules import image_feature_extractor
 from ..representations import Mesh, MeshWithVoxel
+import comfy.model_management
+
+log = logging.getLogger("trellis2")
 
 
 class Trellis2ImageTo3DPipeline(Pipeline):
@@ -239,7 +243,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         coords = torch.argwhere(decoded)[:, [0, 2, 3, 4]].int()
         del decoded  # Free decoded tensor
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         return coords
 
@@ -310,7 +314,6 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             max_num_tokens (int): Maximum number of tokens.
         """
         # LR pass
-        import sys
         flow_model_lr = self._load_model(model_key_lr)
         noise = SparseTensor(
             feats=torch.randn(coords.shape[0], flow_model_lr.in_channels).to(self.device),
@@ -334,9 +337,9 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 lr_cond[k] = None
         del lr_cond, coords
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
         mem_after_lr = torch.cuda.memory_allocated() / 1024**2
-        print(f"[TRELLIS2] After LR cleanup: {mem_after_lr:.0f} MB", file=sys.stderr, flush=True)
+        log.info(f"After LR cleanup: {mem_after_lr:.0f} MB")
 
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(slat.device)
         mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(slat.device)
@@ -361,15 +364,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             num_tokens = coords.shape[0]
             if num_tokens < max_num_tokens or hr_resolution == 1024:
                 if hr_resolution != resolution:
-                    print(f"Due to the limited number of tokens, the resolution is reduced to {hr_resolution}.")
+                    log.info(f"Due to the limited number of tokens, the resolution is reduced to {hr_resolution}.")
                 break
             hr_resolution -= 128
 
         # Move conditioning to CPU to free GPU memory before loading HR model
         # This ensures maximum free VRAM when the 1024 model is loaded
-        import sys
         mem_before_cleanup = torch.cuda.memory_allocated() / 1024**2
-        print(f"[TRELLIS2] Before HR cleanup: {mem_before_cleanup:.0f} MB", file=sys.stderr, flush=True)
+        log.info(f"Before HR cleanup: {mem_before_cleanup:.0f} MB")
 
         cond_on_cpu = {}
         for k, v in cond.items():
@@ -383,10 +385,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         coords_cpu = coords.cpu()
         del hr_coords, coords, quant_coords
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         mem_after_cleanup = torch.cuda.memory_allocated() / 1024**2
-        print(f"[TRELLIS2] After HR cleanup: {mem_after_cleanup:.0f} MB (freed {mem_before_cleanup - mem_after_cleanup:.0f} MB)", file=sys.stderr, flush=True)
+        log.info(f"After HR cleanup: {mem_after_cleanup:.0f} MB (freed {mem_before_cleanup - mem_after_cleanup:.0f} MB)")
 
         # HR pass - Sample structured latent
         # Load the 1024 model with maximum free GPU memory
@@ -460,14 +462,13 @@ class Trellis2ImageTo3DPipeline(Pipeline):
             sampler_params (dict): Additional parameters for the sampler.
         """
         # Sample structured latent
-        import sys
-        print(f"[DEBUG] sample_tex_slat input:", file=sys.stderr)
-        print(f"[DEBUG]   shape_slat.feats.shape: {shape_slat.feats.shape}", file=sys.stderr)
-        print(f"[DEBUG]   shape_slat.shape: {shape_slat.shape}", file=sys.stderr)
+        log.debug(f"sample_tex_slat input:")
+        log.debug(f"  shape_slat.feats.shape: {shape_slat.feats.shape}")
+        log.debug(f"  shape_slat.shape: {shape_slat.shape}")
         std = torch.tensor(self.shape_slat_normalization['std'])[None].to(shape_slat.device)
         mean = torch.tensor(self.shape_slat_normalization['mean'])[None].to(shape_slat.device)
-        print(f"[DEBUG]   mean.shape: {mean.shape}", file=sys.stderr)
-        print(f"[DEBUG]   std.shape: {std.shape}", file=sys.stderr)
+        log.debug(f"  mean.shape: {mean.shape}")
+        log.debug(f"  std.shape: {std.shape}")
         shape_slat = (shape_slat - mean) / std
 
         flow_model = self._load_model(model_key)
@@ -532,13 +533,13 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         meshes, subs = self.decode_shape_slat(shape_slat, resolution)
 
         # Clear GPU cache before texture decoding
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         tex_voxels = self.decode_tex_slat(tex_slat, subs)
 
         # Delete subs immediately after use to free GPU memory
         del subs
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         out_mesh = []
         for m, v in zip(meshes, tex_voxels):
@@ -641,12 +642,12 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         for k in list(cond.keys()):
             cond[k] = None
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Decode shape (keep subs for texture generation)
         meshes, subs = self.decode_shape_slat(shape_slat, res)
 
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
         return meshes, shape_slat, subs, res
 
     @torch.no_grad()
@@ -694,14 +695,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         )
 
         # Clear GPU cache before decode
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Decode both shape and texture
         out_mesh = self.decode_latent(shape_slat, tex_slat, resolution)
 
         # Delete tex_slat after use
         del tex_slat
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
         return out_mesh
 
     @torch.no_grad()
@@ -757,14 +758,14 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # Free shape_slat and cond - no longer needed after sampling
         del shape_slat, tex_cond, cond
         gc.collect()
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Decode texture using pre-computed subs (skip shape decoder!)
         tex_voxels = self.decode_tex_slat(tex_slat, subs)
 
         # Delete tex_slat after use
         del tex_slat
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
 
         # Combine meshes with texture voxels
         out_mesh = []
@@ -885,7 +886,7 @@ class Trellis2ImageTo3DPipeline(Pipeline):
                 cond_1024, 'tex_slat_flow_model_1024',
                 shape_slat, tex_slat_sampler_params
             )
-        torch.cuda.empty_cache()
+        comfy.model_management.soft_empty_cache()
         out_mesh = self.decode_latent(shape_slat, tex_slat, res)
         if return_latent:
             return out_mesh, (shape_slat, tex_slat, res)

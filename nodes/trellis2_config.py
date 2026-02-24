@@ -1,17 +1,9 @@
-"""
-TRELLIS2 model configuration holder.
-
-This is a simple data class that holds model configuration.
-Actual inference happens in @isolated decorated node methods.
-"""
-
-
 class Trellis2ModelConfig:
     """
     Configuration holder for TRELLIS2 models.
 
     This doesn't load any models - it just stores the configuration
-    that @isolated node methods need to run inference.
+    that node methods need to run inference.
     """
 
     def __init__(

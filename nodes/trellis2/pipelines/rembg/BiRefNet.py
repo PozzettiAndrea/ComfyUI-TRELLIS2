@@ -1,9 +1,12 @@
 from typing import *
+import logging
 import os
 from transformers import AutoModelForImageSegmentation
 import torch
 from torchvision import transforms
 from PIL import Image
+
+log = logging.getLogger("trellis2")
 
 # Remap gated models to public alternatives
 RMBG_MODEL_REMAP = {
@@ -32,7 +35,7 @@ class BiRefNet:
         # Remap gated models to public reuploads
         actual_model_name = RMBG_MODEL_REMAP.get(model_name, model_name)
         if actual_model_name != model_name:
-            print(f"[ComfyUI-TRELLIS2] Remapping {model_name} -> {actual_model_name}")
+            log.info(f"Remapping {model_name} -> {actual_model_name}")
 
         # Use ComfyUI models directory for cache
         import folder_paths
@@ -42,15 +45,15 @@ class BiRefNet:
         # Use local_files_only if model is cached or offline mode is enabled
         local_files_only = _is_offline_mode() or _is_model_cached(actual_model_name, cache_dir)
         if local_files_only:
-            print(f"[ComfyUI-TRELLIS2] Loading BiRefNet model from cache: {actual_model_name}...")
+            log.info(f"Loading BiRefNet model from cache: {actual_model_name}...")
         else:
-            print(f"[ComfyUI-TRELLIS2] Downloading BiRefNet model: {actual_model_name}...")
+            log.info(f"Downloading BiRefNet model: {actual_model_name}...")
 
         self.model = AutoModelForImageSegmentation.from_pretrained(
             actual_model_name, trust_remote_code=True, cache_dir=cache_dir,
             local_files_only=local_files_only
         )
-        print(f"[ComfyUI-TRELLIS2] BiRefNet model loaded successfully")
+        log.info("BiRefNet model loaded successfully")
         self.model.eval()
         self.transform_image = transforms.Compose(
             [

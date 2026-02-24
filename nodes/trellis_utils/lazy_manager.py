@@ -2,15 +2,17 @@
 On-demand model loading manager for TRELLIS2.
 
 Loads models only when needed and can unload them after use.
-This runs inside the isolated subprocess.
 """
 
-import sys
 import gc
+import logging
 from pathlib import Path
 from typing import Optional
 
 import torch
+import comfy.model_management
+
+log = logging.getLogger("trellis2")
 
 
 # Global model manager instance
@@ -137,7 +139,7 @@ class LazyModelManager:
             "cpu_offload": "offload unused to CPU",
             "disk_offload": "offload unused to disk"
         }.get(vram_mode, vram_mode)
-        print(f"[TRELLIS2] LazyModelManager initialized (resolution={resolution}, vram_mode={vram_mode}: {vram_desc})", file=sys.stderr)
+        log.info(f"LazyModelManager initialized (resolution={resolution}, vram_mode={vram_mode}: {vram_desc})")
 
     def _setup_attention_backend(self):
         """Setup attention backend before any model loading."""
@@ -150,19 +152,19 @@ class LazyModelManager:
             from ..trellis2.modules.sparse import config as sparse_config
             dense_config.set_backend(self.attn_backend)
             sparse_config.set_attn_backend(self.attn_backend)
-            print(f"[TRELLIS2] Attention backend set to: {self.attn_backend}", file=sys.stderr)
+            log.info(f"Attention backend set to: {self.attn_backend}")
         except Exception as e:
-            print(f"[TRELLIS2] Warning: Could not set attention backend: {e}", file=sys.stderr)
+            log.warning(f"Could not set attention backend: {e}")
 
     def get_dinov3(self, device: torch.device) -> "DinoV3FeatureExtractor":
         """Load DinoV3 model on demand."""
         if self.dinov3_model is None:
             from ..trellis2.modules import image_feature_extractor
-            print(f"[TRELLIS2] Loading DinoV3 feature extractor...", file=sys.stderr)
+            log.info("Loading DinoV3 feature extractor...")
             self.dinov3_model = image_feature_extractor.DinoV3FeatureExtractor(
                 model_name="facebook/dinov3-vitl16-pretrain-lvd1689m"
             )
-            print(f"[TRELLIS2] DinoV3 loaded successfully", file=sys.stderr)
+            log.info("DinoV3 loaded successfully")
 
         self.dinov3_model.to(device)
         return self.dinov3_model
@@ -173,8 +175,8 @@ class LazyModelManager:
             self.dinov3_model.cpu()
             self.dinov3_model = None
             gc.collect()
-            torch.cuda.empty_cache()
-            print(f"[TRELLIS2] DinoV3 offloaded", file=sys.stderr)
+            comfy.model_management.soft_empty_cache()
+            log.info("DinoV3 offloaded")
 
     def get_shape_pipeline(self, device: torch.device) -> "Trellis2ImageTo3DPipeline":
         """Load shape pipeline on demand."""
@@ -188,7 +190,7 @@ class LazyModelManager:
             # Enable disk offload for disk_offload mode (models deleted after use, reloaded from disk)
             enable_disk_offload = (self.vram_mode == "disk_offload")
 
-            print(f"[TRELLIS2] Loading shape pipeline...", file=sys.stderr)
+            log.info("Loading shape pipeline...")
             self.shape_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
                 self.model_name,
                 models_to_load=shape_models,
@@ -203,11 +205,11 @@ class LazyModelManager:
             self.shape_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
 
             if self.vram_mode != "keep_loaded":
-                print(f"[TRELLIS2] Shape pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
-                print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+                log.info(f"Shape pipeline: progressive loading enabled (vram_mode={self.vram_mode})")
+                log.info("Models will be loaded on-demand and unloaded after use to minimize VRAM")
                 # Enable low_vram mode for chunked processing to reduce peak memory
                 self.shape_pipeline.low_vram = True
-            print(f"[TRELLIS2] Shape pipeline ready", file=sys.stderr)
+            log.info("Shape pipeline ready")
 
         return self.shape_pipeline
 
@@ -216,8 +218,8 @@ class LazyModelManager:
         if self.shape_pipeline is not None:
             self.shape_pipeline = None
             gc.collect()
-            torch.cuda.empty_cache()
-            print(f"[TRELLIS2] Shape pipeline offloaded", file=sys.stderr)
+            comfy.model_management.soft_empty_cache()
+            log.info("Shape pipeline offloaded")
 
     def get_texture_pipeline(self, device: torch.device) -> "Trellis2ImageTo3DPipeline":
         """Load texture pipeline on demand."""
@@ -232,7 +234,7 @@ class LazyModelManager:
             # Enable disk offload for disk_offload mode (models deleted after use, reloaded from disk)
             enable_disk_offload = (self.vram_mode == "disk_offload")
 
-            print(f"[TRELLIS2] Loading texture pipeline...", file=sys.stderr)
+            log.info("Loading texture pipeline...")
             self.texture_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
                 self.model_name,
                 models_to_load=texture_models,
@@ -247,11 +249,11 @@ class LazyModelManager:
             self.texture_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
 
             if self.vram_mode != "keep_loaded":
-                print(f"[TRELLIS2] Texture pipeline: progressive loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
-                print(f"[TRELLIS2] Models will be loaded on-demand and unloaded after use to minimize VRAM", file=sys.stderr)
+                log.info(f"Texture pipeline: progressive loading enabled (vram_mode={self.vram_mode})")
+                log.info("Models will be loaded on-demand and unloaded after use to minimize VRAM")
                 # Enable low_vram mode for chunked processing to reduce peak memory
                 self.texture_pipeline.low_vram = True
-            print(f"[TRELLIS2] Texture pipeline ready", file=sys.stderr)
+            log.info("Texture pipeline ready")
 
         return self.texture_pipeline
 
@@ -260,12 +262,12 @@ class LazyModelManager:
         if self.texture_pipeline is not None:
             self.texture_pipeline = None
             gc.collect()
-            torch.cuda.empty_cache()
-            print(f"[TRELLIS2] Texture pipeline offloaded", file=sys.stderr)
+            comfy.model_management.soft_empty_cache()
+            log.info("Texture pipeline offloaded")
 
     def cleanup(self):
         """Unload all models and free VRAM."""
         self.unload_dinov3()
         self.unload_shape_pipeline()
         self.unload_texture_pipeline()
-        print(f"[TRELLIS2] All models cleaned up", file=sys.stderr)
+        log.info("All models cleaned up")

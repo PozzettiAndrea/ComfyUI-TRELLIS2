@@ -2,6 +2,6 @@
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("[TRELLIS2]")
+logger = logging.getLogger("trellis2")
 
 __all__ = ['logger']
