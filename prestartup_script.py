@@ -1,8 +1,12 @@
 """Pre-startup script for ComfyUI-TRELLIS2.
 
-This script runs before ComfyUI initializes and copies example assets
-to ComfyUI's input directory.
+This script runs before ComfyUI initializes and:
+1. Sets up the comfy-env environment (LD_LIBRARY_PATH)
+2. Copies example assets to ComfyUI's input directory.
 """
+from comfy_env import setup_env
+setup_env()
+
 import os
 import shutil
 
