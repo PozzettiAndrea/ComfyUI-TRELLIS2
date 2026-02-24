@@ -15,7 +15,6 @@ class Trellis2GetConditioning:
                 "mask": ("MASK",),
             },
             "optional": {
-                "include_1024": ("BOOLEAN", {"default": True}),
                 "background_color": (["black", "gray", "white"], {"default": "black"}),
             },
         }
@@ -37,14 +36,16 @@ Parameters:
 - model_config: The loaded TRELLIS.2 config
 - image: Input image (RGB)
 - mask: Foreground mask (white=object, black=background)
-- include_1024: Also extract 1024px features (needed for cascade modes)
-
 Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 """
 
-    def get_conditioning(self, model_config, image, mask, include_1024=True, background_color="black"):
+    def get_conditioning(self, model_config, image, mask, background_color="black"):
         # All heavy imports happen inside subprocess
         from .trellis_utils import run_conditioning
+
+        # Auto-detect whether 1024 features are needed from resolution mode
+        resolution = model_config.get("resolution", "1024_cascade")
+        include_1024 = resolution in ("1024_cascade", "1536_cascade", "1024")
 
         conditioning, preprocessed_image = run_conditioning(
             model_config=model_config,

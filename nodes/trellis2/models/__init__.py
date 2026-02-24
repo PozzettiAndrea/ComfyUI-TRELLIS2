@@ -122,8 +122,22 @@ def from_pretrained(path: str, disk_offload_manager=None, model_key: str = None,
     log.info(f"Loading weights directly to {device}...")
     model.load_state_dict(comfy.utils.load_torch_file(model_file, device=torch.device(device)), strict=False, assign=True)
 
+    # Reinitialize any buffers left on meta device after assign=True loading
+    # (strict=False means buffers not in the checkpoint stay on meta)
+    for name, buf in model.named_buffers():
+        if buf.device.type == "meta":
+            parts = name.split(".")
+            parent = model
+            for p in parts[:-1]:
+                parent = getattr(parent, p)
+            parent._buffers[parts[-1]] = torch.zeros_like(buf, device=device)
+
     if dtype is not None:
         model = model.to(dtype=dtype)
+        # Update model's internal dtype so manual_cast uses the actual compute dtype
+        # (model config may say float32, but we've converted weights to bf16/fp16)
+        if hasattr(model, 'dtype') and isinstance(getattr(model, 'dtype', None), torch.dtype):
+            model.dtype = dtype
         log.info(f"Model dtype set to {dtype}")
 
     # Register with disk offload manager if provided

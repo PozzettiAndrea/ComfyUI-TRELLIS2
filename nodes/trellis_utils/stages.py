@@ -22,6 +22,8 @@ log = logging.getLogger("trellis2")
 
 from .helpers import smart_crop_square
 
+_DTYPE_MAP = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}
+
 
 # Shape models needed for each resolution mode
 SHAPE_MODELS_BY_RESOLUTION = {
@@ -331,15 +333,15 @@ def run_shape_generation(
     log.info(f"Running shape generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
-    dtype = model_config.get("dtype")
+    dtype = _DTYPE_MAP.get(model_config.get("dtype"), torch.bfloat16)
     resolution = model_config["resolution"]
 
     # Load conditioning from disk if needed
     conditioning = _load_from_disk(conditioning)
 
-    # Move conditioning to device
+    # Move conditioning to device and dtype
     cond_on_device = {
-        k: v.to(device) if isinstance(v, torch.Tensor) else v
+        k: v.to(device=device, dtype=dtype) if isinstance(v, torch.Tensor) else v
         for k, v in conditioning.items()
     }
 
@@ -459,16 +461,16 @@ def run_texture_generation(
     log.info(f"Running texture generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
-    dtype = model_config.get("dtype")
+    dtype = _DTYPE_MAP.get(model_config.get("dtype"), torch.bfloat16)
     resolution = model_config["resolution"]
 
     # Load conditioning and shape_result from disk if needed
     conditioning = _load_from_disk(conditioning)
     shape_result = _load_from_disk(shape_result)
 
-    # Move conditioning to device
+    # Move conditioning to device and dtype
     cond_on_device = {
-        k: v.to(device) if isinstance(v, torch.Tensor) else v
+        k: v.to(device=device, dtype=dtype) if isinstance(v, torch.Tensor) else v
         for k, v in conditioning.items()
     }
 
