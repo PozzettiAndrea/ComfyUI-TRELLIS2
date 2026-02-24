@@ -1,8 +1,11 @@
 name: Test Installation
-on: workflow_dispatch
+on:
+  push:
+    branches: [main, dev]
 
 jobs:
   test:
+    environment: test
     uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@main
     with:
       config-file: "comfy-test.toml"
