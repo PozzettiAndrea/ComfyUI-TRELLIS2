@@ -90,11 +90,10 @@ class RoPEEmbedding(nn.Module):
         _, _, h, w = pixel_values.shape
         nh, nw = h // self.patch_size, w // self.patch_size
         device = pixel_values.device
-        with torch.autocast(device_type=device.type if device.type != "mps" else "cpu", enabled=False):
-            coords = _get_patch_coords(nh, nw, torch.float32, device)
-            angles = 2 * math.pi * coords[:, :, None] * self.inv_freq[None, None, :]
-            angles = angles.flatten(1, 2).tile(2)
-            cos, sin = torch.cos(angles), torch.sin(angles)
+        coords = _get_patch_coords(nh, nw, torch.float32, device)
+        angles = 2 * math.pi * coords[:, :, None] * self.inv_freq[None, None, :]
+        angles = angles.flatten(1, 2).tile(2)
+        cos, sin = torch.cos(angles), torch.sin(angles)
         dtype = pixel_values.dtype
         return cos.to(dtype=dtype), sin.to(dtype=dtype)
 
