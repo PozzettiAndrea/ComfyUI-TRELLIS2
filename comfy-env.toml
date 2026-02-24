@@ -21,9 +21,6 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
 
     [trellis2.packages]
     requirements = [
-        # Platform-specific
-        "triton-windows>=3.5.0; sys_platform == 'win32'",
-
         # HuggingFace
         "huggingface_hub>=0.20.0,<1.0.0",
         "hf_transfer",
@@ -54,3 +51,9 @@ pytorch_version = "auto"   # 2.8.0 for cu128, 2.4.0 for cu124
         "zstandard",
         "setuptools",
     ]
+
+    [trellis2.packages.windows]
+    requirements = ["triton-windows>=3.5.0"]
+
+    [trellis2.packages.linux]
+    requirements = ["triton>=3.0.0"]
