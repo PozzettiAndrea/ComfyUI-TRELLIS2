@@ -124,37 +124,11 @@ def set_debug(debug: bool) -> None:
 # =============================================================================
 
 class LayerNorm32(ops.LayerNorm):
-    """
-    A LayerNorm layer that computes in float32 for numerical stability.
-    Inherits from comfy.ops.disable_weight_init.LayerNorm for ComfyUI
-    weight management (CastWeightBiasOp, reset_parameters).
-    """
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x_dtype = x.dtype
-        o = F.layer_norm(
-            x.float(), self.normalized_shape,
-            self.weight.float() if self.weight is not None else None,
-            self.bias.float() if self.bias is not None else None,
-            self.eps,
-        )
-        return o.to(x_dtype)
+    pass  # ComfyUI forward_comfy_cast_weights handles weight casting natively
 
 
 class GroupNorm32(ops.GroupNorm):
-    """
-    A GroupNorm layer that computes in float32 for numerical stability.
-    Inherits from comfy.ops.disable_weight_init.GroupNorm for ComfyUI
-    weight management (CastWeightBiasOp, reset_parameters).
-    """
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x_dtype = x.dtype
-        o = F.group_norm(
-            x.float(), self.num_groups,
-            self.weight.float() if self.weight is not None else None,
-            self.bias.float() if self.bias is not None else None,
-            self.eps,
-        )
-        return o.to(x_dtype)
+    pass  # ComfyUI forward_comfy_cast_weights handles weight casting natively
 
 
 class ChannelLayerNorm32(LayerNorm32):
