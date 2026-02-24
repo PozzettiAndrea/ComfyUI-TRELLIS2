@@ -2,8 +2,18 @@ name: PR Gate
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'pyproject.toml'
+      - 'LICENSE'
+      - '.github/workflows/publish.yml'
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'pyproject.toml'
+      - 'LICENSE'
+      - '.github/workflows/publish.yml'
   workflow_dispatch:
 
 jobs:
