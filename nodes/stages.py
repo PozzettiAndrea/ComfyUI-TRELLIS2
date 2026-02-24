@@ -179,7 +179,7 @@ def _load_model(model_key, device=None):
     t0 = time.perf_counter()
     comfy.model_management.load_models_gpu([_model_patchers[model_key]])
     elapsed = time.perf_counter() - t0
-    print(f"[TRELLIS2] {model_key} → GPU: {elapsed:.1f}s", file=sys.stderr)
+    print(f"[TRELLIS2] {model_key} -> GPU: {elapsed:.1f}s", file=sys.stderr)
 
     # Run _post_load once (needs GPU; computes RoPE phases etc.)
     model = _model_patchers[model_key].model
@@ -305,7 +305,7 @@ def _deserialize_from_ipc(obj: Any, device: torch.device) -> Any:
 
 def _sample_sparse_structure(cond, ss_res, sampler_params, device, dtype):
     """
-    Sample sparse structure: SS flow → SS decoder → voxel coords.
+    Sample sparse structure: SS flow -> SS decoder -> voxel coords.
 
     Args:
         cond: dict with 'cond' and 'neg_cond' tensors
@@ -402,7 +402,7 @@ def _sample_shape_slat_cascade(
     device, dtype,
 ):
     """
-    Sample structured latent using cascade (LR flow → decoder upsample → HR flow).
+    Sample structured latent using cascade (LR flow -> decoder upsample -> HR flow).
 
     Returns:
         (slat, actual_hr_resolution)
@@ -474,7 +474,7 @@ def _sample_shape_slat_cascade(
     gc.collect()
     comfy.model_management.soft_empty_cache()
     mem_after = torch.cuda.memory_allocated() / 1024**2
-    log.info(f"HR cleanup: {mem_before:.0f} → {mem_after:.0f} MB")
+    log.info(f"HR cleanup: {mem_before:.0f} -> {mem_after:.0f} MB")
 
     # ---- HR pass ----
     flow_model = _load_model(hr_key)
@@ -506,7 +506,7 @@ def _sample_shape_slat_cascade(
 
 
 def _decode_shape_slat(slat, resolution, dtype):
-    """Decode structured latent → meshes + subs."""
+    """Decode structured latent -> meshes + subs."""
     import time as _time, sys as _sys
     decoder = _load_model('shape_slat_decoder')
     decoder.set_resolution(resolution)
@@ -572,7 +572,7 @@ def _sample_tex_slat(cond, model_key, shape_slat, sampler_params, device, dtype)
 
 
 def _decode_tex_slat(slat, subs):
-    """Decode texture structured latent → texture voxels."""
+    """Decode texture structured latent -> texture voxels."""
     import time as _time, sys as _sys
     decoder = _load_model('tex_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype

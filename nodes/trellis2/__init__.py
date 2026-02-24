@@ -9,7 +9,7 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 log = logging.getLogger("trellis2")
 
-# Model class lookup table: name → (module, class_name)
+# Model class lookup table: name -> (module, class_name)
 _MODEL_CLASSES = {
     # Sparse Structure
     'SparseStructureEncoder': ('.vae', 'SparseStructureEncoder'),
