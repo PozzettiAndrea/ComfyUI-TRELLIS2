@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint
 import comfy.ops
+import comfy.model_management
 from .model import LayerNorm32, GroupNorm32, ChannelLayerNorm32, zero_module, pixel_shuffle_3d, str_to_dtype
 from .sparse import SparseTensor, VarLenTensor, SparseDownsample, SparseUpsample, SparseSpatial2Channel, SparseChannel2Spatial, sparse_cat, SparseActivation
 from .ops_sparse import manual_cast as sparse_ops
@@ -573,15 +574,17 @@ class SparseConvNeXtBlock3d(nn.Module):
     def _forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
         h = self.conv(x)
         h = h.replace(self.norm(h.feats))
-        try:
-            if self.low_vram:
-                feats = _apply_in_chunks(self.mlp, h.feats, self.mlp_chunk_size)
-            else:
-                feats = self.mlp(h.feats)
-        except torch.OutOfMemoryError:
-            if h.feats.is_cuda:
-                torch.cuda.empty_cache()
-            feats = _apply_in_chunks(self.mlp, h.feats, self.mlp_chunk_size)
+        steps = max(1, (h.feats.shape[0] + self.mlp_chunk_size - 1) // self.mlp_chunk_size) if self.low_vram else 1
+        while True:
+            try:
+                chunk_size = (h.feats.shape[0] + steps - 1) // steps if steps > 1 else 0
+                feats = _apply_in_chunks(self.mlp, h.feats, chunk_size)
+                break
+            except comfy.model_management.OOM_EXCEPTION as e:
+                comfy.model_management.soft_empty_cache(True)
+                steps *= 2
+                if steps > 64:
+                    raise e
         h = h.replace(feats)
         return h + x
 
