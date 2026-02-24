@@ -6,7 +6,7 @@ This script sets up an isolated Python virtual environment with all dependencies
 required for TRELLIS2. The environment is completely isolated from
 ComfyUI's main environment, preventing any dependency conflicts.
 
-Uses comfyui-envmanager package for environment management.
+Uses comfy-env package for environment management.
 """
 
 import sys
@@ -150,16 +150,16 @@ def ensure_vcredist():
 # Main Installation
 # =============================================================================
 
-def ensure_comfyui_envmanager():
-    """Install/upgrade comfyui-envmanager package."""
-    print("[TRELLIS2] Installing comfyui-envmanager package...")
+def ensure_comfy_env():
+    """Install/upgrade comfy-env package."""
+    print("[TRELLIS2] Installing comfy-env package...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--upgrade", "comfyui-envmanager>=0.0.12"
+            sys.executable, "-m", "pip", "install", "--upgrade", "comfy-env>=0.0.12"
         ])
         return True
     except subprocess.CalledProcessError as e:
-        print(f"[TRELLIS2] Failed to install comfyui-envmanager: {e}")
+        print(f"[TRELLIS2] Failed to install comfy-env: {e}")
         return False
 
 
@@ -174,9 +174,9 @@ def main():
         print("[TRELLIS2] WARNING: VC++ Redistributable installation failed.")
         print("[TRELLIS2] Some features may not work. Continuing anyway...")
 
-    # Ensure comfyui-envmanager is installed
-    if not ensure_comfyui_envmanager():
-        print("[TRELLIS2] Cannot continue without comfyui-envmanager package.")
+    # Ensure comfy-env is installed
+    if not ensure_comfy_env():
+        print("[TRELLIS2] Cannot continue without comfy-env package.")
         return 1
 
     from comfyui_envmanager import IsolatedEnvManager, discover_config
