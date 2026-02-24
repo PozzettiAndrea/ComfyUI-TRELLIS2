@@ -572,12 +572,6 @@ class SparseConvNeXtBlock3d(nn.Module):
         )
 
     def _forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
-        dev = x.feats.device
-        if dev.type == 'cuda':
-            free = torch.cuda.mem_get_info(dev)[0] / 1024**3
-            used = torch.cuda.memory_allocated(dev) / 1024**3
-            import sys
-            print(f"[vae block] N={x.feats.shape[0]:,} C={x.feats.shape[1]} | free={free:.2f}GB used={used:.2f}GB", file=sys.stderr)
         h = self.conv(x)
         norm_feats = self.norm(h.feats)
         del h  # free conv output feats before MLP expansion
