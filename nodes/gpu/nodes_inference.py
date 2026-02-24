@@ -159,8 +159,8 @@ class Trellis2ShapeToTexturedMesh:
             }
         }
 
-    RETURN_TYPES = ("TRIMESH", "TRELLIS2_VOXELGRID", "STRING")
-    RETURN_NAMES = ("trimesh", "voxelgrid", "pbr_pointcloud_path")
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("mesh_glb_path", "voxelgrid_npz_path")
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
@@ -180,9 +180,8 @@ Parameters:
 - tex_*: Texture sampling parameters
 
 Returns:
-- trimesh: The 3D mesh with PBR vertex attributes
-- voxelgrid: Sparse PBR voxel data for Rasterize PBR node
-- pbr_pointcloud: Debug point cloud with all 6 PBR channels
+- mesh_glb_path: Path to mesh geometry (.glb file)
+- voxelgrid_npz_path: Path to voxelgrid data (.npz file with coords, attrs, vertices, faces, etc.)
 """
 
     def generate(
@@ -195,6 +194,9 @@ Returns:
         tex_sampling_steps=12,
     ):
         # All heavy imports happen inside subprocess
+        import json
+        import os
+        import uuid
         import numpy as np
         import trimesh as Trimesh
         from trellis_utils import run_texture_generation
@@ -208,65 +210,39 @@ Returns:
             tex_sampling_steps=tex_sampling_steps,
         )
 
-        # Create trimesh from vertices/faces
+        # Create output directory
+        cache_dir = '/tmp/trellis2_cache'
+        os.makedirs(cache_dir, exist_ok=True)
+        file_id = uuid.uuid4().hex[:8]
+
+        # Save mesh geometry to .glb
         tri_mesh = Trimesh.Trimesh(
             vertices=texture_result['mesh_vertices'],
             faces=texture_result['mesh_faces'],
             process=False
         )
+        mesh_glb_path = os.path.join(cache_dir, f'mesh_{file_id}.glb')
+        tri_mesh.export(mesh_glb_path)
+        print(f"[TRELLIS2] Mesh saved to: {mesh_glb_path}")
 
-        # Create voxel grid dict for Rasterize PBR node
-        # Convert slices to tuples for JSON serialization across IPC
+        # Convert layout slices to tuples for JSON serialization
         pbr_layout = texture_result['pbr_layout']
         layout_serializable = {k: (v.start, v.stop) for k, v in pbr_layout.items()}
-        voxel_grid = {
-            'coords': texture_result['voxel_coords'],
-            'attrs': texture_result['voxel_attrs'],
-            'voxel_size': texture_result['voxel_size'],
-            'layout': layout_serializable,
-            'original_vertices': texture_result['original_vertices'],
-            'original_faces': texture_result['original_faces'],
-        }
 
-        # Create debug point cloud
-        coords = texture_result['voxel_coords']
-        attrs = texture_result['voxel_attrs']
-        voxel_size = texture_result['voxel_size']
-        # pbr_layout already extracted above (with slice objects for local use)
-
-        # Convert voxel indices to world positions
-        point_positions = coords * voxel_size
-
-        # Apply Y-up to Z-up conversion
-        point_positions[:, 1], point_positions[:, 2] = (
-            point_positions[:, 2].copy(),
-            -point_positions[:, 1].copy()
+        # Save voxelgrid data to .npz
+        voxelgrid_npz_path = os.path.join(cache_dir, f'voxelgrid_{file_id}.npz')
+        np.savez(
+            voxelgrid_npz_path,
+            coords=texture_result['voxel_coords'],
+            attrs=texture_result['voxel_attrs'],
+            voxel_size=np.array([texture_result['voxel_size']]),
+            vertices=texture_result['original_vertices'],
+            faces=texture_result['original_faces'],
+            layout=json.dumps(layout_serializable),
         )
+        print(f"[TRELLIS2] Voxelgrid saved to: {voxelgrid_npz_path}")
 
-        # Convert attrs from [-1, 1] to [0, 1]
-        attrs_normalized = (attrs + 1.0) * 0.5
-
-        # For trimesh.PointCloud colors, use base_color RGB + alpha
-        base_color_slice = pbr_layout.get('base_color', slice(0, 3))
-        alpha_slice = pbr_layout.get('alpha', slice(5, 6))
-
-        colors_rgb = (attrs_normalized[:, base_color_slice] * 255).clip(0, 255).astype(np.uint8)
-        colors_alpha = (attrs_normalized[:, alpha_slice] * 255).clip(0, 255).astype(np.uint8)
-        colors_rgba = np.concatenate([colors_rgb, colors_alpha], axis=1)
-
-        # Save debug pointcloud to file (avoids IPC serialization issues)
-        import os
-        import uuid
-        pointcloud = Trimesh.PointCloud(
-            vertices=point_positions,
-            colors=colors_rgba
-        )
-        temp_dir = '/tmp/trellis2_debug'
-        os.makedirs(temp_dir, exist_ok=True)
-        pointcloud_path = os.path.join(temp_dir, f'pbr_pointcloud_{uuid.uuid4().hex[:8]}.glb')
-        pointcloud.export(pointcloud_path)
-
-        return (tri_mesh, voxel_grid, pointcloud_path)
+        return (mesh_glb_path, voxelgrid_npz_path)
 
 
 class Trellis2RemoveBackground:
