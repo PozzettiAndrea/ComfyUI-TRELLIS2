@@ -108,7 +108,8 @@ def _load_from_disk(ref: Any) -> Any:
         log.info(f"Loading from {path}")
         # Safe loading: these files contain only tensors and basic Python types (dicts, lists, tuples)
         # saved by _save_to_disk() for IPC between pipeline stages
-        return torch.load(path, weights_only=True)
+        import comfy.utils
+        return comfy.utils.load_torch_file(path)
     return ref
 
 

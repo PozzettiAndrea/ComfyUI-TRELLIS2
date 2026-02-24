@@ -20,10 +20,12 @@ def cube_to_dir(s, x, y):
 def latlong_to_cubemap(latlong_map, res):
     if 'dr' not in globals():
         import nvdiffrast.torch as dr
-    cubemap = torch.zeros(6, res[0], res[1], latlong_map.shape[-1], dtype=torch.float32, device='cuda')
+    import comfy.model_management
+    device = comfy.model_management.get_torch_device()
+    cubemap = torch.zeros(6, res[0], res[1], latlong_map.shape[-1], dtype=torch.float32, device=device)
     for s in range(6):
-        gy, gx = torch.meshgrid(torch.linspace(-1.0 + 1.0 / res[0], 1.0 - 1.0 / res[0], res[0], device='cuda'), 
-                                torch.linspace(-1.0 + 1.0 / res[1], 1.0 - 1.0 / res[1], res[1], device='cuda'),
+        gy, gx = torch.meshgrid(torch.linspace(-1.0 + 1.0 / res[0], 1.0 - 1.0 / res[0], res[0], device=device),
+                                torch.linspace(-1.0 + 1.0 / res[1], 1.0 - 1.0 / res[1], res[1], device=device),
                                 indexing='ij')
         v = F.normalize(cube_to_dir(s, gx, gy), dim=-1)
 
@@ -194,10 +196,14 @@ class PbrMeshRenderer:
     Args:
         rendering_options (dict): Rendering options.
         """
-    def __init__(self, rendering_options={}, device='cuda'):
+    def __init__(self, rendering_options={}, device=None):
         if 'dr' not in globals():
             import nvdiffrast.torch as dr
-        
+
+        if device is None:
+            import comfy.model_management
+            device = comfy.model_management.get_torch_device()
+
         self.rendering_options = edict({
             "resolution": None,
             "near": None,

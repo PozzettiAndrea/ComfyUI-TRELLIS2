@@ -3,6 +3,7 @@ import torch
 import math
 from .. import SparseTensor
 from .. import config
+import comfy_attn
 
 
 __all__ = [
@@ -15,7 +16,7 @@ def calc_window_partition(
     tensor: SparseTensor,
     window_size: Union[int, Tuple[int, ...]],
     shift_window: Union[int, Tuple[int, ...]] = 0,
-) -> Tuple[torch.Tensor, torch.Tensor, List[int], List[int]]:
+) -> Tuple[torch.Tensor, torch.Tensor, List[int], Dict]:
     """
     Calculate serialization and partitioning for a set of coordinates.
 
@@ -28,7 +29,7 @@ def calc_window_partition(
         (torch.Tensor): Forwards indices.
         (torch.Tensor): Backwards indices.
         (torch.Tensor): Sequence lengths.
-        (dict): Attn func args.
+        (dict): Attn func args (cu_seqlens, max_seqlen).
     """
     DIM = tensor.coords.shape[1] - 1
     shift_window = (shift_window,) * DIM if isinstance(shift_window, int) else shift_window
@@ -48,29 +49,21 @@ def calc_window_partition(
     seq_lens = torch.bincount(shifted_indices)
     mask = seq_lens != 0
     seq_lens = seq_lens[mask]
-    
-    backend = config.get_attn_backend()
 
-    if backend == 'xformers':
-        import xformers.ops as xops
-        attn_func_args = {
-            'attn_bias': xops.fmha.BlockDiagonalMask.from_seqlens(seq_lens)
-        }
-    elif backend == 'flash_attn':
-        attn_func_args = {
-            'cu_seqlens': torch.cat([torch.tensor([0], device=tensor.device), torch.cumsum(seq_lens, dim=0)], dim=0).int(),
-            'max_seqlen': torch.max(seq_lens)
-        }
-    elif backend == 'sdpa':
-        # For sdpa, we need to store seq_lens to build the mask later
-        attn_func_args = {
-            'seq_lens': seq_lens.tolist() if isinstance(seq_lens, torch.Tensor) else seq_lens
-        }
-    else:
-        raise ValueError(f"Unknown sparse attention backend: {backend}")
+    # Build cumulative sequence lengths for comfy-attn varlen dispatch
+    cu_seqlens = torch.cat([
+        torch.tensor([0], device=tensor.device),
+        torch.cumsum(seq_lens, dim=0)
+    ], dim=0).int()
+    max_seqlen = torch.max(seq_lens).item()
+
+    attn_func_args = {
+        'cu_seqlens': cu_seqlens,
+        'max_seqlen': max_seqlen,
+    }
 
     return fwd_indices, bwd_indices, seq_lens, attn_func_args
-    
+
 
 def sparse_windowed_scaled_dot_product_self_attention(
     qkv: SparseTensor,
@@ -84,7 +77,7 @@ def sparse_windowed_scaled_dot_product_self_attention(
         qkv (SparseTensor): [N, *, 3, H, C] sparse tensor containing Qs, Ks, and Vs.
         window_size (int): The window size to use.
         shift_window (Tuple[int, int, int]): The shift of serialized coordinates.
-        
+
     Returns:
         (SparseTensor): [N, *, H, C] sparse tensor containing the output features.
     """
@@ -97,7 +90,7 @@ def sparse_windowed_scaled_dot_product_self_attention(
         qkv.register_spatial_cache(serialization_spatial_cache_name, (fwd_indices, bwd_indices, seq_lens, attn_func_args))
     else:
         fwd_indices, bwd_indices, seq_lens, attn_func_args = serialization_spatial_cache
-    
+
     qkv_feats = qkv.feats[fwd_indices]      # [M, 3, H, C]
 
     if config.get_debug():
@@ -109,72 +102,14 @@ def sparse_windowed_scaled_dot_product_self_attention(
                     f"SparseWindowedScaledDotProductSelfAttention: window size exceeded"
             start += seq_lens[i]
 
-    backend = config.get_attn_backend()
+    q, k, v = qkv_feats.unbind(dim=1)  # each [M, H, C]
 
-    if backend == 'xformers':
-        import xformers.ops as xops
-        q, k, v = qkv_feats.unbind(dim=1)                                               # [M, H, C]
-        q = q.unsqueeze(0)                                                              # [1, M, H, C]
-        k = k.unsqueeze(0)                                                              # [1, M, H, C]
-        v = v.unsqueeze(0)                                                              # [1, M, H, C]
-        out = xops.memory_efficient_attention(q, k, v, **attn_func_args)[0]             # [M, H, C]
-    elif backend == 'flash_attn':
-        import flash_attn
-        out = flash_attn.flash_attn_varlen_qkvpacked_func(qkv_feats, **attn_func_args)  # [M, H, C]
-    elif backend == 'sdpa':
-        # SDPA fallback: pad variable-length sequences and use attention mask
-        from torch.nn.functional import scaled_dot_product_attention as sdpa
+    cu_seqlens = attn_func_args['cu_seqlens']
+    max_seqlen = attn_func_args['max_seqlen']
 
-        q, k, v = qkv_feats.unbind(dim=1)  # Each: [M, H, C]
-        seq_lens_list = attn_func_args['seq_lens']
-        device = q.device
-
-        N = len(seq_lens_list)
-        max_len = max(seq_lens_list)
-        H = q.shape[1]
-        C = q.shape[2]
-
-        # Create padded tensors [N, max_len, H, C]
-        q_padded = torch.zeros(N, max_len, H, C, device=device, dtype=q.dtype)
-        k_padded = torch.zeros(N, max_len, H, C, device=device, dtype=k.dtype)
-        v_padded = torch.zeros(N, max_len, H, C, device=device, dtype=v.dtype)
-
-        # Fill in the actual values
-        offset = 0
-        for i in range(N):
-            seq_len = seq_lens_list[i]
-            q_padded[i, :seq_len] = q[offset:offset + seq_len]
-            k_padded[i, :seq_len] = k[offset:offset + seq_len]
-            v_padded[i, :seq_len] = v[offset:offset + seq_len]
-            offset += seq_len
-
-        # Create attention mask: True for valid positions
-        attn_mask = torch.zeros(N, 1, max_len, max_len, device=device, dtype=torch.bool)
-        for i in range(N):
-            seq_len = seq_lens_list[i]
-            attn_mask[i, :, :seq_len, :seq_len] = True
-
-        # Convert to float mask for sdpa (0 for valid, -inf for invalid)
-        attn_mask_float = torch.where(attn_mask, 0.0, float('-inf')).to(dtype=q.dtype)
-
-        # Permute to [N, H, L, C] for sdpa
-        q_padded = q_padded.permute(0, 2, 1, 3)
-        k_padded = k_padded.permute(0, 2, 1, 3)
-        v_padded = v_padded.permute(0, 2, 1, 3)
-
-        # Run sdpa
-        out_padded = sdpa(q_padded, k_padded, v_padded, attn_mask=attn_mask_float)
-
-        # Permute back to [N, L, H, C]
-        out_padded = out_padded.permute(0, 2, 1, 3)
-
-        # Extract valid outputs back to flat tensor
-        out_list = []
-        for i in range(N):
-            out_list.append(out_padded[i, :seq_lens_list[i]])
-        out = torch.cat(out_list, dim=0)
-    else:
-        raise ValueError(f"Unknown sparse attention backend: {backend}")
+    out = comfy_attn.dispatch_attention_varlen(
+        q, k, v, cu_seqlens, cu_seqlens, max_seqlen, max_seqlen
+    )  # [M, H, C]
 
     out = out[bwd_indices]      # [T, H, C]
 
@@ -203,7 +138,7 @@ def sparse_windowed_scaled_dot_product_cross_attention(
         kv_window_size (int): The window size to use for Ks and Vs.
         q_shift_window (Tuple[int, int, int]): The shift of serialized coordinates for Qs.
         kv_shift_window (Tuple[int, int, int]): The shift of serialized coordinates for Ks and Vs.
-        
+
     Returns:
         (SparseTensor): [N, *, H, C] sparse tensor containing the output features.
     """
@@ -229,81 +164,13 @@ def sparse_windowed_scaled_dot_product_cross_attention(
 
     q_feats = q.feats[q_fwd_indices]      # [M, H, C]
     kv_feats = kv.feats[kv_fwd_indices]    # [M, 2, H, C]
+    k, v = kv_feats.unbind(dim=1)          # each [M, H, C]
 
-    backend = config.get_attn_backend()
-
-    if backend == 'xformers':
-        import xformers.ops as xops
-        k, v = kv_feats.unbind(dim=1)                                                   # [M, H, C]
-        q_tensor = q_feats.unsqueeze(0)                                                 # [1, M, H, C]
-        k = k.unsqueeze(0)                                                              # [1, M, H, C]
-        v = v.unsqueeze(0)                                                              # [1, M, H, C]
-        mask = xops.fmha.BlockDiagonalMask.from_seqlens(q_seq_lens, kv_seq_lens)
-        out = xops.memory_efficient_attention(q_tensor, k, v, attn_bias=mask)[0]        # [M, H, C]
-    elif backend == 'flash_attn':
-        import flash_attn
-        out = flash_attn.flash_attn_varlen_kvpacked_func(q_feats, kv_feats,
-            cu_seqlens_q=q_attn_func_args['cu_seqlens'], cu_seqlens_k=kv_attn_func_args['cu_seqlens'],
-            max_seqlen_q=q_attn_func_args['max_seqlen'], max_seqlen_k=kv_attn_func_args['max_seqlen'],
-        )  # [M, H, C]
-    elif backend == 'sdpa':
-        # SDPA fallback: pad variable-length sequences and use attention mask
-        from torch.nn.functional import scaled_dot_product_attention as sdpa
-
-        k, v = kv_feats.unbind(dim=1)  # Each: [M, H, C]
-        q_seq_lens_list = q_attn_func_args['seq_lens']
-        kv_seq_lens_list = kv_attn_func_args['seq_lens']
-        device = q_feats.device
-
-        N = len(q_seq_lens_list)
-        max_q_len = max(q_seq_lens_list)
-        max_kv_len = max(kv_seq_lens_list)
-        H = q_feats.shape[1]
-        C = q_feats.shape[2]
-
-        # Create padded tensors [N, max_len, H, C]
-        q_padded = torch.zeros(N, max_q_len, H, C, device=device, dtype=q_feats.dtype)
-        k_padded = torch.zeros(N, max_kv_len, H, C, device=device, dtype=k.dtype)
-        v_padded = torch.zeros(N, max_kv_len, H, C, device=device, dtype=v.dtype)
-
-        # Fill in the actual values
-        q_offset = 0
-        kv_offset = 0
-        for i in range(N):
-            q_len = q_seq_lens_list[i]
-            kv_len = kv_seq_lens_list[i]
-            q_padded[i, :q_len] = q_feats[q_offset:q_offset + q_len]
-            k_padded[i, :kv_len] = k[kv_offset:kv_offset + kv_len]
-            v_padded[i, :kv_len] = v[kv_offset:kv_offset + kv_len]
-            q_offset += q_len
-            kv_offset += kv_len
-
-        # Create attention mask: True for valid positions
-        attn_mask = torch.zeros(N, 1, max_q_len, max_kv_len, device=device, dtype=torch.bool)
-        for i in range(N):
-            attn_mask[i, :, :q_seq_lens_list[i], :kv_seq_lens_list[i]] = True
-
-        # Convert to float mask for sdpa (0 for valid, -inf for invalid)
-        attn_mask_float = torch.where(attn_mask, 0.0, float('-inf')).to(dtype=q.dtype)
-
-        # Permute to [N, H, L, C] for sdpa
-        q_padded = q_padded.permute(0, 2, 1, 3)
-        k_padded = k_padded.permute(0, 2, 1, 3)
-        v_padded = v_padded.permute(0, 2, 1, 3)
-
-        # Run sdpa
-        out_padded = sdpa(q_padded, k_padded, v_padded, attn_mask=attn_mask_float)
-
-        # Permute back to [N, L, H, C]
-        out_padded = out_padded.permute(0, 2, 1, 3)
-
-        # Extract valid outputs back to flat tensor
-        out_list = []
-        for i in range(N):
-            out_list.append(out_padded[i, :q_seq_lens_list[i]])
-        out = torch.cat(out_list, dim=0)
-    else:
-        raise ValueError(f"Unknown sparse attention backend: {backend}")
+    out = comfy_attn.dispatch_attention_varlen(
+        q_feats, k, v,
+        q_attn_func_args['cu_seqlens'], kv_attn_func_args['cu_seqlens'],
+        q_attn_func_args['max_seqlen'], kv_attn_func_args['max_seqlen'],
+    )  # [M, H, C]
 
     out = out[q_bwd_indices]      # [T, H, C]
 

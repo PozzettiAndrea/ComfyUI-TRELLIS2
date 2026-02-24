@@ -6,6 +6,15 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
+def _get_device():
+    """Get the appropriate torch device."""
+    try:
+        import comfy.model_management
+        return comfy.model_management.get_torch_device()
+    except ImportError:
+        return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
 def setup_dist(rank, local_rank, world_size, master_addr, master_port):
     os.environ['MASTER_ADDR'] = master_addr
     os.environ['MASTER_PORT'] = master_port
@@ -14,7 +23,7 @@ def setup_dist(rank, local_rank, world_size, master_addr, master_port):
     os.environ['LOCAL_RANK'] = str(local_rank)
     torch.cuda.set_device(local_rank)
     dist.init_process_group('nccl', rank=rank, world_size=world_size)
-    
+
 
 def read_file_dist(path):
     """
@@ -25,19 +34,20 @@ def read_file_dist(path):
         data (io.BytesIO): The binary data read from the file.
     """
     if dist.is_initialized() and dist.get_world_size() > 1:
+        device = _get_device()
         # read file
-        size = torch.LongTensor(1).cuda()
+        size = torch.LongTensor(1).to(device)
         if dist.get_rank() == 0:
             with open(path, 'rb') as f:
                 data = f.read()
             data = torch.ByteTensor(
                 torch.UntypedStorage.from_buffer(data, dtype=torch.uint8)
-            ).cuda()
+            ).to(device)
             size[0] = data.shape[0]
         # broadcast size
         dist.broadcast(size, src=0)
         if dist.get_rank() != 0:
-            data = torch.ByteTensor(size[0].item()).cuda()
+            data = torch.ByteTensor(size[0].item()).to(device)
         # broadcast data
         dist.broadcast(data, src=0)
         # convert to io.BytesIO
@@ -49,7 +59,7 @@ def read_file_dist(path):
             data = f.read()
         data = io.BytesIO(data)
         return data
-    
+
 
 def unwrap_dist(model):
     """
@@ -74,7 +84,7 @@ def master_first():
         else:
             dist.barrier()
             yield
-            
+
 
 @contextmanager
 def local_master_first():
@@ -90,4 +100,3 @@ def local_master_first():
         else:
             dist.barrier()
             yield
-    
