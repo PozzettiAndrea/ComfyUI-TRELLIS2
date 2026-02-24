@@ -1,18 +1,18 @@
 """Modular mesh processing nodes for TRELLIS.2."""
 import gc
 import os
-import torch
 import numpy as np
 from PIL import Image
-import cv2
 from datetime import datetime
 from pathlib import Path
 
 import folder_paths
 
+from comfyui_isolation import isolated
 from .utils import logger
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2Simplify:
     """Simplify mesh to target face count using CuMesh."""
 
@@ -57,10 +57,11 @@ Parameters:
         remesh=False,
         remesh_band=1.0,
     ):
+        import torch
         import cumesh as CuMesh
         import trimesh as Trimesh
 
-        logger.info(f"Simplify: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces -> {target_face_count} target")
+        print(f"[TRELLIS2] Simplify: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces -> {target_face_count} target")
 
         # Convert to torch tensors
         vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
@@ -73,12 +74,12 @@ Parameters:
         # Initialize CuMesh
         cumesh = CuMesh.CuMesh()
         cumesh.init(vertices_orig, faces)
-        logger.info(f"Initial: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        print(f"[TRELLIS2] Initial: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Fill holes
         if fill_holes:
             cumesh.fill_holes(max_hole_perimeter=fill_holes_perimeter)
-            logger.info(f"After fill holes: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            print(f"[TRELLIS2] After fill holes: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Optional remesh
         if remesh:
@@ -101,21 +102,21 @@ Parameters:
                 verbose=True,
                 bvh=bvh,
             ))
-            logger.info(f"After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            print(f"[TRELLIS2] After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
             # Clean up BVH after remesh
             del bvh, curr_verts, curr_faces
 
         # Unify face orientations before simplify
         cumesh.unify_face_orientations()
-        logger.info("Unified face orientations (pre-simplify)")
+        print("[TRELLIS2] Unified face orientations (pre-simplify)")
 
         # Simplify
         cumesh.simplify(target_face_count, verbose=True)
-        logger.info(f"After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        print(f"[TRELLIS2] After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
 
         # Unify face orientations again after simplify (simplify can break it)
         cumesh.unify_face_orientations()
-        logger.info("Unified face orientations (post-simplify)")
+        print("[TRELLIS2] Unified face orientations (post-simplify)")
 
         # Read result
         out_vertices, out_faces = cumesh.read()
@@ -132,7 +133,7 @@ Parameters:
             process=False
         )
 
-        logger.info(f"Simplify complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
+        print(f"[TRELLIS2] Simplify complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
         # Clean up GPU memory
         del vertices, faces, vertices_orig, out_vertices, out_faces, cumesh
@@ -142,6 +143,7 @@ Parameters:
         return (result,)
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2UVUnwrap:
     """UV unwrap mesh using CuMesh/xatlas. No texture baking."""
 
@@ -185,10 +187,11 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         chart_global_iterations=1,
         chart_smooth_strength=1,
     ):
+        import torch
         import cumesh as CuMesh
         import trimesh as Trimesh
 
-        logger.info(f"UV Unwrap: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces")
+        print(f"[TRELLIS2] UV Unwrap: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces")
 
         # Convert to torch
         vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
@@ -205,7 +208,7 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         cumesh.init(vertices_orig, faces)
 
         # UV Unwrap
-        logger.info("Unwrapping UVs...")
+        print("[TRELLIS2] Unwrapping UVs...")
         out_vertices, out_faces, out_uvs, out_vmaps = cumesh.uv_unwrap(
             compute_charts_kwargs={
                 "threshold_cone_half_angle_rad": chart_cone_angle_rad,
@@ -240,7 +243,7 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         # Attach UVs as visual
         result.visual = Trimesh.visual.TextureVisuals(uv=out_uvs)
 
-        logger.info(f"UV Unwrap complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
+        print(f"[TRELLIS2] UV Unwrap complete: {len(result.vertices)} vertices, {len(result.faces)} faces")
 
         # Clean up GPU memory
         del vertices, faces, vertices_orig, cumesh
@@ -250,6 +253,7 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         return (result,)
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2RasterizePBR:
     """Rasterize PBR textures from voxel data onto UV-mapped mesh."""
 
@@ -284,6 +288,8 @@ Parameters:
         voxelgrid,
         texture_size=2048,
     ):
+        import torch
+        import cv2
         import cumesh as CuMesh
         import nvdiffrast.torch as dr
         from flex_gemm.ops.grid_sample import grid_sample_3d
@@ -297,45 +303,40 @@ Parameters:
         if 'attrs' not in voxelgrid:
             raise ValueError("VoxelGrid has no PBR attributes.")
 
-        logger.info(f"Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
+        print(f"[TRELLIS2] Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
 
         # Get mesh data
         vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).cuda()
         faces = torch.tensor(trimesh.faces, dtype=torch.int32).cuda()
         uvs = torch.tensor(trimesh.visual.uv, dtype=torch.float32).cuda()
 
-        # NOTE: Don't call unify_face_orientations here - it would break UV mapping!
-        # Face orientation should be fixed BEFORE UV unwrapping (in Simplify or earlier)
-
         # Undo Z-up to Y-up for voxel sampling
         vertices_yup = vertices.clone()
         vertices_yup[:, 1], vertices_yup[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
 
-        # Get voxel data from dict (already on GPU)
-        attr_volume = voxelgrid['attrs'].cuda()
-        coords = voxelgrid['coords'].cuda()
+        # Get voxel data from dict
+        attr_volume = voxelgrid['attrs']
+        if isinstance(attr_volume, np.ndarray):
+            attr_volume = torch.from_numpy(attr_volume)
+        attr_volume = attr_volume.cuda()
+
+        coords = voxelgrid['coords']
+        if isinstance(coords, np.ndarray):
+            coords = torch.from_numpy(coords)
+        coords = coords.cuda()
+
         voxel_size = voxelgrid['voxel_size']
         attr_layout = voxelgrid['layout']
-        orig_vertices = voxelgrid['original_vertices'].cuda()
-        orig_faces = voxelgrid['original_faces'].cuda()
 
-        # DEBUG: Print raw voxel attribute statistics
-        logger.info(f"[DEBUG] attr_volume shape: {attr_volume.shape}")
-        logger.info(f"[DEBUG] attr_layout: {attr_layout}")
-        logger.info(f"[DEBUG] coords shape: {coords.shape}, min: {coords.min(dim=0).values.tolist()}, max: {coords.max(dim=0).values.tolist()}")
+        orig_vertices = voxelgrid['original_vertices']
+        if isinstance(orig_vertices, np.ndarray):
+            orig_vertices = torch.from_numpy(orig_vertices)
+        orig_vertices = orig_vertices.cuda()
 
-        # Check raw attribute ranges
-        for name, slc in attr_layout.items():
-            channel_data = attr_volume[:, slc]
-            logger.info(f"[DEBUG] Raw {name}: min={channel_data.min().item():.4f}, max={channel_data.max().item():.4f}, mean={channel_data.mean().item():.4f}")
-
-        # Count low alpha voxels
-        alpha_slc = attr_layout['alpha']
-        alpha_raw = attr_volume[:, alpha_slc]
-        low_alpha_count = (alpha_raw < 0.5).sum().item()
-        zero_alpha_count = (alpha_raw < 0.01).sum().item()
-        logger.info(f"[DEBUG] Voxels with alpha < 0.5: {low_alpha_count}/{attr_volume.shape[0]}")
-        logger.info(f"[DEBUG] Voxels with alpha < 0.01: {zero_alpha_count}/{attr_volume.shape[0]}")
+        orig_faces = voxelgrid['original_faces']
+        if isinstance(orig_faces, np.ndarray):
+            orig_faces = torch.from_numpy(orig_faces)
+        orig_faces = orig_faces.cuda()
 
         # AABB
         aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device='cuda')
@@ -352,10 +353,10 @@ Parameters:
             voxel_size = (aabb[1] - aabb[0]) / grid_size
 
         # Build BVH from original mesh for accurate attribute lookup
-        logger.info("Building BVH...")
+        print("[TRELLIS2] Building BVH...")
         bvh = CuMesh.cuBVH(orig_vertices, orig_faces)
 
-        logger.info("Rasterizing in UV space...")
+        print("[TRELLIS2] Rasterizing in UV space...")
 
         # Setup nvdiffrast
         ctx = dr.RasterizeCudaContext()
@@ -379,10 +380,8 @@ Parameters:
             mask_chunk = rast_chunk[..., 3:4] > 0
             rast_chunk[..., 3:4] += i
             rast = torch.where(mask_chunk, rast_chunk, rast)
-            # Clean up chunk tensors to prevent memory accumulation
             del rast_chunk, mask_chunk
 
-        # Clean up after rasterization loop
         del ctx, uvs_rast
         torch.cuda.empty_cache()
 
@@ -397,19 +396,17 @@ Parameters:
         orig_tri_verts = orig_vertices[orig_faces[face_id.long()]]
         valid_pos = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
 
-        # Map vertex positions to original mesh for accurate field sampling
-        # (UV unwrap splits vertices at seams, need to map back to original positions)
-        logger.info("Mapping vertices to original mesh...")
+        # Map vertex positions to original mesh
+        print("[TRELLIS2] Mapping vertices to original mesh...")
         _, vert_face_id, vert_uvw = bvh.unsigned_distance(vertices_yup, return_uvw=True)
         vert_orig_tris = orig_vertices[orig_faces[vert_face_id.long()]]
         vertices_mapped = (vert_orig_tris * vert_uvw.unsqueeze(-1)).sum(dim=1)
 
-        # Clean up BVH and intermediate tensors
         del bvh, face_id, uvw, orig_tri_verts, vert_face_id, vert_uvw, vert_orig_tris, pos, rast, vertices_yup
         torch.cuda.empty_cache()
 
         # Sample voxel attributes for texture
-        logger.info("Sampling voxel attributes...")
+        print("[TRELLIS2] Sampling voxel attributes...")
         attrs = torch.zeros(texture_size, texture_size, attr_volume.shape[1], device='cuda')
         attrs[mask] = grid_sample_3d(
             attr_volume,
@@ -419,19 +416,18 @@ Parameters:
             mode='trilinear',
         )
 
-        # Sample PBR attributes at mapped vertex positions for GeometryPack fields mode
-        logger.info("Sampling vertex PBR attributes...")
+        # Sample PBR attributes at mapped vertex positions
+        print("[TRELLIS2] Sampling vertex PBR attributes...")
         vertex_pbr_attrs = grid_sample_3d(
             attr_volume,
             torch.cat([torch.zeros_like(coords[:, :1]), coords], dim=-1),
             shape=torch.Size([1, attr_volume.shape[1], *grid_size.tolist()]),
             grid=((vertices_mapped - aabb[0]) / voxel_size).reshape(1, -1, 3),
             mode='trilinear',
-        )[0]  # [N_verts, 6]
+        )[0]
 
-        logger.info("Building PBR textures...")
+        print("[TRELLIS2] Building PBR textures...")
 
-        # Clean up voxel sampling intermediates
         del valid_pos, attr_volume, coords, vertices_mapped
         torch.cuda.empty_cache()
 
@@ -443,27 +439,6 @@ Parameters:
         roughness = np.clip(attrs[..., attr_layout['roughness']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
         alpha = np.clip(attrs[..., attr_layout['alpha']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
 
-        # DEBUG: Print texture statistics after sampling (before inpaint)
-        logger.info(f"[DEBUG] Texture base_color: min={base_color.min()}, max={base_color.max()}, mean={base_color.mean():.2f}")
-        logger.info(f"[DEBUG] Texture metallic: min={metallic.min()}, max={metallic.max()}, mean={metallic.mean():.2f}")
-        logger.info(f"[DEBUG] Texture roughness: min={roughness.min()}, max={roughness.max()}, mean={roughness.mean():.2f}")
-        logger.info(f"[DEBUG] Texture alpha (before inpaint): min={alpha.min()}, max={alpha.max()}, mean={alpha.mean():.2f}")
-
-        # In-mask statistics (actual texture values, excluding masked-out pixels)
-        alpha_in_mask = alpha[mask_np]
-        metallic_in_mask = metallic[mask_np]
-        roughness_in_mask = roughness[mask_np]
-        bc_in_mask = base_color[mask_np]
-        logger.info(f"[DEBUG] In-mask base_color: min={bc_in_mask.min()}, max={bc_in_mask.max()}, mean={bc_in_mask.mean():.2f}")
-        logger.info(f"[DEBUG] In-mask metallic: min={metallic_in_mask.min()}, max={metallic_in_mask.max()}, mean={metallic_in_mask.mean():.2f}")
-        logger.info(f"[DEBUG] In-mask roughness: min={roughness_in_mask.min()}, max={roughness_in_mask.max()}, mean={roughness_in_mask.mean():.2f}")
-        logger.info(f"[DEBUG] In-mask alpha: min={alpha_in_mask.min()}, max={alpha_in_mask.max()}, mean={alpha_in_mask.mean():.2f}")
-        low_alpha_pixels = np.sum(alpha_in_mask < 200)
-        zero_alpha_pixels = np.sum(alpha_in_mask == 0)
-        logger.info(f"[DEBUG] Pixels with alpha < 200 (in valid mask): {low_alpha_pixels}/{alpha_in_mask.size}")
-        logger.info(f"[DEBUG] Pixels with alpha == 0 (in valid mask): {zero_alpha_pixels}/{alpha_in_mask.size}")
-
-        # Clean up attrs tensor after extraction to CPU
         del attrs, mask
         gc.collect()
         torch.cuda.empty_cache()
@@ -475,14 +450,7 @@ Parameters:
         roughness = cv2.inpaint(roughness, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
         alpha = cv2.inpaint(alpha, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
 
-        # DEBUG: Print alpha statistics after inpainting
-        logger.info(f"[DEBUG] Texture alpha (after inpaint): min={alpha.min()}, max={alpha.max()}, mean={alpha.mean():.2f}")
-        low_alpha_final = np.sum(alpha < 200)
-        zero_alpha_final = np.sum(alpha == 0)
-        logger.info(f"[DEBUG] Final texture pixels with alpha < 200: {low_alpha_final}/{alpha.size}")
-        logger.info(f"[DEBUG] Final texture pixels with alpha == 0: {zero_alpha_final}/{alpha.size}")
-
-        # Create PBR material (double-sided to avoid backface culling issues)
+        # Create PBR material
         material = Trimesh.visual.material.PBRMaterial(
             baseColorTexture=Image.fromarray(np.concatenate([base_color, alpha], axis=-1)),
             baseColorFactor=np.array([255, 255, 255, 255], dtype=np.uint8),
@@ -506,22 +474,19 @@ Parameters:
             visual=Trimesh.visual.TextureVisuals(uv=trimesh.visual.uv, material=material)
         )
 
-        # Attach PBR vertex attributes for GeometryPack fields visualization
+        # Attach PBR vertex attributes
         result.vertex_attributes = {}
         for attr_name, attr_slice in attr_layout.items():
             values = vertex_pbr_attrs[:, attr_slice].clamp(0, 1).cpu().numpy()
             if values.shape[1] == 1:
-                # Scalar field (metallic, roughness, alpha)
                 result.vertex_attributes[attr_name] = values[:, 0].astype(np.float32)
             else:
-                # Vector field (base_color RGB) - store as separate channels
                 result.vertex_attributes[f'{attr_name}_r'] = values[:, 0].astype(np.float32)
                 result.vertex_attributes[f'{attr_name}_g'] = values[:, 1].astype(np.float32)
                 result.vertex_attributes[f'{attr_name}_b'] = values[:, 2].astype(np.float32)
 
-        logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures, {len(result.vertex_attributes)} vertex fields")
+        print(f"[TRELLIS2] Rasterize complete: {texture_size}x{texture_size} PBR textures")
 
-        # Final cleanup
         del vertices, faces, uvs, orig_vertices, orig_faces, vertex_pbr_attrs
         gc.collect()
         torch.cuda.empty_cache()
@@ -530,7 +495,10 @@ Parameters:
 
 
 class Trellis2ExportTrimesh:
-    """Export trimesh to file (GLB, OBJ, PLY, etc.)."""
+    """Export trimesh to file (GLB, OBJ, PLY, etc.).
+
+    Note: This is NOT isolated because it's just disk I/O.
+    """
 
     @classmethod
     def INPUT_TYPES(s):

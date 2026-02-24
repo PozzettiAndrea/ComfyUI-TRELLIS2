@@ -1,247 +1,12 @@
-"""Inference nodes for TRELLIS.2 Image-to-3D generation."""
-import gc
-import torch
-import numpy as np
-from PIL import Image
-import trimesh as Trimesh
+"""Inference nodes for TRELLIS.2 Image-to-3D generation.
 
-import comfy.model_management as mm
+All GPU inference runs inside isolated subprocess via @isolated decorator.
+"""
 
-from .utils import logger, tensor_to_pil, pil_to_tensor
+from comfyui_isolation import isolated
 
 
-def smart_crop_square(pil_image, mask_np, margin_ratio=0.1, background_color=(128, 128, 128)):
-    """
-    Extract object with margin, pad to square. Leave at native resolution.
-    DINOv3 will resize to 512/1024 in image_feature_extractor.py.
-
-    Args:
-        pil_image: Input RGBA image (after mask applied)
-        mask_np: Numpy mask array (H, W), values 0-255
-        margin_ratio: Padding around object (default 10%)
-        background_color: RGB tuple for background (default gray to handle dark objects)
-
-    Returns:
-        RGB PIL Image - square, with specified background color
-    """
-    # 1. Find object bounding box from mask
-    alpha_threshold = 0.8 * 255
-    bbox_coords = np.argwhere(mask_np > alpha_threshold)
-    if len(bbox_coords) == 0:
-        # No object found, return as-is (fallback)
-        logger.warning("[smart_crop_square] No object found in mask, returning original image")
-        w, h = pil_image.size
-        size = max(w, h)
-        canvas = Image.new('RGB', (size, size), background_color)
-        canvas.paste(pil_image.convert('RGB'), ((size - w) // 2, (size - h) // 2))
-        return canvas
-
-    y_min, x_min = bbox_coords.min(axis=0)
-    y_max, x_max = bbox_coords.max(axis=0)
-
-    # 2. Calculate object size and add margin
-    obj_w = x_max - x_min
-    obj_h = y_max - y_min
-    obj_size = max(obj_w, obj_h)
-    margin = int(obj_size * margin_ratio)
-
-    # 3. Expand to square with margin (centered on object)
-    center_x = (x_min + x_max) / 2
-    center_y = (y_min + y_max) / 2
-    half_size = (obj_size / 2) + margin
-
-    crop_x1 = int(center_x - half_size)
-    crop_y1 = int(center_y - half_size)
-    crop_x2 = int(center_x + half_size)
-    crop_y2 = int(center_y + half_size)
-    crop_size = crop_x2 - crop_x1  # Should be square
-
-    # Ensure crop_size is at least 1
-    if crop_size < 1:
-        crop_size = 1
-        crop_x2 = crop_x1 + 1
-        crop_y2 = crop_y1 + 1
-
-    # 4. Create canvas with background color and paste cropped region
-    img_w, img_h = pil_image.size
-    canvas = Image.new('RGB', (crop_size, crop_size), background_color)
-
-    # Calculate source region (clamp to image bounds)
-    src_x1 = max(0, crop_x1)
-    src_y1 = max(0, crop_y1)
-    src_x2 = min(img_w, crop_x2)
-    src_y2 = min(img_h, crop_y2)
-
-    # Calculate destination offset (if crop extends beyond image)
-    dst_x = src_x1 - crop_x1
-    dst_y = src_y1 - crop_y1
-
-    # Crop source region
-    cropped = pil_image.crop((src_x1, src_y1, src_x2, src_y2))
-
-    # 5. Alpha blend with background color
-    cropped_np = np.array(cropped.convert('RGBA')).astype(np.float32) / 255
-    alpha = cropped_np[:, :, 3:4]
-    bg = np.array(background_color, dtype=np.float32) / 255
-    # Blend: foreground * alpha + background * (1 - alpha)
-    blended = cropped_np[:, :, :3] * alpha + bg * (1 - alpha)
-    cropped_rgb = Image.fromarray((blended * 255).astype(np.uint8))
-
-    canvas.paste(cropped_rgb, (dst_x, dst_y))
-
-    logger.info(f"[smart_crop_square] Object bbox: ({x_min},{y_min})-({x_max},{y_max}), "
-                f"size={obj_size}, margin={margin}, output={crop_size}x{crop_size}")
-
-    return canvas  # Square RGB, native resolution, DINOv3 will resize
-
-
-def mesh_to_trimesh(mesh_obj):
-    """
-    Convert TRELLIS Mesh to trimesh.Trimesh (untextured).
-
-    Used by Image to Shape node to output untextured mesh for preview/export.
-    """
-    import cumesh as CuMesh
-    # Unify face orientations using CuMesh
-    cumesh = CuMesh.CuMesh()
-    cumesh.init(mesh_obj.vertices, mesh_obj.faces.int())
-    cumesh.unify_face_orientations()
-    unified_verts, unified_faces = cumesh.read()
-
-    vertices = unified_verts.cpu().numpy().astype(np.float32)
-    faces = unified_faces.cpu().numpy()
-    del cumesh, unified_verts, unified_faces
-
-    # Coordinate system conversion (Y-up to Z-up)
-    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
-
-    return Trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
-
-
-def mesh_with_voxel_to_outputs(mesh_obj, pbr_layout):
-    """
-    Convert TRELLIS MeshWithVoxel to separate TRIMESH, VOXELGRID, and debug POINTCLOUD.
-
-    Returns:
-        trimesh: trimesh.Trimesh geometry for preview/remeshing
-        voxelgrid: dict with sparse PBR data on GPU for Rasterize PBR node
-        pointcloud: trimesh.PointCloud with all 6 PBR channels on CPU for debugging
-    """
-    import cumesh as CuMesh
-    # === TRIMESH OUTPUT ===
-    # Unify face orientations using CuMesh (fixes inconsistent winding from dual-grid extraction)
-    cumesh = CuMesh.CuMesh()
-    cumesh.init(mesh_obj.vertices, mesh_obj.faces.int())
-    cumesh.unify_face_orientations()
-    unified_verts, unified_faces = cumesh.read()
-    logger.info(f"Unified face orientations: {unified_faces.shape[0]} faces")
-
-    vertices = unified_verts.cpu().numpy().astype(np.float32)
-    faces = unified_faces.cpu().numpy()
-    del cumesh, unified_verts, unified_faces
-
-    # Coordinate system conversion (Y-up to Z-up)
-    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
-
-    tri_mesh = Trimesh.Trimesh(
-        vertices=vertices,
-        faces=faces,
-        process=False
-    )
-
-    # === VOXELGRID OUTPUT (lightweight, GPU) ===
-    voxel_grid = {
-        'coords': mesh_obj.coords,       # (L, 3) GPU tensor
-        'attrs': mesh_obj.attrs,         # (L, 6) GPU tensor
-        'voxel_size': mesh_obj.voxel_size,
-        'layout': pbr_layout,
-        # Original mesh needed for BVH in Rasterize PBR (maps new verts to voxel field)
-        'original_vertices': mesh_obj.vertices,  # GPU tensor
-        'original_faces': mesh_obj.faces,        # GPU tensor
-    }
-
-    # === POINTCLOUD OUTPUT (CPU, all 6 channels) ===
-    coords_np = mesh_obj.coords.cpu().numpy().astype(np.float32)
-    attrs_np = mesh_obj.attrs.cpu().numpy()  # (L, 6) in [-1, 1]
-
-    # Random subsample to 5% for visualization performance
-    num_points = coords_np.shape[0]
-    subsample_ratio = 0.05
-    num_keep = int(num_points * subsample_ratio)
-    indices = np.random.choice(num_points, size=num_keep, replace=False)
-    coords_np = coords_np[indices]
-    attrs_np = attrs_np[indices]
-    logger.info(f"[DEBUG] Subsampled pointcloud: {num_points} -> {num_keep} points ({subsample_ratio*100:.0f}%)")
-
-    # DEBUG: Print attr statistics
-    logger.info(f"[DEBUG] attrs shape: {attrs_np.shape}, dtype: {attrs_np.dtype}")
-    logger.info(f"[DEBUG] attrs range: [{attrs_np.min():.3f}, {attrs_np.max():.3f}]")
-    for name, slc in pbr_layout.items():
-        channel = attrs_np[:, slc]
-        logger.info(f"[DEBUG] {name}: min={channel.min():.3f}, max={channel.max():.3f}, mean={channel.mean():.3f}")
-
-    # Check alpha (occupancy) distribution
-    alpha_slice = pbr_layout.get('alpha', slice(5, 6))
-    alpha_raw = attrs_np[:, alpha_slice].flatten()  # in [-1, 1]
-    alpha_norm = (alpha_raw + 1) * 0.5  # convert to [0, 1]
-
-    low_alpha = (alpha_norm < 0.5).sum()
-    very_low_alpha = (alpha_norm < 0.1).sum()
-    high_alpha = (alpha_norm > 0.9).sum()
-    logger.info(f"[DEBUG] Alpha distribution (out of {len(alpha_norm)} voxels):")
-    logger.info(f"[DEBUG]   alpha < 0.1 (nearly transparent): {very_low_alpha} ({100*very_low_alpha/len(alpha_norm):.1f}%)")
-    logger.info(f"[DEBUG]   alpha < 0.5 (semi-transparent):   {low_alpha} ({100*low_alpha/len(alpha_norm):.1f}%)")
-    logger.info(f"[DEBUG]   alpha > 0.9 (nearly opaque):      {high_alpha} ({100*high_alpha/len(alpha_norm):.1f}%)")
-
-    # Convert voxel indices to world positions
-    voxel_size = mesh_obj.voxel_size
-    point_positions = coords_np * voxel_size
-
-    # Apply same Y-up to Z-up conversion
-    point_positions[:, 1], point_positions[:, 2] = (
-        point_positions[:, 2].copy(),
-        -point_positions[:, 1].copy()
-    )
-
-    # Convert attrs from [-1, 1] to [0, 1] for storage
-    attrs_normalized = (attrs_np + 1.0) * 0.5  # (L, 6) in [0, 1]
-
-    # For trimesh.PointCloud colors, use base_color RGB + alpha from attrs
-    base_color_slice = pbr_layout.get('base_color', slice(0, 3))
-    alpha_slice = pbr_layout.get('alpha', slice(5, 6))
-
-    colors_rgb = (attrs_normalized[:, base_color_slice] * 255).clip(0, 255).astype(np.uint8)
-    colors_alpha = (attrs_normalized[:, alpha_slice] * 255).clip(0, 255).astype(np.uint8)
-
-    colors_rgba = np.concatenate([colors_rgb, colors_alpha], axis=1)
-
-    pointcloud = Trimesh.PointCloud(
-        vertices=point_positions,
-        colors=colors_rgba
-    )
-
-    # Attach PBR channels as vertex_attributes for field visualization
-    pointcloud.vertex_attributes = {}
-    for attr_name, attr_slice in pbr_layout.items():
-        values = attrs_normalized[:, attr_slice]
-        if values.shape[1] == 1:
-            # Scalar field (metallic, roughness, alpha)
-            pointcloud.vertex_attributes[attr_name] = values[:, 0].astype(np.float32)
-        else:
-            # Vector field (base_color RGB) - store as separate channels
-            pointcloud.vertex_attributes[f'{attr_name}_r'] = values[:, 0].astype(np.float32)
-            pointcloud.vertex_attributes[f'{attr_name}_g'] = values[:, 1].astype(np.float32)
-            pointcloud.vertex_attributes[f'{attr_name}_b'] = values[:, 2].astype(np.float32)
-
-    # Also keep in metadata for full access
-    pointcloud.metadata['pbr_attrs'] = attrs_normalized  # (L, 6) numpy
-    pointcloud.metadata['pbr_layout'] = pbr_layout
-
-    logger.info(f"Created outputs: mesh={len(vertices)} verts, voxels={len(coords_np)} points, fields={list(pointcloud.vertex_attributes.keys())}")
-
-    return tri_mesh, voxel_grid, pointcloud
-
-
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2GetConditioning:
     """Extract image conditioning using DinoV3 for TRELLIS.2."""
 
@@ -249,7 +14,7 @@ class Trellis2GetConditioning:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "dinov3": ("TRELLIS2_DINOV3",),
+                "model_config": ("TRELLIS2_MODEL_CONFIG",),
                 "image": ("IMAGE",),
                 "mask": ("MASK",),
             },
@@ -273,7 +38,7 @@ This node handles:
 4. DinoV3 feature extraction
 
 Parameters:
-- dinov3: The loaded DinoV3 model
+- model_config: The loaded TRELLIS.2 config
 - image: Input image (RGB)
 - mask: Foreground mask (white=object, black=background)
 - include_1024: Also extract 1024px features (needed for cascade modes)
@@ -281,97 +46,22 @@ Parameters:
 Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
 """
 
-    # Background color mapping
-    BACKGROUND_COLORS = {
-        "black": (0, 0, 0),
-        "gray": (128, 128, 128),
-        "white": (255, 255, 255),
-    }
+    def get_conditioning(self, model_config, image, mask, include_1024=True, background_color="black"):
+        # All heavy imports happen inside subprocess
+        from utils.stages import run_conditioning
 
-    def get_conditioning(self, dinov3, image, mask, include_1024=True, background_color="black"):
-        device = dinov3["device"]
-        keep_model_loaded = dinov3.get("keep_model_loaded", False)
-        bg_color = self.BACKGROUND_COLORS.get(background_color, (128, 128, 128))
+        conditioning, preprocessed_image = run_conditioning(
+            model_config=model_config,
+            image=image,
+            mask=mask,
+            include_1024=include_1024,
+            background_color=background_color,
+        )
 
-        # Lazy load DinoV3 if not already loaded
-        if dinov3["model"] is None:
-            from ..trellis2.modules import image_feature_extractor
-            logger.info("Lazy loading DinoV3 feature extractor...")
-            dinov3["model"] = image_feature_extractor.DinoV3FeatureExtractor(
-                model_name=dinov3["model_name"]
-            )
-            logger.info("DinoV3 loaded successfully")
-
-        model = dinov3["model"]
-
-        # Convert ComfyUI tensor to PIL
-        pil_image = tensor_to_pil(image)
-
-        # Apply mask as alpha channel
-        if mask.dim() == 3:
-            mask_np = mask[0].cpu().numpy()
-        else:
-            mask_np = mask.cpu().numpy()
-
-        # Resize mask to match image if needed
-        if mask_np.shape[:2] != (pil_image.height, pil_image.width):
-            mask_pil = Image.fromarray((mask_np * 255).astype(np.uint8))
-            mask_pil = mask_pil.resize((pil_image.width, pil_image.height), Image.LANCZOS)
-            mask_np = np.array(mask_pil) / 255.0
-
-        # Apply mask as alpha channel
-        pil_image = pil_image.convert('RGB')
-        img_np = np.array(pil_image)
-        alpha_np = (mask_np * 255).astype(np.uint8)
-        rgba = np.dstack([img_np, alpha_np])
-        pil_image = Image.fromarray(rgba, 'RGBA')
-
-        # Smart crop: extract object with 10% margin, pad to square, blend with background
-        pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
-
-        logger.info("Extracting DinoV3 conditioning...")
-
-        # Move model to device for inference
-        model.to(device)
-
-        # Get 512px conditioning
-        model.image_size = 512
-        cond_512 = model([pil_image])
-
-        # Get 1024px conditioning if requested
-        cond_1024 = None
-        if include_1024:
-            model.image_size = 1024
-            cond_1024 = model([pil_image])
-
-        # Offload if not keeping model loaded
-        if not keep_model_loaded:
-            model.cpu()
-            dinov3["model"] = None  # Allow garbage collection
-            logger.info("DinoV3 offloaded")
-
-        # Create negative conditioning
-        neg_cond = torch.zeros_like(cond_512)
-
-        conditioning = {
-            'cond_512': cond_512,
-            'neg_cond': neg_cond,
-        }
-        if cond_1024 is not None:
-            conditioning['cond_1024'] = cond_1024
-
-        logger.info("DinoV3 conditioning extracted successfully")
-
-        # Convert preprocessed image to tensor for debug output
-        preprocessed_tensor = pil_to_tensor(pil_image)
-
-        # Clean up intermediate tensors
-        gc.collect()
-        torch.cuda.empty_cache()
-
-        return (conditioning, preprocessed_tensor)
+        return (conditioning, preprocessed_image)
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2ImageToShape:
     """Generate 3D shape from conditioning using TRELLIS.2."""
 
@@ -379,7 +69,7 @@ class Trellis2ImageToShape:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "shape_pipeline": ("TRELLIS2_SHAPE_PIPELINE", {"tooltip": "Shape generation models from Load Shape Model node"}),
+                "model_config": ("TRELLIS2_MODEL_CONFIG", {"tooltip": "Model config from Load TRELLIS.2 Models node"}),
                 "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node"}),
             },
             "optional": {
@@ -393,32 +83,31 @@ class Trellis2ImageToShape:
             }
         }
 
-    RETURN_TYPES = ("TRELLIS2_SHAPE_SLAT", "TRELLIS2_SUBS", "TRIMESH")
-    RETURN_NAMES = ("shape_slat", "subs", "mesh")
+    RETURN_TYPES = ("TRELLIS2_SHAPE_RESULT", "TRIMESH")
+    RETURN_NAMES = ("shape_result", "mesh")
     FUNCTION = "generate"
     CATEGORY = "TRELLIS2"
     DESCRIPTION = """
 Generate 3D shape from image conditioning.
 
 This node generates shape geometry (no texture/PBR).
-Connect shape_slat and subs to "Shape to Textured Mesh" for PBR materials.
+Connect shape_result to "Shape to Textured Mesh" for PBR materials.
 
 Parameters:
-- shape_pipeline: The loaded shape models (resolution is set in Load Shape Model node)
+- model_config: The loaded model config (resolution is set in Load Models node)
 - conditioning: DinoV3 conditioning from "Get Conditioning" node
 - seed: Random seed for reproducibility
 - ss_*: Sparse structure sampling parameters
 - shape_*: Shape latent sampling parameters
 
 Returns:
-- shape_slat: Shape latent for texture generation (GPU)
-- subs: Substructures for texture generation (GPU)
+- shape_result: Shape data for texture generation
 - mesh: Untextured mesh for preview/export
 """
 
     def generate(
         self,
-        shape_pipeline,
+        model_config,
         conditioning,
         seed=0,
         ss_guidance_strength=7.5,
@@ -426,92 +115,31 @@ Returns:
         shape_guidance_strength=7.5,
         shape_sampling_steps=12,
     ):
-        # Lazy load shape pipeline if not already loaded
-        if shape_pipeline["pipeline"] is None:
-            from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+        # All heavy imports happen inside subprocess
+        import trimesh as Trimesh
+        from utils.stages import run_shape_generation
 
-            keep_model_loaded = shape_pipeline["keep_model_loaded"]
-            device = shape_pipeline["device"]
-
-            logger.info(f"Lazy loading shape pipeline...")
-            pipe = Trellis2ImageTo3DPipeline.from_pretrained(
-                shape_pipeline["model_name"],
-                models_to_load=shape_pipeline["models_to_load"],
-                enable_disk_offload=not keep_model_loaded
-            )
-            pipe.keep_model_loaded = keep_model_loaded
-            pipe.default_pipeline_type = shape_pipeline["resolution"]
-
-            # Move to device (only if keeping models loaded)
-            if keep_model_loaded:
-                if device.type == 'cuda':
-                    pipe.cuda()
-                else:
-                    pipe.to(device)
-            else:
-                pipe._device = device
-
-            shape_pipeline["pipeline"] = pipe
-            logger.info("Shape pipeline loaded successfully")
-        else:
-            pipe = shape_pipeline["pipeline"]
-
-        # Get pipeline type from loaded model (set in Load Models node)
-        pipeline_type = shape_pipeline["resolution"]
-
-        # Build sampler params
-        sampler_params = {
-            "sparse_structure_sampler_params": {
-                "steps": ss_sampling_steps,
-                "guidance_strength": ss_guidance_strength,
-            },
-            "shape_slat_sampler_params": {
-                "steps": shape_sampling_steps,
-                "guidance_strength": shape_guidance_strength,
-            },
-        }
-
-        logger.info(f"Generating 3D shape (pipeline_type={pipeline_type}, seed={seed})")
-
-        # Run shape generation (returns mesh, shape_slat, subs, resolution)
-        meshes, shape_slat, subs, res = pipe.run_shape(
-            conditioning,
+        shape_result = run_shape_generation(
+            model_config=model_config,
+            conditioning=conditioning,
             seed=seed,
-            pipeline_type=pipeline_type,
-            **sampler_params
+            ss_guidance_strength=ss_guidance_strength,
+            ss_sampling_steps=ss_sampling_steps,
+            shape_guidance_strength=shape_guidance_strength,
+            shape_sampling_steps=shape_sampling_steps,
         )
-        mesh = meshes[0]
 
-        # Fill holes in mesh
-        mesh.fill_holes()
+        # Create trimesh from vertices/faces
+        tri_mesh = Trimesh.Trimesh(
+            vertices=shape_result['mesh_vertices'],
+            faces=shape_result['mesh_faces'],
+            process=False
+        )
 
-        logger.info("3D shape generated successfully")
-
-        # Convert to trimesh for preview/export (untextured)
-        tri_mesh = mesh_to_trimesh(mesh)
-        logger.info(f"Untextured mesh: {len(tri_mesh.vertices)} vertices, {len(tri_mesh.faces)} faces")
-
-        # Pack shape_slat for texture node (stays on GPU)
-        shape_slat_dict = {
-            'tensor': shape_slat,  # Keep on GPU
-            'meshes': meshes,      # Keep on GPU for texture node
-            'resolution': res,
-            'pipeline_type': pipeline_type,
-        }
-
-        # subs stays on GPU as-is (list of SparseTensors)
-        # Don't clean up - texture node needs these!
-
-        # Offload shape models if not keeping loaded (texture node will load its own)
-        if not shape_pipeline["keep_model_loaded"]:
-            shape_pipeline["pipeline"] = None  # Allow garbage collection
-            gc.collect()
-            torch.cuda.empty_cache()
-            logger.info("Shape pipeline offloaded")
-
-        return (shape_slat_dict, subs, tri_mesh)
+        return (shape_result, tri_mesh)
 
 
+@isolated(env="trellis2", import_paths=[".", ".."])
 class Trellis2ShapeToTexturedMesh:
     """Generate PBR textured mesh from shape using TRELLIS.2."""
 
@@ -519,10 +147,9 @@ class Trellis2ShapeToTexturedMesh:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "texture_pipeline": ("TRELLIS2_TEXTURE_PIPELINE", {"tooltip": "Texture generation models from Load Texture Model node"}),
+                "model_config": ("TRELLIS2_MODEL_CONFIG", {"tooltip": "Model config from Load TRELLIS.2 Models node"}),
                 "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node (same as used for shape)"}),
-                "shape_slat": ("TRELLIS2_SHAPE_SLAT", {"tooltip": "Shape latent from Image to Shape node"}),
-                "subs": ("TRELLIS2_SUBS", {"tooltip": "Substructures from Image to Shape node"}),
+                "shape_result": ("TRELLIS2_SHAPE_RESULT", {"tooltip": "Shape result from Image to Shape node"}),
             },
             "optional": {
                 "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for texture variation"}),
@@ -538,120 +165,105 @@ class Trellis2ShapeToTexturedMesh:
     DESCRIPTION = """
 Generate PBR textured mesh from shape.
 
-Takes shape_slat and subs from "Image to Shape" node and generates PBR materials:
+Takes shape_result from "Image to Shape" node and generates PBR materials:
 - base_color (RGB)
 - metallic
 - roughness
 - alpha
 
-This node only runs texture inference (shape decoder is skipped).
-
 Parameters:
-- texture_pipeline: The loaded texture models
+- model_config: The loaded model config
 - conditioning: DinoV3 conditioning (same as used for shape)
-- shape_slat: Shape latent from "Image to Shape" node
-- subs: Substructures from "Image to Shape" node
+- shape_result: Shape data from "Image to Shape" node
 - seed: Random seed for texture variation
 - tex_*: Texture sampling parameters
 
 Returns:
 - trimesh: The 3D mesh with PBR vertex attributes
-- voxelgrid: Sparse PBR voxel data (GPU) for Rasterize PBR node
-- pbr_pointcloud: Debug point cloud with all 6 PBR channels (CPU)
+- voxelgrid: Sparse PBR voxel data for Rasterize PBR node
+- pbr_pointcloud: Debug point cloud with all 6 PBR channels
 """
 
     def generate(
         self,
-        texture_pipeline,
+        model_config,
         conditioning,
-        shape_slat,
-        subs,
+        shape_result,
         seed=0,
         tex_guidance_strength=7.5,
         tex_sampling_steps=12,
     ):
-        # Lazy load texture pipeline (deferred from loader node for optimal VRAM)
-        if texture_pipeline["pipeline"] is None:
-            from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+        # All heavy imports happen inside subprocess
+        import numpy as np
+        import trimesh as Trimesh
+        from utils.stages import run_texture_generation
 
-            keep_model_loaded = texture_pipeline["keep_model_loaded"]
-            device = texture_pipeline["device"]
-
-            logger.info(f"Loading texture models (deferred from loader node)...")
-            pipe = Trellis2ImageTo3DPipeline.from_pretrained(
-                texture_pipeline["model_name"],
-                models_to_load=texture_pipeline["models_to_load"],
-                enable_disk_offload=not keep_model_loaded
-            )
-            pipe.keep_model_loaded = keep_model_loaded
-            pipe.default_pipeline_type = texture_pipeline["resolution"]
-
-            # Move to device (only if keeping models loaded)
-            if keep_model_loaded:
-                if device.type == 'cuda':
-                    pipe.cuda()
-                else:
-                    pipe.to(device)
-            else:
-                pipe._device = device
-
-            # Store for potential reuse within same workflow execution
-            texture_pipeline["pipeline"] = pipe
-            logger.info("Texture models loaded successfully")
-        else:
-            pipe = texture_pipeline["pipeline"]
-
-        # Extract shape data (already on GPU)
-        shape_slat_tensor = shape_slat['tensor']
-        meshes = shape_slat['meshes']
-        resolution = shape_slat['resolution']
-        pipeline_type = shape_slat['pipeline_type']
-
-        # Build sampler params
-        sampler_params = {
-            "tex_slat_sampler_params": {
-                "steps": tex_sampling_steps,
-                "guidance_strength": tex_guidance_strength,
-            },
-        }
-
-        logger.info(f"Generating PBR textures (seed={seed})")
-
-        # Run texture generation with pre-computed subs (skips shape decoder!)
-        textured_meshes = pipe.run_texture_with_subs(
-            conditioning,
-            shape_slat_tensor,
-            subs,
-            meshes,
-            resolution,
+        texture_result = run_texture_generation(
+            model_config=model_config,
+            conditioning=conditioning,
+            shape_result=shape_result,
             seed=seed,
-            pipeline_type=pipeline_type,
-            **sampler_params
+            tex_guidance_strength=tex_guidance_strength,
+            tex_sampling_steps=tex_sampling_steps,
         )
 
-        mesh = textured_meshes[0]
+        # Create trimesh from vertices/faces
+        tri_mesh = Trimesh.Trimesh(
+            vertices=texture_result['mesh_vertices'],
+            faces=texture_result['mesh_faces'],
+            process=False
+        )
 
-        # Simplify mesh (nvdiffrast limit)
-        mesh.simplify(16777216)
+        # Create voxel grid dict for Rasterize PBR node
+        voxel_grid = {
+            'coords': texture_result['voxel_coords'],
+            'attrs': texture_result['voxel_attrs'],
+            'voxel_size': texture_result['voxel_size'],
+            'layout': texture_result['pbr_layout'],
+            'original_vertices': texture_result['original_vertices'],
+            'original_faces': texture_result['original_faces'],
+        }
 
-        # Clear GPU cache after mesh simplification
-        torch.cuda.empty_cache()
+        # Create debug point cloud
+        coords = texture_result['voxel_coords']
+        attrs = texture_result['voxel_attrs']
+        voxel_size = texture_result['voxel_size']
+        pbr_layout = texture_result['pbr_layout']
 
-        logger.info("PBR textures generated successfully")
+        # Convert voxel indices to world positions
+        point_positions = coords * voxel_size
 
-        # Convert to TRIMESH + VOXELGRID + POINTCLOUD
-        tri_mesh, voxel_grid, pointcloud = mesh_with_voxel_to_outputs(mesh, pipe.pbr_attr_layout)
+        # Apply Y-up to Z-up conversion
+        point_positions[:, 1], point_positions[:, 2] = (
+            point_positions[:, 2].copy(),
+            -point_positions[:, 1].copy()
+        )
 
-        # Cleanup shape data now that we're done
-        del shape_slat_tensor, meshes, subs, textured_meshes
-        gc.collect()
-        torch.cuda.empty_cache()
+        # Convert attrs from [-1, 1] to [0, 1]
+        attrs_normalized = (attrs + 1.0) * 0.5
+
+        # For trimesh.PointCloud colors, use base_color RGB + alpha
+        base_color_slice = pbr_layout.get('base_color', slice(0, 3))
+        alpha_slice = pbr_layout.get('alpha', slice(5, 6))
+
+        colors_rgb = (attrs_normalized[:, base_color_slice] * 255).clip(0, 255).astype(np.uint8)
+        colors_alpha = (attrs_normalized[:, alpha_slice] * 255).clip(0, 255).astype(np.uint8)
+        colors_rgba = np.concatenate([colors_rgb, colors_alpha], axis=1)
+
+        pointcloud = Trimesh.PointCloud(
+            vertices=point_positions,
+            colors=colors_rgba
+        )
 
         return (tri_mesh, voxel_grid, pointcloud)
 
 
 class Trellis2RemoveBackground:
-    """Remove background from image using BiRefNet (TRELLIS rembg)."""
+    """Remove background from image using BiRefNet (TRELLIS rembg).
+
+    Note: This is NOT isolated because BiRefNet runs fine in main process
+    and doesn't conflict with other packages.
+    """
 
     _model = None  # Class-level cache
 
@@ -686,13 +298,21 @@ Returns:
 """
 
     def remove_background(self, image, low_vram=True):
+        import gc
+        import torch
+        import numpy as np
+        from PIL import Image
+
+        import comfy.model_management as mm
+
+        # Lazy import rembg from trellis2
         from ..trellis2.pipelines import rembg
 
         device = mm.get_torch_device()
 
         # Load or reuse cached model
         if Trellis2RemoveBackground._model is None:
-            logger.info("Loading BiRefNet model for background removal...")
+            print("[TRELLIS2] Loading BiRefNet model for background removal...")
             Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
             if not low_vram:
                 Trellis2RemoveBackground._model.to(device)
@@ -700,9 +320,13 @@ Returns:
         model = Trellis2RemoveBackground._model
 
         # Convert ComfyUI tensor to PIL
-        pil_image = tensor_to_pil(image)
+        if image.dim() == 4:
+            img_np = (image[0].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+        else:
+            img_np = (image.cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+        pil_image = Image.fromarray(img_np)
 
-        logger.info("Removing background...")
+        print("[TRELLIS2] Removing background...")
 
         if low_vram:
             model.to(device)
@@ -722,7 +346,7 @@ Returns:
         # Convert mask to ComfyUI format (B, H, W)
         mask_tensor = torch.tensor(mask_np).unsqueeze(0)
 
-        logger.info("Background removed successfully")
+        print("[TRELLIS2] Background removed successfully")
 
         # Return original image + mask
         return (image, mask_tensor)
