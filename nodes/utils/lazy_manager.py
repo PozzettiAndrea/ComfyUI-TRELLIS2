@@ -21,6 +21,7 @@ def get_model_manager(
     model_name: str = "microsoft/TRELLIS.2-4B",
     resolution: str = "1024_cascade",
     attn_backend: str = "auto",
+    vram_mode: str = "keep_loaded",
 ) -> "LazyModelManager":
     """
     Get or create the global model manager.
@@ -29,6 +30,7 @@ def get_model_manager(
         model_name: HuggingFace model name
         resolution: Output resolution mode
         attn_backend: Attention backend
+        vram_mode: VRAM usage mode (normal, low, minimal)
 
     Returns:
         LazyModelManager instance
@@ -36,11 +38,13 @@ def get_model_manager(
     global _LAZY_MANAGER
 
     if _LAZY_MANAGER is None:
-        _LAZY_MANAGER = LazyModelManager(model_name, resolution, attn_backend)
-    elif _LAZY_MANAGER.model_name != model_name or _LAZY_MANAGER.resolution != resolution:
+        _LAZY_MANAGER = LazyModelManager(model_name, resolution, attn_backend, vram_mode)
+    elif (_LAZY_MANAGER.model_name != model_name or
+          _LAZY_MANAGER.resolution != resolution or
+          _LAZY_MANAGER.vram_mode != vram_mode):
         # Config changed, recreate manager
         _LAZY_MANAGER.cleanup()
-        _LAZY_MANAGER = LazyModelManager(model_name, resolution, attn_backend)
+        _LAZY_MANAGER = LazyModelManager(model_name, resolution, attn_backend, vram_mode)
 
     return _LAZY_MANAGER
 
@@ -99,6 +103,11 @@ class LazyModelManager:
 
     Loads models only when needed and unloads them after use.
     Each subprocess call creates a fresh manager, ensuring clean state.
+
+    VRAM modes:
+    - keep_loaded: Keep all models in VRAM (fastest, ~12GB VRAM)
+    - cpu_offload: Offload unused models to CPU RAM (~3-4GB VRAM)
+    - disk_offload: Delete unused models, reload from disk (~3GB VRAM)
     """
 
     def __init__(
@@ -106,10 +115,12 @@ class LazyModelManager:
         model_name: str = "microsoft/TRELLIS.2-4B",
         resolution: str = "1024_cascade",
         attn_backend: str = "auto",
+        vram_mode: str = "keep_loaded",
     ):
         self.model_name = model_name
         self.resolution = resolution
         self.attn_backend = attn_backend
+        self.vram_mode = vram_mode
 
         # Track loaded models
         self.dinov3_model = None
@@ -119,7 +130,12 @@ class LazyModelManager:
         # Setup attention backend
         self._setup_attention_backend()
 
-        print(f"[TRELLIS2] LazyModelManager initialized (resolution={resolution})", file=sys.stderr)
+        vram_desc = {
+            "keep_loaded": "keep all models in VRAM",
+            "cpu_offload": "offload unused to CPU",
+            "disk_offload": "offload unused to disk"
+        }.get(vram_mode, vram_mode)
+        print(f"[TRELLIS2] LazyModelManager initialized (resolution={resolution}, vram_mode={vram_mode}: {vram_desc})", file=sys.stderr)
 
     def _setup_attention_backend(self):
         """Setup attention backend before any model loading."""
@@ -169,14 +185,25 @@ class LazyModelManager:
                 self.resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade']
             )
 
+            # Enable disk offload for disk_offload mode (models deleted after use, reloaded from disk)
+            enable_disk_offload = (self.vram_mode == "disk_offload")
+
             print(f"[TRELLIS2] Loading shape pipeline...", file=sys.stderr)
             self.shape_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
                 self.model_name,
                 models_to_load=shape_models,
-                enable_disk_offload=True,
+                enable_disk_offload=enable_disk_offload,
             )
             self.shape_pipeline.default_pipeline_type = self.resolution
             self.shape_pipeline._device = device
+
+            # Set keep_model_loaded based on vram_mode:
+            # - keep_loaded: True (keep all models in VRAM)
+            # - cpu_offload/disk_offload: False (unload models after each operation)
+            self.shape_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
+
+            if self.vram_mode != "keep_loaded":
+                print(f"[TRELLIS2] Shape pipeline: sequential model loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
             print(f"[TRELLIS2] Shape pipeline loaded", file=sys.stderr)
 
         return self.shape_pipeline
@@ -199,14 +226,25 @@ class LazyModelManager:
                 self.resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade']
             )
 
+            # Enable disk offload for disk_offload mode (models deleted after use, reloaded from disk)
+            enable_disk_offload = (self.vram_mode == "disk_offload")
+
             print(f"[TRELLIS2] Loading texture pipeline...", file=sys.stderr)
             self.texture_pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
                 self.model_name,
                 models_to_load=texture_models,
-                enable_disk_offload=True,
+                enable_disk_offload=enable_disk_offload,
             )
             self.texture_pipeline.default_pipeline_type = texture_resolution
             self.texture_pipeline._device = device
+
+            # Set keep_model_loaded based on vram_mode:
+            # - keep_loaded: True (keep all models in VRAM)
+            # - cpu_offload/disk_offload: False (unload models after each operation)
+            self.texture_pipeline.keep_model_loaded = (self.vram_mode == "keep_loaded")
+
+            if self.vram_mode != "keep_loaded":
+                print(f"[TRELLIS2] Texture pipeline: sequential model loading enabled (vram_mode={self.vram_mode})", file=sys.stderr)
             print(f"[TRELLIS2] Texture pipeline loaded", file=sys.stderr)
 
         return self.texture_pipeline

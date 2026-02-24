@@ -124,6 +124,7 @@ def run_conditioning(
         model_config.model_name,
         model_config.resolution,
         model_config.attn_backend,
+        model_config.vram_mode,
     )
 
     # Convert image to PIL
@@ -229,6 +230,7 @@ def run_shape_generation(
         model_config.model_name,
         model_config.resolution,
         model_config.attn_backend,
+        model_config.vram_mode,
     )
     pipeline = manager.get_shape_pipeline(device)
 
@@ -348,6 +350,7 @@ def run_texture_generation(
         model_config.model_name,
         model_config.resolution,
         model_config.attn_backend,
+        model_config.vram_mode,
     )
     pipeline = manager.get_texture_pipeline(device)
 
