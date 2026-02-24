@@ -146,8 +146,8 @@ class LazyModelManager:
             raise NotImplementedError("sage_attn not yet implemented!")
 
         try:
-            from trellis2.modules.attention import config as dense_config
-            from trellis2.modules.sparse import config as sparse_config
+            from ..trellis2.modules.attention import config as dense_config
+            from ..trellis2.modules.sparse import config as sparse_config
             dense_config.set_backend(self.attn_backend)
             sparse_config.set_attn_backend(self.attn_backend)
             print(f"[TRELLIS2] Attention backend set to: {self.attn_backend}", file=sys.stderr)
@@ -157,7 +157,7 @@ class LazyModelManager:
     def get_dinov3(self, device: torch.device) -> "DinoV3FeatureExtractor":
         """Load DinoV3 model on demand."""
         if self.dinov3_model is None:
-            from trellis2.modules import image_feature_extractor
+            from ..trellis2.modules import image_feature_extractor
             print(f"[TRELLIS2] Loading DinoV3 feature extractor...", file=sys.stderr)
             self.dinov3_model = image_feature_extractor.DinoV3FeatureExtractor(
                 model_name="facebook/dinov3-vitl16-pretrain-lvd1689m"
@@ -179,7 +179,7 @@ class LazyModelManager:
     def get_shape_pipeline(self, device: torch.device) -> "Trellis2ImageTo3DPipeline":
         """Load shape pipeline on demand."""
         if self.shape_pipeline is None:
-            from trellis2.pipelines import Trellis2ImageTo3DPipeline
+            from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
             shape_models = SHAPE_MODELS_BY_RESOLUTION.get(
                 self.resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade']
@@ -222,7 +222,7 @@ class LazyModelManager:
     def get_texture_pipeline(self, device: torch.device) -> "Trellis2ImageTo3DPipeline":
         """Load texture pipeline on demand."""
         if self.texture_pipeline is None:
-            from trellis2.pipelines import Trellis2ImageTo3DPipeline
+            from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
 
             texture_resolution = TEXTURE_RESOLUTION_MAP.get(self.resolution, '1024_cascade')
             texture_models = TEXTURE_MODELS_BY_RESOLUTION.get(
