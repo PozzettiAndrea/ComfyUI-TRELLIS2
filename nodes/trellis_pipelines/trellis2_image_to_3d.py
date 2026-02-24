@@ -212,9 +212,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # Decode sparse structure latent
         decoder = self._load_model('sparse_structure_decoder')
         model_dtype = next(decoder.parameters()).dtype
-        print(f"[TRELLIS2] SS decoder: input={z_s.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
-        with torch.autocast('cuda', dtype=model_dtype):
-            raw_decoded = decoder(z_s)
+        z_s = z_s.to(dtype=model_dtype)
+        raw_decoded = decoder(z_s)
         print(f"[TRELLIS2] SS decoder output: dtype={raw_decoded.dtype}, min={raw_decoded.min().item():.4f}, max={raw_decoded.max().item():.4f}, positive={int((raw_decoded > 0).sum().item())}/{raw_decoded.numel()}", file=sys.stderr)
         decoded = raw_decoded > 0
         del z_s, raw_decoded, decoder  # Free tensors and local model reference
@@ -334,9 +333,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         # Upsample
         decoder = self._load_model('shape_slat_decoder')
         model_dtype = next(decoder.parameters()).dtype
-        print(f"[TRELLIS2] Shape decoder upsample: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
-        with torch.autocast('cuda', dtype=model_dtype):
-            hr_coords = decoder.upsample(slat, upsample_times=4)
+        slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
+        hr_coords = decoder.upsample(slat, upsample_times=4)
 
         # Free LR slat and decoder - not used in HR pass
         del slat, std, mean, decoder
@@ -428,9 +426,8 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         decoder = self._load_model('shape_slat_decoder')
         decoder.set_resolution(resolution)
         model_dtype = next(decoder.parameters()).dtype
-        print(f"[TRELLIS2] Shape decoder: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
-        with torch.autocast('cuda', dtype=model_dtype):
-            ret = decoder(slat, return_subs=True)
+        slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
+        ret = decoder(slat, return_subs=True)
         del decoder
         self._unload_model('shape_slat_decoder')
         return ret
@@ -500,9 +497,10 @@ class Trellis2ImageTo3DPipeline(Pipeline):
         """
         decoder = self._load_model('tex_slat_decoder')
         model_dtype = next(decoder.parameters()).dtype
-        print(f"[TRELLIS2] Texture decoder: input={slat.feats.dtype}, weights={model_dtype}, using autocast({model_dtype})", file=sys.stderr)
-        with torch.autocast('cuda', dtype=model_dtype):
-            ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
+        slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
+        for i, sub in enumerate(subs):
+            subs[i] = sub.replace(feats=sub.feats.to(dtype=model_dtype))
+        ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
         del decoder
         self._unload_model('tex_slat_decoder')
         return ret

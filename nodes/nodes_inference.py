@@ -118,8 +118,8 @@ Returns:
         import trimesh as Trimesh
         from .stages import run_shape_generation
 
-        # run_shape_generation returns (file_ref, vertices, faces)
-        # file_ref is passed to downstream nodes, vertices/faces used for Trimesh
+        # run_shape_generation returns (result_dict, vertices, faces)
+        # result_dict is passed to downstream nodes, vertices/faces used for Trimesh
         shape_result, vertices, faces = run_shape_generation(
             model_config=model_config,
             conditioning=conditioning,
