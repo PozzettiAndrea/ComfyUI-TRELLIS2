@@ -4,7 +4,7 @@ This returns a lightweight config object - actual model loading
 happens inside @isolated subprocess methods.
 """
 
-from .trellis2_config import Trellis2ModelConfig
+# Config is now a plain dict for serialization compatibility
 
 # Resolution modes (matching original TRELLIS.2)
 RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
@@ -59,14 +59,13 @@ VRAM mode:
 """
 
     def load_models(self, resolution='1024_cascade', attn_backend="flash_attn", vram_mode="keep_loaded"):
-        # Create lightweight config object
-        # Actual model loading happens in @isolated subprocess methods
-        config = Trellis2ModelConfig(
-            model_name="microsoft/TRELLIS.2-4B",
-            resolution=resolution,
-            attn_backend=attn_backend,
-            vram_mode=vram_mode,
-        )
+        # Return plain dict - serializes natively across process boundaries
+        config = {
+            "model_name": "microsoft/TRELLIS.2-4B",
+            "resolution": resolution,
+            "attn_backend": attn_backend,
+            "vram_mode": vram_mode,
+        }
         return (config,)
 
 

@@ -59,10 +59,10 @@ def run_video_conditioning(
 
     # Get model manager
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
 
     num_frames = images.shape[0]
@@ -237,10 +237,10 @@ def run_temporal_shape_generation(
 
     # Get pipeline
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
     pipeline = manager.get_shape_pipeline(device)
 
@@ -261,7 +261,7 @@ def run_temporal_shape_generation(
     meshes, shape_slat, subs, res = pipeline.run_shape(
         cond_on_device,
         seed=seed,
-        pipeline_type=model_config.resolution,
+        pipeline_type=model_config["resolution"],
         max_num_tokens=max_num_tokens,
         **sampler_params
     )
@@ -294,7 +294,7 @@ def run_temporal_shape_generation(
         'mesh_vertices': vertices,
         'mesh_faces': faces,
         'resolution': res,
-        'pipeline_type': model_config.resolution,
+        'pipeline_type': model_config["resolution"],
         'raw_mesh_vertices': raw_mesh_vertices.cpu(),
         'raw_mesh_faces': raw_mesh_faces.cpu(),
     }
@@ -399,10 +399,10 @@ def run_animated_texture_generation(
 
     # Get pipeline
     manager = get_model_manager(
-        model_config.model_name,
-        model_config.resolution,
-        model_config.attn_backend,
-        model_config.vram_mode,
+        model_config["model_name"],
+        model_config["resolution"],
+        model_config["attn_backend"],
+        model_config["vram_mode"],
     )
     pipeline = manager.get_texture_pipeline(device)
 
@@ -429,13 +429,13 @@ def run_animated_texture_generation(
 
     # Determine texture model based on pipeline resolution (not conditioning availability)
     # This ensures we use a model that's actually loaded
-    if model_config.resolution in ('1024_cascade', '1536_cascade') and frame_conds_1024:
+    if model_config["resolution"] in ('1024_cascade', '1536_cascade') and frame_conds_1024:
         tex_model_key = 'tex_slat_flow_model_1024'
         use_1024_cond = True
     else:
         tex_model_key = 'tex_slat_flow_model_512'
         use_1024_cond = False
-    print(f"[TRELLIS2] Using texture model: {tex_model_key} (resolution={model_config.resolution})", file=sys.stderr)
+    print(f"[TRELLIS2] Using texture model: {tex_model_key} (resolution={model_config['resolution']})", file=sys.stderr)
 
     # ========== Sample all tex_slats and save to disk ==========
     print(f"[TRELLIS2] Sampling texture latents...", file=sys.stderr)
@@ -484,7 +484,7 @@ def run_animated_texture_generation(
         'num_frames': num_frames,
         'resolution': resolution,
         'interpolation_mode': interpolation_mode,
-        'model_name': model_config.model_name,
+        'model_name': model_config["model_name"],
         'mesh_vertices': shape_result['mesh_vertices'],
         'mesh_faces': shape_result['mesh_faces'],
         # Save subs for decoding
