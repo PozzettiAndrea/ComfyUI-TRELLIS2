@@ -198,7 +198,6 @@ Returns:
         import os
         import uuid
         import numpy as np
-        import trimesh as Trimesh
         from .trellis_utils import run_texture_generation
 
         texture_result = run_texture_generation(
@@ -215,21 +214,11 @@ Returns:
         os.makedirs(cache_dir, exist_ok=True)
         file_id = uuid.uuid4().hex[:8]
 
-        # Save mesh geometry to .glb
-        tri_mesh = Trimesh.Trimesh(
-            vertices=texture_result['mesh_vertices'],
-            faces=texture_result['mesh_faces'],
-            process=False
-        )
-        mesh_glb_path = os.path.join(cache_dir, f'mesh_{file_id}.glb')
-        tri_mesh.export(mesh_glb_path)
-        print(f"[TRELLIS2] Mesh saved to: {mesh_glb_path}")
-
         # Convert layout slices to tuples for JSON serialization
         pbr_layout = texture_result['pbr_layout']
         layout_serializable = {k: (v.start, v.stop) for k, v in pbr_layout.items()}
 
-        # Save voxelgrid data to .npz
+        # Save voxelgrid data to .npz (contains mesh + PBR voxel data)
         voxelgrid_npz_path = os.path.join(cache_dir, f'voxelgrid_{file_id}.npz')
         np.savez(
             voxelgrid_npz_path,
@@ -242,7 +231,7 @@ Returns:
         )
         print(f"[TRELLIS2] Voxelgrid saved to: {voxelgrid_npz_path}")
 
-        return (mesh_glb_path, voxelgrid_npz_path)
+        return ("", voxelgrid_npz_path)
 
 
 class Trellis2RemoveBackground:
