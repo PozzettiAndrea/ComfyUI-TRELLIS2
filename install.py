@@ -150,19 +150,6 @@ def ensure_vcredist():
 # Main Installation
 # =============================================================================
 
-def ensure_comfy_env():
-    """Install/upgrade comfy-env package."""
-    print("[TRELLIS2] Installing comfy-env package...")
-    try:
-        subprocess.check_call([
-            sys.executable, "-m", "pip", "install", "--upgrade", "comfy-env>=0.0.1"
-        ])
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"[TRELLIS2] Failed to install comfy-env: {e}")
-        return False
-
-
 def main():
     """Main installation function."""
     print("\n" + "=" * 60)
@@ -173,11 +160,6 @@ def main():
     if not ensure_vcredist():
         print("[TRELLIS2] WARNING: VC++ Redistributable installation failed.")
         print("[TRELLIS2] Some features may not work. Continuing anyway...")
-
-    # Ensure comfy-env is installed
-    if not ensure_comfy_env():
-        print("[TRELLIS2] Cannot continue without comfy-env package.")
-        return 1
 
     from comfy_env import IsolatedEnvManager, discover_config
 
