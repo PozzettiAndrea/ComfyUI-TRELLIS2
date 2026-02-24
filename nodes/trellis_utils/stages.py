@@ -1,7 +1,7 @@
 """
 TRELLIS2 pipeline stages.
 
-Each stage loads models, runs inference, and optionally unloads.
+Each stage loads models, runs inference, and cleans up.
 """
 
 import gc
@@ -20,8 +20,57 @@ from PIL import Image
 
 log = logging.getLogger("trellis2")
 
-from .lazy_manager import get_model_manager
 from .helpers import smart_crop_square
+
+
+# Shape models needed for each resolution mode
+SHAPE_MODELS_BY_RESOLUTION = {
+    '512': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+    ],
+    '1024_cascade': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+        'shape_slat_flow_model_1024',
+    ],
+    '1536_cascade': [
+        'sparse_structure_decoder',
+        'sparse_structure_flow_model',
+        'shape_slat_decoder',
+        'shape_slat_flow_model_512',
+        'shape_slat_flow_model_1024',
+    ],
+}
+
+# Texture models needed for each resolution mode
+TEXTURE_MODELS_BY_RESOLUTION = {
+    '512': [
+        'tex_slat_decoder',
+        'tex_slat_flow_model_512',
+    ],
+    '1024_cascade': [
+        'tex_slat_decoder',
+        'tex_slat_flow_model_512',
+        'tex_slat_flow_model_1024',
+    ],
+    '1536_cascade': [
+        'tex_slat_decoder',
+        'tex_slat_flow_model_512',
+        'tex_slat_flow_model_1024',
+    ],
+}
+
+# Texture resolution mapping (texture maxes at 1024)
+TEXTURE_RESOLUTION_MAP = {
+    '512': '512',
+    '1024_cascade': '1024_cascade',
+    '1536_cascade': '1024_cascade',
+}
 
 
 # Disk-based tensor serialization for IPC
@@ -156,14 +205,6 @@ def run_conditioning(
     # Get device
     device = comfy.model_management.get_torch_device()
 
-    # Get model manager
-    manager = get_model_manager(
-        model_config["model_name"],
-        model_config["resolution"],
-        model_config["attn_backend"],
-        model_config["vram_mode"],
-    )
-
     # Convert image to PIL
     if image.dim() == 4:
         img_np = (image[0].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
@@ -213,21 +254,30 @@ def run_conditioning(
     # Smart crop
     pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
 
-    # Load DinoV3 and extract features
-    model = manager.get_dinov3(device)
+    # Load DinoV3 directly and extract features
+    from ..trellis2.modules import image_feature_extractor
+    log.info("Loading DinoV3 feature extractor...")
+    dinov3_model = image_feature_extractor.DinoV3FeatureExtractor(
+        model_name="facebook/dinov3-vitl16-pretrain-lvd1689m"
+    )
+    dinov3_model.to(device)
+    log.info("DinoV3 loaded")
 
     # Get 512px conditioning
-    model.image_size = 512
-    cond_512 = model([pil_image])
+    dinov3_model.image_size = 512
+    cond_512 = dinov3_model([pil_image])
 
     # Get 1024px conditioning if requested
     cond_1024 = None
     if include_1024:
-        model.image_size = 1024
-        cond_1024 = model([pil_image])
+        dinov3_model.image_size = 1024
+        cond_1024 = dinov3_model([pil_image])
 
     # Unload DinoV3 immediately
-    manager.unload_dinov3()
+    del dinov3_model
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+    log.info("DinoV3 offloaded")
 
     # Create negative conditioning
     neg_cond = torch.zeros_like(cond_512)
@@ -281,6 +331,8 @@ def run_shape_generation(
     log.info(f"Running shape generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
+    dtype = model_config.get("dtype")
+    resolution = model_config["resolution"]
 
     # Load conditioning from disk if needed
     conditioning = _load_from_disk(conditioning)
@@ -291,14 +343,22 @@ def run_shape_generation(
         for k, v in conditioning.items()
     }
 
-    # Get model manager and shape pipeline
-    manager = get_model_manager(
-        model_config["model_name"],
-        model_config["resolution"],
-        model_config["attn_backend"],
-        model_config["vram_mode"],
+    # Load shape pipeline directly
+    from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+
+    shape_models = SHAPE_MODELS_BY_RESOLUTION.get(
+        resolution, SHAPE_MODELS_BY_RESOLUTION['1024_cascade']
     )
-    pipeline = manager.get_shape_pipeline(device)
+
+    log.info("Loading shape pipeline...")
+    pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
+        model_config["model_name"],
+        models_to_load=shape_models,
+        dtype=dtype,
+    )
+    pipeline.default_pipeline_type = resolution
+    pipeline._device = device
+    log.info("Shape pipeline ready")
 
     # Build sampler params
     sampler_params = {
@@ -317,7 +377,7 @@ def run_shape_generation(
     meshes, shape_slat, subs, res = pipeline.run_shape(
         cond_on_device,
         seed=seed,
-        pipeline_type=model_config["resolution"],
+        pipeline_type=resolution,
         max_num_tokens=max_num_tokens,
         **sampler_params
     )
@@ -327,12 +387,10 @@ def run_shape_generation(
     mesh.fill_holes()
 
     # Save RAW mesh data for texture stage (before coordinate conversion)
-    # These will be used to reconstruct Mesh objects in texture stage
     raw_mesh_vertices = mesh.vertices.cpu()
     raw_mesh_faces = mesh.faces.cpu()
 
     # Convert mesh to CPU arrays for output (with coordinate conversion)
-    # Unify face orientations using CuMesh
     cumesh = CuMesh.CuMesh()
     cumesh.init(mesh.vertices, mesh.faces.int())
     cumesh.unify_face_orientations()
@@ -346,8 +404,6 @@ def run_shape_generation(
     vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
 
     # Pack results - serialize SparseTensor objects to dicts for IPC
-    # This allows the result to cross the subprocess boundary without requiring
-    # trellis2.modules in the main ComfyUI process
     log.debug(f"shape_slat before serialize:")
     log.debug(f"  feats.shape: {shape_slat.feats.shape}")
     log.debug(f"  coords.shape: {shape_slat.coords.shape}")
@@ -356,23 +412,24 @@ def run_shape_generation(
     result = {
         'shape_slat': _serialize_for_ipc(shape_slat),
         'subs': _serialize_for_ipc(subs),
-        'mesh_vertices': vertices,  # numpy, coordinate-converted for output
-        'mesh_faces': faces,        # numpy, for output
+        'mesh_vertices': vertices,
+        'mesh_faces': faces,
         'resolution': res,
-        'pipeline_type': model_config["resolution"],
-        # Raw mesh data for texture stage reconstruction (CPU tensors, original coords)
+        'pipeline_type': resolution,
         'raw_mesh_vertices': raw_mesh_vertices.cpu(),
         'raw_mesh_faces': raw_mesh_faces.cpu(),
     }
 
     # Unload shape pipeline
-    manager.unload_shape_pipeline()
+    del pipeline
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+    log.info("Shape pipeline offloaded")
 
     # Save result to disk for IPC
     result_ref = _save_to_disk(result, 'shape_result')
 
     log.info(f"Shape generated: {len(vertices)} verts, {len(faces)} faces")
-    # Return file reference plus mesh data for Trimesh creation in node
     return result_ref, vertices, faces
 
 
@@ -402,6 +459,8 @@ def run_texture_generation(
     log.info(f"Running texture generation (seed={seed})...")
 
     device = comfy.model_management.get_torch_device()
+    dtype = model_config.get("dtype")
+    resolution = model_config["resolution"]
 
     # Load conditioning and shape_result from disk if needed
     conditioning = _load_from_disk(conditioning)
@@ -414,7 +473,6 @@ def run_texture_generation(
     }
 
     # Deserialize and move shape data to device
-    # SparseTensor objects were serialized as dicts for IPC, reconstruct them here
     shape_slat = _deserialize_from_ipc(shape_result['shape_slat'], device)
     subs = _deserialize_from_ipc(shape_result['subs'], device)
     log.debug(f"shape_slat after deserialize:")
@@ -422,24 +480,32 @@ def run_texture_generation(
     log.debug(f"  coords.shape: {shape_slat.coords.shape}")
     log.debug(f"  shape: {shape_slat.shape}")
     log.debug(f"  scale: {shape_slat._scale}")
-    resolution = shape_result['resolution']
     pipeline_type = shape_result['pipeline_type']
 
     # Reconstruct Mesh objects from saved data
     raw_vertices = shape_result['raw_mesh_vertices'].to(device)
     raw_faces = shape_result['raw_mesh_faces'].to(device)
     mesh = Mesh(vertices=raw_vertices, faces=raw_faces)
-    mesh.fill_holes()  # Re-apply fill_holes since we reconstructed
+    mesh.fill_holes()
     meshes = [mesh]
 
-    # Get model manager and texture pipeline
-    manager = get_model_manager(
-        model_config["model_name"],
-        model_config["resolution"],
-        model_config["attn_backend"],
-        model_config["vram_mode"],
+    # Load texture pipeline directly
+    from ..trellis2.pipelines import Trellis2ImageTo3DPipeline
+
+    texture_resolution = TEXTURE_RESOLUTION_MAP.get(resolution, '1024_cascade')
+    texture_models = TEXTURE_MODELS_BY_RESOLUTION.get(
+        resolution, TEXTURE_MODELS_BY_RESOLUTION['1024_cascade']
     )
-    pipeline = manager.get_texture_pipeline(device)
+
+    log.info("Loading texture pipeline...")
+    pipeline = Trellis2ImageTo3DPipeline.from_pretrained(
+        model_config["model_name"],
+        models_to_load=texture_models,
+        dtype=dtype,
+    )
+    pipeline.default_pipeline_type = texture_resolution
+    pipeline._device = device
+    log.info("Texture pipeline ready")
 
     # Build sampler params
     sampler_params = {
@@ -456,7 +522,7 @@ def run_texture_generation(
         shape_slat,
         subs,
         meshes,
-        resolution,
+        shape_result['resolution'],
         seed=seed,
         pipeline_type=pipeline_type,
         **sampler_params
@@ -478,9 +544,10 @@ def run_texture_generation(
     }
 
     # Cleanup
-    manager.unload_texture_pipeline()
+    del pipeline
     gc.collect()
     comfy.model_management.soft_empty_cache()
+    log.info("Texture pipeline offloaded")
 
     coords = result['voxel_coords']
     log.info(f"Texture generated: {mesh.vertices.shape[0]} verts, {len(coords)} voxels")
