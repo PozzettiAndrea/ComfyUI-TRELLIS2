@@ -10,6 +10,15 @@ import comfy.model_management
 log = logging.getLogger("trellis2")
 
 
+def _is_sparse_model(model: nn.Module) -> bool:
+    """Check if model uses sparse operations (incompatible with lowvram per-layer streaming)."""
+    for m in model.modules():
+        cls_name = type(m).__name__
+        if cls_name.startswith('Sparse') and cls_name != 'SparseTensor':
+            return True
+    return False
+
+
 def _get_trellis2_models_dir():
     """Get the ComfyUI/models/trellis2 directory."""
     import os
@@ -36,6 +45,7 @@ class Pipeline:
         self.models = models
         self.disk_offload_manager = disk_offload_manager
         self.keep_model_loaded = True  # Default: keep models on GPU
+        self._model_patchers = {}
         for model in self.models.values():
             if model is not None:  # Skip None placeholders (progressive loading)
                 model.eval()
@@ -216,11 +226,13 @@ class Pipeline:
 
     def _load_model(self, model_key: str, device: torch.device = None) -> nn.Module:
         """
-        Load a model to GPU - either move existing or load from disk.
+        Load a model to GPU via ModelPatcher for ComfyUI VRAM management.
 
         With progressive loading (disk_offload mode), models are loaded on-demand
         the first time they're needed, then unloaded after use to free VRAM.
         """
+        import comfy.model_patcher
+
         if device is None:
             device = self.device
 
@@ -230,27 +242,36 @@ class Pipeline:
         if model is None and self.disk_offload_manager is not None:
             safetensors_path = self.disk_offload_manager.get_path(model_key)
             if safetensors_path:
-                # Config is same path with .json extension
                 config_path = safetensors_path.replace('.safetensors', '')
                 mem_before = torch.cuda.memory_allocated() / 1024**2
                 log.info(f"Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)")
-                model = models.from_pretrained(config_path, device=str(device), dtype=getattr(self, '_dtype', None))
+                model = models.from_pretrained(config_path, device='cpu', dtype=getattr(self, '_dtype', None))
                 model.eval()
-                # Apply low_vram setting if enabled
                 if self.low_vram and hasattr(model, 'low_vram'):
                     model.low_vram = True
                 self.models[model_key] = model
-                # Enable activation checkpointing for memory reduction (cpu_offload or disk_offload mode)
                 if not self.keep_model_loaded and hasattr(model, 'blocks'):
                     for block in model.blocks:
                         if hasattr(block, 'use_checkpoint'):
                             block.use_checkpoint = True
                     log.info(f"{model_key} checkpointing enabled")
                 mem_after = torch.cuda.memory_allocated() / 1024**2
-                log.info(f"{model_key} loaded (VRAM after: {mem_after:.0f} MB)")
-        elif model is not None:
-            # Model exists, just move to device if needed
-            model.to(device)
+                log.info(f"{model_key} loaded to CPU (VRAM after: {mem_after:.0f} MB)")
+
+        if model is not None:
+            # Wrap in ModelPatcher if not already wrapped
+            if model_key not in self._model_patchers:
+                offload_device = comfy.model_management.unet_offload_device()
+                if not _is_sparse_model(model):
+                    from ...trellis_utils.stages import _enable_lowvram_cast
+                    _enable_lowvram_cast(model)
+                patcher = comfy.model_patcher.ModelPatcher(
+                    model, load_device=device, offload_device=offload_device,
+                )
+                self._model_patchers[model_key] = patcher
+                log.info(f"{model_key} wrapped in ModelPatcher (sparse={_is_sparse_model(model)})")
+
+            comfy.model_management.load_models_gpu([self._model_patchers[model_key]])
 
         return model
 
@@ -264,14 +285,14 @@ class Pipeline:
         if self.keep_model_loaded:
             return  # Keep model loaded, do nothing
 
+        patcher = self._model_patchers.pop(model_key, None)
         model = self.models.get(model_key)
         if model is not None:
             mem_before = torch.cuda.memory_allocated() / 1024**2
             reserved_before = torch.cuda.memory_reserved() / 1024**2
             log.info(f"Unloading {model_key}... (allocated: {mem_before:.0f} MB, reserved: {reserved_before:.0f} MB)")
-            # Delete the model entirely
             self.models[model_key] = None
-            del model
+            del model, patcher
             gc.collect()
             comfy.model_management.soft_empty_cache()
             mem_after = torch.cuda.memory_allocated() / 1024**2

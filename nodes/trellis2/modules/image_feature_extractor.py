@@ -4,16 +4,11 @@ import os
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
-try:
-    from transformers import DINOv3ViTModel, DINOv3ViTConfig
-except ImportError:
-    raise ImportError(
-        "DINOv3ViTModel requires transformers>=4.56.0. "
-        "Please upgrade: pip install --upgrade transformers"
-    )
 import numpy as np
 from PIL import Image
 import comfy.model_management
+
+from .dinov3_vit import DINOv3ViT
 
 log = logging.getLogger("trellis2")
 
@@ -22,53 +17,12 @@ DINOV3_MODEL_REMAP = {
     "facebook/dinov3-vitl16-pretrain-lvd1689m": "PIA-SPACE-LAB/dinov3-vitl-pretrain-lvd1689m",
 }
 
-# Embedded config for DINOv3 ViT-L (avoids needing config.json download)
-# Parameter names must match DINOv3ViTConfig (transformers>=4.56.0) exactly.
-DINOV3_VITL_CONFIG = {
-    "hidden_size": 1024,
-    "intermediate_size": 4096,
-    "num_hidden_layers": 24,
-    "num_attention_heads": 16,
-    "hidden_act": "gelu",
-    "attention_dropout": 0.0,
-    "initializer_range": 0.02,
-    "layer_norm_eps": 1e-6,
-    "image_size": 512,
-    "patch_size": 16,
-    "num_channels": 3,
-    "query_bias": True,
-    "value_bias": True,
-    "proj_bias": True,
-    "mlp_bias": True,
-    "layerscale_value": 1e-5,
-    "drop_path_rate": 0.4,
-    "use_gated_mlp": False,
-    "num_register_tokens": 4,
-    "model_type": "dinov3_vit",
-}
-
 # Clean local safetensors filenames to check (in order of preference)
 LOCAL_SAFETENSORS_NAMES = [
     "dinov3-vitl-pretrain.safetensors",
     "dinov3-vitl.safetensors",
     "model.safetensors",
 ]
-
-
-def _is_offline_mode() -> bool:
-    """Check if offline mode is enabled via HF_HUB_OFFLINE environment variable."""
-    return os.environ.get("HF_HUB_OFFLINE", "0") == "1"
-
-
-def _is_model_cached(model_name: str, cache_dir: str) -> bool:
-    """Check if a HuggingFace model is already cached locally."""
-    try:
-        from huggingface_hub import try_to_load_from_cache
-        from huggingface_hub.constants import _CACHED_NO_EXIST
-        cached = try_to_load_from_cache(model_name, "config.json", cache_dir=cache_dir)
-        return cached is not None and cached != _CACHED_NO_EXIST
-    except Exception:
-        return False
 
 
 def _find_local_safetensors(cache_dir: str) -> Optional[str]:
@@ -83,21 +37,16 @@ def _find_local_safetensors(cache_dir: str) -> Optional[str]:
     return None
 
 
-def _load_dinov3_from_safetensors(safetensors_path: str) -> DINOv3ViTModel:
+def _load_dinov3_from_safetensors(safetensors_path: str) -> DINOv3ViT:
     """
     Load DINOv3 ViT-L model from a single safetensors file.
-    Uses embedded config to avoid needing config.json.
+    Uses vendored DINOv3ViT (plain nn.Module with comfy-attn baked in).
     """
     import comfy.utils
 
-    # Create model from embedded config
-    config = DINOv3ViTConfig(**DINOV3_VITL_CONFIG)
-    model = DINOv3ViTModel(config)
-
-    # Load weights from safetensors
+    model = DINOv3ViT()
     state_dict = comfy.utils.load_torch_file(safetensors_path)
     model.load_state_dict(state_dict, strict=True)
-
     return model
 
 
@@ -190,6 +139,12 @@ class DinoV3FeatureExtractor:
             log.info("DINOv3 model loaded successfully")
 
         self.model.eval()
+
+        # Determine compute dtype (bf16/fp16) so flash attention works
+        device = comfy.model_management.get_torch_device()
+        self.compute_dtype = comfy.model_management.text_encoder_dtype(device)
+        log.info(f"DINOv3 ViT-L loaded ({len(list(self.model.layer))} layers, comfy-attn baked in, dtype={self.compute_dtype})")
+
         self.image_size = image_size
         self.transform = transforms.Compose([
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -206,7 +161,7 @@ class DinoV3FeatureExtractor:
         self.model.cpu()
 
     def extract_features(self, image: torch.Tensor) -> torch.Tensor:
-        image = image.to(self.model.embeddings.patch_embeddings.weight.dtype)
+        image = image.to(dtype=self.compute_dtype)
         hidden_states = self.model.embeddings(image, bool_masked_pos=None)
         position_embeddings = self.model.rope_embeddings(image)
 
