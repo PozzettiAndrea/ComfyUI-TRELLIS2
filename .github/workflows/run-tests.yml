@@ -1,16 +1,10 @@
-name: Test Installation
+name: Workflow Tests
 on:
   push:
-    branches: [main, dev]
+    branches: [dev]
 
 jobs:
-  approve:
-    runs-on: ubuntu-latest
-    environment: test
-    steps:
-      - run: echo "Approved"
   test:
-    needs: approve
     uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@main
     with:
       config-file: "comfy-test.toml"
