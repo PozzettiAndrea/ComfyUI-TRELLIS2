@@ -3,6 +3,6 @@ on: [push, pull_request]
 
 jobs:
   test:
-    uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@main
+    uses: PozzettiAndrea/comfy-test/.github/workflows/test-matrix.yml@master
     with:
       config-file: "comfy-test.toml"
