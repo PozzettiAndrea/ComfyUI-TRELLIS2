@@ -205,6 +205,18 @@ class Pipeline:
     def cpu(self) -> None:
         self.to(torch.device("cpu"))
 
+    @property
+    def low_vram(self) -> bool:
+        return getattr(self, '_low_vram', False)
+
+    @low_vram.setter
+    def low_vram(self, value: bool) -> None:
+        self._low_vram = value
+        # Propagate to all loaded models
+        for model in self.models.values():
+            if model is not None and hasattr(model, 'low_vram'):
+                model.low_vram = value
+
     def _load_model(self, model_key: str, device: torch.device = None) -> nn.Module:
         """
         Load a model to GPU - either move existing or load from disk.
@@ -223,11 +235,22 @@ class Pipeline:
             if safetensors_path:
                 # Config is same path with .json extension
                 config_path = safetensors_path.replace('.safetensors', '')
-                print(f"[TRELLIS2] Loading {model_key} to {device}...", file=sys.stderr, flush=True)
+                mem_before = torch.cuda.memory_allocated() / 1024**2
+                print(f"[TRELLIS2] Loading {model_key} to {device}... (VRAM before: {mem_before:.0f} MB)", file=sys.stderr, flush=True)
                 model = models.from_pretrained(config_path, device=str(device))
                 model.eval()
+                # Apply low_vram setting if enabled
+                if self.low_vram and hasattr(model, 'low_vram'):
+                    model.low_vram = True
                 self.models[model_key] = model
-                print(f"[TRELLIS2] {model_key} loaded", file=sys.stderr, flush=True)
+                # Enable activation checkpointing for memory reduction (cpu_offload or disk_offload mode)
+                if not self.keep_model_loaded and hasattr(model, 'blocks'):
+                    for block in model.blocks:
+                        if hasattr(block, 'use_checkpoint'):
+                            block.use_checkpoint = True
+                    print(f"[TRELLIS2] {model_key} checkpointing enabled", file=sys.stderr, flush=True)
+                mem_after = torch.cuda.memory_allocated() / 1024**2
+                print(f"[TRELLIS2] {model_key} loaded (VRAM after: {mem_after:.0f} MB)", file=sys.stderr, flush=True)
         elif model is not None:
             # Model exists, just move to device if needed
             model.to(device)
@@ -246,10 +269,14 @@ class Pipeline:
 
         model = self.models.get(model_key)
         if model is not None:
-            print(f"[TRELLIS2] Unloading {model_key}...", file=sys.stderr, flush=True)
+            mem_before = torch.cuda.memory_allocated() / 1024**2
+            reserved_before = torch.cuda.memory_reserved() / 1024**2
+            print(f"[TRELLIS2] Unloading {model_key}... (allocated: {mem_before:.0f} MB, reserved: {reserved_before:.0f} MB)", file=sys.stderr, flush=True)
             # Delete the model entirely
             self.models[model_key] = None
             del model
             gc.collect()
             torch.cuda.empty_cache()
-            print(f"[TRELLIS2] {model_key} unloaded", file=sys.stderr, flush=True)
+            mem_after = torch.cuda.memory_allocated() / 1024**2
+            reserved_after = torch.cuda.memory_reserved() / 1024**2
+            print(f"[TRELLIS2] {model_key} unloaded (allocated: {mem_after:.0f} MB, reserved: {reserved_after:.0f} MB)", file=sys.stderr, flush=True)
