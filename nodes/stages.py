@@ -118,6 +118,7 @@ def _load_model(model_key, device=None):
     First call: build model on CPU, load weights, wrap in ModelPatcher.
     Subsequent calls: just call load_models_gpu (model already in RAM).
     """
+    import time
     import comfy.model_patcher
     import comfy.utils
 
@@ -127,6 +128,9 @@ def _load_model(model_key, device=None):
     offload_device = comfy.model_management.unet_offload_device()
 
     if model_key not in _model_patchers:
+        t0 = time.perf_counter()
+        pbar = comfy.utils.ProgressBar(3)
+
         safetensors_path = _model_paths[model_key]
         config_path = safetensors_path.replace('.safetensors', '.json')
 
@@ -138,25 +142,25 @@ def _load_model(model_key, device=None):
 
         # Load state dict to CPU (ComfyUI-native: no device arg = CPU)
         sd = comfy.utils.load_torch_file(safetensors_path)
+        pbar.update(1)
 
-        # Build model on CPU
+        # Determine target dtype: bf16 if GPU supports it, else keep disk dtype
+        compute_dtype = comfy.model_management.vae_dtype(device, allowed_dtypes=[torch.bfloat16])
+        weight_dtype = compute_dtype if compute_dtype == torch.bfloat16 else next(iter(sd.values())).dtype
+
+        # Pre-cast state dict to target dtype (single pass, before entering model)
+        if weight_dtype != next(iter(sd.values())).dtype:
+            for k in sd:
+                if sd[k].is_floating_point():
+                    sd[k] = sd[k].to(weight_dtype)
+
+        # Build model, assign=True: state dict tensors become parameters directly (no copy)
         model = model_class(**config['args'])
-        model.load_state_dict(sd, strict=False)
+        model.load_state_dict(sd, strict=False, assign=True)
         del sd
 
-        import sys
-        weight_dtype = next(model.parameters()).dtype
-
-        # Cast float32 checkpoints to bfloat16 if GPU supports it (saves ~2x memory, ~2x faster)
-        if weight_dtype == torch.float32:
-            compute_dtype = comfy.model_management.vae_dtype(device, allowed_dtypes=[torch.bfloat16])
-            if compute_dtype == torch.bfloat16:
-                model.to(torch.bfloat16)
-                weight_dtype = torch.bfloat16
-
-        print(f"[TRELLIS2] {config['name']} loaded: dtype={weight_dtype}", file=sys.stderr)
-
         model.eval()
+        pbar.update(1)
 
         # Wrap in ModelPatcher — model starts on CPU (offload_device)
         patcher = comfy.model_patcher.ModelPatcher(
@@ -168,9 +172,17 @@ def _load_model(model_key, device=None):
         comfy.model_management.load_models_gpu([patcher])
         if hasattr(model, '_post_load'):
             model._post_load(torch.device(device))
+        pbar.update(1)
+
+        elapsed = time.perf_counter() - t0
+        import sys
+        print(f"[TRELLIS2] Loaded {config['name']}: dtype={weight_dtype}, device={device}, {elapsed:.1f}s", file=sys.stderr)
     else:
-        # Subsequent calls: just ensure model is on GPU
+        t0 = time.perf_counter()
         comfy.model_management.load_models_gpu([_model_patchers[model_key]])
+        elapsed = time.perf_counter() - t0
+        import sys
+        print(f"[TRELLIS2] Reloaded {model_key} to GPU: {elapsed:.1f}s", file=sys.stderr)
 
     return _model_patchers[model_key].model
 
@@ -487,11 +499,15 @@ def _sample_shape_slat_cascade(
 
 def _decode_shape_slat(slat, resolution, dtype):
     """Decode structured latent → meshes + subs."""
+    import time as _time, sys as _sys
     decoder = _load_model('shape_slat_decoder')
     decoder.set_resolution(resolution)
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
+
+    t0 = _time.perf_counter()
     meshes, subs = decoder(slat, return_subs=True)
+    print(f"[TRELLIS2] Shape decode (FlexiDualGridVaeDecoder): {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
 
     _unload_model('shape_slat_decoder')
     return meshes, subs
@@ -549,12 +565,17 @@ def _sample_tex_slat(cond, model_key, shape_slat, sampler_params, device, dtype)
 
 def _decode_tex_slat(slat, subs):
     """Decode texture structured latent → texture voxels."""
+    import time as _time, sys as _sys
     decoder = _load_model('tex_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
     for i, sub in enumerate(subs):
         subs[i] = sub.replace(feats=sub.feats.to(dtype=model_dtype))
+
+    t0 = _time.perf_counter()
     ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
+    ret = ret.replace(feats=ret.feats.float())
+    print(f"[TRELLIS2] Texture decode (SparseUnetVaeDecoder): {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
 
     _unload_model('tex_slat_decoder')
     return ret
@@ -649,25 +670,33 @@ def run_conditioning(
     pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
 
     # Load (or reuse cached) DinoV3 via ComfyUI ModelPatcher
-    log.info("Loading DinoV3 feature extractor...")
+    import time as _time
+    import sys as _sys
+
+    t0 = _time.perf_counter()
     dinov3_model = _load_dinov3(device)
-    log.info("DinoV3 ready")
+    print(f"[TRELLIS2] DinoV3 load: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
 
     # Get 512px conditioning
     dinov3_model.image_size = 512
+    t0 = _time.perf_counter()
     cond_512 = dinov3_model([pil_image])
+    print(f"[TRELLIS2] DinoV3 512px extract: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
     pbar.update(1)
 
     # Get 1024px conditioning only if caller requested it AND pipeline has cascade model
     cond_1024 = None
     if include_1024 and _has_cascade_model():
         dinov3_model.image_size = 1024
+        t0 = _time.perf_counter()
         cond_1024 = dinov3_model([pil_image])
+        print(f"[TRELLIS2] DinoV3 1024px extract: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
     pbar.update(1)
 
+    t0 = _time.perf_counter()
     comfy.model_management.soft_empty_cache()
+    print(f"[TRELLIS2] soft_empty_cache: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
     pbar.update(1)
-    log.info("Conditioning done")
 
     # Create negative conditioning
     neg_cond = torch.zeros_like(cond_512)
@@ -937,12 +966,12 @@ def run_texture_generation(
     textured_mesh.simplify(16777216)
 
     result = {
-        'voxel_coords': textured_mesh.coords.cpu().numpy().astype(np.float32),
-        'voxel_attrs': textured_mesh.attrs.cpu().numpy(),
+        'voxel_coords': textured_mesh.coords.detach().cpu().numpy().astype(np.float32),
+        'voxel_attrs': textured_mesh.attrs.detach().cpu().numpy(),
         'voxel_size': textured_mesh.voxel_size,
         'pbr_layout': _PBR_ATTR_LAYOUT,
-        'original_vertices': textured_mesh.vertices.cpu(),
-        'original_faces': textured_mesh.faces.cpu(),
+        'original_vertices': textured_mesh.vertices.detach().cpu(),
+        'original_faces': textured_mesh.faces.detach().cpu(),
     }
 
     pbar.update(1)

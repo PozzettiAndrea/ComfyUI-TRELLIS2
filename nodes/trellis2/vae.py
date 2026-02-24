@@ -785,9 +785,12 @@ class SparseUnetVaeDecoder(nn.Module):
         self.apply(_basic_init)
 
     def forward(self, x: sp.SparseTensor, guide_subs: Optional[List[sp.SparseTensor]] = None, return_subs: bool = False) -> sp.SparseTensor:
-        import sys
         assert guide_subs is None or self.pred_subdiv == False, "Only decoders with pred_subdiv=False can be used with guide_subs"
         assert return_subs == False or self.pred_subdiv == True, "Only decoders with pred_subdiv=True can be used with return_subs"
+
+        import comfy.utils
+        total_blocks = sum(len(res) for res in self.blocks)
+        pbar = comfy.utils.ProgressBar(total_blocks + 1)  # +1 for output layer
 
         h = self.from_latent(x)
         subs_gt = []
@@ -804,8 +807,10 @@ class SparseUnetVaeDecoder(nn.Module):
                         h = block(h, subdiv=guide_subs[i] if guide_subs is not None else None)
                 else:
                     h = block(h)
+                pbar.update(1)
         h = h.replace(F.layer_norm(h.feats, h.feats.shape[-1:]))
         h = self.output_layer(h)
+        pbar.update(1)
         if self.training and self.pred_subdiv:
             return h, subs_gt, subs
         else:
