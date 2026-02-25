@@ -464,8 +464,8 @@ Parameters:
             ], axis=-1)),
             metallicFactor=1.0,
             roughnessFactor=1.0,
-            alphaMode='BLEND',
-            doubleSided=True,
+            alphaMode='OPAQUE',
+            doubleSided=False,
         )
 
         # Build result
@@ -510,6 +510,7 @@ class Trellis2ExportGLB:
                 "decimation_target": ("INT", {"default": 500000, "min": 1000, "max": 5000000, "step": 1000}),
                 "texture_size": ("INT", {"default": 2048, "min": 512, "max": 8192, "step": 512}),
                 "remesh": ("BOOLEAN", {"default": True}),
+                "use_vb": ("BOOLEAN", {"default": True}),
                 "filename_prefix": ("STRING", {"default": "trellis2"}),
             }
         }
@@ -542,43 +543,51 @@ Parameters:
         decimation_target=500000,
         texture_size=2048,
         remesh=True,
+        use_vb=True,
         filename_prefix="trellis2",
     ):
         import json
         import torch
-        from o_voxel.postprocess import to_glb
+        if use_vb:
+            from o_voxel_vb.postprocess import to_glb
+            logger.info("ExportGLB: using o_voxel_vb")
+        else:
+            from o_voxel.postprocess import to_glb
+            logger.info("ExportGLB: using o_voxel (upstream)")
 
         logger.info(f"ExportGLB: loading {voxelgrid_path}")
         data = np.load(voxelgrid_path, allow_pickle=True)
 
-        device = comfy.model_management.get_torch_device()
-        vertices = torch.from_numpy(data['vertices'].astype(np.float32)).to(device)
-        faces = torch.from_numpy(data['faces'].astype(np.int32)).to(device)
-        coords = torch.from_numpy(data['coords'].astype(np.float32)).to(device)
-        attrs = torch.from_numpy(data['attrs'].astype(np.float32)).to(device)
-        voxel_size = data['voxel_size']
+        vertices = torch.tensor(data['vertices'].astype(np.float32))
+        faces = torch.tensor(data['faces'].astype(np.int32))
+        coords = torch.tensor(data['coords'].astype(np.float32))
+        attrs = torch.tensor(data['attrs'].astype(np.float32))
+        voxel_size_raw = data['voxel_size']
+        voxel_size = float(voxel_size_raw[0]) if hasattr(voxel_size_raw, '__len__') else float(voxel_size_raw)
 
         layout_raw = json.loads(str(data['layout']))
         attr_layout = {k: slice(v[0], v[1]) for k, v in layout_raw.items()}
 
         logger.info(f"{vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
 
+        device = comfy.model_management.get_torch_device()
         textured_mesh = to_glb(
-            vertices=vertices,
-            faces=faces,
-            attr_volume=attrs,
-            coords=coords,
+            vertices=vertices.to(device),
+            faces=faces.to(device),
+            attr_volume=attrs.to(device),
+            coords=coords.to(device),
             attr_layout=attr_layout,
             aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
-            voxel_size=float(voxel_size[0]) if hasattr(voxel_size, '__len__') else float(voxel_size),
+            voxel_size=voxel_size,
             decimation_target=decimation_target,
             texture_size=texture_size,
             remesh=remesh,
-            remesh_band=1,
-            remesh_project=0,
+            remesh_band=1.0,
+            remesh_project=0.9,
             verbose=True,
         )
 
+        # Export
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{filename_prefix}_{timestamp}.glb"
         output_dir = folder_paths.get_output_directory()
@@ -586,6 +595,11 @@ Parameters:
 
         textured_mesh.export(output_path, file_type='glb')
         logger.info(f"GLB exported: {output_path}")
+
+        # Cleanup
+        del vertices, faces, coords, attrs, textured_mesh
+        gc.collect()
+        comfy.model_management.soft_empty_cache()
 
         return (output_path,)
 

@@ -78,6 +78,7 @@ class Trellis2ImageToShape:
                 "shape_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Shape sampling steps. More steps = better quality but slower"}),
                 # VRAM Control
                 "max_tokens": ("INT", {"default": 49152, "min": 16384, "max": 65536, "step": 4096, "tooltip": "Max tokens for 1024 cascade. Lower = less VRAM but potentially lower quality. Default 49152 (~9GB), try 32768 (~7GB) or 24576 (~6GB) for lower VRAM."}),
+                "use_vb": ("BOOLEAN", {"default": True, "tooltip": "Use o_voxel_vb (tiled decoder) vs o_voxel (upstream). Toggle to A/B test mesh extraction."}),
             }
         }
 
@@ -113,6 +114,7 @@ Returns:
         shape_guidance_strength=7.5,
         shape_sampling_steps=12,
         max_tokens=49152,
+        use_vb=True,
     ):
         # All heavy imports happen inside subprocess
         import trimesh as Trimesh
@@ -131,6 +133,7 @@ Returns:
                 shape_guidance_strength=shape_guidance_strength,
                 shape_sampling_steps=shape_sampling_steps,
                 max_num_tokens=max_tokens,
+                use_vb=use_vb,
             )
 
         # Create trimesh from vertices/faces

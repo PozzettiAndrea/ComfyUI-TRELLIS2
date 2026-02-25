@@ -505,11 +505,12 @@ def _sample_shape_slat_cascade(
     return slat, hr_resolution
 
 
-def _decode_shape_slat(slat, resolution, dtype):
+def _decode_shape_slat(slat, resolution, dtype, use_vb=True):
     """Decode structured latent -> meshes + subs."""
     import time as _time, sys as _sys
     decoder = _load_model('shape_slat_decoder')
     decoder.set_resolution(resolution)
+    decoder.use_vb = use_vb
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
 
@@ -734,6 +735,7 @@ def run_shape_generation(
     shape_guidance_strength: float = 7.5,
     shape_sampling_steps: int = 12,
     max_num_tokens: int = 49152,
+    use_vb: bool = True,
 ) -> Dict[str, Any]:
     """
     Run shape generation.
@@ -822,7 +824,7 @@ def run_shape_generation(
     comfy.model_management.soft_empty_cache()
 
     # 3. Decode shape
-    meshes, subs = _decode_shape_slat(shape_slat, res, compute_dtype)
+    meshes, subs = _decode_shape_slat(shape_slat, res, compute_dtype, use_vb=use_vb)
 
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
     log.info(f"Shape generation peak VRAM: {peak_mem:.0f} MB")

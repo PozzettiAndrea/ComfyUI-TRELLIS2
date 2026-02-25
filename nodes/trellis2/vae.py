@@ -842,8 +842,11 @@ class SparseUnetVaeDecoder(nn.Module):
 # Section 3: FlexiDualGrid VAE (from fdg_vae.py)
 # ============================================================================
 
-from o_voxel.convert import flexible_dual_grid_to_mesh
-from o_voxel_vb.convert import tiled_flexible_dual_grid_to_mesh
+from o_voxel_vb.convert import tiled_flexible_dual_grid_to_mesh as _tiled_vb
+try:
+    from o_voxel.convert import flexible_dual_grid_to_mesh as _flex_upstream
+except ImportError:
+    _flex_upstream = None
 import comfy.model_management as _cmm
 
 
@@ -1055,27 +1058,18 @@ class FlexiDualGridVaeDecoder(SparseUnetVaeDecoder):
     def set_resolution(self, resolution: int) -> None:
         self.resolution = resolution
 
-    def forward(self, x: sp.SparseTensor, gt_intersected: sp.SparseTensor = None, **kwargs):
+    # Toggle: True = o_voxel_vb (tiled), False = o_voxel (upstream)
+    use_vb: bool = True
+
+    def forward(self, x: sp.SparseTensor, **kwargs):
         decoded = super().forward(x, **kwargs)
-        if self.training:
-            h, subs_gt, subs = decoded
-            vertices = h.replace((1 + 2 * self.voxel_margin) * F.sigmoid(h.feats[..., 0:3]) - self.voxel_margin)
-            intersected_logits = h.replace(h.feats[..., 3:6])
-            quad_lerp = h.replace(F.softplus(h.feats[..., 6:7]))
-            mesh = [Mesh(flexible_dual_grid_to_mesh(
-                h.coords[:, 1:], v.feats, i.feats, q.feats,
-                aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
-                grid_size=self.resolution,
-                train=True
-            )) for v, i, q in zip(vertices, gt_intersected, quad_lerp)]
-            return mesh, vertices, intersected_logits, subs_gt, subs
-        else:
-            out_list = list(decoded) if isinstance(decoded, tuple) else [decoded]
-            h = out_list[0]
-            vertices = h.replace((1 + 2 * self.voxel_margin) * F.sigmoid(h.feats[..., 0:3]) - self.voxel_margin)
-            intersected = h.replace(h.feats[..., 3:6] > 0)
-            quad_lerp = h.replace(F.softplus(h.feats[..., 6:7]))
-            mesh = [Mesh(*tiled_flexible_dual_grid_to_mesh(
+        out_list = list(decoded) if isinstance(decoded, tuple) else [decoded]
+        h = out_list[0]
+        vertices = h.replace((1 + 2 * self.voxel_margin) * F.sigmoid(h.feats[..., 0:3]) - self.voxel_margin)
+        intersected = h.replace(h.feats[..., 3:6] > 0)
+        quad_lerp = h.replace(F.softplus(h.feats[..., 6:7]))
+        if self.use_vb:
+            mesh = [Mesh(*_tiled_vb(
                 coords=h.coords[:, 1:],
                 dual_vertices=v.feats,
                 intersected_flag=i.feats,
@@ -1083,7 +1077,19 @@ class FlexiDualGridVaeDecoder(SparseUnetVaeDecoder):
                 aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
                 grid_size=self.resolution,
                 tile_size=128,
-                train=False
+                train=False,
             )) for v, i, q in zip(vertices, intersected, quad_lerp)]
-            out_list[0] = mesh
-            return out_list[0] if len(out_list) == 1 else tuple(out_list)
+        else:
+            if _flex_upstream is None:
+                raise ImportError("o_voxel is not installed — cannot use upstream decoder")
+            mesh = [Mesh(*_flex_upstream(
+                coords=h.coords[:, 1:],
+                dual_vertices=v.feats,
+                intersected_flag=i.feats,
+                split_weight=q.feats,
+                aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
+                grid_size=self.resolution,
+                train=False,
+            )) for v, i, q in zip(vertices, intersected, quad_lerp)]
+        out_list[0] = mesh
+        return out_list[0] if len(out_list) == 1 else tuple(out_list)
