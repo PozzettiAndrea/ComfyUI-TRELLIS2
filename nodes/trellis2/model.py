@@ -205,7 +205,7 @@ class MultiHeadRMSNorm(nn.Module):
         self.gamma = nn.Parameter(torch.ones(heads, dim, dtype=dtype, device=device))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return (F.normalize(x.float(), dim = -1) * self.gamma * self.scale).to(x.dtype)
+        return (F.normalize(x.float(), dim = -1) * self.gamma.to(device=x.device) * self.scale).to(x.dtype)
 
 
 class MultiHeadAttention(nn.Module):
@@ -565,7 +565,7 @@ class ModulatedTransformerBlock(nn.Module):
     def _forward(self, x: torch.Tensor, mod: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         transformer_patches = transformer_options.get("patches", {})
         if self.share_mod:
-            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation + mod).type(mod.dtype).chunk(6, dim=1)
+            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation.to(device=mod.device) + mod).type(mod.dtype).chunk(6, dim=1)
         else:
             shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.adaLN_modulation(mod).chunk(6, dim=1)
         h = self.norm1(x)
@@ -666,7 +666,7 @@ class ModulatedTransformerCrossBlock(nn.Module):
     def _forward(self, x: torch.Tensor, mod: torch.Tensor, context: torch.Tensor, phases: Optional[torch.Tensor] = None, transformer_options={}) -> torch.Tensor:
         transformer_patches = transformer_options.get("patches", {})
         if self.share_mod:
-            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation + mod).type(mod.dtype).chunk(6, dim=1)
+            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation.to(device=mod.device) + mod).type(mod.dtype).chunk(6, dim=1)
         else:
             shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.adaLN_modulation(mod).chunk(6, dim=1)
         h = self.norm1(x)
@@ -945,9 +945,9 @@ class SparseMultiHeadRMSNorm(nn.Module):
         x_type = x.dtype
         x = x.float()
         if isinstance(x, VarLenTensor):
-            x = x.replace(F.normalize(x.feats, dim=-1) * self.gamma * self.scale)
+            x = x.replace(F.normalize(x.feats, dim=-1) * self.gamma.to(device=x.feats.device) * self.scale)
         else:
-            x = F.normalize(x, dim=-1) * self.gamma * self.scale
+            x = F.normalize(x, dim=-1) * self.gamma.to(device=x.device) * self.scale
         return x.to(x_type)
 
 
@@ -1304,7 +1304,7 @@ class ModulatedSparseTransformerBlock(nn.Module):
     def _forward(self, x: SparseTensor, mod: torch.Tensor, transformer_options={}) -> SparseTensor:
         transformer_patches = transformer_options.get("patches", {})
         if self.share_mod:
-            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation + mod).type(mod.dtype).chunk(6, dim=1)
+            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation.to(device=mod.device) + mod).type(mod.dtype).chunk(6, dim=1)
         else:
             shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.adaLN_modulation(mod).chunk(6, dim=1)
         h = x.replace(self.norm1(x.feats))
@@ -1409,7 +1409,7 @@ class ModulatedSparseTransformerCrossBlock(nn.Module):
     def _forward(self, x: SparseTensor, mod: torch.Tensor, context: Union[torch.Tensor, VarLenTensor], transformer_options={}) -> SparseTensor:
         transformer_patches = transformer_options.get("patches", {})
         if self.share_mod:
-            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation + mod).type(mod.dtype).chunk(6, dim=1)
+            shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = (self.modulation.to(device=mod.device) + mod).type(mod.dtype).chunk(6, dim=1)
         else:
             shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.adaLN_modulation(mod).chunk(6, dim=1)
         h = x.replace(self.norm1(x.feats))
@@ -1692,10 +1692,12 @@ class SparseStructureFlowModel(nn.Module):
 
         h = self.input_layer(h)
         if self.pe_mode == "ape":
-            h = h + self.pos_emb[None]
+            h = h + self.pos_emb.to(device=h.device)[None]
         t_emb = self.t_embedder(t)
         if self.share_mod:
             t_emb = self.adaLN_modulation(t_emb)
+
+        rope_phases = self.rope_phases.to(device=h.device) if self.rope_phases is not None else None
 
         transformer_options["block_type"] = "cross"
         transformer_options["total_blocks"] = len(self.blocks)
@@ -1710,12 +1712,12 @@ class SparseStructureFlowModel(nn.Module):
                     return out
 
                 out = blocks_replace[("block", i)](
-                    {"x": h, "mod": t_emb, "context": cond, "phases": self.rope_phases, "transformer_options": transformer_options},
+                    {"x": h, "mod": t_emb, "context": cond, "phases": rope_phases, "transformer_options": transformer_options},
                     {"original_block": block_wrap}
                 )
                 h = out["x"]
             else:
-                h = block(h, t_emb, cond, self.rope_phases, transformer_options=transformer_options)
+                h = block(h, t_emb, cond, rope_phases, transformer_options=transformer_options)
 
         h = F.layer_norm(h, h.shape[-1:])
         h = self.out_layer(h)
