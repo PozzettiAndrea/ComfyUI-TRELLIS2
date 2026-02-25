@@ -843,6 +843,7 @@ class SparseUnetVaeDecoder(nn.Module):
 # ============================================================================
 
 from o_voxel.convert import flexible_dual_grid_to_mesh
+from o_voxel_vb.convert import tiled_flexible_dual_grid_to_mesh
 import comfy.model_management as _cmm
 
 
@@ -1074,10 +1075,14 @@ class FlexiDualGridVaeDecoder(SparseUnetVaeDecoder):
             vertices = h.replace((1 + 2 * self.voxel_margin) * F.sigmoid(h.feats[..., 0:3]) - self.voxel_margin)
             intersected = h.replace(h.feats[..., 3:6] > 0)
             quad_lerp = h.replace(F.softplus(h.feats[..., 6:7]))
-            mesh = [Mesh(*flexible_dual_grid_to_mesh(
-                h.coords[:, 1:], v.feats, i.feats, q.feats,
+            mesh = [Mesh(*tiled_flexible_dual_grid_to_mesh(
+                coords=h.coords[:, 1:],
+                dual_vertices=v.feats,
+                intersected_flag=i.feats,
+                split_weight=q.feats,
                 aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
                 grid_size=self.resolution,
+                tile_size=128,
                 train=False
             )) for v, i, q in zip(vertices, intersected, quad_lerp)]
             out_list[0] = mesh
