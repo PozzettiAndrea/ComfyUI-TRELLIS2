@@ -1,13 +1,15 @@
 {
-  "timestamp": "2026-02-14T16:41:13.517113+00:00",
+  "timestamp": "2026-02-23T19:03:56.632833+00:00",
   "platform": "linux",
   "hardware": {
-    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-    "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
-    "gpu": "NVIDIA RTX A4000"
+    "os": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+    "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+    "gpu": "NVIDIA RTX A6000"
   },
+  "commit_hash": "bf51daef6706a97036175b1cd8e58aa4ac6d8d4d",
+  "success": true,
   "summary": {
-    "total": 3,
+    "total": 4,
     "passed": 3,
     "failed": 0
   },
@@ -15,69 +17,76 @@
     {
       "name": "geometry_only",
       "status": "pass",
-      "duration_seconds": 1110.15,
+      "duration_seconds": 190.74,
       "error": null,
       "hardware": {
-        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+        "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+        "gpu": "NVIDIA RTX A6000"
       },
       "resources": {
         "ram": {
-          "peak": 7.26,
-          "avg": 4.56
+          "peak": 11.61,
+          "avg": 5.74
         },
-        "total_ram_gb": 14.6,
-        "samples": 592,
+        "total_ram_gb": 23.5,
+        "samples": 172,
         "vram": {
-          "peak": 8.98,
-          "avg": 2.21
+          "peak": 8.04,
+          "avg": 3.99
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 1386.06,
+      "duration_seconds": 145.34,
       "error": null,
       "hardware": {
-        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+        "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+        "gpu": "NVIDIA RTX A6000"
       },
       "resources": {
         "ram": {
-          "peak": 6.82,
-          "avg": 4.25
+          "peak": 17.41,
+          "avg": 14.76
         },
-        "total_ram_gb": 14.6,
-        "samples": 824,
+        "total_ram_gb": 23.5,
+        "samples": 130,
         "vram": {
-          "peak": 8.98,
-          "avg": 2.81
+          "peak": 7.01,
+          "avg": 6.06
         }
       }
     },
     {
+      "name": "mesh_audit",
+      "status": "skipped",
+      "duration_seconds": 0,
+      "error": "Not configured for GPU runner",
+      "hardware": null
+    },
+    {
       "name": "remove_background",
       "status": "pass",
-      "duration_seconds": 952.66,
+      "duration_seconds": 98.78,
       "error": null,
       "hardware": {
-        "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
-        "cpu": "Intel Xeon E3-12xx v2 (Ivy Bridge, IBRS)",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+        "cpu": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+        "gpu": "NVIDIA RTX A6000"
       },
       "resources": {
         "ram": {
-          "peak": 6.16,
-          "avg": 4.16
+          "peak": 15.64,
+          "avg": 8.42
         },
-        "total_ram_gb": 14.6,
-        "samples": 583,
+        "total_ram_gb": 23.5,
+        "samples": 90,
         "vram": {
-          "peak": 8.98,
-          "avg": 2.13
+          "peak": 7.61,
+          "avg": 5.16
         }
       }
     }

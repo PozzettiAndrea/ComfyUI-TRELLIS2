@@ -5,26 +5,743 @@ Capturing execution frames: geometry_texture.json
   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
   [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui.js" is deprecated and will be removed in v1.34.
   [Console-warning] WARNING: Multiple instances of Three.js being imported.
   [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
-  [Console-error] THREE.WebGLRenderer: A WebGL context could not be created. Reason:  Could not create a WebGL context, VENDOR = 0xffff, DEVICE = 0xffff, GL_VENDOR = Google Inc. (Mesa), GL_RENDERER = ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.1), GL_VERSION = 25.2.8, Sandboxed = no, Optimus = no, AMD switchable = no, Reset notification strategy = 0x8261, ErrorMessage = BindToCurrentSequence failed: .
-  [Console-error] THREE.WebGLRenderer: A WebGL context could not be created. Reason:  Could not create a WebGL context, VENDOR = 0xffff, DEVICE = 0xffff, GL_VENDOR = Google Inc. (Mesa), GL_RENDERER = ANGLE (Mesa, llvmpipe (LLVM 20.1.2 256 bits), OpenGL 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.1), GL_VERSION = 25.2.8, Sandboxed = no, Optimus = no, AMD switchable = no, Reset notification strategy = 0x8261, ErrorMessage = BindToCurrentSequence failed: .
-  [Console-error] THREE.WebGLRenderer: Error creating WebGL context.
-  [Console-error] Error initializing Load3d: Error: Error creating WebGL context.
-    at new WebGLRenderer (http://127.0.0.1:8188/assets/vendor-three-BDtRe4OM.js:3824:10777)
-    at new Load3d (http://127.0.0.1:8188/assets/dialogService-Cr3DyAja.js:18:6948)
-    at Proxy.initializeLoad3d (http://127.0.0.1:8188/assets/dialogService-Cr3DyAja.js:18:20777)
-    at http://127.0.0.1:8188/assets/Load3D-er4iDy_w.js:1:1426
-    at http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:3:56394
-    at callWithErrorHandling (http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:2:152464)
-    at callWithAsyncErrorHandling (http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:2:152574)
-    at t.__weh (http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:3:5140)
-    at flushPostFlushCbs (http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:2:154217)
-    at flushJobs (http://127.0.0.1:8188/assets/vendor-primevue-D50rA9nL.js:2:154503)
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui/components/buttonGroup.js" is deprecated and will be removed in v1.34.
+  [Console-warning] [ComfyUI Deprecated] Importing from "scripts/ui/components/button.js" is deprecated and will be removed in v1.34.
+  [Console-warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  [Console-error] No input!
+  [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+  [Console-error] Error loading model: HttpError: fetch for "http://127.0.0.1:41883/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20260222_171459.glb" responded with 403: Forbidden
+    at http://127.0.0.1:41883/assets/vendor-three-CHi1XwmR.js:3824:116004
+  [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+  [Console-error] Error loading model: HttpError: fetch for "http://127.0.0.1:41883/api/view?type=output&subfolder=%2Fhome%2Fshadeform%2Ftrellis2%2FComfyUI%2Foutput&filename=trellis2_20260222_171459.glb" responded with 403: Forbidden
+    at http://127.0.0.1:41883/assets/vendor-three-CHi1XwmR.js:3824:116004
+  [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+  Frame 1 saved (frame_000.jpg, t=0.0s)
   Validating workflow...
+  [ComfyUI] === /validate endpoint called ===
   Queuing workflow for execution...
-  Captured 4 frames over 1344.58s
-  4 unique frames saved
-  Waiting 5000ms for previews to render...
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Prompt has 9 nodes
+  [ComfyUI]   Node 1: LoadImage
+  [ComfyUI]     Inputs: {"image": "cannon.webp"}
+  [ComfyUI]   Node 10: MaskPreview
+  [ComfyUI]     Inputs: {"mask": ["11", 0]}
+  [ComfyUI]   Node 11: InvertMask
+  [ComfyUI]     Inputs: {"mask": ["1", 1]}
+  [ComfyUI]   Node 64: Preview3D
+  [ComfyUI]     Inputs: {"model_file": ["74", 0], "image": ""}
+  [ComfyUI]   Node 68: LoadTrellis2Models
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]   Node 69: Trellis2GetConditioning
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["68", 0], "image": ["1", 0], "mask": ["11", 0]}
+  [ComfyUI]   Node 73: Trellis2ImageToShape
+  [ComfyUI]     Inputs: {"seed": 42, "ss_guidance_strength": 7.5, "ss_sampling_steps": 12, "shape_guidance_strength": 7.5, "shape_sampling_steps": 12, "max_tokens": 49152, "model_config": ["68", 0], "conditioning": ["69", 0]
+  [ComfyUI]   Node 74: Trellis2ExportGLB
+  [ComfyUI]     Inputs: {"voxelgrid_path": ["75", 1], "decimation_target": 200000, "texture_size": 1024, "remesh": true, "filename_prefix": "trellis2"}
+  [ComfyUI]   Node 75: Trellis2ShapeToTexturedMesh
+  [ComfyUI]     Inputs: {"seed": 42, "tex_guidance_strength": 7.5, "tex_sampling_steps": 12, "model_config": ["68", 0], "conditioning": ["69", 0], "shape_result": ["73", 0]}
+  [ComfyUI] Generated prompt_id: 51ecd5a9-076d-4bb1-b697-e10463e1847f
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Validation result: valid=True
+  [ComfyUI] === Validation PASSED ===
+  [ComfyUI] got prompt
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.load_models
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  Node executed (1 total), capturing...
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2GetConditioning.get_conditioning
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 1042, 1042, 3])
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'mask' shape: torch.Size([1, 1042, 1042])
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1042, 1042, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1042, 1042, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1042, 1042]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1042, 1042])
+  [ComfyUI] [comfy-env] VRAM request: 1.21GB, free before eviction: 45.90GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 45.90GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 load: 0.0s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 conditioning: dtype=torch.bfloat16
+  [ComfyUI] 
+  Frame 2 saved (frame_001.jpg, t=0.9s)
+  [capture-node] freeze=4ms shot=191ms unfreeze=4ms saved=True
+  [ComfyUI] DinoV3 conditioning:   0%|                               | 0/24 [00:00<?, ?it/s]
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 512px extract: 0.3s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] soft_empty_cache: 0.0s
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2ImageToShape.generate
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [comfy-env] VRAM request: 2.59GB, free before eviction: 46.42GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 46.42GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 3 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007490633a1640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000074912e9fd640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00007492baea1640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 42 in _watchdog
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1012 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007492bb929740 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1355 in convert
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/torch/nn/modules/module.py", line 955 in _apply
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1369 in to
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 870 in _hooked_to
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/comfy/model_patcher.py", line 816 in load
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/comfy/model_patcher.py", line 1010 in partially_load
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/comfy/model_management.py", line 563 in model_use_more_vram
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/comfy/model_management.py", line 533 in model_load
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/comfy/model_management.py", line 751 in load_models_gpu
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 976 in _shimmed_load_models_gpu
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 180 in _load_model
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 320 in _sample_sparse_structure
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 786 in run_shape_generation
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 125 in generate
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1143 in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1174 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  Frame 3 saved (frame_002.jpg, t=3.2s)
+  [capture-periodic] freeze=3ms shot=167ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_flow_model -> GPU: 2.2s
+  [ComfyUI] 
+  [ComfyUI] Sampling sparse structure:   0%|                         | 0/12 [00:00<?, ?it/s]
+  [ComfyUI] Sampling sparse structure:  17%|██▊              | 2/12 [00:00<00:03,  2.54it/s]
+  Frame 4 saved (frame_003.jpg, t=5.5s)
+  [capture-periodic] freeze=3ms shot=347ms unfreeze=10ms saved=True
+  [ComfyUI] Sampling sparse structure:  33%|█████▋           | 4/12 [00:01<00:03,  2.50it/s]
+  [capture-loop] iter=50 t=6.7s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] Sampling sparse structure:  50%|████████▌        | 6/12 [00:02<00:02,  2.45it/s]
+  [ComfyUI] Sampling sparse structure:  67%|███████████▎     | 8/12 [00:03<00:01,  2.42it/s]
+  [ComfyUI] Sampling sparse structure:  83%|█████████████▎  | 10/12 [00:04<00:00,  2.43it/s]
+  Frame 5 saved (frame_004.jpg, t=8.0s)
+  [capture-periodic] freeze=3ms shot=348ms unfreeze=3ms saved=True
+  [ComfyUI] 
+  [ComfyUI] [comfy-env] VRAM request: 0.15GB, free before eviction: 46.43GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 46.43GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_decoder -> GPU: 0.1s
+  Frame 6 saved (frame_005.jpg, t=10.5s)
+  [capture-periodic] freeze=3ms shot=184ms unfreeze=5ms saved=True
+  [ComfyUI] [comfy-env] VRAM request: 2.58GB, free before eviction: 46.43GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 46.43GB
+  Frame 7 saved (frame_006.jpg, t=12.8s)
+  [capture-periodic] freeze=3ms shot=177ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_flow_model_512 -> GPU: 2.2s
+  [ComfyUI] 
+  [capture-loop] iter=100 t=13.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] Sampling shape SLat:   0%|                               | 0/12 [00:00<?, ?it/s]
+  [ComfyUI] Sampling shape SLat:   8%|█▉                     | 1/12 [00:00<00:07,  1.57it/s]
+  [ComfyUI] Sampling shape SLat:  17%|███▊                   | 2/12 [00:01<00:06,  1.62it/s]
+  Frame 8 saved (frame_007.jpg, t=15.2s)
+  [capture-periodic] freeze=4ms shot=184ms unfreeze=3ms saved=True
+  [ComfyUI] Sampling shape SLat:  25%|█████▊                 | 3/12 [00:01<00:05,  1.61it/s]
+  [ComfyUI] Sampling shape SLat:  33%|███████▋               | 4/12 [00:02<00:05,  1.59it/s]
+  [ComfyUI] Sampling shape SLat:  42%|█████████▌             | 5/12 [00:03<00:04,  1.59it/s]
+  [ComfyUI] Sampling shape SLat:  50%|███████████▌           | 6/12 [00:03<00:03,  1.60it/s]
+  Frame 9 saved (frame_008.jpg, t=17.5s)
+  [capture-periodic] freeze=2ms shot=174ms unfreeze=4ms saved=True
+  [ComfyUI] Sampling shape SLat:  58%|█████████████▍         | 7/12 [00:04<00:03,  1.61it/s]
+  [ComfyUI] Sampling shape SLat:  67%|███████████████▎       | 8/12 [00:04<00:02,  1.61it/s]
+  [capture-loop] iter=150 t=19.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] Sampling shape SLat:  75%|█████████████████▎     | 9/12 [00:05<00:01,  1.53it/s]
+  Frame 10 saved (frame_009.jpg, t=19.7s)
+  [capture-periodic] freeze=2ms shot=174ms unfreeze=3ms saved=True
+  [ComfyUI] Sampling shape SLat:  92%|████████████████████▏ | 11/12 [00:06<00:00,  1.90it/s]
+  Frame 11 saved (frame_010.jpg, t=22.0s)
+  [capture-periodic] freeze=3ms shot=176ms unfreeze=3ms saved=True
+  [ComfyUI] 
+  [ComfyUI] [comfy-env] VRAM request: 0.95GB, free before eviction: 46.40GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 46.40GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_decoder -> GPU: 0.7s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Shape decode (FlexiDualGridVaeDecoder): 0.2s
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2ShapeToTexturedMesh.generate
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4108, 32]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4108, 32])
+  [capture-loop] iter=200 t=25.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4108, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4108, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4108, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4108, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4108, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4108, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[19412, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([19412, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[19412, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([19412, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[89357, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([89357, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[89357, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([89357, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[398087, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([398087, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[398087, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([398087, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1737465, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1737465, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[3667786, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([3667786, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1737465, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1737465, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[3667786, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([3667786, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SLatFlowModel on CPU: dtype=torch.bfloat16, 0.5s
+  [ComfyUI] [comfy-env] VRAM request: 2.58GB, free before eviction: 45.95GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 45.95GB
+  Frame 12 saved (frame_011.jpg, t=26.5s)
+  [capture-periodic] freeze=3ms shot=185ms unfreeze=6ms saved=True
+  [capture-loop] iter=250 t=31.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] tex_slat_flow_model_512 -> GPU: 6.4s
+  [ComfyUI] 
+  [ComfyUI] Sampling texture SLat:   0%|                             | 0/12 [00:00<?, ?it/s]
+  Frame 13 saved (frame_012.jpg, t=33.2s)
+  [capture-periodic] freeze=3ms shot=169ms unfreeze=4ms saved=True
+  [ComfyUI] Sampling texture SLat:  17%|███▌                 | 2/12 [00:00<00:03,  2.64it/s]
+  [ComfyUI] Sampling texture SLat:  33%|███████              | 4/12 [00:01<00:03,  2.32it/s]
+  Frame 14 saved (frame_013.jpg, t=35.5s)
+  [capture-periodic] freeze=3ms shot=175ms unfreeze=4ms saved=True
+  [ComfyUI] Sampling texture SLat:  50%|██████████▌          | 6/12 [00:02<00:03,  1.94it/s]
+  [capture-loop] iter=300 t=37.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] Sampling texture SLat:  67%|██████████████       | 8/12 [00:04<00:02,  1.81it/s]
+  [ComfyUI] Sampling texture SLat:  75%|███████████████▊     | 9/12 [00:04<00:01,  1.77it/s]
+  Frame 15 saved (frame_014.jpg, t=37.8s)
+  [capture-periodic] freeze=4ms shot=179ms unfreeze=3ms saved=True
+  [ComfyUI] Sampling texture SLat:  92%|██████████████████▎ | 11/12 [00:05<00:00,  2.14it/s]
+  Frame 16 saved (frame_015.jpg, t=40.1s)
+  [capture-periodic] freeze=3ms shot=175ms unfreeze=3ms saved=True
+  Frame 17 saved (frame_016.jpg, t=42.4s)
+  [capture-periodic] freeze=3ms shot=189ms unfreeze=3ms saved=True
+  [capture-loop] iter=350 t=43.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=400 t=49.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseUnetVaeDecoder on CPU: dtype=torch.bfloat16, 9.4s
+  [ComfyUI] [comfy-env] VRAM request: 0.95GB, free before eviction: 46.20GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 46.20GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] tex_slat_decoder -> GPU: 0.6s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Texture decode (SparseUnetVaeDecoder): 0.3s
+  Frame 18 saved (frame_017.jpg, t=51.5s)
+  [capture-periodic] freeze=3ms shot=191ms unfreeze=3ms saved=True
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_unwrap.Trellis2ExportGLB.export_glb
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Original mesh: 1737482 vertices, 3667904 faces
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] After filling holes: 1737482 vertices, 3667904 faces
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Building BVH for current mesh...
+  Frame 19 saved (frame_018.jpg, t=53.7s)
+  [capture-periodic] freeze=3ms shot=174ms unfreeze=3ms saved=True
+  [capture-loop] iter=450 t=55.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Done
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Cleaning mesh...
+  [ComfyUI] 
+  [ComfyUI] Building Sparse Grid:   0%|                                                                                                            | 0/5 [00:00<?, ?it/s]
+  [ComfyUI] Building Sparse Grid: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 52.79it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Running Dual Contouring...
+  [ComfyUI] /home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/cumesh/remeshing.py:220: UserWarning: Using torch.cross without specifying the dim arg is deprecated.
+  [ComfyUI] Please either pass the dim explicitly or simply use torch.linalg.cross.
+  [ComfyUI] The default value of dim will change to agree with that of linalg.cross in a future release. (Triggered internally at /pytorch/aten/src/ATen/native/Cross.cpp:63.)
+  [ComfyUI]   normals0 = torch.cross(mesh_vertices[atempt_triangles_0[:, 1]] - mesh_vertices[atempt_triangles_0[:, 0]], mesh_vertices[atempt_triangles_0[:, 2]] - mesh_vertices[atempt_triangles_0[:, 0]])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] After remeshing: 2812905 vertices, 5633868 faces
+  [ComfyUI] 
+  [ComfyUI] Simplifying:   0%|                                                                                                               | 0/5433868 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   0%|                                                                                              | 0/5433868 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   2%|█▊                                                                          | 131770/5433868 [00:00<00:04, 1175634.55it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   2%|█▊                                                                          | 131770/5433868 [00:00<00:04, 1175634.55it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   4%|███▏                                                                        | 225850/5433868 [00:00<00:04, 1175634.55it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   5%|████▏                                                                       | 295518/5433868 [00:00<00:04, 1191049.11it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   5%|████▏                                                                       | 295518/5433868 [00:00<00:04, 1191049.11it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:   6%|████▊                                                                       | 348332/5433868 [00:00<00:04, 1191049.11it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  13%|█████████▊                                                                  | 705572/5433868 [00:00<00:02, 2339954.07it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  13%|█████████▊                                                                  | 705572/5433868 [00:00<00:02, 2339954.07it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  19%|██████████████▎                                                            | 1041084/5433868 [00:00<00:01, 2339954.07it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  25%|██████████████████▋                                                        | 1350746/5433868 [00:00<00:01, 2339954.07it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  30%|██████████████████████▌                                                    | 1637414/5433868 [00:00<00:00, 4322828.70it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  30%|██████████████████████▌                                                    | 1637414/5433868 [00:00<00:00, 4322828.70it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  35%|██████████████████████████▎                                                | 1901912/5433868 [00:00<00:00, 4322828.70it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  39%|█████████████████████████████▌                                             | 2144448/5433868 [00:00<00:00, 4322828.70it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  44%|████████████████████████████████▋                                          | 2365390/5433868 [00:00<00:00, 5165734.05it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  44%|████████████████████████████████▋                                          | 2365390/5433868 [00:00<00:00, 5165734.05it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  47%|███████████████████████████████████▍                                       | 2566538/5433868 [00:00<00:00, 5165734.05it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  51%|█████████████████████████████████████▉                                     | 2748480/5433868 [00:00<00:00, 5165734.05it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  54%|████████████████████████████████████████▏                                  | 2912366/5433868 [00:00<00:00, 5165734.05it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  56%|██████████████████████████████████████████▏                                | 3058772/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  56%|██████████████████████████████████████████▏                                | 3058772/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  59%|████████████████████████████████████████████                               | 3189412/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  61%|█████████████████████████████████████████████▋                             | 3305690/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  63%|███████████████████████████████████████████████                            | 3407694/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  64%|████████████████████████████████████████████████▎                          | 3497016/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  66%|█████████████████████████████████████████████████▎                         | 3574192/5433868 [00:00<00:00, 5396194.32it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  67%|██████████████████████████████████████████████████▏                        | 3639946/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  67%|██████████████████████████████████████████████████▏                        | 3639946/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  68%|███████████████████████████████████████████████████                        | 3695450/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  69%|███████████████████████████████████████████████████▋                       | 3741200/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  70%|████████████████████████████████████████████████████▏                      | 3778534/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  70%|████████████████████████████████████████████████████▌                      | 3809312/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  71%|████████████████████████████████████████████████████▉                      | 3834312/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  71%|█████████████████████████████████████████████████████▏                     | 3854684/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  71%|█████████████████████████████████████████████████████▍                     | 3871634/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  74%|███████████████████████████████████████████████████████▍                   | 4017006/5433868 [00:01<00:00, 3493269.82it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  76%|█████████████████████████████████████████████████████████▏                 | 4140500/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  76%|█████████████████████████████████████████████████████████▏                 | 4140500/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  78%|██████████████████████████████████████████████████████████▋                | 4251320/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  80%|████████████████████████████████████████████████████████████               | 4351576/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  82%|█████████████████████████████████████████████████████████████▎             | 4443436/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  83%|██████████████████████████████████████████████████████████████▍            | 4527846/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  85%|███████████████████████████████████████████████████████████████▌           | 4605314/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  86%|████████████████████████████████████████████████████████████████▌          | 4676708/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  87%|█████████████████████████████████████████████████████████████████▍         | 4742662/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  88%|██████████████████████████████████████████████████████████████████▎        | 4803072/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  89%|███████████████████████████████████████████████████████████████████        | 4858418/5433868 [00:01<00:00, 3441712.24it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  90%|███████████████████████████████████████████████████████████████████▊       | 4908924/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  90%|███████████████████████████████████████████████████████████████████▊       | 4908924/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  91%|████████████████████████████████████████████████████████████████████▍      | 4954916/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  92%|████████████████████████████████████████████████████████████████████▉      | 4996164/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  93%|█████████████████████████████████████████████████████████████████████▍     | 5033176/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  93%|█████████████████████████████████████████████████████████████████████▉     | 5065758/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  94%|██████████████████████████████████████████████████████████████████████▎    | 5093992/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  94%|██████████████████████████████████████████████████████████████████████▋    | 5118414/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|██████████████████████████████████████████████████████████████████████▉    | 5138848/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▏   | 5155940/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▎   | 5169530/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▍   | 5180100/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  95%|███████████████████████████████████████████████████████████████████████▌   | 5188188/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  96%|███████████████████████████████████████████████████████████████████████▋   | 5194402/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  96%|███████████████████████████████████████████████████████████████████████▊   | 5199070/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  96%|███████████████████████████████████████████████████████████████████████▊   | 5202310/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  96%|████████████████████████████████████████████████████████████████████████▎  | 5238842/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  97%|████████████████████████████████████████████████████████████████████████▋  | 5270076/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  98%|█████████████████████████████████████████████████████████████████████████▏ | 5298170/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  98%|█████████████████████████████████████████████████████████████████████████▍ | 5323412/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  98%|█████████████████████████████████████████████████████████████████████████▊ | 5346348/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  99%|██████████████████████████████████████████████████████████████████████████ | 5367076/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  99%|██████████████████████████████████████████████████████████████████████████▎| 5386116/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]:  99%|██████████████████████████████████████████████████████████████████████████▌| 5403492/5433868 [00:01<00:00, 4280066.27it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|██████████████████████████████████████████████████████████████████████████▊| 5419582/5433868 [00:01<00:00, 4111063.35it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|██████████████████████████████████████████████████████████████████████████▊| 5419582/5433868 [00:01<00:00, 4111063.35it/s]
+  [ComfyUI] Simplifying [thres=1.00e-05]: 100%|███████████████████████████████████████████████████████████████████████████| 5433868/5433868 [00:01<00:00, 3862332.25it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] After simplifying: 100133 vertices, 199494 faces
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Done
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Parameterizing new mesh...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Get 4062 clusters after fast clustering
+  [ComfyUI] 
+  [ComfyUI] Adding clusters to xatlas:   0%|                                                                                                    | 0/4062 [00:00<?, ?it/s]
+  [ComfyUI] Adding clusters to xatlas:  29%|████████████████████████▌                                                             | 1162/4062 [00:00<00:00, 11612.73it/s]
+  [ComfyUI] Adding clusters to xatlas:  61%|████████████████████████████████████████████████████▊                                 | 2497/4062 [00:00<00:00, 12628.91it/s]
+  [ComfyUI] Adding clusters to xatlas:  95%|█████████████████████████████████████████████████████████████████████████████████▎    | 3842/4062 [00:00<00:00, 12999.06it/s]
+  [ComfyUI] Adding clusters to xatlas: 100%|██████████████████████████████████████████████████████████████████████████████████████| 4062/4062 [00:00<00:00, 12832.91it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Computing charts:   0%|                                                                                                      | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Computing charts:   0%|                                                                                                      | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Computing charts:   1%|▉                                                                                             | 1/100 [00:00<00:10,  9.69it/s]
+  [ComfyUI] xatlas: Computing charts:   2%|█▉                                                                                            | 2/100 [00:00<00:07, 12.49it/s]
+  [ComfyUI] xatlas: Computing charts:   3%|██▊                                                                                           | 3/100 [00:00<00:09, 10.45it/s]
+  [ComfyUI] xatlas: Computing charts:   4%|███▊                                                                                          | 4/100 [00:00<00:09, 10.56it/s]
+  [ComfyUI] xatlas: Computing charts:   5%|████▋                                                                                         | 5/100 [00:00<00:12,  7.83it/s]
+  [ComfyUI] xatlas: Computing charts:   6%|█████▋                                                                                        | 6/100 [00:00<00:11,  8.36it/s]
+  [ComfyUI] xatlas: Computing charts:   7%|██████▌                                                                                       | 7/100 [00:00<00:09,  9.44it/s]
+  [ComfyUI] xatlas: Computing charts:   8%|███████▌                                                                                      | 8/100 [00:00<00:09,  9.59it/s]
+  [ComfyUI] xatlas: Computing charts:   9%|████████▍                                                                                     | 9/100 [00:00<00:09,  9.63it/s]
+  [ComfyUI] xatlas: Computing charts:  10%|█████████▎                                                                                   | 10/100 [00:01<00:09,  9.64it/s]
+  [ComfyUI] xatlas: Computing charts:  11%|██████████▏                                                                                  | 11/100 [00:01<00:09,  9.53it/s]
+  [ComfyUI] xatlas: Computing charts:  12%|███████████▏                                                                                 | 12/100 [00:01<00:09,  9.67it/s]
+  [ComfyUI] xatlas: Computing charts:  13%|████████████                                                                                 | 13/100 [00:01<00:08, 10.37it/s]
+  [ComfyUI] xatlas: Computing charts:  14%|█████████████                                                                                | 14/100 [00:01<00:07, 10.80it/s]
+  [ComfyUI] xatlas: Computing charts:  15%|█████████████▉                                                                               | 15/100 [00:01<00:07, 11.06it/s]
+  [ComfyUI] xatlas: Computing charts:  16%|██████████████▉                                                                              | 16/100 [00:01<00:07, 11.42it/s]
+  [ComfyUI] xatlas: Computing charts:  17%|███████████████▊                                                                             | 17/100 [00:01<00:07, 11.81it/s]
+  [ComfyUI] xatlas: Computing charts:  22%|████████████████████▍                                                                        | 22/100 [00:01<00:05, 15.02it/s]
+  [ComfyUI] xatlas: Computing charts:  23%|█████████████████████▍                                                                       | 23/100 [00:01<00:04, 15.70it/s]
+  [ComfyUI] xatlas: Computing charts:  24%|██████████████████████▎                                                                      | 24/100 [00:01<00:04, 15.99it/s]
+  [ComfyUI] xatlas: Computing charts:  25%|███████████████████████▎                                                                     | 25/100 [00:01<00:04, 16.29it/s]
+  [ComfyUI] xatlas: Computing charts:  26%|████████████████████████▏                                                                    | 26/100 [00:01<00:04, 16.58it/s]
+  [ComfyUI] xatlas: Computing charts:  27%|█████████████████████████                                                                    | 27/100 [00:01<00:04, 16.86it/s]
+  [ComfyUI] xatlas: Computing charts:  28%|██████████████████████████                                                                   | 28/100 [00:01<00:04, 17.20it/s]
+  [ComfyUI] xatlas: Computing charts:  29%|██████████████████████████▉                                                                  | 29/100 [00:01<00:04, 17.54it/s]
+  [ComfyUI] xatlas: Computing charts:  30%|███████████████████████████▉                                                                 | 30/100 [00:01<00:03, 17.88it/s]
+  [ComfyUI] xatlas: Computing charts:  31%|████████████████████████████▊                                                                | 31/100 [00:01<00:03, 18.23it/s]
+  [ComfyUI] xatlas: Computing charts:  32%|█████████████████████████████▊                                                               | 32/100 [00:01<00:03, 18.55it/s]
+  [ComfyUI] xatlas: Computing charts:  33%|██████████████████████████████▋                                                              | 33/100 [00:01<00:03, 18.86it/s]
+  [ComfyUI] xatlas: Computing charts:  34%|███████████████████████████████▌                                                             | 34/100 [00:01<00:03, 19.18it/s]
+  [ComfyUI] xatlas: Computing charts:  35%|████████████████████████████████▌                                                            | 35/100 [00:01<00:03, 19.54it/s]
+  [ComfyUI] xatlas: Computing charts:  36%|█████████████████████████████████▍                                                           | 36/100 [00:01<00:03, 19.87it/s]
+  [ComfyUI] xatlas: Computing charts:  37%|██████████████████████████████████▍                                                          | 37/100 [00:01<00:03, 20.22it/s]
+  [ComfyUI] xatlas: Computing charts:  38%|███████████████████████████████████▎                                                         | 38/100 [00:01<00:03, 20.57it/s]
+  [ComfyUI] xatlas: Computing charts:  39%|████████████████████████████████████▎                                                        | 39/100 [00:01<00:02, 20.90it/s]
+  [ComfyUI] xatlas: Computing charts:  40%|█████████████████████████████████████▏                                                       | 40/100 [00:01<00:02, 21.21it/s]
+  [ComfyUI] xatlas: Computing charts:  41%|██████████████████████████████████████▏                                                      | 41/100 [00:01<00:02, 21.56it/s]
+  [ComfyUI] xatlas: Computing charts:  42%|███████████████████████████████████████                                                      | 42/100 [00:01<00:02, 21.89it/s]
+  [ComfyUI] xatlas: Computing charts:  43%|███████████████████████████████████████▉                                                     | 43/100 [00:01<00:02, 22.24it/s]
+  [ComfyUI] xatlas: Computing charts:  44%|████████████████████████████████████████▉                                                    | 44/100 [00:01<00:02, 22.60it/s]
+  [ComfyUI] xatlas: Computing charts:  45%|█████████████████████████████████████████▊                                                   | 45/100 [00:01<00:02, 22.96it/s]
+  [ComfyUI] xatlas: Computing charts:  46%|██████████████████████████████████████████▊                                                  | 46/100 [00:01<00:02, 23.29it/s]
+  [ComfyUI] xatlas: Computing charts:  47%|███████████████████████████████████████████▋                                                 | 47/100 [00:01<00:02, 23.64it/s]
+  [ComfyUI] xatlas: Computing charts:  48%|████████████████████████████████████████████▋                                                | 48/100 [00:01<00:02, 24.00it/s]
+  [ComfyUI] xatlas: Computing charts:  49%|█████████████████████████████████████████████▌                                               | 49/100 [00:02<00:02, 24.38it/s]
+  [ComfyUI] xatlas: Computing charts:  50%|██████████████████████████████████████████████▌                                              | 50/100 [00:02<00:02, 24.75it/s]
+  [ComfyUI] xatlas: Computing charts:  51%|███████████████████████████████████████████████▍                                             | 51/100 [00:02<00:01, 25.09it/s]
+  [ComfyUI] xatlas: Computing charts:  52%|████████████████████████████████████████████████▎                                            | 52/100 [00:02<00:01, 25.44it/s]
+  [ComfyUI] xatlas: Computing charts:  53%|█████████████████████████████████████████████████▎                                           | 53/100 [00:02<00:01, 25.75it/s]
+  [ComfyUI] xatlas: Computing charts:  54%|██████████████████████████████████████████████████▏                                          | 54/100 [00:02<00:01, 26.11it/s]
+  [ComfyUI] xatlas: Computing charts:  55%|███████████████████████████████████████████████████▏                                         | 55/100 [00:02<00:01, 26.51it/s]
+  [ComfyUI] xatlas: Computing charts:  56%|████████████████████████████████████████████████████                                         | 56/100 [00:02<00:01, 26.91it/s]
+  [ComfyUI] xatlas: Computing charts:  57%|█████████████████████████████████████████████████████                                        | 57/100 [00:02<00:01, 27.31it/s]
+  [ComfyUI] xatlas: Computing charts:  58%|█████████████████████████████████████████████████████▉                                       | 58/100 [00:02<00:01, 27.69it/s]
+  [ComfyUI] xatlas: Computing charts:  59%|██████████████████████████████████████████████████████▊                                      | 59/100 [00:02<00:01, 28.10it/s]
+  [ComfyUI] xatlas: Computing charts: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:02<00:00, 47.61it/s]
+  [ComfyUI] xatlas: Computing charts: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:02<00:00, 47.57it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Packing charts:   0%|                                                                                                        | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Packing charts:   0%|                                                                                                        | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Packing charts:   1%|▉                                                                                               | 1/100 [00:00<00:12,  7.80it/s]
+  [ComfyUI] xatlas: Packing charts:   2%|█▉                                                                                              | 2/100 [00:00<00:08, 11.31it/s]
+  [ComfyUI] xatlas: Packing charts:   3%|██▉                                                                                             | 3/100 [00:00<00:06, 14.28it/s]
+  [capture-loop] iter=500 t=61.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] xatlas: Packing charts:   4%|███▊                                                                                            | 4/100 [00:00<00:05, 16.73it/s]
+  [ComfyUI] xatlas: Packing charts:   5%|████▊                                                                                           | 5/100 [00:00<00:05, 18.58it/s]
+  [ComfyUI] xatlas: Packing charts:   6%|█████▊                                                                                          | 6/100 [00:00<00:04, 20.53it/s]
+  [ComfyUI] xatlas: Packing charts:   7%|██████▋                                                                                         | 7/100 [00:00<00:04, 22.44it/s]
+  [ComfyUI] xatlas: Packing charts:   8%|███████▋                                                                                        | 8/100 [00:00<00:03, 24.13it/s]
+  [ComfyUI] xatlas: Packing charts:   9%|████████▋                                                                                       | 9/100 [00:00<00:03, 25.82it/s]
+  [ComfyUI] xatlas: Packing charts:  10%|█████████▌                                                                                     | 10/100 [00:00<00:03, 27.53it/s]
+  [ComfyUI] xatlas: Packing charts:  11%|██████████▍                                                                                    | 11/100 [00:00<00:03, 29.21it/s]
+  [ComfyUI] xatlas: Packing charts:  12%|███████████▍                                                                                   | 12/100 [00:00<00:02, 30.77it/s]
+  [ComfyUI] xatlas: Packing charts:  13%|████████████▎                                                                                  | 13/100 [00:00<00:02, 32.32it/s]
+  [ComfyUI] xatlas: Packing charts:  14%|█████████████▎                                                                                 | 14/100 [00:00<00:02, 33.86it/s]
+  [ComfyUI] xatlas: Packing charts:  15%|██████████████▎                                                                                | 15/100 [00:00<00:02, 35.34it/s]
+  [ComfyUI] xatlas: Packing charts:  16%|███████████████▏                                                                               | 16/100 [00:00<00:02, 36.77it/s]
+  [ComfyUI] xatlas: Packing charts:  17%|████████████████▏                                                                              | 17/100 [00:00<00:02, 38.09it/s]
+  [ComfyUI] xatlas: Packing charts:  18%|█████████████████                                                                              | 18/100 [00:00<00:02, 39.53it/s]
+  [ComfyUI] xatlas: Packing charts:  19%|██████████████████                                                                             | 19/100 [00:00<00:01, 40.91it/s]
+  [ComfyUI] xatlas: Packing charts:  20%|███████████████████                                                                            | 20/100 [00:00<00:01, 42.21it/s]
+  [ComfyUI] xatlas: Packing charts:  21%|███████████████████▉                                                                           | 21/100 [00:00<00:01, 43.53it/s]
+  [ComfyUI] xatlas: Packing charts:  22%|████████████████████▉                                                                          | 22/100 [00:00<00:01, 44.90it/s]
+  [ComfyUI] xatlas: Packing charts:  23%|█████████████████████▊                                                                         | 23/100 [00:00<00:01, 46.21it/s]
+  [ComfyUI] xatlas: Packing charts:  24%|██████████████████████▊                                                                        | 24/100 [00:00<00:01, 47.52it/s]
+  [ComfyUI] xatlas: Packing charts:  25%|███████████████████████▊                                                                       | 25/100 [00:00<00:01, 48.86it/s]
+  [ComfyUI] xatlas: Packing charts:  26%|████████████████████████▋                                                                      | 26/100 [00:00<00:01, 50.22it/s]
+  [ComfyUI] xatlas: Packing charts:  27%|█████████████████████████▋                                                                     | 27/100 [00:00<00:01, 51.59it/s]
+  [ComfyUI] xatlas: Packing charts:  28%|██████████████████████████▌                                                                    | 28/100 [00:00<00:01, 52.88it/s]
+  [ComfyUI] xatlas: Packing charts:  29%|███████████████████████████▌                                                                   | 29/100 [00:00<00:01, 54.17it/s]
+  [ComfyUI] xatlas: Packing charts:  30%|████████████████████████████▌                                                                  | 30/100 [00:00<00:01, 55.48it/s]
+  [ComfyUI] xatlas: Packing charts:  31%|█████████████████████████████▍                                                                 | 31/100 [00:00<00:01, 56.78it/s]
+  [ComfyUI] xatlas: Packing charts:  32%|██████████████████████████████▍                                                                | 32/100 [00:00<00:01, 58.06it/s]
+  [ComfyUI] xatlas: Packing charts:  33%|███████████████████████████████▎                                                               | 33/100 [00:00<00:01, 59.42it/s]
+  [ComfyUI] xatlas: Packing charts:  34%|████████████████████████████████▎                                                              | 34/100 [00:00<00:01, 60.71it/s]
+  [ComfyUI] xatlas: Packing charts:  35%|█████████████████████████████████▎                                                             | 35/100 [00:00<00:01, 62.10it/s]
+  [ComfyUI] xatlas: Packing charts:  36%|██████████████████████████████████▏                                                            | 36/100 [00:00<00:01, 63.45it/s]
+  [ComfyUI] xatlas: Packing charts:  37%|███████████████████████████████████▏                                                           | 37/100 [00:00<00:00, 64.75it/s]
+  [ComfyUI] xatlas: Packing charts:  38%|████████████████████████████████████                                                           | 38/100 [00:00<00:00, 66.11it/s]
+  [ComfyUI] xatlas: Packing charts:  39%|█████████████████████████████████████                                                          | 39/100 [00:00<00:00, 67.40it/s]
+  [ComfyUI] xatlas: Packing charts:  40%|██████████████████████████████████████                                                         | 40/100 [00:00<00:00, 68.78it/s]
+  [ComfyUI] xatlas: Packing charts:  41%|██████████████████████████████████████▉                                                        | 41/100 [00:00<00:00, 70.07it/s]
+  [ComfyUI] xatlas: Packing charts:  42%|███████████████████████████████████████▉                                                       | 42/100 [00:00<00:00, 71.44it/s]
+  [ComfyUI] xatlas: Packing charts:  43%|████████████████████████████████████████▊                                                      | 43/100 [00:00<00:00, 72.80it/s]
+  [ComfyUI] xatlas: Packing charts:  44%|█████████████████████████████████████████▊                                                     | 44/100 [00:00<00:00, 74.18it/s]
+  [ComfyUI] xatlas: Packing charts:  45%|██████████████████████████████████████████▊                                                    | 45/100 [00:00<00:00, 75.55it/s]
+  [ComfyUI] xatlas: Packing charts:  46%|███████████████████████████████████████████▋                                                   | 46/100 [00:00<00:00, 76.96it/s]
+  [ComfyUI] xatlas: Packing charts:  47%|████████████████████████████████████████████▋                                                  | 47/100 [00:00<00:00, 78.31it/s]
+  [ComfyUI] xatlas: Packing charts:  48%|█████████████████████████████████████████████▌                                                 | 48/100 [00:00<00:00, 79.73it/s]
+  [ComfyUI] xatlas: Packing charts:  49%|██████████████████████████████████████████████▌                                                | 49/100 [00:00<00:00, 81.13it/s]
+  [ComfyUI] xatlas: Packing charts:  50%|███████████████████████████████████████████████▌                                               | 50/100 [00:00<00:00, 82.49it/s]
+  [ComfyUI] xatlas: Packing charts:  51%|████████████████████████████████████████████████▍                                              | 51/100 [00:00<00:00, 83.88it/s]
+  [ComfyUI] xatlas: Packing charts:  52%|█████████████████████████████████████████████████▍                                             | 52/100 [00:00<00:00, 85.31it/s]
+  [ComfyUI] xatlas: Packing charts:  53%|██████████████████████████████████████████████████▎                                            | 53/100 [00:00<00:00, 86.74it/s]
+  [ComfyUI] xatlas: Packing charts:  54%|███████████████████████████████████████████████████▎                                           | 54/100 [00:00<00:00, 88.13it/s]
+  [ComfyUI] xatlas: Packing charts:  55%|████████████████████████████████████████████████████▎                                          | 55/100 [00:00<00:00, 89.54it/s]
+  [ComfyUI] xatlas: Packing charts:  56%|█████████████████████████████████████████████████████▏                                         | 56/100 [00:00<00:00, 90.95it/s]
+  [ComfyUI] xatlas: Packing charts:  57%|██████████████████████████████████████████████████████▏                                        | 57/100 [00:00<00:00, 92.39it/s]
+  [ComfyUI] xatlas: Packing charts:  58%|███████████████████████████████████████████████████████                                        | 58/100 [00:00<00:00, 93.82it/s]
+  [ComfyUI] xatlas: Packing charts:  59%|████████████████████████████████████████████████████████                                       | 59/100 [00:00<00:00, 95.26it/s]
+  [ComfyUI] xatlas: Packing charts:  60%|█████████████████████████████████████████████████████████                                      | 60/100 [00:00<00:00, 96.66it/s]
+  [ComfyUI] xatlas: Packing charts:  61%|█████████████████████████████████████████████████████████▉                                     | 61/100 [00:00<00:00, 98.11it/s]
+  [ComfyUI] xatlas: Packing charts:  62%|██████████████████████████████████████████████████████████▉                                    | 62/100 [00:00<00:00, 99.56it/s]
+  [ComfyUI] xatlas: Packing charts:  63%|███████████████████████████████████████████████████████████▏                                  | 63/100 [00:00<00:00, 101.00it/s]
+  [ComfyUI] xatlas: Packing charts:  64%|████████████████████████████████████████████████████████████▏                                 | 64/100 [00:00<00:00, 102.44it/s]
+  [ComfyUI] xatlas: Packing charts:  65%|█████████████████████████████████████████████████████████████                                 | 65/100 [00:00<00:00, 103.87it/s]
+  [ComfyUI] xatlas: Packing charts:  66%|██████████████████████████████████████████████████████████████                                | 66/100 [00:00<00:00, 105.30it/s]
+  [ComfyUI] xatlas: Packing charts:  67%|██████████████████████████████████████████████████████████████▉                               | 67/100 [00:00<00:00, 106.77it/s]
+  [ComfyUI] xatlas: Packing charts:  68%|███████████████████████████████████████████████████████████████▉                              | 68/100 [00:00<00:00, 108.22it/s]
+  [ComfyUI] xatlas: Packing charts:  69%|████████████████████████████████████████████████████████████████▊                             | 69/100 [00:00<00:00, 109.67it/s]
+  [ComfyUI] xatlas: Packing charts:  70%|█████████████████████████████████████████████████████████████████▊                            | 70/100 [00:00<00:00, 111.12it/s]
+  [ComfyUI] xatlas: Packing charts:  71%|██████████████████████████████████████████████████████████████████▋                           | 71/100 [00:00<00:00, 112.57it/s]
+  [ComfyUI] xatlas: Packing charts:  72%|███████████████████████████████████████████████████████████████████▋                          | 72/100 [00:00<00:00, 114.02it/s]
+  [ComfyUI] xatlas: Packing charts:  73%|████████████████████████████████████████████████████████████████████▌                         | 73/100 [00:00<00:00, 115.46it/s]
+  [ComfyUI] xatlas: Packing charts:  74%|█████████████████████████████████████████████████████████████████████▌                        | 74/100 [00:00<00:00, 116.91it/s]
+  [ComfyUI] xatlas: Packing charts:  75%|██████████████████████████████████████████████████████████████████████▌                       | 75/100 [00:00<00:00, 118.38it/s]
+  [ComfyUI] xatlas: Packing charts:  76%|███████████████████████████████████████████████████████████████████████▍                      | 76/100 [00:00<00:00, 119.85it/s]
+  [ComfyUI] xatlas: Packing charts:  77%|████████████████████████████████████████████████████████████████████████▍                     | 77/100 [00:00<00:00, 121.31it/s]
+  [ComfyUI] xatlas: Packing charts:  78%|█████████████████████████████████████████████████████████████████████████▎                    | 78/100 [00:00<00:00, 122.77it/s]
+  [ComfyUI] xatlas: Packing charts:  79%|██████████████████████████████████████████████████████████████████████████▎                   | 79/100 [00:00<00:00, 124.23it/s]
+  [ComfyUI] xatlas: Packing charts:  80%|███████████████████████████████████████████████████████████████████████████▏                  | 80/100 [00:00<00:00, 125.69it/s]
+  [ComfyUI] xatlas: Packing charts:  81%|████████████████████████████████████████████████████████████████████████████▏                 | 81/100 [00:00<00:00, 127.15it/s]
+  [ComfyUI] xatlas: Packing charts:  82%|█████████████████████████████████████████████████████████████████████████████                 | 82/100 [00:00<00:00, 128.59it/s]
+  [ComfyUI] xatlas: Packing charts:  83%|██████████████████████████████████████████████████████████████████████████████                | 83/100 [00:00<00:00, 130.04it/s]
+  [ComfyUI] xatlas: Packing charts:  84%|██████████████████████████████████████████████████████████████████████████████▉               | 84/100 [00:00<00:00, 131.52it/s]
+  [ComfyUI] xatlas: Packing charts:  85%|███████████████████████████████████████████████████████████████████████████████▉              | 85/100 [00:00<00:00, 132.99it/s]
+  [ComfyUI] xatlas: Packing charts:  86%|████████████████████████████████████████████████████████████████████████████████▊             | 86/100 [00:00<00:00, 134.46it/s]
+  [ComfyUI] xatlas: Packing charts:  87%|█████████████████████████████████████████████████████████████████████████████████▊            | 87/100 [00:00<00:00, 135.94it/s]
+  [ComfyUI] xatlas: Packing charts:  88%|██████████████████████████████████████████████████████████████████████████████████▋           | 88/100 [00:00<00:00, 137.41it/s]
+  [ComfyUI] xatlas: Packing charts:  89%|███████████████████████████████████████████████████████████████████████████████████▋          | 89/100 [00:00<00:00, 138.87it/s]
+  [ComfyUI] xatlas: Packing charts:  90%|████████████████████████████████████████████████████████████████████████████████████▌         | 90/100 [00:00<00:00, 140.34it/s]
+  [ComfyUI] xatlas: Packing charts:  91%|█████████████████████████████████████████████████████████████████████████████████████▌        | 91/100 [00:00<00:00, 141.81it/s]
+  [ComfyUI] xatlas: Packing charts:  92%|██████████████████████████████████████████████████████████████████████████████████████▍       | 92/100 [00:00<00:00, 143.26it/s]
+  [ComfyUI] xatlas: Packing charts:  93%|███████████████████████████████████████████████████████████████████████████████████████▍      | 93/100 [00:00<00:00, 144.72it/s]
+  [ComfyUI] xatlas: Packing charts:  94%|████████████████████████████████████████████████████████████████████████████████████████▎     | 94/100 [00:00<00:00, 146.17it/s]
+  [ComfyUI] xatlas: Packing charts:  95%|█████████████████████████████████████████████████████████████████████████████████████████▎    | 95/100 [00:00<00:00, 147.62it/s]
+  [ComfyUI] xatlas: Packing charts:  96%|██████████████████████████████████████████████████████████████████████████████████████████▏   | 96/100 [00:00<00:00, 149.08it/s]
+  [ComfyUI] xatlas: Packing charts:  97%|███████████████████████████████████████████████████████████████████████████████████████████▏  | 97/100 [00:00<00:00, 150.55it/s]
+  [ComfyUI] xatlas: Packing charts:  98%|████████████████████████████████████████████████████████████████████████████████████████████  | 98/100 [00:00<00:00, 152.03it/s]
+  [ComfyUI] xatlas: Packing charts:  99%|█████████████████████████████████████████████████████████████████████████████████████████████ | 99/100 [00:00<00:00, 153.50it/s]
+  [ComfyUI] xatlas: Packing charts: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:00<00:00, 154.97it/s]
+  [ComfyUI] xatlas: Packing charts: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:00<00:00, 154.48it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Building output meshes:   0%|                                                                                                | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Building output meshes:   0%|                                                                                                | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Building output meshes:   1%|▊                                                                                     | 1/100 [00:00<00:00, 1731.04it/s]
+  [ComfyUI] xatlas: Building output meshes:   2%|█▋                                                                                    | 2/100 [00:00<00:00, 2310.91it/s]
+  [ComfyUI] xatlas: Building output meshes:   3%|██▌                                                                                   | 3/100 [00:00<00:00, 2686.93it/s]
+  [ComfyUI] xatlas: Building output meshes:   4%|███▍                                                                                  | 4/100 [00:00<00:00, 1493.83it/s]
+  [ComfyUI] xatlas: Building output meshes:   5%|████▎                                                                                 | 5/100 [00:00<00:00, 1702.51it/s]
+  [ComfyUI] xatlas: Building output meshes:   6%|█████▏                                                                                | 6/100 [00:00<00:00, 1862.76it/s]
+  [ComfyUI] xatlas: Building output meshes:   7%|██████                                                                                | 7/100 [00:00<00:00, 2015.38it/s]
+  [ComfyUI] xatlas: Building output meshes:   8%|██████▉                                                                               | 8/100 [00:00<00:00, 2143.23it/s]
+  [ComfyUI] xatlas: Building output meshes:   9%|███████▋                                                                              | 9/100 [00:00<00:00, 2250.97it/s]
+  [ComfyUI] xatlas: Building output meshes:  10%|████████▌                                                                            | 10/100 [00:00<00:00, 2343.84it/s]
+  [ComfyUI] xatlas: Building output meshes:  11%|█████████▎                                                                           | 11/100 [00:00<00:00, 2458.30it/s]
+  [ComfyUI] xatlas: Building output meshes:  12%|██████████▏                                                                          | 12/100 [00:00<00:00, 2351.95it/s]
+  [ComfyUI] xatlas: Building output meshes:  13%|███████████                                                                          | 13/100 [00:00<00:00, 2356.25it/s]
+  [ComfyUI] xatlas: Building output meshes:  14%|███████████▉                                                                         | 14/100 [00:00<00:00, 2351.44it/s]
+  [ComfyUI] xatlas: Building output meshes:  15%|████████████▊                                                                        | 15/100 [00:00<00:00, 2403.80it/s]
+  [ComfyUI] xatlas: Building output meshes:  16%|█████████████▌                                                                       | 16/100 [00:00<00:00, 2464.70it/s]
+  [ComfyUI] xatlas: Building output meshes:  17%|██████████████▍                                                                      | 17/100 [00:00<00:00, 2536.85it/s]
+  [ComfyUI] xatlas: Building output meshes:  18%|███████████████▎                                                                     | 18/100 [00:00<00:00, 2599.24it/s]
+  [ComfyUI] xatlas: Building output meshes:  19%|████████████████▏                                                                    | 19/100 [00:00<00:00, 2653.30it/s]
+  [ComfyUI] xatlas: Building output meshes:  20%|█████████████████                                                                    | 20/100 [00:00<00:00, 2703.47it/s]
+  [ComfyUI] xatlas: Building output meshes:  21%|█████████████████▊                                                                   | 21/100 [00:00<00:00, 2702.35it/s]
+  [ComfyUI] xatlas: Building output meshes:  22%|██████████████████▋                                                                  | 22/100 [00:00<00:00, 2729.05it/s]
+  [ComfyUI] xatlas: Building output meshes:  23%|███████████████████▌                                                                 | 23/100 [00:00<00:00, 2765.90it/s]
+  [ComfyUI] xatlas: Building output meshes:  24%|████████████████████▍                                                                | 24/100 [00:00<00:00, 2791.55it/s]
+  [ComfyUI] xatlas: Building output meshes:  25%|█████████████████████▎                                                               | 25/100 [00:00<00:00, 2819.13it/s]
+  [ComfyUI] xatlas: Building output meshes:  26%|██████████████████████                                                               | 26/100 [00:00<00:00, 2831.05it/s]
+  [ComfyUI] xatlas: Building output meshes:  27%|██████████████████████▉                                                              | 27/100 [00:00<00:00, 2845.24it/s]
+  [ComfyUI] xatlas: Building output meshes:  28%|███████████████████████▊                                                             | 28/100 [00:00<00:00, 2844.97it/s]
+  [ComfyUI] xatlas: Building output meshes:  29%|████████████████████████▋                                                            | 29/100 [00:00<00:00, 2848.52it/s]
+  [ComfyUI] xatlas: Building output meshes:  30%|█████████████████████████▌                                                           | 30/100 [00:00<00:00, 2858.06it/s]
+  [ComfyUI] xatlas: Building output meshes:  31%|██████████████████████████▎                                                          | 31/100 [00:00<00:00, 2871.48it/s]
+  [ComfyUI] xatlas: Building output meshes:  32%|███████████████████████████▏                                                         | 32/100 [00:00<00:00, 2907.29it/s]
+  [ComfyUI] xatlas: Building output meshes:  33%|████████████████████████████                                                         | 33/100 [00:00<00:00, 2927.37it/s]
+  [ComfyUI] xatlas: Building output meshes:  34%|████████████████████████████▉                                                        | 34/100 [00:00<00:00, 2958.15it/s]
+  [ComfyUI] xatlas: Building output meshes:  35%|█████████████████████████████▋                                                       | 35/100 [00:00<00:00, 2967.89it/s]
+  [ComfyUI] xatlas: Building output meshes:  36%|██████████████████████████████▌                                                      | 36/100 [00:00<00:00, 2990.65it/s]
+  [ComfyUI] xatlas: Building output meshes:  37%|███████████████████████████████▍                                                     | 37/100 [00:00<00:00, 3006.55it/s]
+  [ComfyUI] xatlas: Building output meshes:  38%|████████████████████████████████▎                                                    | 38/100 [00:00<00:00, 3024.47it/s]
+  [ComfyUI] xatlas: Building output meshes:  39%|█████████████████████████████████▏                                                   | 39/100 [00:00<00:00, 3035.18it/s]
+  [ComfyUI] xatlas: Building output meshes:  40%|██████████████████████████████████                                                   | 40/100 [00:00<00:00, 3053.35it/s]
+  [ComfyUI] xatlas: Building output meshes:  41%|██████████████████████████████████▊                                                  | 41/100 [00:00<00:00, 3070.99it/s]
+  [ComfyUI] xatlas: Building output meshes:  42%|███████████████████████████████████▋                                                 | 42/100 [00:00<00:00, 3083.94it/s]
+  [ComfyUI] xatlas: Building output meshes:  43%|████████████████████████████████████▌                                                | 43/100 [00:00<00:00, 3100.64it/s]
+  [ComfyUI] xatlas: Building output meshes:  44%|█████████████████████████████████████▍                                               | 44/100 [00:00<00:00, 3116.39it/s]
+  [ComfyUI] xatlas: Building output meshes:  45%|██████████████████████████████████████▎                                              | 45/100 [00:00<00:00, 3123.40it/s]
+  [ComfyUI] xatlas: Building output meshes:  46%|███████████████████████████████████████                                              | 46/100 [00:00<00:00, 3140.27it/s]
+  [ComfyUI] xatlas: Building output meshes:  47%|███████████████████████████████████████▉                                             | 47/100 [00:00<00:00, 3160.44it/s]
+  [ComfyUI] xatlas: Building output meshes:  48%|████████████████████████████████████████▊                                            | 48/100 [00:00<00:00, 3179.06it/s]
+  [ComfyUI] xatlas: Building output meshes:  49%|█████████████████████████████████████████▋                                           | 49/100 [00:00<00:00, 3190.72it/s]
+  [ComfyUI] xatlas: Building output meshes:  50%|██████████████████████████████████████████▌                                          | 50/100 [00:00<00:00, 3209.40it/s]
+  [ComfyUI] xatlas: Building output meshes:  51%|███████████████████████████████████████████▎                                         | 51/100 [00:00<00:00, 3218.86it/s]
+  [ComfyUI] xatlas: Building output meshes:  52%|████████████████████████████████████████████▏                                        | 52/100 [00:00<00:00, 3235.10it/s]
+  [ComfyUI] xatlas: Building output meshes:  53%|█████████████████████████████████████████████                                        | 53/100 [00:00<00:00, 3227.47it/s]
+  [ComfyUI] xatlas: Building output meshes:  54%|█████████████████████████████████████████████▉                                       | 54/100 [00:00<00:00, 3240.47it/s]
+  [ComfyUI] xatlas: Building output meshes:  55%|██████████████████████████████████████████████▊                                      | 55/100 [00:00<00:00, 3242.90it/s]
+  [ComfyUI] xatlas: Building output meshes:  56%|███████████████████████████████████████████████▌                                     | 56/100 [00:00<00:00, 3240.27it/s]
+  [ComfyUI] xatlas: Building output meshes:  57%|████████████████████████████████████████████████▍                                    | 57/100 [00:00<00:00, 3243.77it/s]
+  [ComfyUI] xatlas: Building output meshes:  58%|█████████████████████████████████████████████████▎                                   | 58/100 [00:00<00:00, 3241.52it/s]
+  [ComfyUI] xatlas: Building output meshes:  59%|██████████████████████████████████████████████████▏                                  | 59/100 [00:00<00:00, 3245.13it/s]
+  [ComfyUI] xatlas: Building output meshes:  60%|███████████████████████████████████████████████████                                  | 60/100 [00:00<00:00, 3247.54it/s]
+  [ComfyUI] xatlas: Building output meshes:  61%|███████████████████████████████████████████████████▊                                 | 61/100 [00:00<00:00, 3256.61it/s]
+  [ComfyUI] xatlas: Building output meshes:  62%|████████████████████████████████████████████████████▋                                | 62/100 [00:00<00:00, 3256.04it/s]
+  [ComfyUI] xatlas: Building output meshes:  63%|█████████████████████████████████████████████████████▌                               | 63/100 [00:00<00:00, 3261.11it/s]
+  [ComfyUI] xatlas: Building output meshes:  64%|██████████████████████████████████████████████████████▍                              | 64/100 [00:00<00:00, 3260.96it/s]
+  [ComfyUI] xatlas: Building output meshes:  65%|███████████████████████████████████████████████████████▎                             | 65/100 [00:00<00:00, 3261.28it/s]
+  [ComfyUI] xatlas: Building output meshes:  66%|████████████████████████████████████████████████████████                             | 66/100 [00:00<00:00, 3267.05it/s]
+  [ComfyUI] xatlas: Building output meshes:  67%|████████████████████████████████████████████████████████▉                            | 67/100 [00:00<00:00, 3261.70it/s]
+  [ComfyUI] xatlas: Building output meshes:  68%|█████████████████████████████████████████████████████████▊                           | 68/100 [00:00<00:00, 3269.74it/s]
+  [ComfyUI] xatlas: Building output meshes:  69%|██████████████████████████████████████████████████████████▋                          | 69/100 [00:00<00:00, 3273.43it/s]
+  [ComfyUI] xatlas: Building output meshes:  70%|███████████████████████████████████████████████████████████▍                         | 70/100 [00:00<00:00, 3271.94it/s]
+  [ComfyUI] xatlas: Building output meshes:  71%|████████████████████████████████████████████████████████████▎                        | 71/100 [00:00<00:00, 3275.72it/s]
+  [ComfyUI] xatlas: Building output meshes:  72%|█████████████████████████████████████████████████████████████▏                       | 72/100 [00:00<00:00, 3278.44it/s]
+  [ComfyUI] xatlas: Building output meshes:  73%|██████████████████████████████████████████████████████████████                       | 73/100 [00:00<00:00, 3280.66it/s]
+  [ComfyUI] xatlas: Building output meshes:  74%|██████████████████████████████████████████████████████████████▉                      | 74/100 [00:00<00:00, 3286.20it/s]
+  [ComfyUI] xatlas: Building output meshes:  75%|███████████████████████████████████████████████████████████████▊                     | 75/100 [00:00<00:00, 3284.43it/s]
+  [ComfyUI] xatlas: Building output meshes:  76%|████████████████████████████████████████████████████████████████▌                    | 76/100 [00:00<00:00, 3288.33it/s]
+  [ComfyUI] xatlas: Building output meshes:  77%|█████████████████████████████████████████████████████████████████▍                   | 77/100 [00:00<00:00, 3294.25it/s]
+  [ComfyUI] xatlas: Building output meshes:  78%|██████████████████████████████████████████████████████████████████▎                  | 78/100 [00:00<00:00, 3303.97it/s]
+  [ComfyUI] xatlas: Building output meshes:  79%|███████████████████████████████████████████████████████████████████▏                 | 79/100 [00:00<00:00, 3307.74it/s]
+  [ComfyUI] xatlas: Building output meshes:  80%|████████████████████████████████████████████████████████████████████                 | 80/100 [00:00<00:00, 3317.03it/s]
+  [ComfyUI] xatlas: Building output meshes:  81%|████████████████████████████████████████████████████████████████████▊                | 81/100 [00:00<00:00, 3322.69it/s]
+  [ComfyUI] xatlas: Building output meshes:  82%|█████████████████████████████████████████████████████████████████████▋               | 82/100 [00:00<00:00, 3338.25it/s]
+  [ComfyUI] xatlas: Building output meshes:  83%|██████████████████████████████████████████████████████████████████████▌              | 83/100 [00:00<00:00, 3342.07it/s]
+  [ComfyUI] xatlas: Building output meshes:  84%|███████████████████████████████████████████████████████████████████████▍             | 84/100 [00:00<00:00, 3348.17it/s]
+  [ComfyUI] xatlas: Building output meshes:  85%|████████████████████████████████████████████████████████████████████████▎            | 85/100 [00:00<00:00, 3351.19it/s]
+  [ComfyUI] xatlas: Building output meshes:  86%|█████████████████████████████████████████████████████████████████████████            | 86/100 [00:00<00:00, 3353.79it/s]
+  [ComfyUI] xatlas: Building output meshes:  87%|█████████████████████████████████████████████████████████████████████████▉           | 87/100 [00:00<00:00, 3354.52it/s]
+  [ComfyUI] xatlas: Building output meshes:  88%|██████████████████████████████████████████████████████████████████████████▊          | 88/100 [00:00<00:00, 3360.42it/s]
+  [ComfyUI] xatlas: Building output meshes:  89%|███████████████████████████████████████████████████████████████████████████▋         | 89/100 [00:00<00:00, 3357.53it/s]
+  [ComfyUI] xatlas: Building output meshes:  90%|████████████████████████████████████████████████████████████████████████████▌        | 90/100 [00:00<00:00, 3364.44it/s]
+  [ComfyUI] xatlas: Building output meshes:  91%|█████████████████████████████████████████████████████████████████████████████▎       | 91/100 [00:00<00:00, 3369.28it/s]
+  [ComfyUI] xatlas: Building output meshes:  92%|██████████████████████████████████████████████████████████████████████████████▏      | 92/100 [00:00<00:00, 3370.45it/s]
+  [ComfyUI] xatlas: Building output meshes:  93%|███████████████████████████████████████████████████████████████████████████████      | 93/100 [00:00<00:00, 3376.76it/s]
+  [ComfyUI] xatlas: Building output meshes:  94%|███████████████████████████████████████████████████████████████████████████████▉     | 94/100 [00:00<00:00, 3379.63it/s]
+  [ComfyUI] xatlas: Building output meshes:  95%|████████████████████████████████████████████████████████████████████████████████▊    | 95/100 [00:00<00:00, 3374.68it/s]
+  [ComfyUI] xatlas: Building output meshes:  96%|█████████████████████████████████████████████████████████████████████████████████▌   | 96/100 [00:00<00:00, 3380.00it/s]
+  [ComfyUI] xatlas: Building output meshes:  97%|██████████████████████████████████████████████████████████████████████████████████▍  | 97/100 [00:00<00:00, 3387.57it/s]
+  [ComfyUI] xatlas: Building output meshes:  98%|███████████████████████████████████████████████████████████████████████████████████▎ | 98/100 [00:00<00:00, 3392.02it/s]
+  [ComfyUI] xatlas: Building output meshes:  99%|████████████████████████████████████████████████████████████████████████████████████▏| 99/100 [00:00<00:00, 3400.20it/s]
+  [ComfyUI] xatlas: Building output meshes: 100%|████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:00<00:00, 3406.07it/s]
+  [ComfyUI] xatlas: Building output meshes: 100%|████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:00<00:00, 3323.56it/s]
+  [ComfyUI] 
+  [ComfyUI] Gathering results from xatlas:   0%|                                                                                                | 0/4062 [00:00<?, ?it/s]
+  [ComfyUI] Gathering results from xatlas:  56%|█████████████████████████████████████████████▋                                    | 2264/4062 [00:00<00:00, 22633.60it/s]
+  [ComfyUI] Gathering results from xatlas: 100%|██████████████████████████████████████████████████████████████████████████████████| 4062/4062 [00:00<00:00, 22942.56it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Done
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Sampling attributes...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 4 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007490633a1640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000074912e9fd640 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 359 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 655 in wait
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00007492baea1640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 42 in _watchdog
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1012 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1075 in _bootstrap_inner
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/threading.py", line 1032 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007492bb929740 (most recent call first):
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/backends/nvidia/compiler.py", line 363 in make_llir
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/backends/nvidia/compiler.py", line 459 in <lambda>
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/compiler/compiler.py", line 359 in compile
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/runtime/jit.py", line 594 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/runtime/autotuner.py", line 146 in kernel_call
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/testing.py", line 149 in do_bench
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/runtime/autotuner.py", line 160 in _bench
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/flex_gemm/utils/autotuner.py", line 67 in run
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/triton/runtime/jit.py", line 390 in <lambda>
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/flex_gemm/kernels/triton/grid_sample/indice_weighed_sum_fwd.py", line 81 in indice_weighed_sum_fwd
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/flex_gemm/ops/grid_sample/grid_sample.py", line 113 in _trilinear_fwd
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/flex_gemm/ops/grid_sample/grid_sample.py", line 176 in forward
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.12/site-packages/torch/autograd/function.py", line 576 in apply
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/flex_gemm/ops/grid_sample/grid_sample.py", line 212 in grid_sample_3d
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/_env_8c5450/lib/python3.1/site-packages/o_voxel/postprocess.py", line 282 in to_glb
+  [ComfyUI]   File "/home/shadeform/workspaces/TRELLIS2-1855/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_unwrap.py", line 566 in export_glb
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1143 in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_d9a205k1/persistent_worker.py", line 1174 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Done
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Finalizing mesh...
+  [capture-loop] iter=550 t=66.8s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Done
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] Prompt executed in 69.52 seconds
+  Node executed (2 total), capturing...
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  Frame 20 saved (frame_019.jpg, t=70.7s)
+  [capture-node] freeze=73ms shot=681ms unfreeze=0ms saved=True
+  Execution complete (t=70.7s)
+  [3d-wait] Phase 1: Waiting for 'Loading 3D Model' text to disappear...
+  [Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+  [3d-wait] Phase 1 exception after 60.0s: Page.wait_for_function: Timeout 60000ms exceeded.
+  [3d-wait] Phase 2: iframes=0
+  [3d-wait] Total 3D wait: 60.0s
+  Captured 20 unique frames over 131.69s
+  [debug] iframes: 0
+  [timing] trigger_3d_previews: 0.0s
   Saved high-quality screenshot: geometry_texture_executed.png
-    Captured 5 video frames
+  [timing] final_screenshot: 1.4s
+    Captured 21 video frames
