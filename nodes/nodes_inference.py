@@ -335,11 +335,337 @@ Returns:
         return (image, mask_tensor)
 
 
+class Trellis2LoadMesh:
+    """Load a 3D mesh file and return as TRIMESH."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "mesh_path": ("STRING", {
+                    "default": "",
+                    "tooltip": "Absolute path to mesh file (GLB, OBJ, PLY, STL, etc.)"
+                }),
+            },
+        }
+
+    RETURN_TYPES = ("TRIMESH",)
+    RETURN_NAMES = ("mesh",)
+    FUNCTION = "load_mesh"
+    CATEGORY = "TRELLIS2"
+    DESCRIPTION = """
+Load a 3D mesh from file.
+
+Supports GLB, GLTF, OBJ, PLY, STL, 3MF, DAE, OFF and other formats
+supported by the trimesh library.
+
+Parameters:
+- mesh_path: Absolute path to the mesh file
+"""
+
+    def load_mesh(self, mesh_path):
+        import os
+        import trimesh as Trimesh
+
+        if not mesh_path or not os.path.exists(mesh_path):
+            raise ValueError(f"Mesh file not found: {mesh_path}")
+
+        log.info(f"Loading mesh from: {mesh_path}")
+        mesh = Trimesh.load(mesh_path, process=False, force='mesh')
+
+        # If Scene returned, concatenate all geometry
+        if isinstance(mesh, Trimesh.Scene):
+            meshes = []
+            for name, geom in mesh.geometry.items():
+                if isinstance(geom, Trimesh.Trimesh):
+                    meshes.append(geom)
+            if not meshes:
+                raise ValueError(f"No mesh geometry found in: {mesh_path}")
+            mesh = Trimesh.util.concatenate(meshes)
+
+        log.info(f"Mesh loaded: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces")
+        return (mesh,)
+
+
+class Trellis2EncodeMesh:
+    """Encode a mesh into a TRELLIS.2 shape latent for retexturing or refinement."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model_config": ("TRELLIS2_MODEL_CONFIG", {
+                    "tooltip": "Model config from Load TRELLIS.2 Models node"
+                }),
+                "mesh": ("TRIMESH", {
+                    "tooltip": "Input mesh to encode"
+                }),
+            },
+            "optional": {
+                "resolution": ("INT", {
+                    "default": 1024, "min": 256, "max": 2048, "step": 128,
+                    "tooltip": "Encoding grid resolution. Higher = more detail but slower. 1024 recommended."
+                }),
+            },
+        }
+
+    RETURN_TYPES = ("TRELLIS2_SHAPE_LATENT",)
+    RETURN_NAMES = ("shape_latent",)
+    FUNCTION = "encode"
+    CATEGORY = "TRELLIS2"
+    DESCRIPTION = """
+Encode a mesh into a TRELLIS.2 shape structured latent.
+
+Uses the FlexiDualGrid VAE Encoder to convert mesh geometry into TRELLIS.2's
+latent space. The latent can then be used for:
+- Standalone retexturing (Texture Mesh node)
+- Geometry refinement (Refine Mesh node)
+
+The mesh is automatically centered and scaled to [-0.5, 0.5]^3.
+First run will download the encoder weights (~950MB) from HuggingFace.
+
+Parameters:
+- model_config: The loaded model config
+- mesh: Input TRIMESH to encode
+- resolution: Grid resolution for voxelization (default 1024)
+"""
+
+    def encode(self, model_config, mesh, resolution=1024):
+        import torch
+        import numpy as np
+        from .stages import run_encode_mesh
+
+        vertices = np.array(mesh.vertices, dtype=np.float32)
+        faces = np.array(mesh.faces, dtype=np.int32)
+
+        with torch.inference_mode():
+            shape_latent = run_encode_mesh(
+                model_config=model_config,
+                vertices=vertices,
+                faces=faces,
+                resolution=resolution,
+            )
+
+        return (shape_latent,)
+
+
+class Trellis2TextureMesh:
+    """Generate PBR textures for an existing mesh from a reference image."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model_config": ("TRELLIS2_MODEL_CONFIG", {
+                    "tooltip": "Model config from Load TRELLIS.2 Models node"
+                }),
+                "conditioning": ("TRELLIS2_CONDITIONING", {
+                    "tooltip": "Image conditioning from Get Conditioning node (the new texture reference)"
+                }),
+                "shape_latent": ("TRELLIS2_SHAPE_LATENT", {
+                    "tooltip": "Encoded shape latent from Encode Mesh node"
+                }),
+            },
+            "optional": {
+                "seed": ("INT", {
+                    "default": 0, "min": 0, "max": 2**31 - 1,
+                    "tooltip": "Random seed for texture variation"
+                }),
+                "tex_guidance_strength": ("FLOAT", {
+                    "default": 3.5, "min": 1.0, "max": 20.0, "step": 0.1,
+                    "tooltip": "Texture CFG scale. Higher = stronger adherence to input image"
+                }),
+                "tex_sampling_steps": ("INT", {
+                    "default": 12, "min": 1, "max": 50, "step": 1,
+                    "tooltip": "Texture sampling steps"
+                }),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("voxelgrid_npz_path",)
+    FUNCTION = "generate"
+    CATEGORY = "TRELLIS2"
+    DESCRIPTION = """
+Generate PBR textures for an existing mesh using a reference image.
+
+This is the "retexture" workflow: take any mesh, encode it with Encode Mesh,
+then generate new PBR materials (base_color, metallic, roughness, alpha)
+guided by a reference image.
+
+Unlike the standard texture path, this decodes WITHOUT subdivision guidance
+since the mesh was not generated by TRELLIS.2's shape pipeline.
+
+Output is a voxelgrid NPZ file compatible with Export GLB, Simplify, etc.
+
+Parameters:
+- model_config: Loaded model config
+- conditioning: DinoV3 conditioning from the new reference image
+- shape_latent: Encoded shape from Encode Mesh
+- seed: Random seed
+- tex_*: Texture sampling parameters
+"""
+
+    def generate(
+        self,
+        model_config,
+        conditioning,
+        shape_latent,
+        seed=0,
+        tex_guidance_strength=3.5,
+        tex_sampling_steps=12,
+    ):
+        import json
+        import os
+        import uuid
+        import numpy as np
+        import torch
+        from .stages import run_texture_mesh
+
+        with torch.inference_mode():
+            texture_result = run_texture_mesh(
+                model_config=model_config,
+                conditioning=conditioning,
+                shape_latent=shape_latent,
+                seed=seed,
+                tex_guidance_strength=tex_guidance_strength,
+                tex_sampling_steps=tex_sampling_steps,
+            )
+
+        # Save voxelgrid NPZ (same format as existing ShapeToTexturedMesh)
+        cache_dir = '/tmp/trellis2_cache'
+        os.makedirs(cache_dir, exist_ok=True)
+        file_id = uuid.uuid4().hex[:8]
+
+        pbr_layout = texture_result['pbr_layout']
+        layout_serializable = {k: (v.start, v.stop) for k, v in pbr_layout.items()}
+
+        voxelgrid_npz_path = os.path.join(cache_dir, f'voxelgrid_retex_{file_id}.npz')
+        np.savez(
+            voxelgrid_npz_path,
+            coords=texture_result['voxel_coords'],
+            attrs=texture_result['voxel_attrs'],
+            voxel_size=np.array([texture_result['voxel_size']]),
+            vertices=texture_result['original_vertices'],
+            faces=texture_result['original_faces'],
+            layout=json.dumps(layout_serializable),
+        )
+        log.info(f"Retexture voxelgrid saved to: {voxelgrid_npz_path}")
+
+        return (voxelgrid_npz_path,)
+
+
+class Trellis2RefineMesh:
+    """Refine mesh geometry by re-sampling shape at higher resolution."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model_config": ("TRELLIS2_MODEL_CONFIG", {
+                    "tooltip": "Model config from Load TRELLIS.2 Models node"
+                }),
+                "conditioning": ("TRELLIS2_CONDITIONING", {
+                    "tooltip": "Image conditioning from Get Conditioning node"
+                }),
+                "shape_latent": ("TRELLIS2_SHAPE_LATENT", {
+                    "tooltip": "Encoded shape latent from Encode Mesh node"
+                }),
+            },
+            "optional": {
+                "seed": ("INT", {
+                    "default": 0, "min": 0, "max": 2**31 - 1,
+                    "tooltip": "Random seed for refinement"
+                }),
+                "shape_guidance_strength": ("FLOAT", {
+                    "default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1,
+                    "tooltip": "Shape CFG scale"
+                }),
+                "shape_sampling_steps": ("INT", {
+                    "default": 12, "min": 1, "max": 50, "step": 1,
+                    "tooltip": "Shape sampling steps"
+                }),
+                "max_tokens": ("INT", {
+                    "default": 49152, "min": 16384, "max": 65536, "step": 4096,
+                    "tooltip": "Max tokens for HR resolution. Lower = less VRAM."
+                }),
+                "use_vb": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Use tiled decoder (o_voxel_vb) vs upstream (o_voxel)"
+                }),
+            },
+        }
+
+    RETURN_TYPES = ("TRELLIS2_SHAPE_RESULT", "TRIMESH")
+    RETURN_NAMES = ("shape_result", "mesh")
+    FUNCTION = "refine"
+    CATEGORY = "TRELLIS2"
+    DESCRIPTION = """
+Refine mesh geometry by re-sampling shape at higher resolution.
+
+Takes an encoded mesh shape latent and:
+1. Upsamples via the shape decoder to get high-resolution coordinates
+2. Re-samples a new shape latent at those coordinates
+3. Decodes to a refined mesh with improved geometric detail
+
+The output shape_result is compatible with the existing "Shape to Textured Mesh"
+node for full PBR texturing with subdivision guidance.
+
+Parameters:
+- model_config: Loaded model config
+- conditioning: DinoV3 conditioning (guides the refinement)
+- shape_latent: Encoded shape from Encode Mesh
+- seed: Random seed
+- shape_*: Shape sampling parameters
+- max_tokens: VRAM limit control
+- use_vb: Toggle tiled vs upstream decoder
+"""
+
+    def refine(
+        self,
+        model_config,
+        conditioning,
+        shape_latent,
+        seed=0,
+        shape_guidance_strength=7.5,
+        shape_sampling_steps=12,
+        max_tokens=49152,
+        use_vb=True,
+    ):
+        import trimesh as Trimesh
+        import torch
+        from .stages import run_refine_mesh
+
+        with torch.inference_mode():
+            shape_result, vertices, faces = run_refine_mesh(
+                model_config=model_config,
+                conditioning=conditioning,
+                shape_latent=shape_latent,
+                seed=seed,
+                shape_guidance_strength=shape_guidance_strength,
+                shape_sampling_steps=shape_sampling_steps,
+                max_num_tokens=max_tokens,
+                use_vb=use_vb,
+            )
+
+        tri_mesh = Trimesh.Trimesh(
+            vertices=vertices,
+            faces=faces,
+            process=False,
+        )
+
+        return (shape_result, tri_mesh)
+
+
 NODE_CLASS_MAPPINGS = {
     "Trellis2RemoveBackground": Trellis2RemoveBackground,
     "Trellis2GetConditioning": Trellis2GetConditioning,
     "Trellis2ImageToShape": Trellis2ImageToShape,
     "Trellis2ShapeToTexturedMesh": Trellis2ShapeToTexturedMesh,
+    "Trellis2LoadMesh": Trellis2LoadMesh,
+    "Trellis2EncodeMesh": Trellis2EncodeMesh,
+    "Trellis2TextureMesh": Trellis2TextureMesh,
+    "Trellis2RefineMesh": Trellis2RefineMesh,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -347,4 +673,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2GetConditioning": "TRELLIS.2 Get Conditioning",
     "Trellis2ImageToShape": "TRELLIS.2 Image to Shape",
     "Trellis2ShapeToTexturedMesh": "TRELLIS.2 Shape to Textured Mesh",
+    "Trellis2LoadMesh": "TRELLIS.2 Load Mesh",
+    "Trellis2EncodeMesh": "TRELLIS.2 Encode Mesh",
+    "Trellis2TextureMesh": "TRELLIS.2 Texture Mesh (Standalone)",
+    "Trellis2RefineMesh": "TRELLIS.2 Refine Mesh",
 }

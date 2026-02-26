@@ -43,6 +43,95 @@ TEXTURE_RESOLUTION_MAP = {
 
 
 # ============================================================
+# Mesh preprocessing helpers
+# ============================================================
+
+def _preprocess_mesh(vertices: torch.Tensor, faces: torch.Tensor):
+    """
+    Center and scale a mesh to [-0.5, 0.5]^3, convert Z-up (ComfyUI) to Y-up (internal).
+
+    Args:
+        vertices: (N, 3) float tensor, Z-up coordinate system
+        faces: (M, 3) int tensor
+
+    Returns:
+        (vertices, faces) in internal Y-up coordinate system, scaled to [-0.5, 0.5]^3
+    """
+    verts = vertices.clone().float()
+
+    # Convert Z-up -> Y-up: y_new = z_old, z_new = -y_old
+    y_old = verts[:, 1].clone()
+    z_old = verts[:, 2].clone()
+    verts[:, 1] = z_old
+    verts[:, 2] = -y_old
+
+    # Center and scale to [-0.5, 0.5]^3
+    vmin = verts.min(dim=0).values
+    vmax = verts.max(dim=0).values
+    center = (vmin + vmax) / 2
+    max_extent = (vmax - vmin).max()
+    verts = (verts - center) * (0.99999 / max_extent)
+
+    return verts, faces.int()
+
+
+def _encode_mesh_to_shape_slat(vertices, faces, resolution, device):
+    """
+    Encode a preprocessed mesh into a shape structured latent using FlexiDualGridVaeEncoder.
+
+    Args:
+        vertices: (N, 3) float tensor in Y-up internal coords, scaled to [-0.5, 0.5]
+        faces: (M, 3) int tensor
+        resolution: grid resolution (e.g. 1024)
+        device: torch device
+
+    Returns:
+        shape_slat SparseTensor
+    """
+    import time as _time, sys as _sys
+    from .trellis2.sparse import SparseTensor
+    import o_voxel
+
+    t0 = _time.perf_counter()
+    voxel_indices, dual_vertices, intersected = o_voxel.convert.mesh_to_flexible_dual_grid(
+        vertices.cpu(),
+        faces.cpu(),
+        grid_size=resolution,
+        aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
+        face_weight=1.0,
+        boundary_weight=0.2,
+        regularization_weight=1e-2,
+    )
+    print(f"[TRELLIS2] mesh_to_flexible_dual_grid: {_time.perf_counter()-t0:.1f}s, "
+          f"{voxel_indices.shape[0]} voxels", file=_sys.stderr)
+
+    # Build SparseTensor inputs for the encoder
+    # feats = vertex offsets within each voxel cell
+    # coords = [batch_idx(0), voxel_x, voxel_y, voxel_z]
+    batch_col = torch.zeros(voxel_indices.shape[0], 1, dtype=voxel_indices.dtype)
+    coords = torch.cat([batch_col, voxel_indices], dim=1).to(device)
+
+    # Load encoder to determine weight dtype
+    encoder = _load_model('shape_slat_encoder')
+    model_dtype = next(encoder.parameters()).dtype
+
+    vertex_feats = (dual_vertices * resolution - voxel_indices.float()).to(device=device, dtype=model_dtype)
+    vertices_sparse = SparseTensor(feats=vertex_feats, coords=coords)
+
+    intersected_feats = intersected.to(device=device, dtype=model_dtype)
+    intersected_sparse = SparseTensor(feats=intersected_feats, coords=coords)
+
+    t0 = _time.perf_counter()
+    shape_slat = encoder(vertices_sparse, intersected_sparse, sample_posterior=False)
+    print(f"[TRELLIS2] Shape encoder: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
+
+    del vertices_sparse, intersected_sparse, vertex_feats, intersected_feats, coords
+    _unload_model('shape_slat_encoder')
+
+    return shape_slat
+
+
+# ============================================================
 # Module-level model management (persists across subprocess calls)
 # ============================================================
 
@@ -572,19 +661,30 @@ def _sample_tex_slat(cond, model_key, shape_slat, sampler_params, device, dtype)
     return slat
 
 
-def _decode_tex_slat(slat, subs):
-    """Decode texture structured latent -> texture voxels."""
+def _decode_tex_slat(slat, subs=None):
+    """Decode texture structured latent -> texture voxels.
+
+    Args:
+        slat: texture structured latent SparseTensor
+        subs: optional subdivision guides from shape decode. When None,
+              the decoder runs without guide_subs (standalone texturing path).
+    """
     import time as _time, sys as _sys
     decoder = _load_model('tex_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
-    for i, sub in enumerate(subs):
-        subs[i] = sub.replace(feats=sub.feats.to(dtype=model_dtype))
+
+    kwargs = {}
+    if subs is not None:
+        for i, sub in enumerate(subs):
+            subs[i] = sub.replace(feats=sub.feats.to(dtype=model_dtype))
+        kwargs['guide_subs'] = subs
 
     t0 = _time.perf_counter()
-    ret = decoder(slat, guide_subs=subs) * 0.5 + 0.5
+    ret = decoder(slat, **kwargs) * 0.5 + 0.5
     ret = ret.replace(feats=ret.feats.float())
-    print(f"[TRELLIS2] Texture decode (SparseUnetVaeDecoder): {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
+    label = "with guide_subs" if subs is not None else "no guide_subs"
+    print(f"[TRELLIS2] Texture decode ({label}): {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
 
     _unload_model('tex_slat_decoder')
     return ret
@@ -988,3 +1088,374 @@ def run_texture_generation(
     coords = result['voxel_coords']
     log.info(f"Texture generated: {textured_mesh.vertices.shape[0]} verts, {len(coords)} voxels")
     return result
+
+
+def run_encode_mesh(
+    model_config: Any,
+    vertices: np.ndarray,
+    faces: np.ndarray,
+    resolution: int = 1024,
+) -> Dict[str, Any]:
+    """
+    Encode a mesh into a shape structured latent (TRELLIS2_SHAPE_LATENT).
+
+    This is the prerequisite for standalone texturing and mesh refinement.
+    First run will download the shape encoder weights (~950MB).
+
+    Args:
+        model_config: Trellis2ModelConfig
+        vertices: (N, 3) numpy array, Z-up coordinate system
+        faces: (M, 3) numpy array
+        resolution: Encoding grid resolution (default 1024)
+
+    Returns:
+        Dict with serialized shape_slat, preprocessed mesh, and resolution
+    """
+    import comfy.utils
+
+    _init_config()
+
+    log.info(f"Encoding mesh to shape latent (resolution={resolution}, "
+             f"{len(vertices)} verts, {len(faces)} faces)...")
+    pbar = comfy.utils.ProgressBar(2)
+
+    device = comfy.model_management.get_torch_device()
+
+    # Convert to torch tensors
+    verts_t = torch.from_numpy(vertices).float()
+    faces_t = torch.from_numpy(faces).int()
+
+    # Preprocess: center, scale, Z-up -> Y-up conversion
+    verts_internal, faces_internal = _preprocess_mesh(verts_t, faces_t)
+    pbar.update(1)
+
+    # Encode via FlexiDualGridVaeEncoder
+    shape_slat = _encode_mesh_to_shape_slat(verts_internal, faces_internal, resolution, device)
+    pbar.update(1)
+
+    # Serialize for IPC transport between nodes
+    result = {
+        'shape_slat': _serialize_for_ipc(shape_slat),
+        'preprocessed_vertices': verts_internal.cpu(),
+        'preprocessed_faces': faces_internal.cpu(),
+        'resolution': resolution,
+    }
+
+    del shape_slat
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+
+    log.info(f"Mesh encoded: {len(vertices)} verts -> {result['shape_slat']['feats'].shape[0]} latent voxels")
+    return result
+
+
+def run_texture_mesh(
+    model_config: Any,
+    conditioning: Dict[str, torch.Tensor],
+    shape_latent: Dict[str, Any],
+    seed: int = 0,
+    tex_guidance_strength: float = 3.5,
+    tex_sampling_steps: int = 12,
+) -> Dict[str, Any]:
+    """
+    Generate PBR textures for an existing mesh using its encoded shape latent.
+
+    Unlike run_texture_generation(), this decodes WITHOUT guide_subs since the
+    mesh was not generated by TRELLIS.2's shape pipeline — there are no
+    subdivision guides available.
+
+    Args:
+        model_config: Trellis2ModelConfig
+        conditioning: Dict with cond_512, neg_cond, optionally cond_1024
+        shape_latent: Result from run_encode_mesh (TRELLIS2_SHAPE_LATENT)
+        seed: Random seed
+        tex_guidance_strength: Texture CFG scale
+        tex_sampling_steps: Texture sampling steps
+
+    Returns:
+        Dict with voxel data for NPZ export (same format as run_texture_generation)
+    """
+    import comfy.utils
+    from .trellis2.vae import Mesh, MeshWithVoxel
+
+    _init_config()
+
+    log.info(f"Running standalone texture generation (seed={seed})...")
+    pbar = comfy.utils.ProgressBar(3)
+
+    device = comfy.model_management.get_torch_device()
+    compute_dtype = _DEFAULT_DTYPE
+    resolution = model_config["resolution"]
+
+    # Move conditioning to device
+    cond_on_device = {
+        k: v.to(device=device, dtype=compute_dtype) if isinstance(v, torch.Tensor) else v
+        for k, v in conditioning.items()
+    }
+
+    # Deserialize shape latent
+    shape_slat = _deserialize_from_ipc(shape_latent['shape_slat'], device)
+    enc_resolution = shape_latent['resolution']
+
+    # Determine texture model key (same logic as existing texture generation)
+    if resolution == '512':
+        tex_model_key = 'tex_slat_flow_model_512'
+        tex_cond = {'cond': cond_on_device['cond_512'], 'neg_cond': cond_on_device['neg_cond']}
+    else:
+        tex_model_key = 'tex_slat_flow_model_1024'
+        tex_cond = {'cond': cond_on_device['cond_1024'], 'neg_cond': cond_on_device['neg_cond']}
+
+    pbar.update(1)
+
+    # Sample texture latent
+    tex_params = {
+        "steps": tex_sampling_steps,
+        "guidance_strength": tex_guidance_strength,
+    }
+
+    torch.manual_seed(seed)
+    torch.cuda.reset_peak_memory_stats()
+
+    tex_slat = _sample_tex_slat(
+        tex_cond, tex_model_key, shape_slat,
+        tex_params, device, compute_dtype,
+    )
+
+    del shape_slat, tex_cond, cond_on_device
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+
+    # Decode WITHOUT guide_subs (standalone texturing path)
+    tex_voxels = _decode_tex_slat(tex_slat, subs=None)
+
+    del tex_slat
+    comfy.model_management.soft_empty_cache()
+
+    peak_mem = torch.cuda.max_memory_allocated() / 1024**2
+    log.info(f"Standalone texture peak VRAM: {peak_mem:.0f} MB")
+    pbar.update(1)
+
+    # Reconstruct mesh from preprocessed vertices/faces
+    prep_verts = shape_latent['preprocessed_vertices'].to(device)
+    prep_faces = shape_latent['preprocessed_faces'].to(device)
+    mesh = Mesh(vertices=prep_verts, faces=prep_faces)
+    mesh.fill_holes()
+
+    # Combine mesh with texture voxels (batch=0)
+    v = tex_voxels[0]
+    textured_mesh = MeshWithVoxel(
+        mesh.vertices, mesh.faces,
+        origin=[-0.5, -0.5, -0.5],
+        voxel_size=1 / enc_resolution,
+        coords=v.coords[:, 1:],
+        attrs=v.feats,
+        voxel_shape=torch.Size([*v.shape, *v.spatial_shape]),
+        layout=_PBR_ATTR_LAYOUT,
+    )
+    textured_mesh.simplify(16777216)
+
+    result = {
+        'voxel_coords': textured_mesh.coords.detach().cpu().numpy().astype(np.float32),
+        'voxel_attrs': textured_mesh.attrs.detach().cpu().numpy(),
+        'voxel_size': textured_mesh.voxel_size,
+        'pbr_layout': _PBR_ATTR_LAYOUT,
+        'original_vertices': textured_mesh.vertices.detach().cpu(),
+        'original_faces': textured_mesh.faces.detach().cpu(),
+    }
+
+    pbar.update(1)
+    log.info(f"Standalone texture generated: {len(result['voxel_coords'])} voxels")
+    return result
+
+
+def run_refine_mesh(
+    model_config: Any,
+    conditioning: Dict[str, torch.Tensor],
+    shape_latent: Dict[str, Any],
+    seed: int = 0,
+    shape_guidance_strength: float = 7.5,
+    shape_sampling_steps: int = 12,
+    max_num_tokens: int = 49152,
+    use_vb: bool = True,
+) -> Tuple[Dict[str, Any], np.ndarray, np.ndarray]:
+    """
+    Refine mesh geometry by re-sampling shape at higher resolution.
+
+    Takes an encoded shape latent (from run_encode_mesh), upsamples via the
+    shape decoder to get HR coordinates, then re-samples a new shape latent
+    at those coordinates using the shape flow model. The result is a new mesh
+    with potentially improved geometric detail.
+
+    Returns TRELLIS2_SHAPE_RESULT (same format as run_shape_generation) so it
+    feeds directly into the existing Trellis2ShapeToTexturedMesh node.
+
+    Args:
+        model_config: Trellis2ModelConfig
+        conditioning: Dict with cond_512, neg_cond, optionally cond_1024
+        shape_latent: Result from run_encode_mesh (TRELLIS2_SHAPE_LATENT)
+        seed: Random seed
+        shape_guidance_strength: Shape CFG scale
+        shape_sampling_steps: Shape sampling steps
+        max_num_tokens: Token limit for HR resolution (lower = less VRAM)
+        use_vb: Use tiled decoder (o_voxel_vb)
+
+    Returns:
+        (shape_result_dict, vertices_np, faces_np)
+    """
+    import comfy.utils
+    import cumesh as CuMesh
+    from .trellis2.sparse import SparseTensor
+    from .trellis2.samplers import FlowEulerGuidanceIntervalSampler
+
+    _init_config()
+
+    log.info(f"Running mesh refinement (seed={seed})...")
+    pbar = comfy.utils.ProgressBar(4)
+
+    device = comfy.model_management.get_torch_device()
+    compute_dtype = _DEFAULT_DTYPE
+    resolution = model_config["resolution"]
+
+    # Move conditioning to device
+    cond_on_device = {
+        k: v.to(device=device, dtype=compute_dtype) if isinstance(v, torch.Tensor) else v
+        for k, v in conditioning.items()
+    }
+
+    # Deserialize encoded shape latent (mesh_slat from encoder)
+    mesh_slat = _deserialize_from_ipc(shape_latent['shape_slat'], device)
+    lr_resolution = shape_latent['resolution']  # e.g. 1024
+
+    pbar.update(1)
+
+    # Step 1: Upsample via shape_slat_decoder to get HR coordinates
+    decoder = _load_model('shape_slat_decoder')
+    model_dtype = next(decoder.parameters()).dtype
+    mesh_slat_cast = mesh_slat.replace(feats=mesh_slat.feats.to(dtype=model_dtype))
+    hr_coords = decoder.upsample(mesh_slat_cast, upsample_times=4)
+
+    del mesh_slat, mesh_slat_cast
+    _unload_model('shape_slat_decoder')
+
+    # Step 2: Quantize and token-limit loop
+    downsampling = 16
+    hr_resolution = lr_resolution  # Start at the encoding resolution
+
+    while True:
+        quant_coords = torch.cat([
+            hr_coords[:, :1],
+            ((hr_coords[:, 1:] + 0.5) / lr_resolution * (hr_resolution // downsampling)).int(),
+        ], dim=1)
+        final_coords = quant_coords.unique(dim=0)
+        num_tokens = final_coords.shape[0]
+        if num_tokens < max_num_tokens or hr_resolution <= 512:
+            if hr_resolution != lr_resolution:
+                log.info(f"Refine resolution reduced to {hr_resolution} due to token limit")
+            break
+        hr_resolution -= 128
+
+    log.info(f"Refinement: {num_tokens} tokens at resolution {hr_resolution}")
+
+    del hr_coords, quant_coords
+
+    # Move data to CPU to free GPU for flow model
+    coords_cpu = final_coords.cpu()
+    cond_cpu = {k: v.cpu() if torch.is_tensor(v) else v for k, v in cond_on_device.items()}
+    del final_coords, cond_on_device
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+
+    pbar.update(1)
+
+    # Step 3: Re-sample shape_slat at HR coords with flow model
+    if resolution == '512' or 'cond_1024' not in cond_cpu:
+        shape_model_key = 'shape_slat_flow_model_512'
+        cond_key = 'cond_512'
+    else:
+        shape_model_key = 'shape_slat_flow_model_1024'
+        cond_key = 'cond_1024'
+
+    flow_model = _load_model(shape_model_key)
+
+    # Move data back to GPU
+    shape_cond = {
+        'cond': cond_cpu[cond_key].to(device),
+        'neg_cond': cond_cpu['neg_cond'].to(device),
+    }
+    hr_final_coords = coords_cpu.to(device)
+    del cond_cpu, coords_cpu
+
+    torch.manual_seed(seed)
+    torch.cuda.reset_peak_memory_stats()
+
+    noise = SparseTensor(
+        feats=torch.randn(hr_final_coords.shape[0], flow_model.in_channels, device=device, dtype=compute_dtype),
+        coords=hr_final_coords,
+    )
+
+    default_params = _pipeline_config['shape_slat_sampler']['params']
+    shape_params = {
+        "steps": shape_sampling_steps,
+        "guidance_strength": shape_guidance_strength,
+    }
+    params = {**default_params, **shape_params}
+    sampler = FlowEulerGuidanceIntervalSampler(sigma_min=1e-5)
+    shape_slat = sampler.sample(
+        flow_model, noise, **shape_cond, **params,
+        verbose=True, tqdm_desc="Refining shape SLat",
+    ).samples
+
+    del noise, hr_final_coords, shape_cond
+    _unload_model(shape_model_key)
+
+    # Denormalize
+    std = torch.tensor(_pipeline_config['shape_slat_normalization']['std'])[None].to(device=shape_slat.device, dtype=compute_dtype)
+    mean = torch.tensor(_pipeline_config['shape_slat_normalization']['mean'])[None].to(device=shape_slat.device, dtype=compute_dtype)
+    shape_slat = shape_slat * std + mean
+
+    gc.collect()
+    comfy.model_management.soft_empty_cache()
+
+    pbar.update(1)
+
+    # Step 4: Decode shape -> mesh + subs
+    meshes, subs = _decode_shape_slat(shape_slat, hr_resolution, compute_dtype, use_vb=use_vb)
+
+    peak_mem = torch.cuda.max_memory_allocated() / 1024**2
+    log.info(f"Mesh refinement peak VRAM: {peak_mem:.0f} MB")
+
+    mesh = meshes[0]
+    mesh.fill_holes()
+
+    # Save raw mesh data for downstream texture stage
+    raw_mesh_vertices = mesh.vertices.cpu()
+    raw_mesh_faces = mesh.faces.cpu()
+
+    # Convert to output coordinates (Y-up -> Z-up)
+    cumesh = CuMesh.CuMesh()
+    cumesh.init(mesh.vertices, mesh.faces.int())
+    cumesh.unify_face_orientations()
+    unified_verts, unified_faces = cumesh.read()
+
+    vertices = unified_verts.cpu().numpy().astype(np.float32)
+    faces = unified_faces.cpu().numpy()
+    del cumesh, unified_verts, unified_faces
+
+    # Coordinate system conversion Y-up -> Z-up
+    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
+
+    # Pack result (same format as run_shape_generation for ShapeToTexturedMesh compatibility)
+    result = {
+        'shape_slat': _serialize_for_ipc(shape_slat),
+        'subs': _serialize_for_ipc(subs),
+        'mesh_vertices': vertices,
+        'mesh_faces': faces,
+        'resolution': hr_resolution,
+        'pipeline_type': resolution,
+        'raw_mesh_vertices': raw_mesh_vertices,
+        'raw_mesh_faces': raw_mesh_faces,
+    }
+
+    pbar.update(1)
+    log.info(f"Mesh refined: {len(vertices)} verts, {len(faces)} faces")
+    return result, vertices, faces

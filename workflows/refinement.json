@@ -1,0 +1,266 @@
+{
+  "id": "f1e2d3c4-5678-9abc-def0-refinement_wf",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 16,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadTrellis2Models",
+      "pos": [-450, -80],
+      "size": [270, 106],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "resolution", "type": "COMBO", "widget": {"name": "resolution"}, "link": null},
+        {"name": "precision", "type": "COMBO", "widget": {"name": "precision"}, "link": null, "shape": 7},
+        {"name": "attn_backend", "type": "COMBO", "widget": {"name": "attn_backend"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "links": [2, 5, 9, 12]}
+      ],
+      "properties": {"Node name for S&R": "LoadTrellis2Models"},
+      "widgets_values": ["1024_cascade", "auto", "auto"]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [-450, 150],
+      "size": [315, 314],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "image", "type": "COMBO", "widget": {"name": "image"}, "link": null},
+        {"name": "upload", "type": "IMAGEUPLOAD", "widget": {"name": "upload"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "slot_index": 0, "links": [3]},
+        {"name": "MASK", "type": "MASK", "links": [1]}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["example.png", "image"]
+    },
+    {
+      "id": 3,
+      "type": "InvertMask",
+      "pos": [-100, 420],
+      "size": [140, 26],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "mask", "type": "MASK", "link": 1}
+      ],
+      "outputs": [
+        {"name": "MASK", "type": "MASK", "links": [4]}
+      ],
+      "properties": {"Node name for S&R": "InvertMask"},
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "Trellis2GetConditioning",
+      "pos": [20, 150],
+      "size": [300, 122],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "link": 2},
+        {"name": "image", "type": "IMAGE", "link": 3},
+        {"name": "mask", "type": "MASK", "link": 4},
+        {"name": "background_color", "type": "COMBO", "widget": {"name": "background_color"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "conditioning", "type": "TRELLIS2_CONDITIONING", "links": [6, 10, 13]},
+        {"name": "preprocessed_image", "type": "IMAGE", "links": null}
+      ],
+      "properties": {"Node name for S&R": "Trellis2GetConditioning"},
+      "widgets_values": ["black"]
+    },
+    {
+      "id": 5,
+      "type": "Trellis2ImageToShape",
+      "pos": [380, 150],
+      "size": [310, 222],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "link": 5},
+        {"name": "conditioning", "type": "TRELLIS2_CONDITIONING", "link": 6},
+        {"name": "seed", "type": "INT", "widget": {"name": "seed"}, "link": null, "shape": 7},
+        {"name": "ss_guidance_strength", "type": "FLOAT", "widget": {"name": "ss_guidance_strength"}, "link": null, "shape": 7},
+        {"name": "ss_sampling_steps", "type": "INT", "widget": {"name": "ss_sampling_steps"}, "link": null, "shape": 7},
+        {"name": "shape_guidance_strength", "type": "FLOAT", "widget": {"name": "shape_guidance_strength"}, "link": null, "shape": 7},
+        {"name": "shape_sampling_steps", "type": "INT", "widget": {"name": "shape_sampling_steps"}, "link": null, "shape": 7},
+        {"name": "max_tokens", "type": "INT", "widget": {"name": "max_tokens"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "shape_result", "type": "TRELLIS2_SHAPE_RESULT", "links": null},
+        {"name": "mesh", "type": "TRIMESH", "slot_index": 1, "links": [7]}
+      ],
+      "properties": {"Node name for S&R": "Trellis2ImageToShape"},
+      "widgets_values": [42, "fixed", 7.5, 12, 7.5, 12, 49152]
+    },
+    {
+      "id": 6,
+      "type": "Trellis2EncodeMesh",
+      "pos": [380, 440],
+      "size": [280, 82],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "link": 9},
+        {"name": "trimesh", "type": "TRIMESH", "link": 7},
+        {"name": "resolution", "type": "INT", "widget": {"name": "resolution"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "shape_latent", "type": "TRELLIS2_SHAPE_LATENT", "slot_index": 0, "links": [11]}
+      ],
+      "properties": {"Node name for S&R": "Trellis2EncodeMesh"},
+      "widgets_values": [1024]
+    },
+    {
+      "id": 7,
+      "type": "Trellis2RefineMesh",
+      "pos": [730, 150],
+      "size": [310, 250],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "link": 9},
+        {"name": "conditioning", "type": "TRELLIS2_CONDITIONING", "link": 10},
+        {"name": "shape_latent", "type": "TRELLIS2_SHAPE_LATENT", "link": 11},
+        {"name": "seed", "type": "INT", "widget": {"name": "seed"}, "link": null, "shape": 7},
+        {"name": "guidance_strength", "type": "FLOAT", "widget": {"name": "guidance_strength"}, "link": null, "shape": 7},
+        {"name": "sampling_steps", "type": "INT", "widget": {"name": "sampling_steps"}, "link": null, "shape": 7},
+        {"name": "downsampling", "type": "INT", "widget": {"name": "downsampling"}, "link": null, "shape": 7},
+        {"name": "max_num_tokens", "type": "INT", "widget": {"name": "max_num_tokens"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "shape_result", "type": "TRELLIS2_SHAPE_RESULT", "slot_index": 0, "links": [14]},
+        {"name": "mesh", "type": "TRIMESH", "links": null}
+      ],
+      "properties": {"Node name for S&R": "Trellis2RefineMesh"},
+      "widgets_values": [42, "fixed", 7.5, 12, 16, 49152]
+    },
+    {
+      "id": 8,
+      "type": "Trellis2ShapeToTexturedMesh",
+      "pos": [1100, 150],
+      "size": [335, 170],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_config", "type": "TRELLIS2_MODEL_CONFIG", "link": 12},
+        {"name": "conditioning", "type": "TRELLIS2_CONDITIONING", "link": 13},
+        {"name": "shape_result", "type": "TRELLIS2_SHAPE_RESULT", "link": 14},
+        {"name": "seed", "type": "INT", "widget": {"name": "seed"}, "link": null, "shape": 7},
+        {"name": "tex_guidance_strength", "type": "FLOAT", "widget": {"name": "tex_guidance_strength"}, "link": null, "shape": 7},
+        {"name": "tex_sampling_steps", "type": "INT", "widget": {"name": "tex_sampling_steps"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "mesh_glb_path", "type": "STRING", "links": null},
+        {"name": "voxelgrid_npz_path", "type": "STRING", "slot_index": 1, "links": [15]}
+      ],
+      "properties": {"Node name for S&R": "Trellis2ShapeToTexturedMesh"},
+      "widgets_values": [42, "fixed", 3.5, 12]
+    },
+    {
+      "id": 9,
+      "type": "Trellis2ExportGLB",
+      "pos": [1100, 400],
+      "size": [270, 154],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {"name": "voxelgrid_path", "type": "STRING", "widget": {"name": "voxelgrid_path"}, "link": 15},
+        {"name": "decimation_target", "type": "INT", "widget": {"name": "decimation_target"}, "link": null, "shape": 7},
+        {"name": "texture_size", "type": "INT", "widget": {"name": "texture_size"}, "link": null, "shape": 7},
+        {"name": "remesh", "type": "BOOLEAN", "widget": {"name": "remesh"}, "link": null, "shape": 7},
+        {"name": "filename_prefix", "type": "STRING", "widget": {"name": "filename_prefix"}, "link": null, "shape": 7}
+      ],
+      "outputs": [
+        {"name": "glb_path", "type": "STRING", "links": [16]}
+      ],
+      "properties": {"Node name for S&R": "Trellis2ExportGLB"},
+      "widgets_values": ["", 200000, 1024, true, "trellis2_refined"]
+    },
+    {
+      "id": 10,
+      "type": "Preview3D",
+      "pos": [1430, 100],
+      "size": [400, 550],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {"name": "camera_info", "type": "LOAD3D_CAMERA", "link": null, "shape": 7},
+        {"name": "bg_image", "type": "IMAGE", "link": null, "shape": 7},
+        {"name": "model_file", "type": "STRING,FILE_3D_GLB,FILE_3D_GLTF,FILE_3D_FBX,FILE_3D_OBJ,FILE_3D_STL,FILE_3D_USDZ,FILE_3D", "widget": {"name": "model_file"}, "link": 16},
+        {"name": "image", "type": "PREVIEW_3D", "widget": {"name": "image"}, "link": null}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "Preview3D"},
+      "widgets_values": ["", ""]
+    }
+  ],
+  "links": [
+    [1, 2, 1, 3, 0, "MASK"],
+    [2, 1, 0, 4, 0, "TRELLIS2_MODEL_CONFIG"],
+    [3, 2, 0, 4, 1, "IMAGE"],
+    [4, 3, 0, 4, 2, "MASK"],
+    [5, 1, 0, 5, 0, "TRELLIS2_MODEL_CONFIG"],
+    [6, 4, 0, 5, 1, "TRELLIS2_CONDITIONING"],
+    [7, 5, 1, 6, 1, "TRIMESH"],
+    [9, 1, 0, 7, 0, "TRELLIS2_MODEL_CONFIG"],
+    [10, 4, 0, 7, 1, "TRELLIS2_CONDITIONING"],
+    [11, 6, 0, 7, 2, "TRELLIS2_SHAPE_LATENT"],
+    [12, 1, 0, 8, 0, "TRELLIS2_MODEL_CONFIG"],
+    [13, 4, 0, 8, 1, "TRELLIS2_CONDITIONING"],
+    [14, 7, 0, 8, 2, "TRELLIS2_SHAPE_RESULT"],
+    [15, 8, 1, 9, 0, "STRING"],
+    [16, 9, 0, 10, 2, "STRING"]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Initial Generation",
+      "bounding": [-470, -120, 1200, 600],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Encode + Refine (NEW - requires shape_slat_encoder weights)",
+      "bounding": [360, 400, 620, 160],
+      "color": "#8A8",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Texture Refined Mesh + Export",
+      "bounding": [1080, 100, 780, 490],
+      "color": "#88A",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6,
+      "offset": [600, 300]
+    }
+  },
+  "version": 0.4
+}
