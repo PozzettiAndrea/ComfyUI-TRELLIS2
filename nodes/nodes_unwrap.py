@@ -7,35 +7,22 @@ from datetime import datetime
 from pathlib import Path
 
 import folder_paths
+from comfy_api.latest import io
 
 from .utils import logger
 import comfy.model_management
 
 
-class Trellis2Simplify:
+class Trellis2Simplify(io.ComfyNode):
     """Simplify mesh to target face count using CuMesh."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-                "target_face_count": ("INT", {"default": 500000, "min": 1000, "max": 5000000, "step": 1000}),
-            },
-            "optional": {
-                "fill_holes": ("BOOLEAN", {"default": True}),
-                "fill_holes_perimeter": ("FLOAT", {"default": 0.03, "min": 0.001, "max": 0.5, "step": 0.001}),
-                "remesh": ("BOOLEAN", {"default": False}),
-                "remesh_band": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 5.0, "step": 0.1}),
-            }
-        }
-
-    RETURN_TYPES = ("TRIMESH",)
-    RETURN_NAMES = ("trimesh",)
-    FUNCTION = "simplify"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Simplify mesh to target face count.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2Simplify",
+            display_name="TRELLIS.2 Simplify Mesh",
+            category="TRELLIS2",
+            description="""Simplify mesh to target face count.
 
 Uses CuMesh for GPU-accelerated simplification.
 
@@ -44,11 +31,23 @@ Parameters:
 - fill_holes: Fill small holes before simplifying
 - fill_holes_perimeter: Max hole perimeter to fill
 - remesh: Apply dual-contouring remesh for cleaner topology
-- remesh_band: Remesh band width
-"""
+- remesh_band: Remesh band width""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Int.Input("target_face_count", default=500000, min=1000, max=5000000, step=1000),
+                io.Boolean.Input("fill_holes", default=True, optional=True),
+                io.Float.Input("fill_holes_perimeter", default=0.03, min=0.001, max=0.5, step=0.001, optional=True),
+                io.Boolean.Input("remesh", default=False, optional=True),
+                io.Float.Input("remesh_band", default=1.0, min=0.1, max=5.0, step=0.1, optional=True),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
+        )
 
-    def simplify(
-        self,
+    @classmethod
+    def execute(
+        cls,
         trimesh,
         target_face_count=500000,
         fill_holes=True,
@@ -61,6 +60,8 @@ Parameters:
         import trimesh as Trimesh
 
         logger.info(f"Simplify: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces -> {target_face_count} target")
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         device = comfy.model_management.get_torch_device()
 
@@ -141,32 +142,19 @@ Parameters:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return (result,)
+        return io.NodeOutput(result)
 
 
-class Trellis2UVUnwrap:
+class Trellis2UVUnwrap(io.ComfyNode):
     """UV unwrap mesh using CuMesh/xatlas. No texture baking."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-            },
-            "optional": {
-                "chart_cone_angle": ("FLOAT", {"default": 90.0, "min": 0.0, "max": 359.9, "step": 1.0}),
-                "chart_refine_iterations": ("INT", {"default": 0, "min": 0, "max": 10}),
-                "chart_global_iterations": ("INT", {"default": 1, "min": 0, "max": 10}),
-                "chart_smooth_strength": ("INT", {"default": 1, "min": 0, "max": 10}),
-            }
-        }
-
-    RETURN_TYPES = ("TRIMESH",)
-    RETURN_NAMES = ("trimesh",)
-    FUNCTION = "unwrap"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-UV unwrap mesh using xatlas.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2UVUnwrap",
+            display_name="TRELLIS.2 UV Unwrap",
+            category="TRELLIS2",
+            description="""UV unwrap mesh using xatlas.
 
 Just creates UVs - no texture baking. Use Rasterize PBR node after this.
 
@@ -176,11 +164,22 @@ Parameters:
 - chart_global_iterations: Global UV optimization passes
 - chart_smooth_strength: UV smoothing strength
 
-TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
-"""
+TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Float.Input("chart_cone_angle", default=90.0, min=0.0, max=359.9, step=1.0, optional=True),
+                io.Int.Input("chart_refine_iterations", default=0, min=0, max=10, optional=True),
+                io.Int.Input("chart_global_iterations", default=1, min=0, max=10, optional=True),
+                io.Int.Input("chart_smooth_strength", default=1, min=0, max=10, optional=True),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
+        )
 
-    def unwrap(
-        self,
+    @classmethod
+    def execute(
+        cls,
         trimesh,
         chart_cone_angle=90.0,
         chart_refine_iterations=0,
@@ -192,6 +191,8 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         import trimesh as Trimesh
 
         logger.info(f"UV Unwrap: {len(trimesh.vertices)} vertices, {len(trimesh.faces)} faces")
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         device = comfy.model_management.get_torch_device()
 
@@ -252,39 +253,39 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return (result,)
+        return io.NodeOutput(result)
 
 
-class Trellis2RasterizePBR:
+class Trellis2RasterizePBR(io.ComfyNode):
     """Rasterize PBR textures from voxel data onto UV-mapped mesh."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-                "voxelgrid": ("TRELLIS2_VOXELGRID",),
-                "texture_size": ("INT", {"default": 2048, "min": 512, "max": 16384, "step": 512}),
-            },
-        }
-
-    RETURN_TYPES = ("TRIMESH",)
-    RETURN_NAMES = ("trimesh",)
-    FUNCTION = "rasterize"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Bake PBR textures from voxel data onto UV-mapped mesh.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2RasterizePBR",
+            display_name="TRELLIS.2 Rasterize PBR",
+            category="TRELLIS2",
+            description="""Bake PBR textures from voxel data onto UV-mapped mesh.
 
 Takes a mesh WITH UVs and bakes color/metallic/roughness from the VOXELGRID.
 
 Input mesh MUST have UVs (use UV Unwrap node first).
 
 Parameters:
-- texture_size: Resolution of baked textures (512-16384px)
-"""
+- texture_size: Resolution of baked textures (512-16384px)""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Custom("TRELLIS2_VOXELGRID").Input("voxelgrid"),
+                io.Int.Input("texture_size", default=2048, min=512, max=16384, step=512),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
+        )
 
-    def rasterize(
-        self,
+    @classmethod
+    def execute(
+        cls,
         trimesh,
         voxelgrid,
         texture_size=2048,
@@ -305,6 +306,8 @@ Parameters:
             raise ValueError("VoxelGrid has no PBR attributes.")
 
         logger.info(f"Rasterize PBR: {len(trimesh.vertices)} vertices, texture {texture_size}px")
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         device = comfy.model_management.get_torch_device()
 
@@ -376,6 +379,7 @@ Parameters:
         # Rasterize in chunks
         chunk_size = 100000
         for i in range(0, faces.shape[0], chunk_size):
+            comfy.model_management.throw_exception_if_processing_interrupted()
             rast_chunk, _ = dr.rasterize(
                 ctx, uvs_rast, faces[i:i+chunk_size],
                 resolution=[texture_size, texture_size],
@@ -494,34 +498,20 @@ Parameters:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return (result,)
+        return io.NodeOutput(result)
 
 
-class Trellis2ExportGLB:
+class Trellis2ExportGLB(io.ComfyNode):
     """All-in-one: load voxelgrid NPZ -> simplify -> UV unwrap -> bake PBR -> export GLB."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "voxelgrid_path": ("STRING",),
-            },
-            "optional": {
-                "decimation_target": ("INT", {"default": 500000, "min": 1000, "max": 5000000, "step": 1000}),
-                "texture_size": ("INT", {"default": 2048, "min": 512, "max": 8192, "step": 512}),
-                "remesh": ("BOOLEAN", {"default": True}),
-                "use_vb": ("BOOLEAN", {"default": True}),
-                "filename_prefix": ("STRING", {"default": "trellis2"}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("glb_path",)
-    FUNCTION = "export_glb"
-    CATEGORY = "TRELLIS2"
-    OUTPUT_NODE = True
-    DESCRIPTION = """
-All-in-one textured GLB export from voxelgrid data.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ExportGLB",
+            display_name="TRELLIS.2 Export GLB",
+            category="TRELLIS2",
+            is_output_node=True,
+            description="""All-in-one textured GLB export from voxelgrid data.
 
 Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
 1. Simplifies the mesh to decimation_target faces
@@ -534,11 +524,23 @@ Parameters:
 - decimation_target: Target face count after simplification
 - texture_size: Resolution of baked PBR textures
 - remesh: Apply remeshing for cleaner topology before simplification
-- filename_prefix: Output filename prefix
-"""
+- filename_prefix: Output filename prefix""",
+            inputs=[
+                io.String.Input("voxelgrid_path"),
+                io.Int.Input("decimation_target", default=500000, min=1000, max=5000000, step=1000, optional=True),
+                io.Int.Input("texture_size", default=2048, min=512, max=8192, step=512, optional=True),
+                io.Boolean.Input("remesh", default=True, optional=True),
+                io.Boolean.Input("use_vb", default=True, optional=True),
+                io.String.Input("filename_prefix", default="trellis2", optional=True),
+            ],
+            outputs=[
+                io.String.Output(display_name="glb_path"),
+            ],
+        )
 
-    def export_glb(
-        self,
+    @classmethod
+    def execute(
+        cls,
         voxelgrid_path,
         decimation_target=500000,
         texture_size=2048,
@@ -569,6 +571,8 @@ Parameters:
         attr_layout = {k: slice(v[0], v[1]) for k, v in layout_raw.items()}
 
         logger.info(f"{vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         device = comfy.model_management.get_torch_device()
         textured_mesh = to_glb(
@@ -601,39 +605,38 @@ Parameters:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return (output_path,)
+        return io.NodeOutput(output_path)
 
 
-class Trellis2ExportTrimesh:
+class Trellis2ExportTrimesh(io.ComfyNode):
     """Export trimesh to file (GLB, OBJ, PLY, etc.).
 
     Note: This is NOT isolated because it's just disk I/O.
     """
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-            },
-            "optional": {
-                "filename_prefix": ("STRING", {"default": "trellis2"}),
-                "file_format": (["glb", "obj", "ply", "stl", "3mf", "dae"], {"default": "glb"}),
-            }
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ExportTrimesh",
+            display_name="TRELLIS.2 Export Trimesh",
+            category="TRELLIS2",
+            is_output_node=True,
+            description="""Export trimesh to various 3D file formats.
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("file_path",)
-    FUNCTION = "export"
-    CATEGORY = "TRELLIS2"
-    OUTPUT_NODE = True
-    DESCRIPTION = """
-Export trimesh to various 3D file formats.
+Supports: GLB, OBJ, PLY, STL, 3MF, DAE""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.String.Input("filename_prefix", default="trellis2", optional=True),
+                io.Combo.Input("file_format", options=["glb", "obj", "ply", "stl", "3mf", "dae"],
+                               default="glb", optional=True),
+            ],
+            outputs=[
+                io.String.Output(display_name="file_path"),
+            ],
+        )
 
-Supports: GLB, OBJ, PLY, STL, 3MF, DAE
-"""
-
-    def export(self, trimesh, filename_prefix="trellis2", file_format="glb"):
+    @classmethod
+    def execute(cls, trimesh, filename_prefix="trellis2", file_format="glb"):
         now = datetime.now()
         timestamp = now.strftime("%Y%m%d_%H%M%S")
         filename = f"{filename_prefix}_{timestamp}.{file_format}"
@@ -646,7 +649,7 @@ Supports: GLB, OBJ, PLY, STL, 3MF, DAE
 
         logger.info(f"Exported to: {output_path}")
 
-        return (str(output_path),)
+        return io.NodeOutput(str(output_path))
 
 
 NODE_CLASS_MAPPINGS = {

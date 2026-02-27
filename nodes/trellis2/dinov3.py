@@ -391,7 +391,6 @@ class DinoV3FeatureExtractor:
         # Use ComfyUI-native dtype detection: bf16 if GPU supports it, else fp32.
         # fp16 is NOT allowed — DINOv3 ViT-L overflows at layer 1 in fp16.
         import sys
-        from tqdm import tqdm
         device = comfy.model_management.get_torch_device()
         compute_dtype = comfy.model_management.vae_dtype(device, allowed_dtypes=[torch.bfloat16])
         print(f"[TRELLIS2] DinoV3 conditioning: dtype={compute_dtype}", file=sys.stderr)
@@ -400,7 +399,7 @@ class DinoV3FeatureExtractor:
         position_embeddings = self.model.rope_embeddings(image)
 
         pbar = comfy.utils.ProgressBar(len(self.model.layer))
-        for layer_module in tqdm(self.model.layer, desc="DinoV3 conditioning", ncols=80, leave=False, mininterval=0.5):
+        for layer_module in self.model.layer:
             hidden_states = layer_module(
                 hidden_states,
                 position_embeddings=position_embeddings,

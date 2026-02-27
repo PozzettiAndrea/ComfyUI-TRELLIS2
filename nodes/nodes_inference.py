@@ -1,30 +1,21 @@
 """Inference nodes for TRELLIS.2 Image-to-3D generation."""
 import logging
+import comfy.model_management
+from comfy_api.latest import io
+
 log = logging.getLogger("trellis2")
 
 
-class Trellis2GetConditioning:
+class Trellis2GetConditioning(io.ComfyNode):
     """Extract image conditioning using DinoV3 for TRELLIS.2."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG",),
-                "image": ("IMAGE",),
-                "mask": ("MASK",),
-            },
-            "optional": {
-                "background_color": (["black", "gray", "white"], {"default": "black"}),
-            },
-        }
-
-    RETURN_TYPES = ("TRELLIS2_CONDITIONING", "IMAGE")
-    RETURN_NAMES = ("conditioning", "preprocessed_image")
-    FUNCTION = "get_conditioning"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Preprocess image and extract visual features using DinoV3.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2GetConditioning",
+            display_name="TRELLIS.2 Get Conditioning",
+            category="TRELLIS2",
+            description="""Preprocess image and extract visual features using DinoV3.
 
 This node handles:
 1. Applying mask as alpha channel
@@ -36,12 +27,26 @@ Parameters:
 - model_config: The loaded TRELLIS.2 config
 - image: Input image (RGB)
 - mask: Foreground mask (white=object, black=background)
-Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
-"""
+Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config"),
+                io.Image.Input("image"),
+                io.Mask.Input("mask"),
+                io.Combo.Input("background_color", options=["black", "gray", "white"],
+                               default="black", optional=True),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_CONDITIONING").Output(display_name="conditioning"),
+                io.Image.Output(display_name="preprocessed_image"),
+            ],
+        )
 
-    def get_conditioning(self, model_config, image, mask, background_color="black"):
+    @classmethod
+    def execute(cls, model_config, image, mask, background_color="black"):
         # All heavy imports happen inside subprocess
         from .stages import run_conditioning
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         # Auto-detect whether 1024 features are needed from resolution mode
         resolution = model_config.get("resolution", "1024_cascade")
@@ -55,39 +60,19 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.
             background_color=background_color,
         )
 
-        return (conditioning, preprocessed_image)
+        return io.NodeOutput(conditioning, preprocessed_image)
 
 
-class Trellis2ImageToShape:
+class Trellis2ImageToShape(io.ComfyNode):
     """Generate 3D shape from conditioning using TRELLIS.2."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG", {"tooltip": "Model config from Load TRELLIS.2 Models node"}),
-                "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node"}),
-            },
-            "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for reproducible generation"}),
-                # Sparse Structure Sampler
-                "ss_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Sparse structure CFG scale. Higher = stronger adherence to input image"}),
-                "ss_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Sparse structure sampling steps. More steps = better quality but slower"}),
-                # Shape SLat Sampler
-                "shape_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Shape CFG scale. Higher = stronger adherence to input image"}),
-                "shape_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Shape sampling steps. More steps = better quality but slower"}),
-                # VRAM Control
-                "max_tokens": ("INT", {"default": 49152, "min": 16384, "max": 65536, "step": 4096, "tooltip": "Max tokens for 1024 cascade. Lower = less VRAM but potentially lower quality. Default 49152 (~9GB), try 32768 (~7GB) or 24576 (~6GB) for lower VRAM."}),
-                "use_vb": ("BOOLEAN", {"default": True, "tooltip": "Use o_voxel_vb (tiled decoder) vs o_voxel (upstream). Toggle to A/B test mesh extraction."}),
-            }
-        }
-
-    RETURN_TYPES = ("TRELLIS2_SHAPE_RESULT", "TRIMESH")
-    RETURN_NAMES = ("shape_result", "mesh")
-    FUNCTION = "generate"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Generate 3D shape from image conditioning.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ImageToShape",
+            display_name="TRELLIS.2 Image to Shape",
+            category="TRELLIS2",
+            description="""Generate 3D shape from image conditioning.
 
 This node generates shape geometry (no texture/PBR).
 Connect shape_result to "Shape to Textured Mesh" for PBR materials.
@@ -101,11 +86,39 @@ Parameters:
 
 Returns:
 - shape_result: Shape data for texture generation
-- mesh: Untextured mesh for preview/export
-"""
+- mesh: Untextured mesh for preview/export""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
+                    tooltip="Model config from Load TRELLIS.2 Models node"),
+                io.Custom("TRELLIS2_CONDITIONING").Input("conditioning",
+                    tooltip="Image conditioning from Get Conditioning node"),
+                io.Int.Input("seed", default=0, min=0, max=2**31 - 1, optional=True,
+                             tooltip="Random seed for reproducible generation"),
+                # Sparse Structure Sampler
+                io.Float.Input("ss_guidance_strength", default=7.5, min=1.0, max=20.0, step=0.1, optional=True,
+                               tooltip="Sparse structure CFG scale. Higher = stronger adherence to input image"),
+                io.Int.Input("ss_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
+                             tooltip="Sparse structure sampling steps. More steps = better quality but slower"),
+                # Shape SLat Sampler
+                io.Float.Input("shape_guidance_strength", default=7.5, min=1.0, max=20.0, step=0.1, optional=True,
+                               tooltip="Shape CFG scale. Higher = stronger adherence to input image"),
+                io.Int.Input("shape_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
+                             tooltip="Shape sampling steps. More steps = better quality but slower"),
+                # VRAM Control
+                io.Int.Input("max_tokens", default=49152, min=16384, max=65536, step=4096, optional=True,
+                             tooltip="Max tokens for 1024 cascade. Lower = less VRAM but potentially lower quality. Default 49152 (~9GB), try 32768 (~7GB) or 24576 (~6GB) for lower VRAM."),
+                io.Boolean.Input("use_vb", default=True, optional=True,
+                                 tooltip="Use o_voxel_vb (tiled decoder) vs o_voxel (upstream). Toggle to A/B test mesh extraction."),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_SHAPE_RESULT").Output(display_name="shape_result"),
+                io.Custom("TRIMESH").Output(display_name="mesh"),
+            ],
+        )
 
-    def generate(
-        self,
+    @classmethod
+    def execute(
+        cls,
         model_config,
         conditioning,
         seed=0,
@@ -119,6 +132,8 @@ Returns:
         # All heavy imports happen inside subprocess
         import trimesh as Trimesh
         from .stages import run_shape_generation
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         # run_shape_generation returns (result_dict, vertices, faces)
         # result_dict is passed to downstream nodes, vertices/faces used for Trimesh
@@ -143,33 +158,19 @@ Returns:
             process=False
         )
 
-        return (shape_result, tri_mesh)
+        return io.NodeOutput(shape_result, tri_mesh)
 
 
-class Trellis2ShapeToTexturedMesh:
+class Trellis2ShapeToTexturedMesh(io.ComfyNode):
     """Generate PBR textured mesh from shape using TRELLIS.2."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG", {"tooltip": "Model config from Load TRELLIS.2 Models node"}),
-                "conditioning": ("TRELLIS2_CONDITIONING", {"tooltip": "Image conditioning from Get Conditioning node (same as used for shape)"}),
-                "shape_result": ("TRELLIS2_SHAPE_RESULT", {"tooltip": "Shape result from Image to Shape node"}),
-            },
-            "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31 - 1, "tooltip": "Random seed for texture variation"}),
-                "tex_guidance_strength": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "Texture CFG scale. Higher = stronger adherence to input image"}),
-                "tex_sampling_steps": ("INT", {"default": 12, "min": 1, "max": 50, "step": 1, "tooltip": "Texture sampling steps. More steps = better quality but slower"}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING", "STRING")
-    RETURN_NAMES = ("mesh_glb_path", "voxelgrid_npz_path")
-    FUNCTION = "generate"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Generate PBR textured mesh from shape.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ShapeToTexturedMesh",
+            display_name="TRELLIS.2 Shape to Textured Mesh",
+            category="TRELLIS2",
+            description="""Generate PBR textured mesh from shape.
 
 Takes shape_result from "Image to Shape" node and generates PBR materials:
 - base_color (RGB)
@@ -186,11 +187,30 @@ Parameters:
 
 Returns:
 - mesh_glb_path: Path to mesh geometry (.glb file)
-- voxelgrid_npz_path: Path to voxelgrid data (.npz file with coords, attrs, vertices, faces, etc.)
-"""
+- voxelgrid_npz_path: Path to voxelgrid data (.npz file with coords, attrs, vertices, faces, etc.)""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
+                    tooltip="Model config from Load TRELLIS.2 Models node"),
+                io.Custom("TRELLIS2_CONDITIONING").Input("conditioning",
+                    tooltip="Image conditioning from Get Conditioning node (same as used for shape)"),
+                io.Custom("TRELLIS2_SHAPE_RESULT").Input("shape_result",
+                    tooltip="Shape result from Image to Shape node"),
+                io.Int.Input("seed", default=0, min=0, max=2**31 - 1, optional=True,
+                             tooltip="Random seed for texture variation"),
+                io.Float.Input("tex_guidance_strength", default=7.5, min=1.0, max=20.0, step=0.1, optional=True,
+                               tooltip="Texture CFG scale. Higher = stronger adherence to input image"),
+                io.Int.Input("tex_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
+                             tooltip="Texture sampling steps. More steps = better quality but slower"),
+            ],
+            outputs=[
+                io.String.Output(display_name="mesh_glb_path"),
+                io.String.Output(display_name="voxelgrid_npz_path"),
+            ],
+        )
 
-    def generate(
-        self,
+    @classmethod
+    def execute(
+        cls,
         model_config,
         conditioning,
         shape_result,
@@ -204,6 +224,8 @@ Returns:
         import uuid
         import numpy as np
         from .stages import run_texture_generation
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         import torch
         with torch.inference_mode():
@@ -238,10 +260,10 @@ Returns:
         )
         log.info(f"Voxelgrid saved to: {voxelgrid_npz_path}")
 
-        return ("", voxelgrid_npz_path)
+        return io.NodeOutput("", voxelgrid_npz_path)
 
 
-class Trellis2RemoveBackground:
+class Trellis2RemoveBackground(io.ComfyNode):
     """Remove background from image using BiRefNet (TRELLIS rembg).
 
     Note: This is NOT isolated because BiRefNet runs fine in main process
@@ -251,22 +273,12 @@ class Trellis2RemoveBackground:
     _model = None  # Class-level cache
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "image": ("IMAGE",),
-            },
-            "optional": {
-                "low_vram": ("BOOLEAN", {"default": True}),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image", "mask")
-    FUNCTION = "remove_background"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Remove background from image using BiRefNet (same as TRELLIS rembg).
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2RemoveBackground",
+            display_name="TRELLIS.2 Remove Background",
+            category="TRELLIS2",
+            description="""Remove background from image using BiRefNet (same as TRELLIS rembg).
 
 This node extracts a foreground mask using the BiRefNet segmentation model.
 The mask can be used with the "Get Conditioning" node.
@@ -277,10 +289,19 @@ Parameters:
 
 Returns:
 - image: Original image (unchanged)
-- mask: Foreground mask (white=object, black=background)
-"""
+- mask: Foreground mask (white=object, black=background)""",
+            inputs=[
+                io.Image.Input("image"),
+                io.Boolean.Input("low_vram", default=True, optional=True),
+            ],
+            outputs=[
+                io.Image.Output(display_name="image"),
+                io.Mask.Output(display_name="mask"),
+            ],
+        )
 
-    def remove_background(self, image, low_vram=True):
+    @classmethod
+    def execute(cls, image, low_vram=True):
         import gc
         import torch
         import numpy as np
@@ -311,6 +332,8 @@ Returns:
 
         log.info("Removing background...")
 
+        comfy.model_management.throw_exception_if_processing_interrupted()
+
         if low_vram:
             model.to(device)
 
@@ -332,38 +355,36 @@ Returns:
         log.info("Background removed successfully")
 
         # Return original image + mask
-        return (image, mask_tensor)
+        return io.NodeOutput(image, mask_tensor)
 
 
-class Trellis2LoadMesh:
+class Trellis2LoadMesh(io.ComfyNode):
     """Load a 3D mesh file and return as TRIMESH."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "mesh_path": ("STRING", {
-                    "default": "",
-                    "tooltip": "Absolute path to mesh file (GLB, OBJ, PLY, STL, etc.)"
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("TRIMESH",)
-    RETURN_NAMES = ("mesh",)
-    FUNCTION = "load_mesh"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Load a 3D mesh from file.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2LoadMesh",
+            display_name="TRELLIS.2 Load Mesh",
+            category="TRELLIS2",
+            description="""Load a 3D mesh from file.
 
 Supports GLB, GLTF, OBJ, PLY, STL, 3MF, DAE, OFF and other formats
 supported by the trimesh library.
 
 Parameters:
-- mesh_path: Absolute path to the mesh file
-"""
+- mesh_path: Absolute path to the mesh file""",
+            inputs=[
+                io.String.Input("mesh_path", default="",
+                                tooltip="Absolute path to mesh file (GLB, OBJ, PLY, STL, etc.)"),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="mesh"),
+            ],
+        )
 
-    def load_mesh(self, mesh_path):
+    @classmethod
+    def execute(cls, mesh_path):
         import os
         import trimesh as Trimesh
 
@@ -384,37 +405,19 @@ Parameters:
             mesh = Trimesh.util.concatenate(meshes)
 
         log.info(f"Mesh loaded: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces")
-        return (mesh,)
+        return io.NodeOutput(mesh)
 
 
-class Trellis2EncodeMesh:
+class Trellis2EncodeMesh(io.ComfyNode):
     """Encode a mesh into a TRELLIS.2 shape latent for retexturing or refinement."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG", {
-                    "tooltip": "Model config from Load TRELLIS.2 Models node"
-                }),
-                "mesh": ("TRIMESH", {
-                    "tooltip": "Input mesh to encode"
-                }),
-            },
-            "optional": {
-                "resolution": ("INT", {
-                    "default": 1024, "min": 256, "max": 2048, "step": 128,
-                    "tooltip": "Encoding grid resolution. Higher = more detail but slower. 1024 recommended."
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("TRELLIS2_SHAPE_LATENT",)
-    RETURN_NAMES = ("shape_latent",)
-    FUNCTION = "encode"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Encode a mesh into a TRELLIS.2 shape structured latent.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2EncodeMesh",
+            display_name="TRELLIS.2 Encode Mesh",
+            category="TRELLIS2",
+            description="""Encode a mesh into a TRELLIS.2 shape structured latent.
 
 Uses the FlexiDualGrid VAE Encoder to convert mesh geometry into TRELLIS.2's
 latent space. The latent can then be used for:
@@ -427,13 +430,27 @@ First run will download the encoder weights (~950MB) from HuggingFace.
 Parameters:
 - model_config: The loaded model config
 - mesh: Input TRIMESH to encode
-- resolution: Grid resolution for voxelization (default 1024)
-"""
+- resolution: Grid resolution for voxelization (default 1024)""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
+                    tooltip="Model config from Load TRELLIS.2 Models node"),
+                io.Custom("TRIMESH").Input("mesh",
+                    tooltip="Input mesh to encode"),
+                io.Int.Input("resolution", default=1024, min=256, max=2048, step=128, optional=True,
+                             tooltip="Encoding grid resolution. Higher = more detail but slower. 1024 recommended."),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_SHAPE_LATENT").Output(display_name="shape_latent"),
+            ],
+        )
 
-    def encode(self, model_config, mesh, resolution=1024):
+    @classmethod
+    def execute(cls, model_config, mesh, resolution=1024):
         import torch
         import numpy as np
         from .stages import run_encode_mesh
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         vertices = np.array(mesh.vertices, dtype=np.float32)
         faces = np.array(mesh.faces, dtype=np.int32)
@@ -446,48 +463,19 @@ Parameters:
                 resolution=resolution,
             )
 
-        return (shape_latent,)
+        return io.NodeOutput(shape_latent)
 
 
-class Trellis2TextureMesh:
+class Trellis2TextureMesh(io.ComfyNode):
     """Generate PBR textures for an existing mesh from a reference image."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG", {
-                    "tooltip": "Model config from Load TRELLIS.2 Models node"
-                }),
-                "conditioning": ("TRELLIS2_CONDITIONING", {
-                    "tooltip": "Image conditioning from Get Conditioning node (the new texture reference)"
-                }),
-                "shape_latent": ("TRELLIS2_SHAPE_LATENT", {
-                    "tooltip": "Encoded shape latent from Encode Mesh node"
-                }),
-            },
-            "optional": {
-                "seed": ("INT", {
-                    "default": 0, "min": 0, "max": 2**31 - 1,
-                    "tooltip": "Random seed for texture variation"
-                }),
-                "tex_guidance_strength": ("FLOAT", {
-                    "default": 3.5, "min": 1.0, "max": 20.0, "step": 0.1,
-                    "tooltip": "Texture CFG scale. Higher = stronger adherence to input image"
-                }),
-                "tex_sampling_steps": ("INT", {
-                    "default": 12, "min": 1, "max": 50, "step": 1,
-                    "tooltip": "Texture sampling steps"
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("voxelgrid_npz_path",)
-    FUNCTION = "generate"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Generate PBR textures for an existing mesh using a reference image.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2TextureMesh",
+            display_name="TRELLIS.2 Texture Mesh (Standalone)",
+            category="TRELLIS2",
+            description="""Generate PBR textures for an existing mesh using a reference image.
 
 This is the "retexture" workflow: take any mesh, encode it with Encode Mesh,
 then generate new PBR materials (base_color, metallic, roughness, alpha)
@@ -503,11 +491,29 @@ Parameters:
 - conditioning: DinoV3 conditioning from the new reference image
 - shape_latent: Encoded shape from Encode Mesh
 - seed: Random seed
-- tex_*: Texture sampling parameters
-"""
+- tex_*: Texture sampling parameters""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
+                    tooltip="Model config from Load TRELLIS.2 Models node"),
+                io.Custom("TRELLIS2_CONDITIONING").Input("conditioning",
+                    tooltip="Image conditioning from Get Conditioning node (the new texture reference)"),
+                io.Custom("TRELLIS2_SHAPE_LATENT").Input("shape_latent",
+                    tooltip="Encoded shape latent from Encode Mesh node"),
+                io.Int.Input("seed", default=0, min=0, max=2**31 - 1, optional=True,
+                             tooltip="Random seed for texture variation"),
+                io.Float.Input("tex_guidance_strength", default=3.5, min=1.0, max=20.0, step=0.1, optional=True,
+                               tooltip="Texture CFG scale. Higher = stronger adherence to input image"),
+                io.Int.Input("tex_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
+                             tooltip="Texture sampling steps"),
+            ],
+            outputs=[
+                io.String.Output(display_name="voxelgrid_npz_path"),
+            ],
+        )
 
-    def generate(
-        self,
+    @classmethod
+    def execute(
+        cls,
         model_config,
         conditioning,
         shape_latent,
@@ -521,6 +527,8 @@ Parameters:
         import numpy as np
         import torch
         from .stages import run_texture_mesh
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         with torch.inference_mode():
             texture_result = run_texture_mesh(
@@ -552,56 +560,19 @@ Parameters:
         )
         log.info(f"Retexture voxelgrid saved to: {voxelgrid_npz_path}")
 
-        return (voxelgrid_npz_path,)
+        return io.NodeOutput(voxelgrid_npz_path)
 
 
-class Trellis2RefineMesh:
+class Trellis2RefineMesh(io.ComfyNode):
     """Refine mesh geometry by re-sampling shape at higher resolution."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG", {
-                    "tooltip": "Model config from Load TRELLIS.2 Models node"
-                }),
-                "conditioning": ("TRELLIS2_CONDITIONING", {
-                    "tooltip": "Image conditioning from Get Conditioning node"
-                }),
-                "shape_latent": ("TRELLIS2_SHAPE_LATENT", {
-                    "tooltip": "Encoded shape latent from Encode Mesh node"
-                }),
-            },
-            "optional": {
-                "seed": ("INT", {
-                    "default": 0, "min": 0, "max": 2**31 - 1,
-                    "tooltip": "Random seed for refinement"
-                }),
-                "shape_guidance_strength": ("FLOAT", {
-                    "default": 7.5, "min": 1.0, "max": 20.0, "step": 0.1,
-                    "tooltip": "Shape CFG scale"
-                }),
-                "shape_sampling_steps": ("INT", {
-                    "default": 12, "min": 1, "max": 50, "step": 1,
-                    "tooltip": "Shape sampling steps"
-                }),
-                "max_tokens": ("INT", {
-                    "default": 49152, "min": 16384, "max": 65536, "step": 4096,
-                    "tooltip": "Max tokens for HR resolution. Lower = less VRAM."
-                }),
-                "use_vb": ("BOOLEAN", {
-                    "default": True,
-                    "tooltip": "Use tiled decoder (o_voxel_vb) vs upstream (o_voxel)"
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("TRELLIS2_SHAPE_RESULT", "TRIMESH")
-    RETURN_NAMES = ("shape_result", "mesh")
-    FUNCTION = "refine"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Refine mesh geometry by re-sampling shape at higher resolution.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2RefineMesh",
+            display_name="TRELLIS.2 Refine Mesh",
+            category="TRELLIS2",
+            description="""Refine mesh geometry by re-sampling shape at higher resolution.
 
 Takes an encoded mesh shape latent and:
 1. Upsamples via the shape decoder to get high-resolution coordinates
@@ -618,11 +589,34 @@ Parameters:
 - seed: Random seed
 - shape_*: Shape sampling parameters
 - max_tokens: VRAM limit control
-- use_vb: Toggle tiled vs upstream decoder
-"""
+- use_vb: Toggle tiled vs upstream decoder""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
+                    tooltip="Model config from Load TRELLIS.2 Models node"),
+                io.Custom("TRELLIS2_CONDITIONING").Input("conditioning",
+                    tooltip="Image conditioning from Get Conditioning node"),
+                io.Custom("TRELLIS2_SHAPE_LATENT").Input("shape_latent",
+                    tooltip="Encoded shape latent from Encode Mesh node"),
+                io.Int.Input("seed", default=0, min=0, max=2**31 - 1, optional=True,
+                             tooltip="Random seed for refinement"),
+                io.Float.Input("shape_guidance_strength", default=7.5, min=1.0, max=20.0, step=0.1, optional=True,
+                               tooltip="Shape CFG scale"),
+                io.Int.Input("shape_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
+                             tooltip="Shape sampling steps"),
+                io.Int.Input("max_tokens", default=49152, min=16384, max=65536, step=4096, optional=True,
+                             tooltip="Max tokens for HR resolution. Lower = less VRAM."),
+                io.Boolean.Input("use_vb", default=True, optional=True,
+                                 tooltip="Use tiled decoder (o_voxel_vb) vs upstream (o_voxel)"),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_SHAPE_RESULT").Output(display_name="shape_result"),
+                io.Custom("TRIMESH").Output(display_name="mesh"),
+            ],
+        )
 
-    def refine(
-        self,
+    @classmethod
+    def execute(
+        cls,
         model_config,
         conditioning,
         shape_latent,
@@ -635,6 +629,8 @@ Parameters:
         import trimesh as Trimesh
         import torch
         from .stages import run_refine_mesh
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         with torch.inference_mode():
             shape_result, vertices, faces = run_refine_mesh(
@@ -654,7 +650,7 @@ Parameters:
             process=False,
         )
 
-        return (shape_result, tri_mesh)
+        return io.NodeOutput(shape_result, tri_mesh)
 
 
 NODE_CLASS_MAPPINGS = {

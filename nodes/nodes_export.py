@@ -6,45 +6,45 @@ from datetime import datetime
 
 import folder_paths
 import comfy.model_management
+from comfy_api.latest import io
 
 # Create logger for non-isolated classes
 logger = logging.getLogger("trellis2")
 
 
-class Trellis2RenderPreview:
+class Trellis2RenderPreview(io.ComfyNode):
     """Render preview images of a mesh.
 
     Note: This is NOT isolated because pyrender runs on CPU.
     """
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-            },
-            "optional": {
-                "num_views": ("INT", {"default": 8, "min": 1, "max": 36, "step": 1}),
-                "resolution": ("INT", {"default": 512, "min": 256, "max": 2048, "step": 128}),
-                "render_mode": (["normal", "clay", "base_color"], {"default": "normal"}),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("preview_images",)
-    FUNCTION = "render"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Render preview images of the 3D mesh.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2RenderPreview",
+            display_name="TRELLIS.2 Render Preview",
+            category="TRELLIS2",
+            description="""Render preview images of the 3D mesh.
 
 Parameters:
 - trimesh: The 3D mesh geometry
 - num_views: Number of views to render (rotating around object)
 - resolution: Render resolution
-- render_mode: Rendering style (normal, clay, base_color)
-"""
+- render_mode: Rendering style (normal, clay, base_color)""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Int.Input("num_views", default=8, min=1, max=36, step=1, optional=True),
+                io.Int.Input("resolution", default=512, min=256, max=2048, step=128, optional=True),
+                io.Combo.Input("render_mode", options=["normal", "clay", "base_color"],
+                               default="normal", optional=True),
+            ],
+            outputs=[
+                io.Image.Output(display_name="preview_images"),
+            ],
+        )
 
-    def render(self, trimesh, num_views=8, resolution=512, render_mode="normal"):
+    @classmethod
+    def execute(cls, trimesh, num_views=8, resolution=512, render_mode="normal"):
         import torch
         import pyrender
         import math
@@ -72,6 +72,7 @@ Parameters:
         renderer = pyrender.OffscreenRenderer(resolution, resolution)
 
         for i in range(num_views):
+            comfy.model_management.throw_exception_if_processing_interrupted()
             angle = 2 * math.pi * i / num_views
 
             # Camera position
@@ -115,46 +116,44 @@ Parameters:
         frames_np = np.stack(frames, axis=0)
         frames_tensor = torch.from_numpy(frames_np).float() / 255.0
 
-        return (frames_tensor,)
+        return io.NodeOutput(frames_tensor)
 
 
-class Trellis2RenderVideo:
+class Trellis2RenderVideo(io.ComfyNode):
     """Render a rotating video of the mesh.
 
     Note: This is NOT isolated because pyrender runs on CPU.
     """
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "trimesh": ("TRIMESH",),
-            },
-            "optional": {
-                "num_frames": ("INT", {"default": 60, "min": 10, "max": 360, "step": 10}),
-                "fps": ("INT", {"default": 15, "min": 1, "max": 60, "step": 1}),
-                "resolution": ("INT", {"default": 512, "min": 256, "max": 2048, "step": 128}),
-                "filename_prefix": ("STRING", {"default": "trellis2_video"}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("video_path",)
-    FUNCTION = "render_video"
-    CATEGORY = "TRELLIS2"
-    OUTPUT_NODE = True
-    DESCRIPTION = """
-Render a rotating video of the 3D mesh.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2RenderVideo",
+            display_name="TRELLIS.2 Render Video",
+            category="TRELLIS2",
+            is_output_node=True,
+            description="""Render a rotating video of the 3D mesh.
 
 Parameters:
 - trimesh: The 3D mesh geometry
 - num_frames: Number of frames in the video
 - fps: Frames per second
 - resolution: Render resolution
-- filename_prefix: Prefix for output filename
-"""
+- filename_prefix: Prefix for output filename""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Int.Input("num_frames", default=60, min=10, max=360, step=10, optional=True),
+                io.Int.Input("fps", default=15, min=1, max=60, step=1, optional=True),
+                io.Int.Input("resolution", default=512, min=256, max=2048, step=128, optional=True),
+                io.String.Input("filename_prefix", default="trellis2_video", optional=True),
+            ],
+            outputs=[
+                io.String.Output(display_name="video_path"),
+            ],
+        )
 
-    def render_video(self, trimesh, num_frames=60, fps=15, resolution=512, filename_prefix="trellis2_video"):
+    @classmethod
+    def execute(cls, trimesh, num_frames=60, fps=15, resolution=512, filename_prefix="trellis2_video"):
         import torch
         import pyrender
         import imageio
@@ -183,6 +182,7 @@ Parameters:
         renderer = pyrender.OffscreenRenderer(resolution, resolution)
 
         for i in range(num_frames):
+            comfy.model_management.throw_exception_if_processing_interrupted()
             angle = 2 * math.pi * i / num_frames
 
             cam_pos = np.array([
@@ -230,7 +230,7 @@ Parameters:
 
         comfy.model_management.soft_empty_cache()
 
-        return (output_path,)
+        return io.NodeOutput(output_path)
 
 
 NODE_CLASS_MAPPINGS = {

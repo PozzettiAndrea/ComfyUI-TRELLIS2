@@ -4,9 +4,17 @@ This returns a lightweight config object - actual model loading
 happens inside node methods.
 """
 
+import os
 import logging
 import torch
 import comfy.model_management as mm
+import folder_paths
+from comfy_api.latest import io
+
+# Register model folder with ComfyUI's folder_paths system
+_trellis2_models_dir = os.path.join(folder_paths.models_dir, "trellis2")
+os.makedirs(_trellis2_models_dir, exist_ok=True)
+folder_paths.add_model_folder_path("trellis2", _trellis2_models_dir)
 
 log = logging.getLogger("trellis2")
 
@@ -17,33 +25,16 @@ RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
 ATTN_BACKENDS = ['auto', 'flash_attn', 'xformers', 'sdpa', 'sageattn']
 
 
-class LoadTrellis2Models:
+class LoadTrellis2Models(io.ComfyNode):
     """Load TRELLIS.2 models for 3D generation."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "resolution": (RESOLUTION_MODES, {"default": '1024_cascade'}),
-            },
-            "optional": {
-                "precision": (["auto", "bf16", "fp16", "fp32"], {
-                    "default": "auto",
-                    "tooltip": "Model precision. auto: best for your GPU (bf16 on Ampere+, fp16 on Volta/Turing, fp32 on older)."
-                }),
-                "attn_backend": (ATTN_BACKENDS, {
-                    "default": "auto",
-                    "tooltip": "Attention backend. auto: best available (sageattn > flash_attn > xformers > sdpa)."
-                }),
-            }
-        }
-
-    RETURN_TYPES = ("TRELLIS2_MODEL_CONFIG",)
-    RETURN_NAMES = ("model_config",)
-    FUNCTION = "load_models"
-    CATEGORY = "TRELLIS2"
-    DESCRIPTION = """
-Load TRELLIS.2 model configuration for image-to-3D generation.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="LoadTrellis2Models",
+            display_name="(Down)Load TRELLIS.2 Models",
+            category="TRELLIS2",
+            description="""Load TRELLIS.2 model configuration for image-to-3D generation.
 
 This node creates a configuration object that inference nodes use
 to load models on-demand.
@@ -58,10 +49,23 @@ Attention backend:
 - flash_attn: FlashAttention (requires flash_attn package)
 - xformers: Memory-efficient attention (requires xformers package)
 - sdpa: PyTorch native scaled_dot_product_attention (PyTorch >= 2.0)
-- sageattn: SageAttention (fastest, requires sageattention package)
-"""
+- sageattn: SageAttention (fastest, requires sageattention package)""",
+            inputs=[
+                io.Combo.Input("resolution", options=RESOLUTION_MODES, default='1024_cascade'),
+                io.Combo.Input("precision", options=["auto", "bf16", "fp16", "fp32"],
+                               default="auto", optional=True,
+                               tooltip="Model precision. auto: best for your GPU (bf16 on Ampere+, fp16 on Volta/Turing, fp32 on older)."),
+                io.Combo.Input("attn_backend", options=ATTN_BACKENDS,
+                               default="auto", optional=True,
+                               tooltip="Attention backend. auto: best available (sageattn > flash_attn > xformers > sdpa)."),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Output(display_name="model_config"),
+            ],
+        )
 
-    def load_models(self, resolution='1024_cascade', precision="auto", attn_backend="auto", **kwargs):
+    @classmethod
+    def execute(cls, resolution='1024_cascade', precision="auto", attn_backend="auto", **kwargs):
         # Resolve precision to actual torch dtype
         device = mm.get_torch_device()
         if precision == "auto":
@@ -94,7 +98,7 @@ Attention backend:
             "dtype": dtype_str,
             "attn_backend": attn_backend,
         }
-        return (config,)
+        return io.NodeOutput(config)
 
 
 NODE_CLASS_MAPPINGS = {
@@ -102,5 +106,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "LoadTrellis2Models": "Load TRELLIS.2 Models",
+    "LoadTrellis2Models": "(Down)Load TRELLIS.2 Models",
 }

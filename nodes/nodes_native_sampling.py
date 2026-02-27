@@ -20,37 +20,38 @@ import torch
 import comfy.model_management
 import comfy.model_patcher
 import comfy.utils
+from comfy_api.latest import io
 
 log = logging.getLogger("trellis2")
 
 
-class Trellis2LoadSSFlowModel:
+class Trellis2LoadSSFlowModel(io.ComfyNode):
     """Load TRELLIS2 sparse structure flow model as ComfyUI MODEL for KSampler."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG",),
-            },
-        }
-
-    RETURN_TYPES = ("MODEL",)
-    RETURN_NAMES = ("model",)
-    FUNCTION = "load"
-    CATEGORY = "TRELLIS2/Native"
-    DESCRIPTION = """
-Load the sparse structure flow model as a standard ComfyUI MODEL.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2LoadSSFlowModel",
+            display_name="TRELLIS.2 Load SS Flow Model (Native)",
+            category="TRELLIS2/Native",
+            description="""Load the sparse structure flow model as a standard ComfyUI MODEL.
 
 This wraps the flow model in ComfyUI's BaseModel/ModelPatcher system
 so it can be driven by KSampler with any sampler/scheduler.
 
 Connect the output MODEL to KSampler's 'model' input.
 Use Trellis2SSConditioning for positive/negative conditioning.
-Use Trellis2Empty3DLatent for the initial latent.
-"""
+Use Trellis2Empty3DLatent for the initial latent.""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config"),
+            ],
+            outputs=[
+                io.Model.Output(display_name="model"),
+            ],
+        )
 
-    def load(self, model_config):
+    @classmethod
+    def execute(cls, model_config):
         from .stages import _init_config, _model_paths
         from .trellis2.supported_models import TRELLIS2SparseStructure as SSConfig
 
@@ -118,35 +119,36 @@ Use Trellis2Empty3DLatent for the initial latent.
         model.load_model_weights(sd, "")
 
         log.info(f"SS flow model loaded for KSampler: dtype={unet_dtype}")
-        return (patcher,)
+        return io.NodeOutput(patcher)
 
 
-class Trellis2SSConditioning:
+class Trellis2SSConditioning(io.ComfyNode):
     """Convert TRELLIS2 conditioning to ComfyUI CONDITIONING format for KSampler."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "conditioning": ("TRELLIS2_CONDITIONING",),
-            },
-        }
-
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING")
-    RETURN_NAMES = ("positive", "negative")
-    FUNCTION = "convert"
-    CATEGORY = "TRELLIS2/Native"
-    DESCRIPTION = """
-Convert TRELLIS2 DinoV3 conditioning to standard ComfyUI CONDITIONING.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2SSConditioning",
+            display_name="TRELLIS.2 SS Conditioning (Native)",
+            category="TRELLIS2/Native",
+            description="""Convert TRELLIS2 DinoV3 conditioning to standard ComfyUI CONDITIONING.
 
 Takes the output of 'TRELLIS.2 Get Conditioning' and produces
 positive/negative conditioning compatible with KSampler.
 
 Connect 'positive' to KSampler's positive input.
-Connect 'negative' to KSampler's negative input.
-"""
+Connect 'negative' to KSampler's negative input.""",
+            inputs=[
+                io.Custom("TRELLIS2_CONDITIONING").Input("conditioning"),
+            ],
+            outputs=[
+                io.Conditioning.Output(display_name="positive"),
+                io.Conditioning.Output(display_name="negative"),
+            ],
+        )
 
-    def convert(self, conditioning):
+    @classmethod
+    def execute(cls, conditioning):
         # Get 512px features (always present)
         cond = conditioning['cond_512']
         neg_cond = conditioning['neg_cond']
@@ -156,36 +158,35 @@ Connect 'negative' to KSampler's negative input.
         positive = [[cond, {}]]
         negative = [[neg_cond, {}]]
 
-        return (positive, negative)
+        return io.NodeOutput(positive, negative)
 
 
-class Trellis2Empty3DLatent:
+class Trellis2Empty3DLatent(io.ComfyNode):
     """Create empty 3D latent tensor for sparse structure sampling."""
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model": ("MODEL",),
-            },
-            "optional": {
-                "batch_size": ("INT", {"default": 1, "min": 1, "max": 4}),
-            },
-        }
-
-    RETURN_TYPES = ("LATENT",)
-    FUNCTION = "create"
-    CATEGORY = "TRELLIS2/Native"
-    DESCRIPTION = """
-Create an empty 3D latent tensor for sparse structure sampling.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2Empty3DLatent",
+            display_name="TRELLIS.2 Empty 3D Latent",
+            category="TRELLIS2/Native",
+            description="""Create an empty 3D latent tensor for sparse structure sampling.
 
 Reads the model's resolution and channel count to create the
 correct shape: [batch, channels, res, res, res].
 
-For the default TRELLIS2 model: [1, 8, 16, 16, 16].
-"""
+For the default TRELLIS2 model: [1, 8, 16, 16, 16].""",
+            inputs=[
+                io.Model.Input("model"),
+                io.Int.Input("batch_size", default=1, min=1, max=4, optional=True),
+            ],
+            outputs=[
+                io.Latent.Output(),
+            ],
+        )
 
-    def create(self, model, batch_size=1):
+    @classmethod
+    def execute(cls, model, batch_size=1):
         # Get model params from the diffusion model
         diff_model = model.model.diffusion_model
         resolution = diff_model.resolution
@@ -194,10 +195,10 @@ For the default TRELLIS2 model: [1, 8, 16, 16, 16].
         # Create empty 5D latent: [B, C, R, R, R]
         latent = torch.zeros(batch_size, in_channels, resolution, resolution, resolution)
 
-        return ({"samples": latent},)
+        return io.NodeOutput({"samples": latent})
 
 
-class Trellis2ApplyGuidanceInterval:
+class Trellis2ApplyGuidanceInterval(io.ComfyNode):
     """Apply guidance interval to model for TRELLIS2 flow matching sampling.
 
     When guidance_interval is (0.0, 1.0), CFG is applied at every step (standard).
@@ -205,35 +206,32 @@ class Trellis2ApplyGuidanceInterval:
     """
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model": ("MODEL",),
-                "guidance_interval_start": ("FLOAT", {
-                    "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.05,
-                    "tooltip": "Start of guidance interval (sigma value). 0.0 = apply from clean end."
-                }),
-                "guidance_interval_end": ("FLOAT", {
-                    "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05,
-                    "tooltip": "End of guidance interval (sigma value). 1.0 = apply until noise end."
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("MODEL",)
-    FUNCTION = "apply"
-    CATEGORY = "TRELLIS2/Native"
-    DESCRIPTION = """
-Apply a guidance interval to control when CFG is active during sampling.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ApplyGuidanceInterval",
+            display_name="TRELLIS.2 Apply Guidance Interval",
+            category="TRELLIS2/Native",
+            description="""Apply a guidance interval to control when CFG is active during sampling.
 
 For TRELLIS2 flow matching, sigma goes from 1.0 (pure noise) to 0.0 (clean).
 - (0.0, 1.0) = always apply CFG (default, same as standard KSampler)
 - (0.2, 0.8) = only apply CFG when sigma is between 0.2 and 0.8
 
-Outside the interval, only the conditional prediction is used (no CFG).
-"""
+Outside the interval, only the conditional prediction is used (no CFG).""",
+            inputs=[
+                io.Model.Input("model"),
+                io.Float.Input("guidance_interval_start", default=0.0, min=0.0, max=1.0, step=0.05,
+                               tooltip="Start of guidance interval (sigma value). 0.0 = apply from clean end."),
+                io.Float.Input("guidance_interval_end", default=1.0, min=0.0, max=1.0, step=0.05,
+                               tooltip="End of guidance interval (sigma value). 1.0 = apply until noise end."),
+            ],
+            outputs=[
+                io.Model.Output(),
+            ],
+        )
 
-    def apply(self, model, guidance_interval_start=0.0, guidance_interval_end=1.0):
+    @classmethod
+    def execute(cls, model, guidance_interval_start=0.0, guidance_interval_end=1.0):
         # Clone model patcher so we don't modify the original
         m = model.clone()
 
@@ -258,10 +256,10 @@ Outside the interval, only the conditional prediction is used (no CFG).
                 return cond_eps
 
         m.model_options["sampler_cfg_function"] = guidance_interval_cfg
-        return (m,)
+        return io.NodeOutput(m)
 
 
-class Trellis2DecodeSSLatent:
+class Trellis2DecodeSSLatent(io.ComfyNode):
     """Decode sparse structure latent to voxel coordinates.
 
     Takes the sampled latent from KSampler and runs it through the
@@ -270,39 +268,37 @@ class Trellis2DecodeSSLatent:
     """
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model_config": ("TRELLIS2_MODEL_CONFIG",),
-                "samples": ("LATENT",),
-            },
-            "optional": {
-                "ss_resolution": ("INT", {
-                    "default": 32, "min": 16, "max": 128, "step": 16,
-                    "tooltip": "Target sparse structure resolution. If decoder outputs higher res, maxpool downsamples."
-                }),
-            },
-        }
-
-    RETURN_TYPES = ("TRELLIS2_SS_COORDS",)
-    RETURN_NAMES = ("coords",)
-    FUNCTION = "decode"
-    CATEGORY = "TRELLIS2/Native"
-    DESCRIPTION = """
-Decode sparse structure latent into voxel coordinates.
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2DecodeSSLatent",
+            display_name="TRELLIS.2 Decode SS Latent",
+            category="TRELLIS2/Native",
+            description="""Decode sparse structure latent into voxel coordinates.
 
 Takes the sampled latent from KSampler and:
 1. Runs the SparseStructureDecoder (logits -> binary occupancy)
 2. Optionally downsamples to target resolution via max pooling
 3. Extracts active voxel coordinates
 
-The output coords can be passed to downstream shape generation nodes.
-"""
+The output coords can be passed to downstream shape generation nodes.""",
+            inputs=[
+                io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config"),
+                io.Latent.Input("samples"),
+                io.Int.Input("ss_resolution", default=32, min=16, max=128, step=16, optional=True,
+                             tooltip="Target sparse structure resolution. If decoder outputs higher res, maxpool downsamples."),
+            ],
+            outputs=[
+                io.Custom("TRELLIS2_SS_COORDS").Output(display_name="coords"),
+            ],
+        )
 
-    def decode(self, model_config, samples, ss_resolution=32):
+    @classmethod
+    def execute(cls, model_config, samples, ss_resolution=32):
         from .stages import _init_config, _load_model, _unload_model
 
         _init_config()
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
 
         latent = samples["samples"]
         device = comfy.model_management.get_torch_device()
@@ -335,7 +331,7 @@ The output coords can be passed to downstream shape generation nodes.
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return (coords.cpu(),)
+        return io.NodeOutput(coords.cpu())
 
 
 NODE_CLASS_MAPPINGS = {

@@ -112,6 +112,7 @@ def _encode_mesh_to_shape_slat(vertices, faces, resolution, device):
     coords = torch.cat([batch_col, voxel_indices], dim=1).to(device)
 
     # Load encoder to determine weight dtype
+    comfy.model_management.throw_exception_if_processing_interrupted()
     encoder = _load_model('shape_slat_encoder')
     model_dtype = next(encoder.parameters()).dtype
 
@@ -406,6 +407,7 @@ def _sample_sparse_structure(cond, ss_res, sampler_params, device, dtype):
     from .trellis2.samplers import FlowEulerGuidanceIntervalSampler
 
     # Sample sparse structure latent
+    comfy.model_management.throw_exception_if_processing_interrupted()
     flow_model = _load_model('sparse_structure_flow_model')
     reso = flow_model.resolution
     in_channels = flow_model.in_channels
@@ -423,6 +425,7 @@ def _sample_sparse_structure(cond, ss_res, sampler_params, device, dtype):
     _unload_model('sparse_structure_flow_model')
 
     # Decode sparse structure latent
+    comfy.model_management.throw_exception_if_processing_interrupted()
     decoder = _load_model('sparse_structure_decoder')
     model_dtype = next(decoder.parameters()).dtype
     z_s = z_s.to(dtype=model_dtype)
@@ -458,6 +461,8 @@ def _sample_shape_slat(cond, model_key, coords, sampler_params, device, dtype):
     """
     from .trellis2.sparse import SparseTensor
     from .trellis2.samplers import FlowEulerGuidanceIntervalSampler
+
+    comfy.model_management.throw_exception_if_processing_interrupted()
 
     flow_model = _load_model(model_key)
     noise = SparseTensor(
@@ -504,6 +509,7 @@ def _sample_shape_slat_cascade(
     sampler = FlowEulerGuidanceIntervalSampler(sigma_min=1e-5)
 
     # ---- LR pass ----
+    comfy.model_management.throw_exception_if_processing_interrupted()
     flow_model_lr = _load_model(lr_key)
     noise = SparseTensor(
         feats=torch.randn(coords.shape[0], flow_model_lr.in_channels, device=device, dtype=dtype),
@@ -531,6 +537,7 @@ def _sample_shape_slat_cascade(
     slat = slat * std + mean
 
     # ---- Upsample via decoder ----
+    comfy.model_management.throw_exception_if_processing_interrupted()
     decoder = _load_model('shape_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
@@ -566,6 +573,7 @@ def _sample_shape_slat_cascade(
     log.info(f"HR cleanup: {mem_before:.0f} -> {mem_after:.0f} MB")
 
     # ---- HR pass ----
+    comfy.model_management.throw_exception_if_processing_interrupted()
     flow_model = _load_model(hr_key)
 
     # Move conditioning and coords back to GPU
@@ -597,6 +605,7 @@ def _sample_shape_slat_cascade(
 def _decode_shape_slat(slat, resolution, dtype, use_vb=True):
     """Decode structured latent -> meshes + subs."""
     import time as _time, sys as _sys
+    comfy.model_management.throw_exception_if_processing_interrupted()
     decoder = _load_model('shape_slat_decoder')
     decoder.set_resolution(resolution)
     decoder.use_vb = use_vb
@@ -626,6 +635,8 @@ def _sample_tex_slat(cond, model_key, shape_slat, sampler_params, device, dtype)
     from .trellis2.sparse import SparseTensor
     from .trellis2.samplers import FlowEulerGuidanceIntervalSampler
     import torch.nn as nn
+
+    comfy.model_management.throw_exception_if_processing_interrupted()
 
     # Normalize shape_slat for conditioning
     std = torch.tensor(_pipeline_config['shape_slat_normalization']['std'])[None].to(device=shape_slat.device, dtype=dtype)
@@ -670,6 +681,7 @@ def _decode_tex_slat(slat, subs=None):
               the decoder runs without guide_subs (standalone texturing path).
     """
     import time as _time, sys as _sys
+    comfy.model_management.throw_exception_if_processing_interrupted()
     decoder = _load_model('tex_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype
     slat = slat.replace(feats=slat.feats.to(dtype=model_dtype))
@@ -782,6 +794,8 @@ def run_conditioning(
     import time as _time
     import sys as _sys
 
+    comfy.model_management.throw_exception_if_processing_interrupted()
+
     t0 = _time.perf_counter()
     dinov3_model = _load_dinov3(device)
     print(f"[TRELLIS2] DinoV3 load: {_time.perf_counter()-t0:.1f}s", file=_sys.stderr)
@@ -883,12 +897,14 @@ def run_shape_generation(
     torch.manual_seed(seed)
 
     # 1. Sample sparse structure
+    comfy.model_management.throw_exception_if_processing_interrupted()
     ss_res = {'512': 32, '1024': 64, '1024_cascade': 32, '1536_cascade': 32}[resolution]
     cond_512 = {'cond': cond_on_device['cond_512'], 'neg_cond': cond_on_device['neg_cond']}
     coords = _sample_sparse_structure(cond_512, ss_res, ss_params, device, compute_dtype)
     pbar.update(1)
 
     # 2. Sample shape structured latent
+    comfy.model_management.throw_exception_if_processing_interrupted()
     torch.cuda.reset_peak_memory_stats()
 
     if resolution == '512':
@@ -924,6 +940,7 @@ def run_shape_generation(
     comfy.model_management.soft_empty_cache()
 
     # 3. Decode shape
+    comfy.model_management.throw_exception_if_processing_interrupted()
     meshes, subs = _decode_shape_slat(shape_slat, res, compute_dtype, use_vb=use_vb)
 
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
@@ -1032,6 +1049,8 @@ def run_texture_generation(
     pbar.update(1)
 
     # Sample texture latent
+    comfy.model_management.throw_exception_if_processing_interrupted()
+
     tex_params = {
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
@@ -1051,6 +1070,7 @@ def run_texture_generation(
     comfy.model_management.soft_empty_cache()
 
     # Decode texture using pre-computed subs
+    comfy.model_management.throw_exception_if_processing_interrupted()
     tex_voxels = _decode_tex_slat(tex_slat, subs)
 
     del tex_slat
@@ -1130,6 +1150,7 @@ def run_encode_mesh(
     pbar.update(1)
 
     # Encode via FlexiDualGridVaeEncoder
+    comfy.model_management.throw_exception_if_processing_interrupted()
     shape_slat = _encode_mesh_to_shape_slat(verts_internal, faces_internal, resolution, device)
     pbar.update(1)
 
@@ -1208,6 +1229,8 @@ def run_texture_mesh(
     pbar.update(1)
 
     # Sample texture latent
+    comfy.model_management.throw_exception_if_processing_interrupted()
+
     tex_params = {
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
@@ -1226,6 +1249,7 @@ def run_texture_mesh(
     comfy.model_management.soft_empty_cache()
 
     # Decode WITHOUT guide_subs (standalone texturing path)
+    comfy.model_management.throw_exception_if_processing_interrupted()
     tex_voxels = _decode_tex_slat(tex_slat, subs=None)
 
     del tex_slat
@@ -1329,6 +1353,7 @@ def run_refine_mesh(
     pbar.update(1)
 
     # Step 1: Upsample via shape_slat_decoder to get HR coordinates
+    comfy.model_management.throw_exception_if_processing_interrupted()
     decoder = _load_model('shape_slat_decoder')
     model_dtype = next(decoder.parameters()).dtype
     mesh_slat_cast = mesh_slat.replace(feats=mesh_slat.feats.to(dtype=model_dtype))
@@ -1368,6 +1393,7 @@ def run_refine_mesh(
     pbar.update(1)
 
     # Step 3: Re-sample shape_slat at HR coords with flow model
+    comfy.model_management.throw_exception_if_processing_interrupted()
     if resolution == '512' or 'cond_1024' not in cond_cpu:
         shape_model_key = 'shape_slat_flow_model_512'
         cond_key = 'cond_512'
@@ -1419,6 +1445,7 @@ def run_refine_mesh(
     pbar.update(1)
 
     # Step 4: Decode shape -> mesh + subs
+    comfy.model_management.throw_exception_if_processing_interrupted()
     meshes, subs = _decode_shape_slat(shape_slat, hr_resolution, compute_dtype, use_vb=use_vb)
 
     peak_mem = torch.cuda.max_memory_allocated() / 1024**2
