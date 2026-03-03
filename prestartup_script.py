@@ -8,3 +8,4 @@ COMFYUI_DIR = SCRIPT_DIR.parent.parent
 
 # Copy assets
 copy_files(SCRIPT_DIR / "assets", COMFYUI_DIR / "input")
+copy_files(SCRIPT_DIR / "assets" / "3d", COMFYUI_DIR / "input"/ "3d")
