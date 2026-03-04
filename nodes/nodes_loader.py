@@ -66,6 +66,10 @@ Attention backend:
 
     @classmethod
     def execute(cls, resolution='1024_cascade', precision="auto", attn_backend="auto", **kwargs):
+        # Ensure all models are downloaded before inference nodes run
+        from .stages import _init_config
+        _init_config()
+
         # Resolve precision to actual torch dtype
         device = mm.get_torch_device()
         if precision == "auto":

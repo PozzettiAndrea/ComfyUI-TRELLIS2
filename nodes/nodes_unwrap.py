@@ -13,6 +13,16 @@ from .utils import logger
 import comfy.model_management
 
 
+def _log_vram(label):
+    import torch
+    if torch.cuda.is_available():
+        alloc = torch.cuda.memory_allocated() / 1024**2
+        reserved = torch.cuda.memory_reserved() / 1024**2
+        peak = torch.cuda.max_memory_allocated() / 1024**2
+        logger.info(f"[VRAM] {label}: alloc={alloc:.0f}MB reserved={reserved:.0f}MB peak={peak:.0f}MB")
+
+
+
 class Trellis2Simplify(io.ComfyNode):
     """Simplify mesh to target face count using CuMesh."""
 
@@ -65,6 +75,9 @@ Parameters:
 
         device = comfy.model_management.get_torch_device()
 
+        torch.cuda.reset_peak_memory_stats()
+        _log_vram("Simplify Start")
+
         # Convert to torch tensors
         vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
         faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
@@ -77,16 +90,19 @@ Parameters:
         cumesh = CuMesh.CuMesh()
         cumesh.init(vertices_orig, faces)
         logger.info(f"Initial: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        _log_vram("After CuMesh.init")
 
         # Fill holes
         if fill_holes:
             cumesh.fill_holes(max_hole_perimeter=fill_holes_perimeter)
             logger.info(f"After fill holes: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            _log_vram("After fill_holes")
 
         # Optional remesh
         if remesh:
             curr_verts, curr_faces = cumesh.read()
             bvh = CuMesh.cuBVH(curr_verts, curr_faces)
+            _log_vram("After BVH build")
 
             # Estimate grid parameters
             aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], device=device)
@@ -105,20 +121,25 @@ Parameters:
                 bvh=bvh,
             ))
             logger.info(f"After remesh: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+            _log_vram("After DC remesh")
             # Clean up BVH after remesh
             del bvh, curr_verts, curr_faces
+            _log_vram("After BVH cleanup")
 
         # Unify face orientations before simplify
         cumesh.unify_face_orientations()
         logger.info("Unified face orientations (pre-simplify)")
+        _log_vram("After unify (pre-simplify)")
 
         # Simplify
         cumesh.simplify(target_face_count, verbose=True)
         logger.info(f"After simplify: {cumesh.num_vertices} vertices, {cumesh.num_faces} faces")
+        _log_vram("After simplify")
 
         # Unify face orientations again after simplify (simplify can break it)
         cumesh.unify_face_orientations()
         logger.info("Unified face orientations (post-simplify)")
+        _log_vram("After unify (post-simplify)")
 
         # Read result
         out_vertices, out_faces = cumesh.read()
@@ -141,6 +162,7 @@ Parameters:
         del vertices, faces, vertices_orig, out_vertices, out_faces, cumesh
         gc.collect()
         comfy.model_management.soft_empty_cache()
+        _log_vram("After cleanup")
 
         return io.NodeOutput(result)
 

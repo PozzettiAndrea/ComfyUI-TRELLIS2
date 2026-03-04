@@ -1,6 +1,4 @@
-# Disable HuggingFace progress bars (weight loading, downloads, etc.)
 import os
-os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 
 # Suppress verbose HTTP request logs from huggingface_hub/httpx
 import logging
