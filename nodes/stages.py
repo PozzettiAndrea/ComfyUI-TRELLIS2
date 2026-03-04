@@ -980,7 +980,7 @@ def run_shape_generation(
     del cumesh, unified_verts, unified_faces
 
     # Coordinate system conversion (Y-up to Z-up) for output mesh
-    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
+    vertices[:, 1], vertices[:, 2] = -vertices[:, 2].copy(), vertices[:, 1].copy()
 
     # Pack results - serialize SparseTensor objects to dicts for IPC
     result = {
@@ -1490,7 +1490,7 @@ def run_refine_mesh(
     del cumesh, unified_verts, unified_faces
 
     # Coordinate system conversion Y-up -> Z-up
-    vertices[:, 1], vertices[:, 2] = vertices[:, 2].copy(), -vertices[:, 1].copy()
+    vertices[:, 1], vertices[:, 2] = -vertices[:, 2].copy(), vertices[:, 1].copy()
 
     # Pack result (same format as run_shape_generation for ShapeToTexturedMesh compatibility)
     result = {

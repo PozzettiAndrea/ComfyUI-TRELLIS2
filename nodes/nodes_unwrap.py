@@ -71,7 +71,7 @@ Parameters:
 
         # Undo coordinate conversion if needed (Z-up back to Y-up)
         vertices_orig = vertices.clone()
-        vertices_orig[:, 1], vertices_orig[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
+        vertices_orig[:, 1], vertices_orig[:, 2] = vertices[:, 2].clone(), -vertices[:, 1].clone()
 
         # Initialize CuMesh
         cumesh = CuMesh.CuMesh()
@@ -126,7 +126,7 @@ Parameters:
         faces_np = out_faces.cpu().numpy()
 
         # Convert back to Z-up
-        vertices_np[:, 1], vertices_np[:, 2] = vertices_np[:, 2].copy(), -vertices_np[:, 1].copy()
+        vertices_np[:, 1], vertices_np[:, 2] = -vertices_np[:, 2].copy(), vertices_np[:, 1].copy()
 
         # Build new trimesh
         result = Trimesh.Trimesh(
@@ -200,9 +200,9 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.""",
         vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
         faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
 
-        # Undo coord conversion
+        # Undo coord conversion (Z-up back to Y-up)
         vertices_orig = vertices.clone()
-        vertices_orig[:, 1], vertices_orig[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
+        vertices_orig[:, 1], vertices_orig[:, 2] = vertices[:, 2].clone(), -vertices[:, 1].clone()
 
         chart_cone_angle_rad = np.radians(chart_cone_angle)
 
@@ -232,8 +232,8 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.""",
         out_normals = cumesh.read_vertex_normals()[out_vmaps.to(device)].cpu().numpy()
 
         # Convert to Z-up
-        out_vertices[:, 1], out_vertices[:, 2] = out_vertices[:, 2].copy(), -out_vertices[:, 1].copy()
-        out_normals[:, 1], out_normals[:, 2] = out_normals[:, 2].copy(), -out_normals[:, 1].copy()
+        out_vertices[:, 1], out_vertices[:, 2] = -out_vertices[:, 2].copy(), out_vertices[:, 1].copy()
+        out_normals[:, 1], out_normals[:, 2] = -out_normals[:, 2].copy(), out_normals[:, 1].copy()
         out_uvs[:, 1] = 1 - out_uvs[:, 1]
 
         # Build trimesh with UVs
@@ -318,7 +318,7 @@ Parameters:
 
         # Undo Z-up to Y-up for voxel sampling
         vertices_yup = vertices.clone()
-        vertices_yup[:, 1], vertices_yup[:, 2] = -vertices[:, 2].clone(), vertices[:, 1].clone()
+        vertices_yup[:, 1], vertices_yup[:, 2] = vertices[:, 2].clone(), -vertices[:, 1].clone()
 
         # Get voxel data from dict
         attr_volume = voxelgrid['attrs']
