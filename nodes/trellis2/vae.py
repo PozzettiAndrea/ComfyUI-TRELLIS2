@@ -526,36 +526,48 @@ class SparseResBlockC2S3d(nn.Module):
 
     def _forward(self, x: sp.SparseTensor, subdiv: sp.SparseTensor = None) -> sp.SparseTensor:
         _ma = torch.cuda.memory_allocated
+        _v = lambda: _ma() // 1048576
         if self.pred_subdiv:
             subdiv = self.to_subdiv(x)
+        print(f"[C2S3d] after subdiv: alloc={_v()}MB", flush=True)
         h = x.replace(self.norm1(x.feats))
+        print(f"[C2S3d] after norm1: alloc={_v()}MB", flush=True)
         h = h.replace(F.silu(h.feats))
-        print(f"[C2S3d] pre-conv1: N={h.feats.shape[0]:,} Ci={h.feats.shape[1]} Co={self.out_channels*8} alloc={_ma()//1048576}MB", flush=True)
+        print(f"[C2S3d] pre-conv1: N={h.feats.shape[0]:,} Ci={h.feats.shape[1]} Co={self.out_channels*8} alloc={_v()}MB", flush=True)
         h = self.conv1(h)
+        print(f"[C2S3d] post-conv1: h={h.feats.shape} alloc={_v()}MB", flush=True)
         subdiv_binarized = subdiv.replace(subdiv.feats > 0) if subdiv is not None else None
+        print(f"[C2S3d] pre-C2S(h): alloc={_v()}MB", flush=True)
         h = self.updown(h, subdiv_binarized)
+        print(f"[C2S3d] post-C2S(h): h={h.feats.shape} alloc={_v()}MB", flush=True)
         x = self.updown(x, subdiv_binarized)
+        print(f"[C2S3d] post-C2S(x): x={x.feats.shape} alloc={_v()}MB", flush=True)
         del subdiv_binarized
         # Free conv1/C2S spatial caches before conv2 builds its own
         h.clear_spatial_cache()
         x.clear_spatial_cache()
-        print(f"[C2S3d] post-C2S: N={h.feats.shape[0]:,} h={h.feats.shape[1]}ch x={x.feats.shape[1]}ch alloc={_ma()//1048576}MB", flush=True)
+        print(f"[C2S3d] post-C2S: N={h.feats.shape[0]:,} h={h.feats.shape[1]}ch x={x.feats.shape[1]}ch alloc={_v()}MB", flush=True)
         # Offload x to CPU during conv2 — only needed for skip after
         x_feats_cpu = x.feats.to('cpu', non_blocking=True)
         del x
         torch.cuda.current_stream().synchronize()
-        print(f"[C2S3d] x offloaded to CPU, pre-conv2: alloc={_ma()//1048576}MB", flush=True)
+        torch.cuda.empty_cache()
+        print(f"[C2S3d] x offloaded to CPU, pre-conv2: alloc={_v()}MB", flush=True)
         h = h.replace(self.norm2(h.feats))
+        print(f"[C2S3d] after norm2: alloc={_v()}MB", flush=True)
         h = h.replace(F.silu(h.feats))
+        print(f"[C2S3d] after silu: alloc={_v()}MB", flush=True)
         h = self.conv2(h)
+        print(f"[C2S3d] post-conv2: alloc={_v()}MB", flush=True)
         h.clear_spatial_cache()  # Free conv2 neighbor cache before skip allocation
-        print(f"[C2S3d] post-conv2 (cache cleared): alloc={_ma()//1048576}MB", flush=True)
+        print(f"[C2S3d] post-conv2 (cache cleared): alloc={_v()}MB", flush=True)
         # Fused skip: bring x back from CPU, repeat_interleave + add
         skip_feats = x_feats_cpu.to(h.feats.device).repeat_interleave(self.out_channels // (self.channels // 8), dim=1)
         del x_feats_cpu
+        print(f"[C2S3d] after skip expand: alloc={_v()}MB", flush=True)
         h = h.replace(h.feats + skip_feats)
         del skip_feats
-        print(f"[C2S3d] post-skip: alloc={_ma()//1048576}MB", flush=True)
+        print(f"[C2S3d] post-skip: alloc={_v()}MB", flush=True)
         if self.pred_subdiv:
             return h, subdiv
         else:
@@ -608,7 +620,12 @@ class SparseConvNeXtBlock3d(nn.Module):
                 if steps > 64:
                     raise e
         del norm_feats  # free norm output before residual add
-        feats.add_(x.feats)  # in-place residual
+        # x.feats may be on CPU (tiled conv offloads input) — move back for residual
+        x_feats = x.feats
+        if x_feats.device != feats.device:
+            x_feats = x_feats.to(feats.device)
+        feats.add_(x_feats)  # in-place residual
+        del x_feats
         return x.replace(feats)
 
     def forward(self, x: sp.SparseTensor) -> sp.SparseTensor:
@@ -794,6 +811,15 @@ class SparseUnetVaeDecoder(nn.Module):
                     setattr(module, "low_vram", self._low_vram)
                 except Exception:
                     pass
+        # Tiled sparse conv for large voxel counts
+        tile_size = 1_000_000 if self._low_vram else 0
+        count = 0
+        for module in self.modules():
+            if module.__class__.__name__ == 'SparseConv3d':
+                module.max_voxels_per_tile = tile_size
+                count += 1
+        if count:
+            print(f"[vae] set max_voxels_per_tile={tile_size} on {count} SparseConv3d modules", flush=True)
 
     def convert_to_fp16(self) -> None:
         pass

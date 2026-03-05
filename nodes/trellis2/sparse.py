@@ -217,8 +217,33 @@ class SparseChannel2Spatial(nn.Module):
         else:
             new_coords, idx, subidx = cache
 
-        x_feats = x.feats.reshape(x.feats.shape[0] * self.factor ** DIM, -1)
-        new_feats = x_feats[idx * self.factor ** DIM + subidx]
+        _ma = torch.cuda.memory_allocated
+        N_in = x.feats.shape[0]
+        feats_mb = x.feats.numel() * x.feats.element_size() // 1048576
+        N_out = new_coords.shape[0]
+        Co = x.feats.shape[1] // self.factor ** DIM
+        out_mb = N_out * Co * x.feats.element_size() // 1048576
+        print(f"[C2S] scatter: {N_in:,}×{x.feats.shape[1]} -> {N_out:,}×{Co} "
+              f"in={feats_mb}MB out={out_mb}MB alloc={_ma()//1048576}MB", flush=True)
+
+        # For large scatters, offload input feats to CPU to avoid
+        # old feats + new feats coexisting on GPU
+        if feats_mb > 256:
+            x_feats_cpu = x.feats.reshape(N_in * self.factor ** DIM, -1).cpu()
+            x.data['feats'] = None  # release GPU feats
+            torch.cuda.empty_cache()
+            print(f"[C2S] offloaded {feats_mb}MB to CPU, alloc={_ma()//1048576}MB", flush=True)
+            gather_idx = idx * self.factor ** DIM + subidx
+            if gather_idx.is_cuda:
+                gather_idx = gather_idx.cpu()
+            new_feats = x_feats_cpu[gather_idx].to(new_coords.device)
+            del x_feats_cpu, gather_idx
+        else:
+            x_feats = x.feats.reshape(N_in * self.factor ** DIM, -1)
+            new_feats = x_feats[idx * self.factor ** DIM + subidx]
+            del x_feats
+
+        print(f"[C2S] scatter done: alloc={_ma()//1048576}MB", flush=True)
         out = SparseTensor(new_feats, new_coords, None if x._shape is None else torch.Size([x._shape[0], x._shape[1] // self.factor ** DIM]))
         out._scale = tuple([s / self.factor for s in x._scale])
         if cache is not None:           # only keep cache when subdiv following it
