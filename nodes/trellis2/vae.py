@@ -514,6 +514,7 @@ class SparseResBlockC2S3d(nn.Module):
         self.out_channels = out_channels or channels
         self.use_checkpoint = use_checkpoint
         self.pred_subdiv = pred_subdiv
+        self._low_vram = False
 
         self.norm1 = LayerNorm32(channels, elementwise_affine=True, eps=1e-6, dtype=dtype, device=device)
         self.norm2 = LayerNorm32(self.out_channels, elementwise_affine=False, eps=1e-6, dtype=dtype, device=device)
@@ -523,6 +524,14 @@ class SparseResBlockC2S3d(nn.Module):
         if pred_subdiv:
             self.to_subdiv = sparse_operations.SparseLinear(channels, 8, dtype=dtype, device=device)
         self.updown = sp.SparseChannel2Spatial(2)
+
+    @property
+    def low_vram(self) -> bool:
+        return self._low_vram
+
+    @low_vram.setter
+    def low_vram(self, value: bool) -> None:
+        self._low_vram = bool(value)
 
     def _forward(self, x: sp.SparseTensor, subdiv: sp.SparseTensor = None) -> sp.SparseTensor:
         _ma = torch.cuda.memory_allocated
@@ -534,8 +543,20 @@ class SparseResBlockC2S3d(nn.Module):
         print(f"[C2S3d] after norm1: alloc={_v()}MB", flush=True)
         h = h.replace(F.silu(h.feats))
         print(f"[C2S3d] pre-conv1: N={h.feats.shape[0]:,} Ci={h.feats.shape[1]} Co={self.out_channels*8} alloc={_v()}MB", flush=True)
+        # Offload x.feats to CPU during conv1 — not needed until C2S
+        if self._low_vram:
+            x_feats_cpu = x.feats.to('cpu', non_blocking=True)
+            x = x.replace(torch.empty(0, dtype=x.feats.dtype, device=x.feats.device))
+            torch.cuda.current_stream().synchronize()
+            torch.cuda.empty_cache()
+            print(f"[C2S3d] x.feats offloaded before conv1: alloc={_v()}MB", flush=True)
         h = self.conv1(h)
         print(f"[C2S3d] post-conv1: h={h.feats.shape} alloc={_v()}MB", flush=True)
+        # Restore x.feats from CPU before C2S
+        if self._low_vram:
+            x = x.replace(x_feats_cpu.to(h.feats.device))
+            del x_feats_cpu
+            print(f"[C2S3d] x.feats restored from CPU: alloc={_v()}MB", flush=True)
         subdiv_binarized = subdiv.replace(subdiv.feats > 0) if subdiv is not None else None
         print(f"[C2S3d] pre-C2S(h): alloc={_v()}MB", flush=True)
         h = self.updown(h, subdiv_binarized)
