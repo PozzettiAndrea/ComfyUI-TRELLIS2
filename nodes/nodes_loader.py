@@ -19,7 +19,7 @@ folder_paths.add_model_folder_path("trellis2", _trellis2_models_dir)
 log = logging.getLogger("trellis2")
 
 # Resolution modes (matching original TRELLIS.2)
-RESOLUTION_MODES = ['512', '1024_cascade', '1536_cascade']
+RESOLUTION_MODES = ['512', '1024', '1024_cascade', '1536_cascade']
 
 # Attention backend options (auto detects best available)
 ATTN_BACKENDS = ['auto', 'flash_attn', 'xformers', 'sdpa', 'sageattn']

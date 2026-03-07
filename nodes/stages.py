@@ -38,6 +38,7 @@ _PBR_ATTR_LAYOUT = {
 # Texture resolution mapping (texture maxes at 1024)
 TEXTURE_RESOLUTION_MAP = {
     '512': '512',
+    '1024': '1024_cascade',
     '1024_cascade': '1024_cascade',
     '1536_cascade': '1024_cascade',
 }
@@ -856,8 +857,8 @@ def run_shape_generation(
         max_num_tokens: Max tokens for 1024 cascade (lower = less VRAM)
 
     Returns:
-        Dict with shape_slat, subs, mesh_vertices, mesh_faces, resolution, pipeline_type
-        Plus raw_mesh_vertices/faces for texture stage reconstruction
+        Dict with shape_slat, subs, resolution, pipeline_type,
+        raw_mesh_vertices/faces for texture stage and mesh extraction
     """
     import comfy.utils
     import cumesh as CuMesh
@@ -945,29 +946,19 @@ def run_shape_generation(
     mesh = meshes[0]
     mesh.fill_holes()
 
-    # Save RAW mesh data for texture stage (before coordinate conversion)
-    raw_mesh_vertices = mesh.vertices.cpu()
-    raw_mesh_faces = mesh.faces.cpu()
-
-    # Convert mesh to CPU arrays for output (with coordinate conversion)
+    # Unify face orientations and save for texture stage + mesh extraction
     cumesh = CuMesh.CuMesh()
     cumesh.init(mesh.vertices, mesh.faces.int())
     cumesh.unify_face_orientations()
-    unified_verts, unified_faces = cumesh.read()
-
-    vertices = unified_verts.cpu().numpy().astype(np.float32)
-    faces = unified_faces.cpu().numpy()
-    del cumesh, unified_verts, unified_faces
-
-    # Coordinate system conversion (Y-up to Z-up) for output mesh
-    vertices[:, 1], vertices[:, 2] = -vertices[:, 2].copy(), vertices[:, 1].copy()
+    raw_mesh_vertices, raw_mesh_faces = cumesh.read()
+    raw_mesh_vertices = raw_mesh_vertices.cpu()
+    raw_mesh_faces = raw_mesh_faces.cpu()
+    del cumesh
 
     # Pack results - serialize SparseTensor objects to dicts for IPC
     result = {
         'shape_slat': _serialize_for_ipc(shape_slat),
         'subs': _serialize_for_ipc(subs),
-        'mesh_vertices': vertices,
-        'mesh_faces': faces,
         'resolution': res,
         'pipeline_type': resolution,
         'raw_mesh_vertices': raw_mesh_vertices,
@@ -980,8 +971,8 @@ def run_shape_generation(
     comfy.model_management.soft_empty_cache()
 
     pbar.update(1)
-    log.info(f"Shape generated: {len(vertices)} verts, {len(faces)} faces")
-    return result, vertices, faces
+    log.info(f"Shape generated: {raw_mesh_vertices.shape[0]} verts, {raw_mesh_faces.shape[0]} faces")
+    return result
 
 
 def run_texture_generation(
@@ -1307,7 +1298,7 @@ def run_refine_mesh(
     shape_sampling_steps: int = 12,
     max_num_tokens: int = 49152,
     use_vb: bool = True,
-) -> Tuple[Dict[str, Any], np.ndarray, np.ndarray]:
+) -> Dict[str, Any]:
     """
     Refine mesh geometry by re-sampling shape at higher resolution.
 
@@ -1330,7 +1321,7 @@ def run_refine_mesh(
         use_vb: Use tiled decoder (o_voxel_vb)
 
     Returns:
-        (shape_result_dict, vertices_np, faces_np)
+        shape_result dict (same format as run_shape_generation)
     """
     import comfy.utils
     import cumesh as CuMesh
@@ -1461,29 +1452,19 @@ def run_refine_mesh(
     mesh = meshes[0]
     mesh.fill_holes()
 
-    # Save raw mesh data for downstream texture stage
-    raw_mesh_vertices = mesh.vertices.cpu()
-    raw_mesh_faces = mesh.faces.cpu()
-
-    # Convert to output coordinates (Y-up -> Z-up)
+    # Save raw mesh data for downstream texture stage and mesh extraction
     cumesh = CuMesh.CuMesh()
     cumesh.init(mesh.vertices, mesh.faces.int())
     cumesh.unify_face_orientations()
     unified_verts, unified_faces = cumesh.read()
-
-    vertices = unified_verts.cpu().numpy().astype(np.float32)
-    faces = unified_faces.cpu().numpy()
+    raw_mesh_vertices = unified_verts.cpu()
+    raw_mesh_faces = unified_faces.cpu()
     del cumesh, unified_verts, unified_faces
-
-    # Coordinate system conversion Y-up -> Z-up
-    vertices[:, 1], vertices[:, 2] = -vertices[:, 2].copy(), vertices[:, 1].copy()
 
     # Pack result (same format as run_shape_generation for ShapeToTexturedMesh compatibility)
     result = {
         'shape_slat': _serialize_for_ipc(shape_slat),
         'subs': _serialize_for_ipc(subs),
-        'mesh_vertices': vertices,
-        'mesh_faces': faces,
         'resolution': hr_resolution,
         'pipeline_type': resolution,
         'raw_mesh_vertices': raw_mesh_vertices,
@@ -1491,5 +1472,5 @@ def run_refine_mesh(
     }
 
     pbar.update(1)
-    log.info(f"Mesh refined: {len(vertices)} verts, {len(faces)} faces")
-    return result, vertices, faces
+    log.info(f"Mesh refined: {raw_mesh_vertices.shape[0]} verts, {raw_mesh_faces.shape[0]} faces")
+    return result

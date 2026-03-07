@@ -75,18 +75,11 @@ class Trellis2ImageToShape(io.ComfyNode):
             description="""Generate 3D shape from image conditioning.
 
 This node generates shape geometry (no texture/PBR).
-Connect shape_result to "Shape to Textured Mesh" for PBR materials.
-
-Parameters:
-- model_config: The loaded model config (resolution is set in Load Models node)
-- conditioning: DinoV3 conditioning from "Get Conditioning" node
-- seed: Random seed for reproducibility
-- ss_*: Sparse structure sampling parameters
-- shape_*: Shape latent sampling parameters
+Connect shape_result to "Shape to Mesh" to extract the mesh,
+or to "Shape to Textured Mesh" for PBR materials.
 
 Returns:
-- shape_result: Shape data for texture generation
-- mesh: Untextured mesh for preview/export""",
+- shape_result: Shape data for downstream nodes""",
             inputs=[
                 io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
                     tooltip="Model config from Load TRELLIS.2 Models node"),
@@ -112,7 +105,6 @@ Returns:
             ],
             outputs=[
                 io.Custom("TRELLIS2_SHAPE_RESULT").Output(display_name="shape_result"),
-                io.Custom("TRIMESH").Output(display_name="mesh"),
             ],
         )
 
@@ -129,17 +121,13 @@ Returns:
         max_tokens=49152,
         use_vb=True,
     ):
-        # All heavy imports happen inside subprocess
-        import trimesh as Trimesh
         from .stages import run_shape_generation
 
         comfy.model_management.throw_exception_if_processing_interrupted()
 
-        # run_shape_generation returns (result_dict, vertices, faces)
-        # result_dict is passed to downstream nodes, vertices/faces used for Trimesh
         import torch
         with torch.inference_mode():
-            shape_result, vertices, faces = run_shape_generation(
+            shape_result = run_shape_generation(
                 model_config=model_config,
                 conditioning=conditioning,
                 seed=seed,
@@ -151,14 +139,7 @@ Returns:
                 use_vb=use_vb,
             )
 
-        # Create trimesh from vertices/faces
-        tri_mesh = Trimesh.Trimesh(
-            vertices=vertices,
-            faces=faces,
-            process=False
-        )
-
-        return io.NodeOutput(shape_result, tri_mesh)
+        return io.NodeOutput(shape_result)
 
 
 class Trellis2ShapeToTexturedMesh(io.ComfyNode):
@@ -172,22 +153,11 @@ class Trellis2ShapeToTexturedMesh(io.ComfyNode):
             category="TRELLIS2",
             description="""Generate PBR textured mesh from shape.
 
-Takes shape_result from "Image to Shape" node and generates PBR materials:
-- base_color (RGB)
-- metallic
-- roughness
-- alpha
-
-Parameters:
-- model_config: The loaded model config
-- conditioning: DinoV3 conditioning (same as used for shape)
-- shape_result: Shape data from "Image to Shape" node
-- seed: Random seed for texture variation
-- tex_*: Texture sampling parameters
+Takes shape_result from "Image to Shape" and generates PBR materials
+(base_color, metallic, roughness, alpha) stored as a voxelgrid .npz.
 
 Returns:
-- mesh_glb_path: Path to mesh geometry (.glb file)
-- voxelgrid_npz_path: Path to voxelgrid data (.npz file with coords, attrs, vertices, faces, etc.)""",
+- voxelgrid_npz_path: Path to voxelgrid data (.npz)""",
             inputs=[
                 io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config",
                     tooltip="Model config from Load TRELLIS.2 Models node"),
@@ -203,7 +173,6 @@ Returns:
                              tooltip="Texture sampling steps. More steps = better quality but slower"),
             ],
             outputs=[
-                io.String.Output(display_name="mesh_glb_path"),
                 io.String.Output(display_name="voxelgrid_npz_path"),
             ],
         )
@@ -260,7 +229,12 @@ Returns:
         )
         log.info(f"Voxelgrid saved to: {voxelgrid_npz_path}")
 
-        return io.NodeOutput("", voxelgrid_npz_path)
+        # Release worker CUDA cache so ExportGLB has headroom
+        del texture_result
+        import gc; gc.collect()
+        torch.cuda.empty_cache()
+
+        return io.NodeOutput(voxelgrid_npz_path)
 
 
 class Trellis2RemoveBackground(io.ComfyNode):
@@ -610,7 +584,6 @@ Parameters:
             ],
             outputs=[
                 io.Custom("TRELLIS2_SHAPE_RESULT").Output(display_name="shape_result"),
-                io.Custom("TRIMESH").Output(display_name="mesh"),
             ],
         )
 
@@ -626,14 +599,13 @@ Parameters:
         max_tokens=49152,
         use_vb=True,
     ):
-        import trimesh as Trimesh
         import torch
         from .stages import run_refine_mesh
 
         comfy.model_management.throw_exception_if_processing_interrupted()
 
         with torch.inference_mode():
-            shape_result, vertices, faces = run_refine_mesh(
+            shape_result = run_refine_mesh(
                 model_config=model_config,
                 conditioning=conditioning,
                 shape_latent=shape_latent,
@@ -644,13 +616,82 @@ Parameters:
                 use_vb=use_vb,
             )
 
-        tri_mesh = Trimesh.Trimesh(
-            vertices=vertices,
-            faces=faces,
-            process=False,
+        return io.NodeOutput(shape_result)
+
+
+class Trellis2ShapeToMesh(io.ComfyNode):
+    """Extract mesh from shape_result with optional simplification."""
+
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ShapeToMesh",
+            display_name="TRELLIS.2 Shape to Mesh",
+            category="TRELLIS2",
+            description="""Extract mesh from shape_result with optional simplification.
+
+Parameters:
+- target_face_count: Target number of faces (0 = no simplification)
+- fill_holes: Fill small holes before simplifying
+- fill_holes_perimeter: Max hole perimeter to fill""",
+            inputs=[
+                io.Custom("TRELLIS2_SHAPE_RESULT").Input("shape_result",
+                    tooltip="Shape result from Image to Shape or Refine Mesh node"),
+                io.Int.Input("target_face_count", default=200000, min=0, max=5000000, step=1000,
+                    tooltip="Target face count. 0 = no simplification."),
+                io.Boolean.Input("fill_holes", default=False, optional=True),
+                io.Float.Input("fill_holes_perimeter", default=0.03, min=0.001, max=0.5, step=0.001, optional=True),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
         )
 
-        return io.NodeOutput(shape_result, tri_mesh)
+    @classmethod
+    def execute(cls, shape_result, target_face_count=0, fill_holes=True, fill_holes_perimeter=0.03):
+        import numpy as np
+        import trimesh as Trimesh
+
+        vertices = shape_result['raw_mesh_vertices'].numpy().astype(np.float32)
+        faces = shape_result['raw_mesh_faces'].numpy()
+
+        log.info(f"ShapeToMesh: {vertices.shape[0]} vertices, {faces.shape[0]} faces")
+
+        simplify = target_face_count > 0 and faces.shape[0] > target_face_count
+
+        if simplify or fill_holes:
+            import torch
+            import cumesh as CuMesh
+
+            device = comfy.model_management.get_torch_device()
+            verts_t = torch.tensor(vertices, dtype=torch.float32).to(device)
+            faces_t = torch.tensor(faces, dtype=torch.int32).to(device)
+
+            cumesh = CuMesh.CuMesh()
+            cumesh.init(verts_t, faces_t)
+
+            if fill_holes:
+                cumesh.fill_holes(max_hole_perimeter=fill_holes_perimeter)
+                log.info(f"After fill holes: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+
+            if simplify:
+                cumesh.simplify(target_face_count, verbose=True)
+                log.info(f"After simplify: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+
+            out_v, out_f = cumesh.read()
+            vertices = out_v.cpu().numpy()
+            faces = out_f.cpu().numpy()
+
+            del verts_t, faces_t, cumesh
+            comfy.model_management.soft_empty_cache()
+
+        # Coordinate conversion Y-up -> Z-up
+        vertices[:, 1], vertices[:, 2] = -vertices[:, 2].copy(), vertices[:, 1].copy()
+
+        mesh = Trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+        log.info(f"ShapeToMesh output: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces")
+
+        return io.NodeOutput(mesh)
 
 
 NODE_CLASS_MAPPINGS = {
@@ -662,6 +703,7 @@ NODE_CLASS_MAPPINGS = {
     "Trellis2EncodeMesh": Trellis2EncodeMesh,
     "Trellis2TextureMesh": Trellis2TextureMesh,
     "Trellis2RefineMesh": Trellis2RefineMesh,
+    "Trellis2ShapeToMesh": Trellis2ShapeToMesh,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -673,4 +715,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2EncodeMesh": "TRELLIS.2 Encode Mesh",
     "Trellis2TextureMesh": "TRELLIS.2 Texture Mesh (Standalone)",
     "Trellis2RefineMesh": "TRELLIS.2 Refine Mesh",
+    "Trellis2ShapeToMesh": "TRELLIS.2 Shape to Mesh",
 }

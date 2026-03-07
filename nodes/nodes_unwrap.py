@@ -526,6 +526,238 @@ Parameters:
         return io.NodeOutput(result)
 
 
+def remesh_narrow_band_dc_lowmem(
+    vertices, faces, center, scale, resolution,
+    band=1, project_back=0, verbose=False, bvh=None,
+    topo_chunk=500_000, tri_chunk=500_000,
+):
+    """Low-memory version of cumesh.remeshing.remesh_narrow_band_dc.
+
+    Same algorithm but chunks the topology generation and triangle splitting
+    steps to avoid materializing huge intermediate tensors.
+    """
+    import torch
+    from cumesh import _C
+    from cumesh.bvh import cuBVH
+    from cumesh.remeshing import _init_hashmap
+    from tqdm import tqdm
+
+    device = vertices.device
+
+    # --- Constants ---
+    edge_neighbor_voxel_offset = torch.tensor([
+        [[0, 0, 0], [0, 0, 1], [0, 1, 1], [0, 1, 0]],
+        [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]],
+        [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0]],
+    ], dtype=torch.int32, device=device).unsqueeze(0)  # (1, 3, 4, 3)
+
+    quad_split_1_n = torch.tensor([0, 1, 2, 0, 2, 3], dtype=torch.long, device=device)
+    quad_split_1_p = torch.tensor([0, 2, 1, 0, 3, 2], dtype=torch.long, device=device)
+    quad_split_2_n = torch.tensor([0, 1, 3, 3, 1, 2], dtype=torch.long, device=device)
+    quad_split_2_p = torch.tensor([0, 3, 1, 3, 2, 1], dtype=torch.long, device=device)
+
+    OFFSETS = torch.tensor([
+        [0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0],
+        [0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1],
+    ], dtype=torch.int32, device=device)
+
+    # --- 1. Build BVH ---
+    if bvh is None:
+        if verbose:
+            print("Building BVH...")
+        bvh = cuBVH(vertices, faces)
+
+    eps = band * scale / resolution
+
+    # --- 2. Sparse Grid Construction ---
+    base_resolution = resolution
+    while base_resolution > 32:
+        assert base_resolution % 2 == 0
+        base_resolution //= 2
+
+    coords = torch.stack(torch.meshgrid(
+        torch.arange(base_resolution, device=device),
+        torch.arange(base_resolution, device=device),
+        torch.arange(base_resolution, device=device),
+        indexing='ij',
+    ), dim=-1).int().reshape(-1, 3)
+
+    pbar = tqdm(
+        total=int(torch.log2(torch.tensor(resolution // base_resolution)).item()) + 1,
+        desc="Building Sparse Grid", disable=not verbose,
+    )
+
+    while True:
+        cell_size = scale / base_resolution
+        pts = ((coords.float() + 0.5) / base_resolution - 0.5) * scale + center
+        distances = bvh.unsigned_distance(pts)[0]
+        distances -= eps
+        distances = torch.abs(distances)
+        subdiv_mask = distances < 0.87 * cell_size
+        coords = coords[subdiv_mask]
+        if base_resolution >= resolution:
+            break
+        base_resolution *= 2
+        coords *= 2
+        coords = (coords.unsqueeze(1) + OFFSETS.unsqueeze(0)).reshape(-1, 3)
+        pbar.update(1)
+
+    Nvox = coords.shape[0]
+    if verbose:
+        print(f"Sparse grid: {Nvox:,} voxels")
+
+    # --- 3. Hashmaps + DC vertices ---
+    hashmap_vox = _init_hashmap(resolution, 2 * Nvox, device)
+    _C.hashmap_insert_3d_idx_as_val_cuda(
+        *hashmap_vox,
+        torch.cat([torch.zeros_like(coords[:, :1]), coords], dim=1),
+        resolution, resolution, resolution,
+    )
+
+    coords = coords.contiguous()
+    grid_verts = _C.get_sparse_voxel_grid_active_vertices(
+        *hashmap_vox, coords, resolution, resolution, resolution,
+    )
+    Nvert = grid_verts.shape[0]
+
+    pts_vert = (grid_verts.float() / resolution - 0.5) * scale + center
+    distances_vert = bvh.unsigned_distance(pts_vert)[0]
+    distances_vert -= eps
+
+    pbar.update(1)
+    pbar.close()
+
+    if verbose:
+        print("Running Dual Contouring...")
+
+    hashmap_vert = _init_hashmap(resolution + 1, 2 * Nvert, device)
+    _C.hashmap_insert_3d_idx_as_val_cuda(
+        *hashmap_vert,
+        torch.cat([torch.zeros_like(grid_verts[:, :1]), grid_verts], dim=1),
+        resolution + 1, resolution + 1, resolution + 1,
+    )
+
+    dual_verts, intersected = _C.simple_dual_contour(
+        *hashmap_vert, coords, distances_vert,
+        resolution + 1, resolution + 1, resolution + 1,
+    )
+
+    # Free hashmap_vert — no longer needed
+    del hashmap_vert, grid_verts, distances_vert, pts_vert
+    torch.cuda.empty_cache()
+
+    # --- 4. Chunked Topology Generation ---
+    if verbose:
+        print(f"Topology generation (chunked, {topo_chunk:,} voxels/chunk)...")
+
+    R = resolution
+    all_quad_indices = []
+    all_intersected_dirs = []
+    for start in range(0, Nvox, topo_chunk):
+        end = min(start + topo_chunk, Nvox)
+        c = coords[start:end]
+        inter = intersected[start:end]
+        chunk_n = c.shape[0]
+
+        # (chunk, 3, 4, 3)
+        neighbors = c.reshape(chunk_n, 1, 1, 3) + edge_neighbor_voxel_offset
+        mask = inter != 0
+        connected = neighbors[mask]  # (M, 4, 3)
+        dirs = inter[mask]           # (M,)
+        M = connected.shape[0]
+        if M == 0:
+            del neighbors, connected, dirs
+            continue
+
+        hash_key = torch.cat([
+            torch.zeros((M * 4, 1), dtype=torch.int, device=device),
+            connected.reshape(-1, 3),
+        ], dim=1)
+        indices = _C.hashmap_lookup_3d_cuda(
+            *hashmap_vox, hash_key, R, R, R,
+        ).reshape(M, 4).int()
+        valid = (indices != 0xffffffff).all(dim=1)
+        if valid.any():
+            all_quad_indices.append(indices[valid])
+            all_intersected_dirs.append(dirs[valid].int())
+
+        del neighbors, connected, dirs, hash_key, indices, valid
+
+    quad_indices = torch.cat(all_quad_indices)
+    intersected_dir = torch.cat(all_intersected_dirs)
+    del all_quad_indices, all_intersected_dirs, intersected
+    L = quad_indices.shape[0]
+
+    if verbose:
+        print(f"  {L:,} quads")
+
+    # --- 5. Remove unreferenced vertices ---
+    unique_verts = torch.unique(quad_indices.reshape(-1))
+    dual_verts = dual_verts[unique_verts]
+    vert_map = torch.zeros((Nvox,), dtype=torch.int32, device=device)
+    vert_map[unique_verts] = torch.arange(unique_verts.shape[0], dtype=torch.int32, device=device)
+    quad_indices = vert_map[quad_indices]
+    del vert_map, unique_verts
+
+    mesh_vertices = (dual_verts / resolution - 0.5) * scale + center
+
+    # --- 6. Chunked Triangle Splitting ---
+    if verbose:
+        print(f"Triangle splitting (chunked, {tri_chunk:,} quads/chunk)...")
+
+    all_triangles = []
+    for start in range(0, L, tri_chunk):
+        end = min(start + tri_chunk, L)
+        qi = quad_indices[start:end]
+        idir = intersected_dir[start:end]
+        is_pos = (idir == 1).unsqueeze(1)
+
+        # Split 1
+        t0 = torch.where(is_pos, qi[:, quad_split_1_p], qi[:, quad_split_1_n])
+        n0a = torch.linalg.cross(
+            mesh_vertices[t0[:, 1]] - mesh_vertices[t0[:, 0]],
+            mesh_vertices[t0[:, 2]] - mesh_vertices[t0[:, 0]],
+        )
+        n0b = torch.linalg.cross(
+            mesh_vertices[t0[:, 2]] - mesh_vertices[t0[:, 1]],
+            mesh_vertices[t0[:, 3]] - mesh_vertices[t0[:, 1]],
+        )
+        align0 = (n0a * n0b).sum(dim=1).abs()
+
+        # Split 2
+        t1 = torch.where(is_pos, qi[:, quad_split_2_p], qi[:, quad_split_2_n])
+        n1a = torch.linalg.cross(
+            mesh_vertices[t1[:, 1]] - mesh_vertices[t1[:, 0]],
+            mesh_vertices[t1[:, 2]] - mesh_vertices[t1[:, 0]],
+        )
+        n1b = torch.linalg.cross(
+            mesh_vertices[t1[:, 2]] - mesh_vertices[t1[:, 1]],
+            mesh_vertices[t1[:, 3]] - mesh_vertices[t1[:, 1]],
+        )
+        align1 = (n1a * n1b).sum(dim=1).abs()
+
+        selected = torch.where((align0 > align1).unsqueeze(1), t0, t1)
+        all_triangles.append(selected)
+        del qi, idir, t0, t1, n0a, n0b, n1a, n1b, align0, align1, selected
+
+    mesh_triangles = torch.cat(all_triangles).reshape(-1, 3)
+    del all_triangles, quad_indices, intersected_dir
+
+    # --- 7. Project back ---
+    if project_back > 0:
+        if verbose:
+            print("Projecting back to original mesh...")
+        _, face_id, uvw = bvh.unsigned_distance(mesh_vertices, return_uvw=True)
+        orig_tri_verts = vertices[faces[face_id.long()]]
+        projected_verts = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
+        mesh_vertices -= project_back * (mesh_vertices - projected_verts)
+
+    if verbose:
+        print(f"  {mesh_vertices.shape[0]:,} vertices, {mesh_triangles.shape[0]:,} faces")
+
+    return mesh_vertices, mesh_triangles.int()
+
+
 class Trellis2ExportGLB(io.ComfyNode):
     """All-in-one: load voxelgrid NPZ -> simplify -> UV unwrap -> bake PBR -> export GLB."""
 
@@ -555,6 +787,8 @@ Parameters:
                 io.Int.Input("decimation_target", default=500000, min=1000, max=5000000, step=1000, optional=True),
                 io.Int.Input("texture_size", default=2048, min=512, max=8192, step=512, optional=True),
                 io.Boolean.Input("remesh", default=True, optional=True),
+                io.Boolean.Input("pre_simplify", default=True, optional=True,
+                    tooltip="Pre-simplify mesh before remesh to massively reduce VRAM. May lose very thin features."),
                 io.Boolean.Input("use_vb", default=True, optional=True),
                 io.String.Input("filename_prefix", default="trellis2", optional=True),
             ],
@@ -570,6 +804,7 @@ Parameters:
         decimation_target=500000,
         texture_size=2048,
         remesh=True,
+        pre_simplify=True,
         use_vb=True,
         filename_prefix="trellis2",
     ):
@@ -581,6 +816,8 @@ Parameters:
         else:
             from o_voxel.postprocess import to_glb
             logger.info("ExportGLB: using o_voxel (upstream)")
+
+        torch.cuda.empty_cache()
 
         logger.info(f"ExportGLB: loading {voxelgrid_path}")
         data = np.load(voxelgrid_path, allow_pickle=True)
@@ -600,6 +837,47 @@ Parameters:
         comfy.model_management.throw_exception_if_processing_interrupted()
 
         device = comfy.model_management.get_torch_device()
+
+        # Pre-simplify before remesh to reduce BVH/simplify cost
+        if pre_simplify and remesh and faces.shape[0] > 2_000_000:
+            import cumesh as CuMesh
+            logger.info(f"Pre-simplifying {faces.shape[0]} faces -> 2M before remesh")
+            premesh = CuMesh.CuMesh()
+            premesh.init(vertices.to(device), faces.to(device))
+            premesh.simplify(2_000_000, verbose=True)
+            vertices, faces = premesh.read()
+            vertices, faces = vertices.cpu(), faces.cpu()
+            del premesh
+            torch.cuda.empty_cache()
+            logger.info(f"Pre-simplified: {vertices.shape[0]} verts, {faces.shape[0]} faces")
+
+        # Run our low-mem DC instead of letting to_glb do it
+        if remesh:
+            aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device=device)
+            grid_size = ((aabb[1] - aabb[0]) / voxel_size).round().int()
+            dc_resolution = grid_size.max().item()
+            dc_center = aabb.mean(dim=0)
+            dc_scale = (aabb[1] - aabb[0]).max().item()
+            remesh_band = 1.0
+
+            logger.info(f"Running low-mem DC: resolution={dc_resolution}")
+            new_verts, new_faces = remesh_narrow_band_dc_lowmem(
+                vertices.to(device), faces.to(device),
+                center=dc_center,
+                scale=(dc_resolution + 3 * remesh_band) / dc_resolution * dc_scale,
+                resolution=dc_resolution,
+                band=remesh_band,
+                project_back=0.9,
+                verbose=True,
+            )
+            # Replace mesh with remeshed version
+            vertices = new_verts.cpu()
+            faces = new_faces.cpu()
+            del new_verts, new_faces
+            torch.cuda.empty_cache()
+            logger.info(f"Remeshed: {vertices.shape[0]} verts, {faces.shape[0]} faces")
+
+        # Pass remesh=False since we already did it (or user didn't want it)
         textured_mesh = to_glb(
             vertices=vertices.to(device),
             faces=faces.to(device),
@@ -610,9 +888,7 @@ Parameters:
             voxel_size=voxel_size,
             decimation_target=decimation_target,
             texture_size=texture_size,
-            remesh=remesh,
-            remesh_band=1.0,
-            remesh_project=0.9,
+            remesh=False,
             verbose=True,
         )
 

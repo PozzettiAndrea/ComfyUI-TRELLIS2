@@ -533,6 +533,128 @@ class SparseResBlockC2S3d(nn.Module):
     def low_vram(self, value: bool) -> None:
         self._low_vram = bool(value)
 
+    def _tiled_conv1_c2s(self, h, x, subdiv_bin):
+        """Fused tiled conv1→C2S. Never materializes full conv1 output.
+
+        Returns (h_fine: SparseTensor, x_fine_feats_cpu: Tensor).
+        """
+        from flex_gemm_ap.ops.spconv.submanifold_conv3d import (
+            SubMConv3dFunction, _partition_octree
+        )
+
+        _ma = torch.cuda.memory_allocated
+        _v = lambda: _ma() // 1048576
+        device = h.feats.device
+        N = h.feats.shape[0]
+        coords = h.coords
+        spatial = coords[:, 1:]
+        shape = torch.Size([*h.shape, *h.spatial_shape])
+
+        weight = self.conv1.weight
+        bias = self.conv1.bias
+        Co, Kd, Kh, Kw, Ci = weight.shape
+        kernel_size = (Kw, Kh, Kd)
+        dilation = self.conv1.dilation
+        halo = max((k // 2) * d for k, d in zip(kernel_size, dilation))
+
+        factor = self.updown.factor
+        DIM = 3
+        factor_cubed = factor ** DIM
+        subdiv_feats = subdiv_bin.feats
+
+        x_scale = x._scale
+
+        max_tile = 500_000
+        tiles = _partition_octree(spatial, max_tile)
+        print(f"[C2S3d] TILED: N={N:,} → {len(tiles)} tiles, alloc={_v()}MB", flush=True)
+
+        h_feats_cpu = h.feats.cpu()
+        x_feats_cpu = x.feats.cpu()
+        h.data['feats'] = torch.empty(0, device='cpu')
+        x.data['feats'] = torch.empty(0, device='cpu')
+        del h, x
+        torch.cuda.empty_cache()
+        print(f"[C2S3d] TILED feats offloaded, alloc={_v()}MB", flush=True)
+
+        fine_h_list = []
+        fine_x_list = []
+        fine_coords_list = []
+
+        for ti, (tile_min, tile_max) in enumerate(tiles):
+            interior_mask = ((spatial >= tile_min) & (spatial < tile_max)).all(dim=1)
+            halo_mask = ((spatial >= tile_min - halo) & (spatial < tile_max + halo)).all(dim=1)
+
+            halo_indices = halo_mask.nonzero(as_tuple=True)[0]
+            halo_indices_cpu = halo_indices.cpu()
+            tile_feats = h_feats_cpu[halo_indices_cpu].to(device)
+            tile_coords = coords[halo_indices].contiguous()
+
+            print(f"[C2S3d] TILED tile {ti+1}/{len(tiles)}: conv1 N_halo={tile_feats.shape[0]:,} "
+                  f"alloc={_v()}MB", flush=True)
+            tile_cache = SubMConv3dFunction._compute_neighbor_cache(
+                tile_coords, shape, kernel_size, dilation)
+            tile_conv_out = SubMConv3dFunction._sparse_submanifold_conv_forward(
+                tile_feats, tile_cache, weight, bias)
+            del tile_feats, tile_cache
+
+            interior_in_halo = interior_mask[halo_indices]
+            interior_conv = tile_conv_out[interior_in_halo]
+            interior_coords = tile_coords[interior_in_halo]
+            del tile_conv_out, tile_coords, halo_indices, halo_indices_cpu
+
+            interior_global = interior_mask.nonzero(as_tuple=True)[0]
+            tile_subdiv = subdiv_feats[interior_global]
+            tile_x = x_feats_cpu[interior_global.cpu()].to(device)
+
+            N_int = interior_conv.shape[0]
+            N_leaf = tile_subdiv.sum(dim=-1)
+            subidx = tile_subdiv.nonzero()[:, -1]
+            output_size = subidx.shape[0]
+
+            new_coords = interior_coords.clone()
+            new_coords[:, 1:] *= factor
+            new_coords = torch.repeat_interleave(
+                new_coords, N_leaf, dim=0, output_size=output_size)
+            for i in range(DIM):
+                new_coords[:, i + 1] += subidx // factor ** i % factor
+
+            idx = torch.repeat_interleave(
+                torch.arange(N_int, device=device), N_leaf, dim=0,
+                output_size=output_size)
+            gather = idx * factor_cubed + subidx
+
+            fine_h = interior_conv.reshape(N_int * factor_cubed, -1)[gather]
+            fine_x = tile_x.reshape(N_int * factor_cubed, -1)[gather]
+
+            fine_h_list.append(fine_h.cpu())
+            fine_x_list.append(fine_x.cpu())
+            fine_coords_list.append(new_coords.cpu())
+
+            del interior_conv, tile_x, interior_coords, tile_subdiv
+            del fine_h, fine_x, new_coords, interior_mask, halo_mask
+            del interior_in_halo, interior_global, idx, gather
+            torch.cuda.empty_cache()
+            print(f"[C2S3d] TILED tile {ti+1}/{len(tiles)}: N_int={N_int:,} "
+                  f"fine={output_size:,} alloc={_v()}MB", flush=True)
+
+        del h_feats_cpu
+
+        fine_coords_gpu = torch.cat(fine_coords_list).to(device)
+        del fine_coords_list
+        h_fine = sp.SparseTensor(
+            torch.cat(fine_h_list).to(device),
+            fine_coords_gpu,
+        )
+        h_fine._scale = tuple(s / factor for s in x_scale)
+        del fine_h_list
+
+        x_fine_feats_cpu = torch.cat(fine_x_list)
+        del fine_x_list, x_feats_cpu
+
+        print(f"[C2S3d] TILED done: h_fine={h_fine.feats.shape} "
+              f"x_fine_cpu={x_fine_feats_cpu.shape} alloc={_v()}MB", flush=True)
+        return h_fine, x_fine_feats_cpu
+
     def _forward(self, x: sp.SparseTensor, subdiv: sp.SparseTensor = None) -> sp.SparseTensor:
         _ma = torch.cuda.memory_allocated
         _v = lambda: _ma() // 1048576
@@ -542,48 +664,56 @@ class SparseResBlockC2S3d(nn.Module):
         h = x.replace(self.norm1(x.feats))
         print(f"[C2S3d] after norm1: alloc={_v()}MB", flush=True)
         h = h.replace(F.silu(h.feats))
-        print(f"[C2S3d] pre-conv1: N={h.feats.shape[0]:,} Ci={h.feats.shape[1]} Co={self.out_channels*8} alloc={_v()}MB", flush=True)
-        # Offload x.feats to CPU during conv1 — not needed until C2S
-        if self._low_vram:
+        N = h.feats.shape[0]
+        print(f"[C2S3d] pre-conv1: N={N:,} Ci={h.feats.shape[1]} Co={self.out_channels*8} alloc={_v()}MB", flush=True)
+
+        subdiv_binarized = subdiv.replace(subdiv.feats > 0) if subdiv is not None else None
+
+        # --- TILED PATH: fused conv1→C2S, never materializes full conv1 output ---
+        if self._low_vram and N > 1_000_000:
+            h, x_feats_cpu = self._tiled_conv1_c2s(h, x, subdiv_binarized)
+            del subdiv_binarized
+        else:
+            # --- NORMAL PATH ---
+            if self._low_vram:
+                x_feats_cpu = x.feats.to('cpu', non_blocking=True)
+                x = x.replace(torch.empty(0, dtype=x.feats.dtype, device=x.feats.device))
+                torch.cuda.current_stream().synchronize()
+                torch.cuda.empty_cache()
+                print(f"[C2S3d] x.feats offloaded before conv1: alloc={_v()}MB", flush=True)
+            h = self.conv1(h)
+            print(f"[C2S3d] post-conv1: h={h.feats.shape} alloc={_v()}MB", flush=True)
+            if self._low_vram:
+                x = x.replace(x_feats_cpu.to(h.feats.device))
+                del x_feats_cpu
+                print(f"[C2S3d] x.feats restored from CPU: alloc={_v()}MB", flush=True)
+            print(f"[C2S3d] pre-C2S(h): alloc={_v()}MB", flush=True)
+            h = self.updown(h, subdiv_binarized)
+            print(f"[C2S3d] post-C2S(h): h={h.feats.shape} alloc={_v()}MB", flush=True)
+            x = self.updown(x, subdiv_binarized)
+            print(f"[C2S3d] post-C2S(x): x={x.feats.shape} alloc={_v()}MB", flush=True)
+            del subdiv_binarized
+            h.clear_spatial_cache()
+            x.clear_spatial_cache()
+            print(f"[C2S3d] post-C2S: N={h.feats.shape[0]:,} h={h.feats.shape[1]}ch x={x.feats.shape[1]}ch alloc={_v()}MB", flush=True)
             x_feats_cpu = x.feats.to('cpu', non_blocking=True)
-            x = x.replace(torch.empty(0, dtype=x.feats.dtype, device=x.feats.device))
+            del x
             torch.cuda.current_stream().synchronize()
             torch.cuda.empty_cache()
-            print(f"[C2S3d] x.feats offloaded before conv1: alloc={_v()}MB", flush=True)
-        h = self.conv1(h)
-        print(f"[C2S3d] post-conv1: h={h.feats.shape} alloc={_v()}MB", flush=True)
-        # Restore x.feats from CPU before C2S
-        if self._low_vram:
-            x = x.replace(x_feats_cpu.to(h.feats.device))
-            del x_feats_cpu
-            print(f"[C2S3d] x.feats restored from CPU: alloc={_v()}MB", flush=True)
-        subdiv_binarized = subdiv.replace(subdiv.feats > 0) if subdiv is not None else None
-        print(f"[C2S3d] pre-C2S(h): alloc={_v()}MB", flush=True)
-        h = self.updown(h, subdiv_binarized)
-        print(f"[C2S3d] post-C2S(h): h={h.feats.shape} alloc={_v()}MB", flush=True)
-        x = self.updown(x, subdiv_binarized)
-        print(f"[C2S3d] post-C2S(x): x={x.feats.shape} alloc={_v()}MB", flush=True)
-        del subdiv_binarized
-        # Free conv1/C2S spatial caches before conv2 builds its own
+            print(f"[C2S3d] x offloaded to CPU, pre-conv2: alloc={_v()}MB", flush=True)
+
+        # --- conv2 + skip (shared by both paths) ---
         h.clear_spatial_cache()
-        x.clear_spatial_cache()
-        print(f"[C2S3d] post-C2S: N={h.feats.shape[0]:,} h={h.feats.shape[1]}ch x={x.feats.shape[1]}ch alloc={_v()}MB", flush=True)
-        # Offload x to CPU during conv2 — only needed for skip after
-        x_feats_cpu = x.feats.to('cpu', non_blocking=True)
-        del x
-        torch.cuda.current_stream().synchronize()
-        torch.cuda.empty_cache()
-        print(f"[C2S3d] x offloaded to CPU, pre-conv2: alloc={_v()}MB", flush=True)
         h = h.replace(self.norm2(h.feats))
         print(f"[C2S3d] after norm2: alloc={_v()}MB", flush=True)
         h = h.replace(F.silu(h.feats))
         print(f"[C2S3d] after silu: alloc={_v()}MB", flush=True)
         h = self.conv2(h)
         print(f"[C2S3d] post-conv2: alloc={_v()}MB", flush=True)
-        h.clear_spatial_cache()  # Free conv2 neighbor cache before skip allocation
+        h.clear_spatial_cache()
         print(f"[C2S3d] post-conv2 (cache cleared): alloc={_v()}MB", flush=True)
-        # Fused skip: bring x back from CPU, repeat_interleave + add
-        skip_feats = x_feats_cpu.to(h.feats.device).repeat_interleave(self.out_channels // (self.channels // 8), dim=1)
+        R = self.out_channels // (self.channels // 8)
+        skip_feats = x_feats_cpu.repeat_interleave(R, dim=1).to(h.feats.device)
         del x_feats_cpu
         print(f"[C2S3d] after skip expand: alloc={_v()}MB", flush=True)
         h = h.replace(h.feats + skip_feats)
