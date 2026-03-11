@@ -838,9 +838,11 @@ def run_shape_generation(
     model_config: Any,
     conditioning: Dict[str, torch.Tensor],
     seed: int = 0,
-    ss_guidance_strength: float = 7.5,
+    ss_guidance_strength: float = 6.5,
+    ss_guidance_rescale: float = 0.05,
     ss_sampling_steps: int = 12,
-    shape_guidance_strength: float = 7.5,
+    shape_guidance_strength: float = 6.5,
+    shape_guidance_rescale: float = 0.05,
     shape_sampling_steps: int = 12,
     max_num_tokens: int = 49152,
     use_vb: bool = True,
@@ -882,10 +884,12 @@ def run_shape_generation(
     ss_params = {
         "steps": ss_sampling_steps,
         "guidance_strength": ss_guidance_strength,
+        "guidance_rescale": ss_guidance_rescale,
     }
     shape_params = {
         "steps": shape_sampling_steps,
         "guidance_strength": shape_guidance_strength,
+        "guidance_rescale": shape_guidance_rescale,
     }
 
     torch.manual_seed(seed)
@@ -980,7 +984,8 @@ def run_texture_generation(
     conditioning: Dict[str, torch.Tensor],
     shape_result: Dict[str, Any],
     seed: int = 0,
-    tex_guidance_strength: float = 7.5,
+    tex_guidance_strength: float = 3.0,
+    tex_guidance_rescale: float = 0.20,
     tex_sampling_steps: int = 12,
 ) -> Dict[str, Any]:
     """
@@ -1043,6 +1048,7 @@ def run_texture_generation(
     tex_params = {
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
+        "guidance_rescale": tex_guidance_rescale,
     }
 
     torch.manual_seed(seed)
@@ -1164,7 +1170,8 @@ def run_texture_mesh(
     conditioning: Dict[str, torch.Tensor],
     shape_latent: Dict[str, Any],
     seed: int = 0,
-    tex_guidance_strength: float = 3.5,
+    tex_guidance_strength: float = 3.0,
+    tex_guidance_rescale: float = 0.20,
     tex_sampling_steps: int = 12,
 ) -> Dict[str, Any]:
     """
@@ -1223,6 +1230,7 @@ def run_texture_mesh(
     tex_params = {
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
+        "guidance_rescale": tex_guidance_rescale,
     }
 
     torch.manual_seed(seed)
@@ -1294,7 +1302,8 @@ def run_refine_mesh(
     conditioning: Dict[str, torch.Tensor],
     shape_latent: Dict[str, Any],
     seed: int = 0,
-    shape_guidance_strength: float = 7.5,
+    shape_guidance_strength: float = 6.5,
+    shape_guidance_rescale: float = 0.05,
     shape_sampling_steps: int = 12,
     max_num_tokens: int = 49152,
     use_vb: bool = True,
@@ -1421,6 +1430,7 @@ def run_refine_mesh(
     shape_params = {
         "steps": shape_sampling_steps,
         "guidance_strength": shape_guidance_strength,
+        "guidance_rescale": shape_guidance_rescale,
     }
     params = {**default_params, **shape_params}
     sampler = FlowEulerGuidanceIntervalSampler(sigma_min=1e-5)
