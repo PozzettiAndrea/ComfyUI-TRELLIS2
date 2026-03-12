@@ -281,6 +281,215 @@ TIP: Simplify mesh first! UV unwrapping 10M faces takes forever.""",
         return io.NodeOutput(result)
 
 
+class Trellis2ProcessMesh(io.ComfyNode):
+    """Combined mesh processing: fill holes, remesh, simplify, cleanup, UV unwrap."""
+
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2ProcessMesh",
+            display_name="TRELLIS.2 Process Mesh",
+            category="TRELLIS2",
+            description="""All-in-one mesh processing pipeline.
+
+Combines fill holes → remesh → simplify → cleanup → UV unwrap in a single
+CuMesh session for efficiency.
+
+Output mesh has UVs and normals ready for Rasterize PBR.""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                io.Int.Input("target_face_count", default=500000, min=1000, max=5000000, step=1000),
+                io.Boolean.Input("fill_holes", default=True, optional=True),
+                io.Float.Input("fill_holes_perimeter", default=0.03, min=0.001, max=0.5, step=0.001, optional=True),
+                io.Boolean.Input("remesh", default=False, optional=True),
+                io.Float.Input("remesh_band", default=1.0, min=0.1, max=5.0, step=0.1, optional=True),
+                io.Boolean.Input("remove_inner_faces", default=False, optional=True),
+                io.Int.Input("min_component_faces", default=0, min=0, max=100000, optional=True),
+                io.Float.Input("chart_cone_angle", default=90.0, min=0.0, max=359.9, step=1.0, optional=True),
+                io.Int.Input("chart_refine_iterations", default=0, min=0, max=10, optional=True),
+                io.Int.Input("chart_global_iterations", default=1, min=0, max=10, optional=True),
+                io.Int.Input("chart_smooth_strength", default=1, min=0, max=10, optional=True),
+                io.Boolean.Input("weld_vertices", default=True, optional=True),
+                io.Int.Input("weld_digits", default=4, min=1, max=8, optional=True),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        trimesh,
+        target_face_count=500000,
+        fill_holes=True,
+        fill_holes_perimeter=0.03,
+        remesh=False,
+        remesh_band=1.0,
+        remove_inner_faces=False,
+        min_component_faces=0,
+        chart_cone_angle=90.0,
+        chart_refine_iterations=0,
+        chart_global_iterations=1,
+        chart_smooth_strength=1,
+        weld_vertices=True,
+        weld_digits=4,
+    ):
+        import torch
+        import cumesh_vb as CuMesh
+        import trimesh as Trimesh
+
+        logger.info(f"ProcessMesh: {len(trimesh.vertices)} verts, {len(trimesh.faces)} faces -> target {target_face_count}")
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
+        device = comfy.model_management.get_torch_device()
+        torch.cuda.reset_peak_memory_stats()
+        _log_vram("ProcessMesh Start")
+
+        # Convert to torch, Z-up → Y-up
+        vertices = torch.tensor(trimesh.vertices, dtype=torch.float32).to(device)
+        faces = torch.tensor(trimesh.faces, dtype=torch.int32).to(device)
+        vertices[:, 1], vertices[:, 2] = vertices[:, 2].clone(), -vertices[:, 1].clone()
+
+        # Helper: remove small disconnected components by face count (on CPU tensors)
+        def _remove_floaters(verts, facs):
+            if min_component_faces <= 0:
+                return verts, facs
+            tmp = Trimesh.Trimesh(vertices=verts.cpu().numpy(), faces=facs.cpu().numpy(), process=False)
+            components = tmp.split(only_watertight=False)
+            kept = [c for c in components if len(c.faces) >= min_component_faces]
+            if not kept or len(kept) == len(components):
+                return verts, facs
+            merged = Trimesh.util.concatenate(kept)
+            logger.info(f"Removed {len(components) - len(kept)} components < {min_component_faces} faces, kept {len(kept)}")
+            return (
+                torch.tensor(merged.vertices, dtype=torch.float32, device=device),
+                torch.tensor(merged.faces, dtype=torch.int32, device=device),
+            )
+
+        import sys
+        def _print(msg):
+            print(f"[ProcessMesh] {msg}", file=sys.stderr, flush=True)
+
+        # 1. Remove floaters (first pass)
+        _print(f"Removing floaters (min_component_faces={min_component_faces})...")
+        vertices, faces = _remove_floaters(vertices, faces)
+        _print(f"After floater removal: {vertices.shape[0]} verts, {faces.shape[0]} faces")
+
+        cumesh = CuMesh.CuMesh()
+        cumesh.init(vertices, faces)
+
+        # 2. Optional remesh (quad dual contouring)
+        if remesh:
+            curr_verts, curr_faces = cumesh.read()
+
+            aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], device=device)
+            center = aabb.mean(dim=0)
+            scale = (aabb[1] - aabb[0]).max().item()
+            resolution = 512
+
+            _print(f"Remeshing (quad DC, resolution={resolution}, band={remesh_band}, remove_inner_faces={remove_inner_faces})...")
+            cumesh.init(*CuMesh.remeshing.remesh_narrow_band_dc_quad(
+                curr_verts, curr_faces,
+                center=center,
+                scale=scale * 1.1,
+                resolution=resolution,
+                band=remesh_band,
+                project_back=0.0,
+                verbose=True,
+                remove_inner_faces=remove_inner_faces,
+            ))
+            _print(f"After remesh: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+            del curr_verts, curr_faces
+
+            # Remove floaters (second pass, after remesh)
+            _print("Removing floaters after remesh...")
+            new_verts, new_faces = cumesh.read()
+            new_verts, new_faces = _remove_floaters(new_verts, new_faces)
+            cumesh.init(new_verts, new_faces)
+            _print(f"After floater removal: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+            del new_verts, new_faces
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
+
+        # 3. Cleanup + simplify
+        _print("Cleaning up mesh...")
+        cumesh.remove_duplicate_faces()
+        cumesh.repair_non_manifold_edges()
+        cumesh.remove_small_connected_components(1e-5)
+        cumesh.unify_face_orientations()
+
+        _print(f"Simplifying to {target_face_count} faces...")
+        cumesh.simplify(target_face_count, verbose=True)
+        _print(f"After simplify: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+
+        # 4. Post-simplify cleanup + fill holes
+        _print("Post-simplify cleanup...")
+        cumesh.remove_duplicate_faces()
+        cumesh.repair_non_manifold_edges()
+        cumesh.remove_small_connected_components(1e-5)
+        if fill_holes:
+            _print(f"Filling holes (max_perimeter={fill_holes_perimeter})...")
+            cumesh.fill_holes(max_hole_perimeter=fill_holes_perimeter)
+            _print(f"After fill holes: {cumesh.num_vertices} verts, {cumesh.num_faces} faces")
+        cumesh.unify_face_orientations()
+
+        comfy.model_management.throw_exception_if_processing_interrupted()
+
+        # 5. UV unwrap
+        _print("UV unwrapping...")
+        chart_cone_angle_rad = np.radians(chart_cone_angle)
+        out_vertices, out_faces, out_uvs, out_vmaps = cumesh.uv_unwrap(
+            compute_charts_kwargs={
+                "threshold_cone_half_angle_rad": chart_cone_angle_rad,
+                "refine_iterations": chart_refine_iterations,
+                "global_iterations": chart_global_iterations,
+                "smooth_strength": chart_smooth_strength,
+            },
+            return_vmaps=True,
+            verbose=True,
+        )
+
+        out_vertices = out_vertices.cpu().numpy()
+        out_faces = out_faces.cpu().numpy()
+        out_uvs = out_uvs.cpu().numpy()
+
+        cumesh.compute_vertex_normals()
+        out_normals = cumesh.read_vertex_normals()[out_vmaps.to(device)].cpu().numpy()
+        _print(f"After UV unwrap: {out_vertices.shape[0]} verts, {out_faces.shape[0]} faces")
+
+        # Y-up → Z-up
+        out_vertices[:, 1], out_vertices[:, 2] = -out_vertices[:, 2].copy(), out_vertices[:, 1].copy()
+        out_normals[:, 1], out_normals[:, 2] = -out_normals[:, 2].copy(), out_normals[:, 1].copy()
+        out_uvs[:, 1] = 1 - out_uvs[:, 1]
+
+        result = Trimesh.Trimesh(
+            vertices=out_vertices,
+            faces=out_faces,
+            vertex_normals=out_normals,
+            process=False,
+        )
+        result.visual = Trimesh.visual.TextureVisuals(uv=out_uvs)
+
+        # 6. Weld vertices
+        if weld_vertices:
+            _print(f"Welding vertices (digits={weld_digits})...")
+            pre_verts = len(result.vertices)
+            result.merge_vertices(merge_tex=True, merge_norm=True, digits_vertex=weld_digits, digits_norm=weld_digits, digits_uv=weld_digits)
+            result.remove_unreferenced_vertices()
+            result.update_faces(result.nondegenerate_faces())
+            _print(f"After weld: removed {pre_verts - len(result.vertices)} verts, now {len(result.vertices)} verts, {len(result.faces)} faces")
+
+        _print(f"Done: {len(result.vertices)} verts, {len(result.faces)} faces")
+
+        del vertices, faces, cumesh, out_vmaps
+        gc.collect()
+        comfy.model_management.soft_empty_cache()
+        _log_vram("ProcessMesh done")
+
+        return io.NodeOutput(result)
+
+
 class Trellis2RasterizePBR(io.ComfyNode):
     """Rasterize PBR textures from voxel data onto UV-mapped mesh."""
 
@@ -356,8 +565,6 @@ Parameters:
         coords = coords.to(device)
 
         voxel_size = voxelgrid['voxel_size']
-        attr_layout = voxelgrid['layout']
-
         # AABB
         aabb = torch.tensor([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]], dtype=torch.float32, device=device)
 
@@ -412,10 +619,10 @@ Parameters:
         mask_np = mask.cpu().numpy()
 
         # Extract PBR channels
-        base_color = np.clip(attrs[..., attr_layout['base_color']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        metallic = np.clip(attrs[..., attr_layout['metallic']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        roughness = np.clip(attrs[..., attr_layout['roughness']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        alpha = np.clip(attrs[..., attr_layout['alpha']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        base_color = np.clip(attrs[..., 0:3].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        metallic = np.clip(attrs[..., 3:4].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        roughness = np.clip(attrs[..., 4:5].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        alpha = np.clip(attrs[..., 5:6].cpu().numpy() * 255, 0, 255).astype(np.uint8)
 
         del attrs, mask
         gc.collect()
@@ -454,7 +661,7 @@ Parameters:
 
         # Attach PBR vertex attributes
         result.vertex_attributes = {}
-        for attr_name, attr_slice in attr_layout.items():
+        for attr_name, attr_slice in [('base_color', slice(0,3)), ('metallic', slice(3,4)), ('roughness', slice(4,5)), ('alpha', slice(5,6))]:
             values = vertex_pbr_attrs[:, attr_slice].clamp(0, 1).cpu().numpy()
             if values.shape[1] == 1:
                 result.vertex_attributes[attr_name] = values[:, 0].astype(np.float32)
@@ -897,9 +1104,6 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
         voxel_size_raw = data['voxel_size']
         voxel_size_f = float(voxel_size_raw[0]) if hasattr(voxel_size_raw, '__len__') else float(voxel_size_raw)
 
-        layout_raw = json.loads(str(data['layout']))
-        attr_layout = {k: slice(v[0], v[1]) for k, v in layout_raw.items()}
-
         logger.info(f"ExportGLB: {vertices.shape[0]} verts, {faces.shape[0]} faces, {coords.shape[0]} voxels")
 
         comfy.model_management.throw_exception_if_processing_interrupted()
@@ -1048,10 +1252,10 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
         mask_np = mask.cpu().numpy()
         mask_inv = (~mask_np).astype(np.uint8)
 
-        base_color = np.clip(attrs[..., attr_layout['base_color']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        metallic = np.clip(attrs[..., attr_layout['metallic']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        roughness = np.clip(attrs[..., attr_layout['roughness']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
-        alpha = np.clip(attrs[..., attr_layout['alpha']].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        base_color = np.clip(attrs[..., 0:3].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        metallic = np.clip(attrs[..., 3:4].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        roughness = np.clip(attrs[..., 4:5].cpu().numpy() * 255, 0, 255).astype(np.uint8)
+        alpha = np.clip(attrs[..., 5:6].cpu().numpy() * 255, 0, 255).astype(np.uint8)
 
         del attrs, mask
         gc.collect()
@@ -1159,6 +1363,7 @@ Supports: GLB, OBJ, PLY, STL, 3MF, DAE""",
 NODE_CLASS_MAPPINGS = {
     "Trellis2Simplify": Trellis2Simplify,
     "Trellis2UVUnwrap": Trellis2UVUnwrap,
+    "Trellis2ProcessMesh": Trellis2ProcessMesh,
     "Trellis2RasterizePBR": Trellis2RasterizePBR,
     "Trellis2ExportGLB": Trellis2ExportGLB,
     "Trellis2ExportTrimesh": Trellis2ExportTrimesh,
@@ -1167,6 +1372,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2Simplify": "TRELLIS.2 Simplify Mesh",
     "Trellis2UVUnwrap": "TRELLIS.2 UV Unwrap",
+    "Trellis2ProcessMesh": "TRELLIS.2 Process Mesh",
     "Trellis2RasterizePBR": "TRELLIS.2 Rasterize PBR",
     "Trellis2ExportGLB": "TRELLIS.2 Export GLB",
     "Trellis2ExportTrimesh": "TRELLIS.2 Export Trimesh",

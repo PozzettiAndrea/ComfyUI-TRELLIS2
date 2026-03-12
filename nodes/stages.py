@@ -27,14 +27,6 @@ from .helpers import smart_crop_square
 # Model weights stay in safetensors dtype; manual_cast handles per-layer casting.
 _DEFAULT_DTYPE = torch.float32
 
-# PBR attribute layout for texture voxels
-_PBR_ATTR_LAYOUT = {
-    'base_color': slice(0, 3),
-    'metallic': slice(3, 4),
-    'roughness': slice(4, 5),
-    'alpha': slice(5, 6),
-}
-
 # Texture resolution mapping (texture maxes at 1024)
 TEXTURE_RESOLUTION_MAP = {
     '512': '512',
@@ -1416,7 +1408,6 @@ def run_texture_generation(
         'coords': v.coords[:, 1:].detach().cpu().numpy().astype(np.float32),
         'attrs': v.feats.detach().cpu().numpy(),
         'voxel_size': voxel_size,
-        'layout': _PBR_ATTR_LAYOUT,
     }
 
     pbar.update(1)
@@ -1590,7 +1581,6 @@ def run_texture_mesh(
         'coords': v.coords[:, 1:].detach().cpu().numpy().astype(np.float32),
         'attrs': v.feats.detach().cpu().numpy(),
         'voxel_size': voxel_size,
-        'layout': _PBR_ATTR_LAYOUT,
     }
 
     pbar.update(1)
