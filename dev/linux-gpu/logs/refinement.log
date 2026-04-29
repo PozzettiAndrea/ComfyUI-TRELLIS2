@@ -1,0 +1,105 @@
+Capturing execution frames: refinement.json
+  Frame 1 saved (frame_000.jpg, t=0.0s)
+  Validating workflow...
+  [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Received JSON with keys: ['prompt']
+  Validation failed: Prompt outputs failed validation
+Node errors:
+{
+  "19": {
+    "errors": [
+      {
+        "type": "required_input_missing",
+        "message": "Required input is missing",
+        "details": "trimesh",
+        "extra_info": {
+          "input_name": "trimesh"
+        }
+      }
+    ],
+    "dependent_outputs": [
+      "13"
+    ],
+    "class_type": "Trellis2ShapeToMesh"
+  }
+}
+    Status: FAILED
+    Error: Workflow validation failed
+    Details: Prompt outputs failed validation
+Node errors:
+{
+  "19": {
+    "errors": [
+      {
+        "type": "required_input_missing",
+        "message": "Required input is missing",
+        "details": "trimesh",
+        "extra_info": {
+          "input_name": "trimesh"
+        }
+      }
+    ],
+    "dependent_outputs": [
+      "13"
+    ],
+    "class_type": "Trellis2ShapeToMesh"
+  }
+}
+  [ComfyUI] Prompt has 9 nodes
+  [ComfyUI] Prompt has 9 nodes
+  [ComfyUI]   Node 1: LoadTrellis2Models
+  [ComfyUI]   Node 1: LoadTrellis2Models
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]   Node 2: LoadImage
+  [ComfyUI]   Node 2: LoadImage
+  [ComfyUI]     Inputs: {"image": "pineapple.webp"}
+  [ComfyUI]     Inputs: {"image": "pineapple.webp"}
+  [ComfyUI]   Node 3: InvertMask
+  [ComfyUI]   Node 3: InvertMask
+  [ComfyUI]     Inputs: {"mask": ["2", 1]}
+  [ComfyUI]     Inputs: {"mask": ["2", 1]}
+  [ComfyUI]   Node 4: Trellis2GetConditioning
+  [ComfyUI]   Node 4: Trellis2GetConditioning
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["1", 0], "image": ["2", 0], "mask": ["3", 0]}
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["1", 0], "image": ["2", 0], "mask": ["3", 0]}
+  [ComfyUI]   Node 11: Trellis2EncodeMesh
+  [ComfyUI]   Node 11: Trellis2EncodeMesh
+  [ComfyUI]     Inputs: {"resolution": 1024, "model_config": ["1", 0], "mesh": ["12", 0]}
+  [ComfyUI]     Inputs: {"resolution": 1024, "model_config": ["1", 0], "mesh": ["12", 0]}
+  [ComfyUI]   Node 12: GeomPackLoadMesh
+  [ComfyUI]   Node 12: GeomPackLoadMesh
+  [ComfyUI]     Inputs: {"file_path": "3d/lowwrap.stl"}
+  [ComfyUI]     Inputs: {"file_path": "3d/lowwrap.stl"}
+  [ComfyUI]   Node 13: GeomPackPreviewMeshDual
+  [ComfyUI]   Node 13: GeomPackPreviewMeshDual
+  [ComfyUI]     Inputs: {"layout": "side_by_side", "mode": "fields", "opacity_1": 1, "opacity_2": 1, "preview_dual": "{\"show_edges\":false,\"camera_state\":\"{\\\"position\\\":[-2.5165764235737056,-0.0656252651797762,0.2063
+  [ComfyUI]     Inputs: {"layout": "side_by_side", "mode": "fields", "opacity_1": 1, "opacity_2": 1, "preview_dual": "{\"show_edges\":false,\"camera_state\":\"{\\\"position\\\":[-2.5165764235737056,-0.0656252651797762,0.2063
+  [ComfyUI]   Node 18: Trellis2RefineMesh
+  [ComfyUI]   Node 18: Trellis2RefineMesh
+  [ComfyUI]     Inputs: {"seed": 1652185810, "shape_guidance_strength": 7.5, "shape_guidance_rescale": 12, "shape_sampling_steps": 49152, "max_tokens": true, "model_config": ["1", 0], "conditioning": ["4", 0], "shape_latent"
+  [ComfyUI]     Inputs: {"seed": 1652185810, "shape_guidance_strength": 7.5, "shape_guidance_rescale": 12, "shape_sampling_steps": 49152, "max_tokens": true, "model_config": ["1", 0], "conditioning": ["4", 0], "shape_latent"
+  [ComfyUI]   Node 19: Trellis2ShapeToMesh
+  [ComfyUI]   Node 19: Trellis2ShapeToMesh
+  [ComfyUI]     Inputs: {"target_face_count": 500000, "fill_holes": false, "fill_holes_perimeter": 0.03, "shape_result": ["18", 0]}
+  [ComfyUI]     Inputs: {"target_face_count": 500000, "fill_holes": false, "fill_holes_perimeter": 0.03, "shape_result": ["18", 0]}
+  [ComfyUI] Generated prompt_id: 7b5ea25d-70f9-49d4-94a1-2f2599745167
+  [ComfyUI] Generated prompt_id: 7b5ea25d-70f9-49d4-94a1-2f2599745167
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Failed to validate prompt for output 13:
+  [ComfyUI] Failed to validate prompt for output 13:
+  [ComfyUI] * Trellis2ShapeToMesh 19:
+  [ComfyUI] * Trellis2ShapeToMesh 19:
+  [ComfyUI]   - Required input is missing: trimesh
+  [ComfyUI]   - Required input is missing: trimesh
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Validation result: valid=False
+  [ComfyUI] Validation result: valid=False
+  [ComfyUI]   Error: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}
+  [ComfyUI]   Error: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}
+  [ComfyUI]   Node errors: {"19": {"errors": [{"type": "required_input_missing", "message": "Required input is missing", "details": "trimesh", "extra_info": {"input_name": "trimesh"}}], "dependent_outputs": ["13"], "class_type": "Trellis2ShapeToMesh"}}
+  [ComfyUI]   Node errors: {"19": {"errors": [{"type": "required_input_missing", "message": "Required input is missing", "details": "trimesh", "extra_info": {"input_name": "trimesh"}}], "dependent_outputs": ["13"], "class_type": "Trellis2ShapeToMesh"}}

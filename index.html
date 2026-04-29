@@ -33,8 +33,30 @@
     const tabs = document.getElementById('branch-tabs');
     const frame = document.getElementById('frame');
     let activeTab = null;
+    let pendingTest = null;
+
+    function parseHash() {
+      const raw = decodeURIComponent(location.hash.slice(1));
+      const slashIdx = raw.indexOf('/');
+      if (slashIdx === -1) return { branch: raw, test: null };
+      return { branch: raw.substring(0, slashIdx), test: raw.substring(slashIdx + 1) };
+    }
 
     function init() {
+      const { branch: hashBranch, test: hashTest } = parseHash();
+      pendingTest = hashTest;
+
+      // When the inner iframe finishes loading, send the pending test name
+      frame.addEventListener('load', function() {
+        if (pendingTest) {
+          // Small delay to let nested iframes initialize
+          setTimeout(function() {
+            frame.contentWindow.postMessage({ type: 'comfytest-open', name: pendingTest }, '*');
+            pendingTest = null;
+          }, 500);
+        }
+      });
+
       branches.forEach(function(branch) {
         const btn = document.createElement('button');
         btn.className = 'branch-btn' + (branch === 'main' ? ' main' : '');
@@ -48,12 +70,29 @@
         };
         tabs.appendChild(btn);
 
-        const hash = location.hash.slice(1);
-        if (hash === branch || (!activeTab && branch === 'main') || (!activeTab && branches.indexOf('main') === -1 && branch === branches[0])) {
+        if (hashBranch === branch || (!activeTab && branch === 'main') || (!activeTab && branches.indexOf('main') === -1 && branch === branches[0])) {
           btn.click();
         }
       });
     }
+
+    // Forward keyboard events down to iframe chain
+    document.onkeydown = function(e) {
+      if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(e.key) && activeTab) {
+        e.preventDefault();
+        frame.contentWindow.postMessage({ type: 'comfytest-key', key: e.key }, '*');
+      }
+    };
+
+    // Listen for test open/close from inner iframes to update hash
+    window.addEventListener('message', function(e) {
+      if (!e.data || !e.data.type) return;
+      if (e.data.type === 'comfytest-open' && activeTab) {
+        history.replaceState(null, '', '#' + activeTab + '/' + encodeURIComponent(e.data.name));
+      } else if (e.data.type === 'comfytest-close' && activeTab) {
+        history.replaceState(null, '', '#' + activeTab);
+      }
+    });
 
     init();
   </script>

@@ -1,0 +1,136 @@
+Capturing execution frames: standalone_texturing.json
+  Frame 1 saved (frame_000.jpg, t=0.0s)
+  Validating workflow...
+  [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Prompt has 12 nodes
+  [ComfyUI] Prompt has 12 nodes
+  Warning: 1 node(s) have validation errors (will fail after screenshots)
+  [ComfyUI]   Node 1: LoadTrellis2Models
+  [ComfyUI]   Node 1: LoadTrellis2Models
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]     Inputs: {"resolution": "512", "precision": "auto", "attn_backend": "auto"}
+  Queuing workflow for execution...
+  [ComfyUI]   Node 2: LoadImage
+  [ComfyUI]   Node 2: LoadImage
+  [ComfyUI]     Inputs: {"image": "pineapple.webp"}
+  [ComfyUI]     Inputs: {"image": "pineapple.webp"}
+  [ComfyUI]   Node 3: InvertMask
+  [ComfyUI]   Node 3: InvertMask
+  [ComfyUI]     Inputs: {"mask": ["2", 1]}
+  [ComfyUI]     Inputs: {"mask": ["2", 1]}
+  [ComfyUI]   Node 4: Trellis2GetConditioning
+  [ComfyUI]   Node 4: Trellis2GetConditioning
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["1", 0], "image": ["2", 0], "mask": ["3", 0]}
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["1", 0], "image": ["2", 0], "mask": ["3", 0]}
+  [ComfyUI]   Node 7: Trellis2TextureMesh
+  [ComfyUI]   Node 7: Trellis2TextureMesh
+  [ComfyUI]     Inputs: {"seed": 42, "tex_guidance_strength": 3.5, "tex_guidance_rescale": 12, "tex_sampling_steps": 12, "model_config": ["1", 0], "conditioning": ["4", 0], "shape_latent": ["12", 0]}
+  [ComfyUI]     Inputs: {"seed": 42, "tex_guidance_strength": 3.5, "tex_guidance_rescale": 12, "tex_sampling_steps": 12, "model_config": ["1", 0], "conditioning": ["4", 0], "shape_latent": ["12", 0]}
+  [ComfyUI]   Node 8: Trellis2ExportGLB
+  [ComfyUI]   Node 8: Trellis2ExportGLB
+  [ComfyUI]     Inputs: {"voxelgrid_path": ["7", 0], "decimation_target": 200000, "texture_size": 1024, "remesh": true, "pre_simplify": "trellis2_retextured", "remove_inner_faces": "trellis2", "double_sided": "trellis2", "fi
+  [ComfyUI]     Inputs: {"voxelgrid_path": ["7", 0], "decimation_target": 200000, "texture_size": 1024, "remesh": true, "pre_simplify": "trellis2_retextured", "remove_inner_faces": "trellis2", "double_sided": "trellis2", "fi
+  [ComfyUI]   Node 10: GeomPackLoadMesh
+  [ComfyUI]   Node 10: GeomPackLoadMesh
+  [ComfyUI]     Inputs: {"file_path": "3d/pineapple_alphawrapped.stl"}
+  [ComfyUI]     Inputs: {"file_path": "3d/pineapple_alphawrapped.stl"}
+  [ComfyUI]   Node 12: Trellis2EncodeMesh
+  [ComfyUI]   Node 12: Trellis2EncodeMesh
+  [ComfyUI]     Inputs: {"resolution": 1024, "model_config": ["1", 0], "mesh": ["10", 0]}
+  [ComfyUI]     Inputs: {"resolution": 1024, "model_config": ["1", 0], "mesh": ["10", 0]}
+  [ComfyUI]   Node 13: MaskPreview
+  [ComfyUI]   Node 13: MaskPreview
+  [ComfyUI]     Inputs: {"mask": ["3", 0]}
+  [ComfyUI]     Inputs: {"mask": ["3", 0]}
+  [ComfyUI]   Node 18: GeomPackPreviewMeshDual
+  [ComfyUI]   Node 18: GeomPackPreviewMeshDual
+  [ComfyUI]     Inputs: {"layout": "side_by_side", "mode": "texture", "opacity_1": 1, "opacity_2": 1, "preview_dual": "{\"show_edges\":true,\"camera_state\":\"{\\\"position\\\":[1.8298327548705489,1.380500163284349,-0.054020
+  [ComfyUI]     Inputs: {"layout": "side_by_side", "mode": "texture", "opacity_1": 1, "opacity_2": 1, "preview_dual": "{\"show_edges\":true,\"camera_state\":\"{\\\"position\\\":[1.8298327548705489,1.380500163284349,-0.054020
+  [ComfyUI]   Node 19: GeomPackLoadMeshPath
+  [ComfyUI]   Node 19: GeomPackLoadMeshPath
+  [ComfyUI]     Inputs: {"file_path": ["8", 0]}
+  [ComfyUI]     Inputs: {"file_path": ["8", 0]}
+  [ComfyUI]   Node 20: Preview3D
+  [ComfyUI]   Node 20: Preview3D
+  [ComfyUI]     Inputs: {"model_file": ["8", 0], "image": ""}
+  [ComfyUI]     Inputs: {"model_file": ["8", 0], "image": ""}
+  [ComfyUI] Generated prompt_id: 5a9ae620-e772-4430-98c2-bba8da72d225
+  [ComfyUI] Generated prompt_id: 5a9ae620-e772-4430-98c2-bba8da72d225
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Failed to validate prompt for output 8:
+  [ComfyUI] Failed to validate prompt for output 8:
+  [ComfyUI] * (prompt):
+  [ComfyUI] * (prompt):
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI] * Trellis2ExportGLB 8:
+  [ComfyUI] * Trellis2ExportGLB 8:
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Failed to validate prompt for output 20:
+  [ComfyUI] Failed to validate prompt for output 20:
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Failed to validate prompt for output 18:
+  [ComfyUI] Failed to validate prompt for output 18:
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Validation result: valid=True
+  [ComfyUI] Validation result: valid=True
+  [ComfyUI]   Node errors: {"8": {"errors": [{"type": "return_type_mismatch", "message": "Return type mismatch between linked nodes", "details": "voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)", "extra_info": {"input_name": "voxelgrid_path", "input_config": ["STRING", {"multiline": false}], "received_type": "TRELLIS2_VOXELGRID", "linked_node": ["7", 0]}}], "dependent_outputs": ["8", "20", "18"], "class_type": "Trellis2ExportGLB"}}
+  [ComfyUI]   Node errors: {"8": {"errors": [{"type": "return_type_mismatch", "message": "Return type mismatch between linked nodes", "details": "voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)", "extra_info": {"input_name": "voxelgrid_path", "input_config": ["STRING", {"multiline": false}], "received_type": "TRELLIS2_VOXELGRID", "linked_node": ["7", 0]}}], "dependent_outputs": ["8", "20", "18"], "class_type": "Trellis2ExportGLB"}}
+  [ComfyUI] === Validation PASSED ===
+  [ComfyUI] === Validation PASSED ===
+  [ComfyUI] got prompt
+  [ComfyUI] got prompt
+  [ComfyUI] Failed to validate prompt for output 8:
+  [ComfyUI] Failed to validate prompt for output 8:
+  [ComfyUI] * (prompt):
+  [ComfyUI] * (prompt):
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI] * Trellis2ExportGLB 8:
+  [ComfyUI] * Trellis2ExportGLB 8:
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI]   - Return type mismatch between linked nodes: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Failed to validate prompt for output 20:
+  [ComfyUI] Failed to validate prompt for output 20:
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Failed to validate prompt for output 18:
+  [ComfyUI] Failed to validate prompt for output 18:
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Output will be ignored
+  [ComfyUI] Prompt executed in 0.17 seconds
+  [ComfyUI] Prompt executed in 0.17 seconds
+  Node executed (1 total), capturing...
+  Frame 2 saved (frame_001.jpg, t=1.1s)
+  [capture-node] freeze=10ms shot=272ms unfreeze=0ms saved=True
+  Execution complete (t=1.1s)
+  [3d-wait] Phase 1: Waiting for 'Loading 3D Model' text to disappear...
+  [3d-wait] Phase 1 done in 0.0s
+  [3d-wait] Phase 2: iframes=1
+  [3d-wait] iframe viewer_ready=False (matched 0 console logs)
+  [3d-wait] Waiting for 'Loaded successfully' console message (timeout=60s)...
+  [3d-wait] iframe wait exception: Timeout 60000ms exceeded while waiting for event "console"
+=========================== logs ===========================
+waiting for event "console"
+============================================================
+  [3d-wait] Total 3D wait: 60.1s
+  Captured 2 unique frames over 61.61s
+  [debug] iframes: 1
+  [debug]   iframe[0]: src=http://127.0.0.1:41881/extensions/ComfyUI-GeometryPack/viewer_dual.html?v=177742, canvas=0x0, rafFrozen=True
+  [timing] trigger_3d_previews: 0.0s
+  Saved high-quality screenshot: standalone_texturing_executed.png
+  [timing] final_screenshot: 1.5s
+    Status: FAILED
+    Error: 1 node(s) had validation errors and were silently skipped: node 8: voxelgrid_path, received_type(TRELLIS2_VOXELGRID) mismatch input_type(STRING)
+    Details: Workflow: /node/ComfyUI-TRELLIS2/workflows/standalone_texturing.json
