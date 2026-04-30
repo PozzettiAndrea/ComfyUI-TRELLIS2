@@ -1,0 +1,308 @@
+Capturing execution frames: geometry_only_1024.json
+  Frame 1 saved (frame_000.jpg, t=0.0s)
+  Validating workflow...
+  [ComfyUI] === /validate endpoint called ===
+  Queuing workflow for execution...
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Prompt has 8 nodes
+  [ComfyUI]   Node 1: LoadImage
+  [ComfyUI]     Inputs: {"image": "t_logo.png"}
+  [ComfyUI]   Node 10: MaskPreview
+  [ComfyUI]     Inputs: {"mask": ["11", 0]}
+  [ComfyUI]   Node 11: InvertMask
+  [ComfyUI]     Inputs: {"mask": ["1", 1]}
+  [ComfyUI]   Node 91: Trellis2GetConditioning
+  [ComfyUI]     Inputs: {"background_color": "black", "model_config": ["92", 0], "image": ["1", 0], "mask": ["11", 0]}
+  [ComfyUI]   Node 92: LoadTrellis2Models
+  [ComfyUI]     Inputs: {"resolution": "1024", "precision": "auto", "attn_backend": "auto"}
+  [ComfyUI]   Node 104: Trellis2ImageToShape
+  [ComfyUI]     Inputs: {"seed": 561843699, "ss_guidance_strength": 6.5, "ss_guidance_rescale": 0.05, "ss_sampling_steps": 12, "shape_guidance_strength": 6.5, "shape_guidance_rescale": 0.05, "shape_sampling_steps": 12, "max_
+  [ComfyUI]   Node 108: GeomPackPreviewMeshVTK
+  [ComfyUI]     Inputs: {"mode": "fields", "preview_vtk": "{\"show_edges\":false,\"camera_state\":\"{\\\"position\\\":[0,0,1],\\\"focalPoint\\\":[0,0,0],\\\"viewUp\\\":[0,1,0]}\",\"selected_field\":\"\",\"selected_channel\":
+  [ComfyUI]   Node 109: Trellis2ProcessMesh
+  [ComfyUI]     Inputs: {"target_face_count": 500000, "fill_holes": false, "fill_holes_perimeter": 0.03, "remesh": true, "remesh_band": 1, "remove_inner_faces": true, "min_component_faces": 1, "chart_cone_angle": 90, "chart_
+  [ComfyUI] Generated prompt_id: b73ad71e-0cf3-4d4c-9bb7-f004d280f817
+  [ComfyUI] Calling execution.validate_prompt()...
+  [ComfyUI] Validation result: valid=True
+  [ComfyUI] === Validation PASSED ===
+  [ComfyUI] got prompt
+  [ComfyUI] [comfy-env] Running LoadTrellis2Models: resolution: '1024', precision: 'auto', attn_backend: 'auto'
+  [ComfyUI] [VRAM] Before LoadTrellis2Models: 1156 / 16379 MB
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.EXECUTE_NORMALIZED
+  [ComfyUI] [comfy-env] SubprocessWorker: C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\python.exe
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [comfy-env] env_vars: {'PYTORCH_CUDA_ALLOC_CONF': 'expandable_segments:True', 'COMFYUI_BASE': 'C:\\workspaces\\TRELLIS2-2248\\ComfyUI'}
+  [ComfyUI] [comfy-env] trellis2-nodes: Library/bin has 234 DLLs
+  [ComfyUI] [ComfyUI-TRELLIS2] python: C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\python.exe
+  [ComfyUI] [ComfyUI-TRELLIS2] sys_path sent to worker: ['C:\\workspaces\\TRELLIS2-2248\\ComfyUI', 'C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2', 'C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\Lib\\site-packages', 'C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2']
+  [ComfyUI] [SubprocessWorker] is_pixi=True, python=C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\python.exe
+  [ComfyUI] [SubprocessWorker] launching cmd=['C:\\Users\\ContainerAdministrator\\.local\\bin\\pixi.EXE', 'run', '--as-is', '--manifest-path', 'C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\pixi.toml', '-e', 'trellis2-nodes', 'python', 'C:\\Users\\ContainerAdministrator\\AppData\\Local\\Temp\\comfyui_pvenv_f78b_qnj\\persistent_worker.py', 'tcp://127.0.0.1:60400']...
+  Node executed (1 total), capturing...
+  Frame 2 saved (frame_001.jpg, t=0.5s)
+  [capture-node] freeze=3ms shot=74ms unfreeze=2ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] WARNING: WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=1 sending call_method
+  Frame 3 saved (frame_002.jpg, t=4.8s)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading pipeline config from HuggingFace...
+  [capture-periodic] freeze=1ms shot=77ms unfreeze=2ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Pipeline config downloaded
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/ss_dec_conv3d_16l8_fp16 from microsoft/TRELLIS-image-large...
+  [capture-loop] iter=50 t=6.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/ss_dec_conv3d_16l8_fp16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/ss_flow_img_dit_1_3B_64_bf16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=100 t=11.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=150 t=17.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=200 t=22.8s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=250 t=28.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/ss_flow_img_dit_1_3B_64_bf16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/shape_dec_next_dc_f16c32_fp16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=300 t=33.9s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/shape_dec_next_dc_f16c32_fp16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/slat_flow_img2shape_dit_1_3B_512_bf16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=350 t=39.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=1
+  [capture-loop] iter=400 t=45.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=450 t=50.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=500 t=56.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/slat_flow_img2shape_dit_1_3B_512_bf16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16 from microsoft/TRELLIS.2-4B...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 1 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x0000142c (most recent call first):
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 324 in wait
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 607 in wait
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\tqdm\_monitor.py", line 60 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000007d4 (most recent call first):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 106 in _vram_poller
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 953 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00001708 (most recent call first):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 52 in _watchdog
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 953 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00003bd8 (most recent call first):
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 633 in xet_get
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 1727 in _download_to_tmp_and_move
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 1304 in _hf_hub_download_to_local_dir
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 994 in hf_hub_download
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114 in _inner_fn
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\stages.py", line 200 in _init_config
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\nodes_loader.py", line 71 in execute
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\comfy_api\latest\_io.py", line 1826 in EXECUTE_NORMALIZED
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1723 in main
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1768 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [capture-loop] iter=550 t=61.7s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=600 t=67.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=650 t=73.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=700 t=78.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/tex_dec_next_dc_f16c32_fp16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=750 t=84.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=800 t=89.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/tex_dec_next_dc_f16c32_fp16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/slat_flow_imgshape2tex_dit_1_3B_512_bf16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=850 t=95.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=900 t=100.8s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=950 t=106.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3
+  [capture-loop] iter=1000 t=111.9s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/slat_flow_imgshape2tex_dit_1_3B_512_bf16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16 from microsoft/TRELLIS.2-4B...
+  [capture-loop] iter=1050 t=117.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 2 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x0000142c (most recent call first):
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 324 in wait
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 607 in wait
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\tqdm\_monitor.py", line 60 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x000007d4 (most recent call first):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 106 in _vram_poller
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 953 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00001708 (most recent call first):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 52 in _watchdog
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 953 in run
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 1016 in _bootstrap_inner
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\threading.py", line 973 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00003bd8 (most recent call first):
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 633 in xet_get
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 1727 in _download_to_tmp_and_move
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 1304 in _hf_hub_download_to_local_dir
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\file_download.py", line 994 in hf_hub_download
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114 in _inner_fn
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\stages.py", line 200 in _init_config
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\nodes_loader.py", line 71 in execute
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\comfy_api\latest\_io.py", line 1826 in EXECUTE_NORMALIZED
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1723 in main
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1768 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [capture-loop] iter=1100 t=123.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=1150 t=128.7s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=1200 t=134.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading ckpts/shape_enc_next_dc_f16c32_fp16...
+  [capture-loop] iter=1250 t=139.8s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloaded ckpts/shape_enc_next_dc_f16c32_fp16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Config loaded: 9 models registered
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] LoadTrellis2Models done (143.26s): result: NodeOutput
+  [ComfyUI] [VRAM] After LoadTrellis2Models: 1156 / 16379 MB
+  [ComfyUI] [comfy-env] Running Trellis2GetConditioning: background_color: 'black', model_config: dict, image: torch.float32 [1,1024,1024,3] cpu, mask: torch.float32 [1,1024,1024] cpu
+  [ComfyUI] [VRAM] Before Trellis2GetConditioning: 1156 / 16379 MB
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2GetConditioning.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 1024, 1024, 3])
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'mask' shape: torch.Size([1, 1024, 1024])
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=2 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1024, 1024, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1024, 1024, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'manager_path', 'storage_key', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1024, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1024, 1024])
+  Frame 4 saved (frame_003.jpg, t=144.6s)
+  [capture-periodic] freeze=1ms shot=87ms unfreeze=2ms saved=True
+  [capture-loop] iter=1300 t=145.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=1
+  [capture-loop] iter=1350 t=150.9s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [capture-loop] iter=1400 t=156.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=2
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=2
+  [ComfyUI] [comfy-env] VRAM request: 1.21GB, free before eviction: 15.96GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 15.96GB
+  [ComfyUI] C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py:1370: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  [ComfyUI]   return t.to(
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +256MB (now 256MB) reserved=258MB peak=256MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 conditioning: dtype=torch.bfloat16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy.attention_sparse] Dense attention: attention_sage
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +930MB (now 1186MB) reserved=1226MB peak=1186MB
+  [ComfyUI] [SubprocessWorker] got response: error
+  [ComfyUI] !!! Exception during processing !!! CUDA error: unspecified launch failure
+  [ComfyUI] Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+  [ComfyUI] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+  [ComfyUI] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+  [ComfyUI] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Worker traceback:
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1723, in main
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\comfy_api\latest\_io.py", line 1826, in EXECUTE_NORMALIZED
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\nodes_inference.py", line 55, in execute
+  [ComfyUI]     conditioning, preprocessed_image = run_conditioning(
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\stages.py", line 811, in run_conditioning
+  [ComfyUI]     cond_512 = dinov3_model([pil_image])
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+  [ComfyUI]     return func(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 385, in __call__
+  [ComfyUI]     features = self.extract_features(image)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 352, in extract_features
+  [ComfyUI]     hidden_states = layer_module(
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 193, in forward
+  [ComfyUI]     x = self.attention(self.norm1(x), position_embeddings=position_embeddings)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 144, in forward
+  [ComfyUI]     return self.o_proj(out.contiguous().reshape(B, N, -1))
+  [ComfyUI] torch.AcceleratorError: CUDA error: unspecified launch failure
+  [ComfyUI] Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+  [ComfyUI] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+  [ComfyUI] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+  [ComfyUI] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\execution.py", line 534, in execute
+  [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\execution.py", line 334, in get_output_data
+  [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\execution.py", line 308, in _async_map_node_over_list
+  [ComfyUI]     await process_inputs(input_dict, i)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\execution.py", line 296, in process_inputs
+  [ComfyUI]     result = f(**inputs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\.venv\lib\site-packages\comfy_env\isolation\metadata.py", line 528, in proxy
+  [ComfyUI]     result = worker.call_method(
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\.venv\lib\site-packages\comfy_env\isolation\workers\subprocess.py", line 3490, in call_method
+  [ComfyUI]     raise WorkerError(
+  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: CUDA error: unspecified launch failure
+  [ComfyUI] Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+  [ComfyUI] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+  [ComfyUI] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+  [ComfyUI] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Worker traceback:
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI]   File "C:\Users\ContainerAdministrator\AppData\Local\Temp\comfyui_pvenv_f78b_qnj\persistent_worker.py", line 1723, in main
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\comfy_api\latest\_io.py", line 1826, in EXECUTE_NORMALIZED
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\nodes_inference.py", line 55, in execute
+  [ComfyUI]     conditioning, preprocessed_image = run_conditioning(
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\stages.py", line 811, in run_conditioning
+  [ComfyUI]     cond_512 = dinov3_model([pil_image])
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+  [ComfyUI]     return func(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 385, in __call__
+  [ComfyUI]     features = self.extract_features(image)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 352, in extract_features
+  Execution complete (t=160.0s)
+  [ComfyUI]     hidden_states = layer_module(
+  Execution error: {'prompt_id': '39d3ed25-d189-4720-8e8d-a4fbb2d4dd03', 'node_id': '91', 'node_type': 'Trellis2GetConditioning', 'executed': ['92', '11', '1', '10'], 'exception_message': 'CUDA error: unspecified launch failure\nSearch for `cudaErrorLaunchFailure\' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n\n\nWorker traceback:\nTraceback (most recent call last):\n  File "C:\\Users\\ContainerAdministrator\\AppData\\Local\\Temp\\comfyui_pvenv_f78b_qnj\\persistent_worker.py", line 1723, in main\n    result = method(**inputs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\comfy_api\\latest\\_io.py", line 1826, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\nodes_inference.py", line 55, in execute\n    conditioning, preprocessed_image = run_conditioning(\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\stages.py", line 811, in run_conditioning\n    cond_512 = dinov3_model([pil_image])\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\utils\\_contextlib.py", line 124, in decorate_context\n    return func(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 385, in __call__\n    features = self.extract_features(image)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 352, in extract_features\n    hidden_states = layer_module(\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 193, in forward\n    x = self.attention(self.norm1(x), position_embeddings=position_embeddings)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 144, in forward\n    return self.o_proj(out.contiguous().reshape(B, N, -1))\ntorch.AcceleratorError: CUDA error: unspecified launch failure\nSearch for `cudaErrorLaunchFailure\' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 534, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 334, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 308, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 296, in process_inputs\n    result = f(**inputs)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\.venv\\lib\\site-packages\\comfy_env\\isolation\\metadata.py", line 528, in proxy\n    result = worker.call_method(\n', '  File "C:\\workspaces\\TRELLIS2-2248\\.venv\\lib\\site-packages\\comfy_env\\isolation\\workers\\subprocess.py", line 3490, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'background_color': ['black'], 'model_config': ["{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1024', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}"], 'image': ['tensor([[[[0.0275, 0.0353, 0.0392],\n          [0.0314, 0.0431, 0.0392],\n          [0.0353, 0.0431, 0.0392],\n          ...,\n          [0.0549, 0.0667, 0.0667],\n          [0.0549, 0.0667, 0.0745],\n          [0.0627, 0.0745, 0.0784]],\n\n         [[0.0431, 0.0392, 0.0431],\n          [0.0353, 0.0431, 0.0392],\n          [0.0314, 0.0392, 0.0353],\n          ...,\n          [0.0549, 0.0627, 0.0627],\n          [0.0627, 0.0706, 0.0745],\n          [0.0431, 0.0627, 0.0627]],\n\n         [[0.0392, 0.0392, 0.0431],\n          [0.0353, 0.0353, 0.0353],\n          [0.0314, 0.0353, 0.0392],\n          ...,\n          [0.0627, 0.0627, 0.0706],\n          [0.0549, 0.0588, 0.0667],\n          [0.0510, 0.0627, 0.0667]],\n\n         ...,\n\n         [[0.0431, 0.0471, 0.0588],\n          [0.0431, 0.0431, 0.0549],\n          [0.0471, 0.0471, 0.0588],\n          ...,\n          [0.0314, 0.0314, 0.0275],\n          [0.0275, 0.0235, 0.0235],\n          [0.0275, 0.0314, 0.0275]],\n\n         [[0.0510, 0.0510, 0.0627],\n          [0.0510, 0.0510, 0.0588],\n          [0.0471, 0.0471, 0.0549],\n          ...,\n          [0.0235, 0.0235, 0.0235],\n          [0.0314, 0.0353, 0.0314],\n          [0.0235, 0.0275, 0.0275]],\n\n         [[0.0431, 0.0471, 0.0510],\n          [0.0431, 0.0510, 0.0588],\n          [0.0431, 0.0471, 0.0667],\n          ...,\n          [0.0235, 0.0275, 0.0314],\n          [0.0235, 0.0275, 0.0235],\n          [0.0314, 0.0275, 0.0275]]]])'], 'mask': ['tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         ...,\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.]]])']}, 'current_outputs': ['104', '109', '92', '1', '11', '91', '108', '10'], 'timestamp': 1777582593484}
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    Status: FAILED
+    Error: Workflow execution failed: {'prompt_id': '39d3ed25-d189-4720-8e8d-a4fbb2d4dd03', 'node_id': '91', 'node_type': 'Trellis2GetConditioning', 'executed': ['92', '11', '1', '10'], 'exception_message': 'CUDA error: unspecified launch failure\nSearch for `cudaErrorLaunchFailure\' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n\n\nWorker traceback:\nTraceback (most recent call last):\n  File "C:\\Users\\ContainerAdministrator\\AppData\\Local\\Temp\\comfyui_pvenv_f78b_qnj\\persistent_worker.py", line 1723, in main\n    result = method(**inputs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\comfy_api\\latest\\_io.py", line 1826, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\nodes_inference.py", line 55, in execute\n    conditioning, preprocessed_image = run_conditioning(\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\stages.py", line 811, in run_conditioning\n    cond_512 = dinov3_model([pil_image])\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\utils\\_contextlib.py", line 124, in decorate_context\n    return func(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 385, in __call__\n    features = self.extract_features(image)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 352, in extract_features\n    hidden_states = layer_module(\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 193, in forward\n    x = self.attention(self.norm1(x), position_embeddings=position_embeddings)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\.ce\\.pixi\\envs\\trellis2-nodes\\lib\\site-packages\\torch\\nn\\modules\\module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\custom_nodes\\ComfyUI-TRELLIS2\\nodes\\trellis2\\dinov3.py", line 144, in forward\n    return self.o_proj(out.contiguous().reshape(B, N, -1))\ntorch.AcceleratorError: CUDA error: unspecified launch failure\nSearch for `cudaErrorLaunchFailure\' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 534, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 334, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 308, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\ComfyUI\\execution.py", line 296, in process_inputs\n    result = f(**inputs)\n', '  File "C:\\workspaces\\TRELLIS2-2248\\.venv\\lib\\site-packages\\comfy_env\\isolation\\metadata.py", line 528, in proxy\n    result = worker.call_method(\n', '  File "C:\\workspaces\\TRELLIS2-2248\\.venv\\lib\\site-packages\\comfy_env\\isolation\\workers\\subprocess.py", line 3490, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'background_color': ['black'], 'model_config': ["{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1024', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}"], 'image': ['tensor([[[[0.0275, 0.0353, 0.0392],\n          [0.0314, 0.0431, 0.0392],\n          [0.0353, 0.0431, 0.0392],\n          ...,\n          [0.0549, 0.0667, 0.0667],\n          [0.0549, 0.0667, 0.0745],\n          [0.0627, 0.0745, 0.0784]],\n\n         [[0.0431, 0.0392, 0.0431],\n          [0.0353, 0.0431, 0.0392],\n          [0.0314, 0.0392, 0.0353],\n          ...,\n          [0.0549, 0.0627, 0.0627],\n          [0.0627, 0.0706, 0.0745],\n          [0.0431, 0.0627, 0.0627]],\n\n         [[0.0392, 0.0392, 0.0431],\n          [0.0353, 0.0353, 0.0353],\n          [0.0314, 0.0353, 0.0392],\n          ...,\n          [0.0627, 0.0627, 0.0706],\n          [0.0549, 0.0588, 0.0667],\n          [0.0510, 0.0627, 0.0667]],\n\n         ...,\n\n         [[0.0431, 0.0471, 0.0588],\n          [0.0431, 0.0431, 0.0549],\n          [0.0471, 0.0471, 0.0588],\n          ...,\n          [0.0314, 0.0314, 0.0275],\n          [0.0275, 0.0235, 0.0235],\n          [0.0275, 0.0314, 0.0275]],\n\n         [[0.0510, 0.0510, 0.0627],\n          [0.0510, 0.0510, 0.0588],\n          [0.0471, 0.0471, 0.0549],\n          ...,\n          [0.0235, 0.0235, 0.0235],\n          [0.0314, 0.0353, 0.0314],\n          [0.0235, 0.0275, 0.0275]],\n\n         [[0.0431, 0.0471, 0.0510],\n          [0.0431, 0.0510, 0.0588],\n          [0.0431, 0.0471, 0.0667],\n          ...,\n          [0.0235, 0.0275, 0.0314],\n          [0.0235, 0.0275, 0.0235],\n          [0.0314, 0.0275, 0.0275]]]])'], 'mask': ['tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         ...,\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.]]])']}, 'current_outputs': ['104', '109', '92', '1', '11', '91', '108', '10'], 'timestamp': 1777582593484}
+    Details: Workflow: C:\ComfyUI-TRELLIS2\workflows\geometry_only_1024.json
+Node error: Trellis2GetConditioning
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 193, in forward
+  [ComfyUI]     x = self.attention(self.norm1(x), position_embeddings=position_embeddings)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\.ce\.pixi\envs\trellis2-nodes\lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "C:\workspaces\TRELLIS2-2248\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes\trellis2\dinov3.py", line 144, in forward
+  [ComfyUI]     return self.o_proj(out.contiguous().reshape(B, N, -1))
+  [ComfyUI] torch.AcceleratorError: CUDA error: unspecified launch failure
+  [ComfyUI] Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+  [ComfyUI] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+  [ComfyUI] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+  [ComfyUI] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Prompt executed in 159.78 seconds
