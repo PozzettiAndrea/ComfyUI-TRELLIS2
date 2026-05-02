@@ -1,60 +1,131 @@
 {
-  "timestamp": "2026-02-23T11:31:39.221844+00:00",
+  "timestamp": "2026-05-02T03:15:29.874377+00:00",
   "platform": "windows",
   "hardware": {
-    "os": "Windows-11-10.0.26100-SP0",
-    "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
-    "gpu": "NVIDIA RTX A4000"
+    "os": "Windows-10-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+    "gpu": "NVIDIA GeForce RTX 3090"
   },
+  "commit_hash": "59aab9d181c4ee34af330ee84781cbd0d960f641",
+  "success": true,
   "summary": {
-    "total": 4,
-    "passed": 3,
+    "total": 9,
+    "passed": 8,
     "failed": 0
   },
   "workflows": [
     {
-      "name": "geometry_only",
+      "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 714.78,
+      "duration_seconds": 399.45,
       "error": null,
       "hardware": {
-        "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 23.53,
-          "avg": 16.29
+          "peak": 19.44,
+          "avg": 7.8
         },
-        "total_ram_gb": 30.0,
-        "samples": 483,
+        "total_ram_gb": 31.9,
+        "samples": 338,
         "vram": {
-          "peak": 5.2,
-          "avg": 2.55
+          "peak": 5.05,
+          "avg": 2.15
+        }
+      }
+    },
+    {
+      "name": "geometry_only_1024_cascade",
+      "status": "pass",
+      "duration_seconds": 215.82,
+      "error": null,
+      "hardware": {
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "resources": {
+        "ram": {
+          "peak": 22.95,
+          "avg": 17.21
+        },
+        "total_ram_gb": 31.9,
+        "samples": 189,
+        "vram": {
+          "peak": 5.71,
+          "avg": 3.45
+        }
+      }
+    },
+    {
+      "name": "geometry_only_1536",
+      "status": "pass",
+      "duration_seconds": 490.14,
+      "error": null,
+      "hardware": {
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "resources": {
+        "ram": {
+          "peak": 23.56,
+          "avg": 12.48
+        },
+        "total_ram_gb": 31.9,
+        "samples": 428,
+        "vram": {
+          "peak": 8.62,
+          "avg": 4.76
+        }
+      }
+    },
+    {
+      "name": "geometry_only_512",
+      "status": "pass",
+      "duration_seconds": 87.58,
+      "error": null,
+      "hardware": {
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "resources": {
+        "ram": {
+          "peak": 10.08,
+          "avg": 6.41
+        },
+        "total_ram_gb": 31.9,
+        "samples": 77,
+        "vram": {
+          "peak": 4.37,
+          "avg": 2.48
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 644.86,
+      "duration_seconds": 239.8,
       "error": null,
       "hardware": {
-        "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 29.44,
-          "avg": 23.71
+          "peak": 16.12,
+          "avg": 12.95
         },
-        "total_ram_gb": 30.0,
-        "samples": 474,
+        "total_ram_gb": 31.9,
+        "samples": 211,
         "vram": {
-          "peak": 5.82,
-          "avg": 3.86
+          "peak": 4.21,
+          "avg": 1.91
         }
       }
     },
@@ -66,25 +137,71 @@
       "hardware": null
     },
     {
-      "name": "remove_background",
+      "name": "refinement",
       "status": "pass",
-      "duration_seconds": 483.33,
+      "duration_seconds": 161.17,
       "error": null,
       "hardware": {
-        "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 58 Stepping 9, GenuineIntel",
-        "gpu": "NVIDIA RTX A4000"
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 29.03,
-          "avg": 22.83
+          "peak": 14.99,
+          "avg": 4.72
         },
-        "total_ram_gb": 30.0,
-        "samples": 341,
+        "total_ram_gb": 31.9,
+        "samples": 142,
         "vram": {
-          "peak": 5.83,
-          "avg": 3.44
+          "peak": 8.11,
+          "avg": 4.21
+        }
+      }
+    },
+    {
+      "name": "remove_background",
+      "status": "pass",
+      "duration_seconds": 256.78,
+      "error": null,
+      "hardware": {
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "resources": {
+        "ram": {
+          "peak": 13.35,
+          "avg": 11.0
+        },
+        "total_ram_gb": 31.9,
+        "samples": 226,
+        "vram": {
+          "peak": 6.18,
+          "avg": 2.04
+        }
+      }
+    },
+    {
+      "name": "standalone_texturing",
+      "status": "pass",
+      "duration_seconds": 226.96,
+      "error": null,
+      "hardware": {
+        "os": "Windows-10-10.0.26200-SP0",
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "resources": {
+        "ram": {
+          "peak": 11.09,
+          "avg": 8.18
+        },
+        "total_ram_gb": 31.9,
+        "samples": 199,
+        "vram": {
+          "peak": 4.64,
+          "avg": 2.04
         }
       }
     }

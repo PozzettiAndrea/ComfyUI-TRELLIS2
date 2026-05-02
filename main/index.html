@@ -12,6 +12,11 @@
     .tab:hover { background: #243656; color: #e6edf3; border-color: #4a6282; }
     .tab.active { background: #58a6ff; color: #fff; border-color: #58a6ff; }
     .tab.available { color: #3fb950; }
+    .tab.passed { color: #3fb950; border-color: rgba(63, 185, 80, 0.4); }
+    .tab.failed { color: #f85149; border-color: rgba(248, 81, 73, 0.5); background: #2a1416; }
+    .tab.failed.active { background: #f85149; color: #fff; border-color: #f85149; }
+    .tab.passed.active { background: #3fb950; color: #fff; border-color: #3fb950; }
+    .tab .status-mark { margin-left: 6px; font-weight: 700; }
     .tab.unavailable { color: #4a6282; cursor: not-allowed; border-color: #1c2d44; background: #0f1923; }
     iframe { flex: 1; width: 100%; border: none; background: #0f1923; }
   </style>
@@ -28,21 +33,41 @@
     const frame = document.getElementById('frame');
     let activeTab = null;
 
-    async function checkAvailable(id) {
+    async function fetchStatus(id) {
+      // Returns 'passed' | 'failed' | 'available' | 'unavailable'.
       try {
-        const resp = await fetch(id + '/index.html', { method: 'HEAD' });
-        return resp.ok;
-      } catch { return false; }
+        const r = await fetch(id + '/results.json', { cache: 'no-cache' });
+        if (r.ok) {
+          const data = await r.json();
+          if (typeof data.success === 'boolean') return data.success ? 'passed' : 'failed';
+        }
+      } catch {}
+      try {
+        const head = await fetch(id + '/index.html', { method: 'HEAD' });
+        return head.ok ? 'available' : 'unavailable';
+      } catch { return 'unavailable'; }
     }
 
     async function init() {
       for (const p of platforms) {
-        const available = await checkAvailable(p.id);
+        const status = await fetchStatus(p.id);
+        const interactive = status !== 'unavailable';
         const btn = document.createElement('button');
-        btn.className = 'tab ' + (available ? 'available' : 'unavailable');
+        btn.className = 'tab ' + status;
         btn.textContent = p.label;
+        if (status === 'passed') {
+          const mark = document.createElement('span');
+          mark.className = 'status-mark';
+          mark.textContent = '✓';
+          btn.appendChild(mark);
+        } else if (status === 'failed') {
+          const mark = document.createElement('span');
+          mark.className = 'status-mark';
+          mark.textContent = '✗';
+          btn.appendChild(mark);
+        }
         btn.onclick = () => {
-          if (!available) return;
+          if (!interactive) return;
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
           btn.classList.add('active');
           frame.src = p.id + '/index.html';
@@ -52,11 +77,52 @@
         tabs.appendChild(btn);
 
         const hash = location.hash.slice(1);
-        if ((hash === p.id || (!activeTab && available)) && available) {
+        if ((hash === p.id || (!activeTab && interactive)) && interactive) {
           btn.click();
         }
       }
     }
+
+    // Forward keyboard events to report iframe
+    document.onkeydown = function(e) {
+      if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        if (frameReady) frame.contentWindow.postMessage({ type: 'comfytest-key', key: e.key }, '*');
+      }
+    };
+
+    let pendingMessage = null;
+    let frameReady = false;
+
+    frame.addEventListener('load', function() {
+      if (frame.src !== 'about:blank') {
+        frameReady = true;
+        if (pendingMessage) {
+          // Small delay to let report.html initialize
+          setTimeout(function() {
+            frame.contentWindow.postMessage(pendingMessage, '*');
+            pendingMessage = null;
+          }, 200);
+        }
+      }
+    });
+
+    // Forward messages between report iframe and parent (branch_index)
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type && e.data.type.startsWith('comfytest-')) {
+        if (e.source === frame.contentWindow) {
+          // From report iframe -> forward to parent
+          if (window !== window.top) window.parent.postMessage(e.data, '*');
+        } else {
+          // From parent -> forward to report iframe
+          if (frameReady) {
+            frame.contentWindow.postMessage(e.data, '*');
+          } else {
+            pendingMessage = e.data;
+          }
+        }
+      }
+    });
 
     init();
   </script>
