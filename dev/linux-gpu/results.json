@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-05-05T15:43:29.250745+00:00",
+  "timestamp": "2026-05-05T16:18:39.032971+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
     "cpu": "AMD Ryzen 5 3600 6-Core Processor",
     "gpu": "NVIDIA GeForce RTX 5060"
   },
-  "commit_hash": "4362341ee9f5a29be2d645befb76a722403bceca",
+  "commit_hash": "e692ebd19a2b41344c3ddcb1157709ca8257ddf5",
   "success": false,
   "summary": {
     "total": 9,
@@ -17,7 +17,7 @@
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 424.19,
+      "duration_seconds": 412.93,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -26,21 +26,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.22,
-          "avg": 7.71
+          "peak": 20.0,
+          "avg": 7.97
         },
         "total_ram_gb": 31.3,
-        "samples": 412,
+        "samples": 401,
         "vram": {
           "peak": 3.87,
-          "avg": 1.49
+          "avg": 1.51
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 229.18,
+      "duration_seconds": 222.31,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -49,22 +49,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 22.95,
-          "avg": 14.49
+          "peak": 23.33,
+          "avg": 19.93
         },
         "total_ram_gb": 31.3,
-        "samples": 223,
+        "samples": 217,
         "vram": {
-          "peak": 4.02,
-          "avg": 2.41
+          "peak": 4.07,
+          "avg": 2.49
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "pass",
-      "duration_seconds": 701.99,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 401.23,
+      "error": "Workflow execution failed: {'prompt_id': '1804167e-0cd4-4d59-a188-cf6333b15087', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['92', '91', '1', '11', '10'], 'exception_message': '[CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_awmmr1eo/persistent_worker.py\", line 1749, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1545/ComfyUI/comfy_api/latest/_io.py\", line 1826, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1545/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n  File \"/workspaces/TRELLIS2-1545/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 957, in run_shape_generation\\n    mesh.fill_holes()  # match original decode_latent()\\n  File \"/workspaces/TRELLIS2-1545/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py\", line 1169, in fill_holes\\n    mesh.fill_holes(max_hole_perimeter=max_hole_perimeter)\\n  File \"/workspaces/TRELLIS2-1545/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/cumesh_vb/cumesh.py\", line 286, in fill_holes\\n    self.cu_mesh.fill_holes(max_hole_perimeter)\\nRuntimeError: [CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1545/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1545/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1545/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1545/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1545/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 528, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1545/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 3516, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'seed': [1163985367], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1536_cascade', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.3281e-01, -1.3984e+00, -5.7812e+00,  ..., -7.3828e-01,\\n          -8.6328e-01, -6.4453e-01],\\n         [-4.1250e+00,  6.5430e-02, -8.7500e+00,  ...,  9.3750e-02,\\n          -2.4844e+00,  4.3359e-01],\\n         [ 2.7734e-01, -8.9645e-04, -9.5215e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0391e-01, -6.1328e-01, -5.6875e+00,  ..., -5.6885e-02,\\n          -6.2109e-01,  7.1777e-02],\\n         [-5.3125e-01, -6.4844e-01, -5.9375e+00,  ..., -1.1523e-01,\\n          -5.8203e-01,  5.4443e-02],\\n         [-3.7305e-01, -7.9297e-01, -5.7188e+00,  ...,  4.3213e-02,\\n          -2.9492e-01,  5.7373e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 8.3008e-02, -1.3828e+00, -5.8750e+00,  ..., -6.8359e-01,\\n          -9.4531e-01, -6.1328e-01],\\n         [-3.8750e+00,  1.4453e-01, -8.8125e+00,  ...,  2.1484e-01,\\n          -2.4219e+00,  4.8828e-01],\\n         [ 2.7930e-01, -4.0588e-03, -1.0938e-01,  ...,  3.2471e-02,\\n           1.5259e-02,  3.0029e-02],\\n         ...,\\n         [-4.9414e-01, -5.6641e-01, -5.8750e+00,  ..., -5.9814e-02,\\n          -4.9609e-01,  1.4160e-01],\\n         [-4.8633e-01, -5.9766e-01, -6.0000e+00,  ..., -7.3242e-02,\\n          -4.7461e-01,  1.2695e-01],\\n         [-3.3398e-01, -8.0469e-01, -5.5312e+00,  ...,  1.3379e-01,\\n          -1.6602e-01,  1.2158e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['92', '104', '91', '108', '1', '11', '112', '10'], 'timestamp': 1777997252587}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1536.json\nNode error: Trellis2ImageToShape",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -72,21 +72,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 28.19,
-          "avg": 21.79
+          "peak": 26.16,
+          "avg": 18.04
         },
         "total_ram_gb": 31.3,
-        "samples": 680,
+        "samples": 391,
         "vram": {
-          "peak": 5.79,
-          "avg": 2.89
+          "peak": 6.94,
+          "avg": 4.21
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 88.84,
+      "duration_seconds": 84.46,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -95,21 +95,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 19.22,
-          "avg": 17.52
+          "peak": 21.04,
+          "avg": 10.31
         },
         "total_ram_gb": 31.3,
-        "samples": 87,
+        "samples": 82,
         "vram": {
-          "peak": 3.2,
-          "avg": 1.8
+          "peak": 3.61,
+          "avg": 1.82
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 195.85,
+      "duration_seconds": 176.12,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.53,
-          "avg": 13.67
+          "peak": 18.11,
+          "avg": 16.11
         },
         "total_ram_gb": 31.3,
-        "samples": 190,
+        "samples": 171,
         "vram": {
-          "peak": 3.07,
-          "avg": 1.17
+          "peak": 3.09,
+          "avg": 1.18
         }
       }
     },
@@ -139,7 +139,7 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 138.37,
+      "duration_seconds": 143.09,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.51,
-          "avg": 6.12
+          "peak": 16.91,
+          "avg": 7.49
         },
         "total_ram_gb": 31.3,
-        "samples": 135,
+        "samples": 140,
         "vram": {
           "peak": 6.73,
-          "avg": 2.66
+          "avg": 2.63
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 22.75,
-      "error": "1 node(s) had validation errors and were silently skipped: node 93: target_face_count\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json",
+      "status": "pass",
+      "duration_seconds": 100.32,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -171,21 +171,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 6.16,
-          "avg": 4.51
+          "peak": 15.47,
+          "avg": 10.88
         },
         "total_ram_gb": 31.3,
-        "samples": 23,
+        "samples": 98,
         "vram": {
           "peak": 3.91,
-          "avg": 0.58
+          "avg": 1.3
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 156.51,
+      "duration_seconds": 161.0,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 13.49,
-          "avg": 6.33
+          "peak": 13.09,
+          "avg": 9.83
         },
         "total_ram_gb": 31.3,
-        "samples": 153,
+        "samples": 157,
         "vram": {
           "peak": 3.43,
-          "avg": 1.06
+          "avg": 1.1
         }
       }
     }
