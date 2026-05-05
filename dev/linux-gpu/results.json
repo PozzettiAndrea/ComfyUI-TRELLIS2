@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-05-04T23:48:13.055658+00:00",
+  "timestamp": "2026-05-05T15:43:29.250745+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
     "cpu": "AMD Ryzen 5 3600 6-Core Processor",
     "gpu": "NVIDIA GeForce RTX 5060"
   },
-  "commit_hash": "97cafaa214f4d5050fc4695197d4f51102004522",
-  "success": true,
+  "commit_hash": "4362341ee9f5a29be2d645befb76a722403bceca",
+  "success": false,
   "summary": {
     "total": 9,
-    "passed": 8,
-    "failed": 0
+    "passed": 7,
+    "failed": 1
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 419.31,
+      "duration_seconds": 424.19,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -26,21 +26,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 16.39,
-          "avg": 7.65
+          "peak": 17.22,
+          "avg": 7.71
         },
         "total_ram_gb": 31.3,
-        "samples": 407,
+        "samples": 412,
         "vram": {
-          "peak": 3.85,
-          "avg": 1.36
+          "peak": 3.87,
+          "avg": 1.49
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 293.14,
+      "duration_seconds": 229.18,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -49,21 +49,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 21.92,
-          "avg": 13.92
+          "peak": 22.95,
+          "avg": 14.49
         },
         "total_ram_gb": 31.3,
-        "samples": 285,
+        "samples": 223,
         "vram": {
-          "peak": 4.04,
-          "avg": 2.21
+          "peak": 4.02,
+          "avg": 2.41
         }
       }
     },
     {
       "name": "geometry_only_1536",
       "status": "pass",
-      "duration_seconds": 723.88,
+      "duration_seconds": 701.99,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -72,13 +72,13 @@
       },
       "resources": {
         "ram": {
-          "peak": 24.5,
-          "avg": 19.81
+          "peak": 28.19,
+          "avg": 21.79
         },
         "total_ram_gb": 31.3,
-        "samples": 703,
+        "samples": 680,
         "vram": {
-          "peak": 6.28,
+          "peak": 5.79,
           "avg": 2.89
         }
       }
@@ -86,7 +86,7 @@
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 103.44,
+      "duration_seconds": 88.84,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -95,21 +95,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.28,
-          "avg": 15.69
+          "peak": 19.22,
+          "avg": 17.52
         },
         "total_ram_gb": 31.3,
-        "samples": 101,
+        "samples": 87,
         "vram": {
-          "peak": 3.08,
-          "avg": 1.63
+          "peak": 3.2,
+          "avg": 1.8
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 184.16,
+      "duration_seconds": 195.85,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 16.59,
-          "avg": 13.16
+          "peak": 17.53,
+          "avg": 13.67
         },
         "total_ram_gb": 31.3,
-        "samples": 179,
+        "samples": 190,
         "vram": {
-          "peak": 3.08,
-          "avg": 1.12
+          "peak": 3.07,
+          "avg": 1.17
         }
       }
     },
@@ -139,7 +139,7 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 145.86,
+      "duration_seconds": 138.37,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.63,
-          "avg": 6.03
+          "peak": 12.51,
+          "avg": 6.12
         },
         "total_ram_gb": 31.3,
-        "samples": 142,
+        "samples": 135,
         "vram": {
           "peak": 6.73,
-          "avg": 2.55
+          "avg": 2.66
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "pass",
-      "duration_seconds": 129.6,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 22.75,
+      "error": "1 node(s) had validation errors and were silently skipped: node 93: target_face_count\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -171,21 +171,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 14.44,
-          "avg": 10.49
+          "peak": 6.16,
+          "avg": 4.51
         },
         "total_ram_gb": 31.3,
-        "samples": 127,
+        "samples": 23,
         "vram": {
-          "peak": 3.03,
-          "avg": 1.14
+          "peak": 3.91,
+          "avg": 0.58
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 159.81,
+      "duration_seconds": 156.51,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 13.22,
-          "avg": 9.83
+          "peak": 13.49,
+          "avg": 6.33
         },
         "total_ram_gb": 31.3,
-        "samples": 155,
+        "samples": 153,
         "vram": {
           "peak": 3.43,
-          "avg": 1.12
+          "avg": 1.06
         }
       }
     }
