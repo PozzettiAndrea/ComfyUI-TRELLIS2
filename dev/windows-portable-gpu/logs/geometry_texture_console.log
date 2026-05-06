@@ -21,29 +21,29 @@
 [Console-log] [MotionCapture] Loading FBX mesh preview extension...
 [Console-log] [MotionCapture] Detected extension folder: ComfyUI-GeometryPack
 [Console-log] [MotionCapture] FBX mesh preview extension registered
-[Console-log] [GeomPack] Loading UV mesh preview extension...
-[Console-log] [GeomPack] UV mesh preview extension registered
-[Console-log] [GeomPack] Loading mesh preview extension...
-[Console-log] [GeomPack] Mesh preview extension registered
-[Console-log] [GeomPack Multi JS] Loading mesh_preview_multi.js extension
-[Console-log] [GeomPack Gaussian] Loading extension...
-[Console-log] [FBXAnimationViewer] Loading FBX Animation Viewer extension
-[Console-log] [FBXAnimationViewer] Loading FBX Animation Viewer extension...
-[Console-log] [FBXAnimationViewer] Extension registered: comfy3d.fbxanimationviewer
-[Console-log] [CompareSMPLBVH] Loading Compare SMPL BVH extension
-[Console-log] [CompareSMPLBVH] Loading Compare SMPL BVH extension...
-[Console-log] [CompareSMPLBVH] Extension registered: comfy3d.comparesmplbvh
 [Console-log] [UniRig Compare] Loading compare skeleton widget...
 [Console-log] [UniRig Compare] Detected extension folder: ComfyUI-GeometryPack
 [Console-log] [UniRig Compare] Compare skeleton widget registered
-[Console-log] [BVHViewer] Loading BVH Viewer extension
-[Console-log] [BVHViewer] Loading BVH viewer extension...
-[Console-log] [BVHViewer] Extension registered: comfy3d.bvhviewer
+[Console-log] [GeomPack Gaussian] Loading extension...
+[Console-log] [GeomPack] Loading mesh preview extension...
+[Console-log] [GeomPack] Mesh preview extension registered
 [Console-log] [UniRig Debug] Loading FBX mesh preview extension...
 [Console-log] [UniRig Debug] Detected extension folder: ComfyUI-GeometryPack
 [Console-log] [UniRig Debug] FBX mesh preview extension registered
+[Console-log] [GeomPack] Loading UV mesh preview extension...
+[Console-log] [GeomPack] UV mesh preview extension registered
+[Console-log] [CompareSMPLBVH] Loading Compare SMPL BVH extension
+[Console-log] [CompareSMPLBVH] Loading Compare SMPL BVH extension...
+[Console-log] [CompareSMPLBVH] Extension registered: comfy3d.comparesmplbvh
+[Console-log] [FBXAnimationViewer] Loading FBX Animation Viewer extension
+[Console-log] [FBXAnimationViewer] Loading FBX Animation Viewer extension...
+[Console-log] [FBXAnimationViewer] Extension registered: comfy3d.fbxanimationviewer
+[Console-log] [GeomPack Multi JS] Loading mesh_preview_multi.js extension
 [Console-log] [GeomPack] Loading VTK.js textured mesh preview extension...
 [Console-log] [GeomPack] VTK.js textured mesh preview extension registered
+[Console-log] [BVHViewer] Loading BVH Viewer extension
+[Console-log] [BVHViewer] Loading BVH viewer extension...
+[Console-log] [BVHViewer] Extension registered: comfy3d.bvhviewer
 [Console-log] [VTK Bundle] GLTFImporter included in bundle
 [Console-warning] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration.
 [Console-log] [GeomPack] Registering Preview Mesh node
@@ -67,3 +67,23 @@
 [Console-error] No input!
 [Console-error] Failed to load resource: the server responded with a status of 403 (Forbidden)
 [Console-log] [comfy-test] graphToPrompt: 12 nodes, missing class_type: [], sample: {"inputs":{"image":"cannon.webp"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[Console-error] No input!
+[Console-log] [GeomPack PBR Viewer] Initializing...
+[Console-log] [GeomPack PBR Viewer] Loading environment map from: /extensions/ComfyUI-GeometryPack/assets/studio.exr
+[Console-log] [GeomPack PBR Viewer] Received message: {type: LOAD_MESH, filepath: /view?filename=preview_vtk_52cb5820.glb&type=output&subfolder=, timestamp: 1778103107135, showEdges: false, cameraState: {"position":[0.8901965746019178,-0.700983733294544…1165946,-0.40398925982139655,0.6491146729751406]}}
+[Console-log] [GeomPack PBR Viewer] Loading: /view?filename=preview_vtk_52cb5820.glb&type=output&subfolder=
+[Console-log] [GeomPack PBR Viewer] Loading environment map from: /extensions/ComfyUI-GeometryPack/assets/studio.exr
+[Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[Console-error] [GeomPack PBR Viewer] Failed to load EXR environment: HttpError: fetch for "http://127.0.0.1:41880/extensions/ComfyUI-GeometryPack/assets/studio.exr" responded with 404: Not Found
+    at https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js:43575:12
+[Console-warning] [GeomPack PBR Viewer] Using fallback gradient environment
+[Console-log] [GeomPack PBR Viewer] Using fallback gradient environment
+[Console-error] [GeomPack PBR Viewer] Failed to load EXR environment: HttpError: fetch for "http://127.0.0.1:41880/extensions/ComfyUI-GeometryPack/assets/studio.exr" responded with 404: Not Found
+    at https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js:43575:12
+[Console-warning] [GeomPack PBR Viewer] Using fallback gradient environment
+[Console-log] [GeomPack PBR Viewer] Using fallback gradient environment
+[Console-log] [GeomPack PBR Viewer] Ready
+[Console-log] [GeomPack PBR Viewer] Material: {name: , metalness: 1, roughness: 1, opacity: 1, transparent: true}
+[Console-log] [GeomPack PBR Viewer] Mesh Loaded successfully
+[Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[Console-error] Failed to load resource: the server responded with a status of 404 (Not Found)
