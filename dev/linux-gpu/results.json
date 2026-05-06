@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-06T12:31:41.618010+00:00",
+  "timestamp": "2026-05-06T19:09:12.417233+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -7,18 +7,18 @@
     "gpu": "NVIDIA GeForce RTX 5060"
   },
   "commit_hash": "f57aebf6059de2f450fafb0ec7c3bd1d40891c46",
-  "success": false,
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 0,
-    "failed": 8
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "fail",
-      "duration_seconds": 6.46,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 436.05,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -26,22 +26,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 17.54,
+          "avg": 7.94
         },
         "total_ram_gb": 31.3,
-        "samples": 7,
+        "samples": 424,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.87,
+          "avg": 1.48
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "fail",
-      "duration_seconds": 5.92,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 226.19,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -49,22 +49,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 21.23,
+          "avg": 13.75
         },
         "total_ram_gb": 31.3,
-        "samples": 6,
+        "samples": 221,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.96,
+          "avg": 2.39
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 5.94,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 800.3,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -72,22 +72,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 27.67,
+          "avg": 21.45
         },
         "total_ram_gb": 31.3,
-        "samples": 6,
+        "samples": 776,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 5.79,
+          "avg": 2.65
         }
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "fail",
-      "duration_seconds": 5.73,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 91.32,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -95,22 +95,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 19.98,
+          "avg": 18.29
         },
         "total_ram_gb": 31.3,
-        "samples": 6,
+        "samples": 89,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.21,
+          "avg": 1.8
         }
       }
     },
     {
       "name": "geometry_texture",
-      "status": "fail",
-      "duration_seconds": 6.34,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 117.47,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 18.51,
+          "avg": 12.12
         },
         "total_ram_gb": 31.3,
-        "samples": 7,
+        "samples": 114,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.07,
+          "avg": 1.47
         }
       }
     },
@@ -138,9 +138,9 @@
     },
     {
       "name": "refinement",
-      "status": "fail",
-      "duration_seconds": 6.68,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 137.63,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 17.26,
+          "avg": 9.52
         },
         "total_ram_gb": 31.3,
-        "samples": 7,
+        "samples": 134,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 6.79,
+          "avg": 2.68
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 5.88,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 108.96,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -171,22 +171,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 13.57,
+          "avg": 9.52
         },
         "total_ram_gb": 31.3,
-        "samples": 6,
+        "samples": 106,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 2.99,
+          "avg": 1.21
         }
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "fail",
-      "duration_seconds": 6.22,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 157.58,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 0.98,
-          "avg": 0.98
+          "peak": 12.26,
+          "avg": 9.16
         },
         "total_ram_gb": 31.3,
-        "samples": 6,
+        "samples": 153,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.43,
+          "avg": 1.1
         }
       }
     }
