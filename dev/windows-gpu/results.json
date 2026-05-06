@@ -1,131 +1,131 @@
 {
-  "timestamp": "2026-05-06T19:03:47.019192+00:00",
+  "timestamp": "2026-05-06T20:58:03.128305+00:00",
   "platform": "windows",
   "hardware": {
     "os": "Windows-10-10.0.26200-SP0",
-    "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-    "gpu": "NVIDIA GeForce RTX 4060 Ti"
+    "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+    "gpu": "NVIDIA GeForce RTX 3090"
   },
   "commit_hash": "f57aebf6059de2f450fafb0ec7c3bd1d40891c46",
-  "success": false,
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 7,
-    "failed": 1
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 409.09,
+      "duration_seconds": 404.69,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 11.35,
-          "avg": 3.55
+          "peak": 19.48,
+          "avg": 7.71
         },
-        "total_ram_gb": 15.9,
-        "samples": 368,
+        "total_ram_gb": 31.9,
+        "samples": 355,
         "vram": {
-          "peak": 4.74,
-          "avg": 2.05
+          "peak": 4.98,
+          "avg": 1.97
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 216.98,
+      "duration_seconds": 203.12,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 8.6,
-          "avg": 5.71
+          "peak": 22.9,
+          "avg": 17.24
         },
-        "total_ram_gb": 15.9,
-        "samples": 195,
+        "total_ram_gb": 31.9,
+        "samples": 179,
         "vram": {
-          "peak": 4.97,
-          "avg": 3.17
+          "peak": 5.4,
+          "avg": 3.19
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 411.73,
-      "error": "Workflow execution failed: {'prompt_id': 'eda3b26a-66b4-48eb-a607-fa5b435b9673', 'node_id': '112', 'node_type': 'Trellis2ProcessMesh', 'executed': ['92', '1', '104', '11', '91', '10'], 'exception_message': 'bad allocation\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Temp\\\\comfyui_pvenv_4v3u1kxf\\\\persistent_worker.py\", line 1749, in main\\n    result = method(**inputs)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\comfy_api\\\\latest\\\\_io.py\", line 1827, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\custom_nodes\\\\ComfyUI-TRELLIS2\\\\nodes\\\\nodes_unwrap.py\", line 378, in execute\\n    cumesh.init(*CuMesh.remeshing.remesh_narrow_band_dc_quad(\\n  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\cumesh_vb\\\\remeshing.py\", line 740, in remesh_narrow_band_dc_quad\\n    bvh = cuBVH(vertices.detach().clone(), faces.detach().clone())\\n  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\cumesh_vb\\\\bvh.py\", line 23, in __init__\\n    self.impl = _backend.create_cuBVH(vertices, triangles)\\nMemoryError: bad allocation\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\ComfyUI\\\\execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\.venv\\\\lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\metadata.py\", line 524, in proxy\\n    result = worker.call_method(\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-2029\\\\.venv\\\\lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\workers\\\\subprocess.py\", line 673, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'remesh': ['on'], 'remesh.remesh_band': [1], 'remesh.remove_inner_faces': [True], 'target_face_count': [500000], 'floater_threshold': [0.001], 'weld_vertices': [True], 'weld_digits': [4], 'chart_cone_angle': [90], 'chart_refine_iterations': [1], 'chart_global_iterations': [1], 'chart_smooth_strength': [1], 'trimesh': ['<trimesh.Trimesh(vertices.shape=(18383477, 3), faces.shape=(40512360, 3))>']}, 'current_outputs': ['112', '92', '108', '1', '104', '11', '91', '10'], 'timestamp': 1778093670830}\n\nDetails:\nWorkflow: C:\\ComfyUI-TRELLIS2\\workflows\\geometry_only_1536.json\nNode error: Trellis2ProcessMesh",
+      "status": "pass",
+      "duration_seconds": 444.56,
+      "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 11.74,
-          "avg": 4.46
+          "peak": 26.17,
+          "avg": 16.28
         },
-        "total_ram_gb": 15.9,
-        "samples": 370,
+        "total_ram_gb": 31.9,
+        "samples": 391,
         "vram": {
-          "peak": 6.83,
-          "avg": 4.78
+          "peak": 8.24,
+          "avg": 4.66
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 73.12,
+      "duration_seconds": 81.83,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 11.44,
-          "avg": 6.9
+          "peak": 11.19,
+          "avg": 9.34
         },
-        "total_ram_gb": 15.9,
-        "samples": 66,
+        "total_ram_gb": 31.9,
+        "samples": 72,
         "vram": {
-          "peak": 3.59,
-          "avg": 1.96
+          "peak": 4.31,
+          "avg": 2.54
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 117.38,
+      "duration_seconds": 156.11,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 11.79,
-          "avg": 7.95
+          "peak": 16.08,
+          "avg": 12.04
         },
-        "total_ram_gb": 15.9,
-        "samples": 106,
+        "total_ram_gb": 31.9,
+        "samples": 138,
         "vram": {
-          "peak": 3.65,
-          "avg": 1.97
+          "peak": 4.08,
+          "avg": 2.09
         }
       }
     },
@@ -139,69 +139,69 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 125.51,
+      "duration_seconds": 149.99,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 11.8,
-          "avg": 8.9
+          "peak": 17.98,
+          "avg": 14.91
         },
-        "total_ram_gb": 15.9,
-        "samples": 114,
+        "total_ram_gb": 31.9,
+        "samples": 133,
         "vram": {
-          "peak": 7.55,
-          "avg": 3.55
+          "peak": 7.96,
+          "avg": 4.29
         }
       }
     },
     {
       "name": "remove_background",
       "status": "pass",
-      "duration_seconds": 92.88,
+      "duration_seconds": 161.83,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 10.73,
-          "avg": 8.11
+          "peak": 17.08,
+          "avg": 10.62
         },
-        "total_ram_gb": 15.9,
-        "samples": 83,
+        "total_ram_gb": 31.9,
+        "samples": 143,
         "vram": {
-          "peak": 3.83,
-          "avg": 2.1
+          "peak": 3.94,
+          "avg": 2.05
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 145.47,
+      "duration_seconds": 233.45,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
-        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
-        "gpu": "NVIDIA GeForce RTX 4060 Ti"
+        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 10.6,
-          "avg": 4.2
+          "peak": 12.09,
+          "avg": 9.03
         },
-        "total_ram_gb": 15.9,
-        "samples": 132,
+        "total_ram_gb": 31.9,
+        "samples": 206,
         "vram": {
-          "peak": 4.19,
-          "avg": 1.68
+          "peak": 4.57,
+          "avg": 1.99
         }
       }
     }
