@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-05-06T21:43:01.602125+00:00",
+  "timestamp": "2026-05-07T08:50:16.705063+00:00",
   "platform": "windows_portable",
   "hardware": {
     "os": "Windows-10-10.0.26200-SP0",
     "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
     "gpu": "NVIDIA GeForce RTX 3090"
   },
-  "commit_hash": "f57aebf6059de2f450fafb0ec7c3bd1d40891c46",
-  "success": true,
+  "commit_hash": "507e187d9b93d3a75a9b38f87d801add772acfff",
+  "success": false,
   "summary": {
     "total": 9,
-    "passed": 8,
-    "failed": 0
+    "passed": 0,
+    "failed": 8
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "pass",
-      "duration_seconds": 414.12,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 7.86,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -26,22 +26,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 18.83,
-          "avg": 7.59
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 363,
+        "samples": 7,
         "vram": {
-          "peak": 4.98,
-          "avg": 2.03
+          "peak": 0.5,
+          "avg": 0.43
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "pass",
-      "duration_seconds": 212.46,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.16,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -49,22 +49,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 22.32,
-          "avg": 17.02
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 187,
+        "samples": 6,
         "vram": {
-          "peak": 5.4,
-          "avg": 3.21
+          "peak": 0.54,
+          "avg": 0.54
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "pass",
-      "duration_seconds": 461.79,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.07,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -72,22 +72,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 24.85,
-          "avg": 17.02
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 406,
+        "samples": 6,
         "vram": {
-          "peak": 7.47,
-          "avg": 4.66
+          "peak": 0.56,
+          "avg": 0.55
         }
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "pass",
-      "duration_seconds": 77.98,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.04,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -95,22 +95,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 14.39,
-          "avg": 12.8
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 69,
+        "samples": 6,
         "vram": {
-          "peak": 4.3,
-          "avg": 2.55
+          "peak": 0.58,
+          "avg": 0.58
         }
       }
     },
     {
       "name": "geometry_texture",
-      "status": "pass",
-      "duration_seconds": 217.31,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.36,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 16.26,
-          "avg": 13.07
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 192,
+        "samples": 6,
         "vram": {
-          "peak": 4.09,
-          "avg": 1.9
+          "peak": 0.63,
+          "avg": 0.61
         }
       }
     },
@@ -138,9 +138,9 @@
     },
     {
       "name": "refinement",
-      "status": "pass",
-      "duration_seconds": 160.5,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.28,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 15.3,
-          "avg": 4.58
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 142,
+        "samples": 6,
         "vram": {
-          "peak": 7.94,
-          "avg": 4.03
+          "peak": 0.65,
+          "avg": 0.64
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "pass",
-      "duration_seconds": 148.02,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.25,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -171,22 +171,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 14.23,
-          "avg": 10.06
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 131,
+        "samples": 6,
         "vram": {
-          "peak": 5.63,
-          "avg": 2.13
+          "peak": 0.67,
+          "avg": 0.66
         }
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "pass",
-      "duration_seconds": 293.47,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.42,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.11,
-          "avg": 9.19
+          "peak": 0.92,
+          "avg": 0.92
         },
         "total_ram_gb": 31.9,
-        "samples": 259,
+        "samples": 6,
         "vram": {
-          "peak": 4.58,
-          "avg": 1.87
+          "peak": 0.69,
+          "avg": 0.68
         }
       }
     }
