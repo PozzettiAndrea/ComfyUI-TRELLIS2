@@ -36,23 +36,39 @@
     let pendingTest = null;
 
     function parseHash() {
+      // `#<branch>` | `#<branch>/<platform>` | `#<branch>/<platform>/<workflow>`
       const raw = decodeURIComponent(location.hash.slice(1));
-      const slashIdx = raw.indexOf('/');
-      if (slashIdx === -1) return { branch: raw, test: null };
-      return { branch: raw.substring(0, slashIdx), test: raw.substring(slashIdx + 1) };
+      const parts = raw.split('/');
+      return {
+        branch: parts[0] || '',
+        platform: parts[1] || null,
+        workflow: parts[2] || null,
+      };
     }
 
-    function init() {
-      const { branch: hashBranch, test: hashTest } = parseHash();
-      pendingTest = hashTest;
+    let lastPlatform = null;
+    let pendingPlatform = null;
+    let pendingWorkflow = null;
 
-      // When the inner iframe finishes loading, send the pending test name
+    function init() {
+      const { branch: hashBranch, platform: hashPlatform, workflow: hashWorkflow } = parseHash();
+      pendingPlatform = hashPlatform;
+      pendingWorkflow = hashWorkflow;
+
+      // When the inner iframe finishes loading, forward the pending
+      // platform (if any) so root_index can click that tab. The
+      // workflow piece flows on once the report iframe is ready —
+      // root_index handles that step.
       frame.addEventListener('load', function() {
-        if (pendingTest) {
-          // Small delay to let nested iframes initialize
+        if (pendingPlatform) {
           setTimeout(function() {
-            frame.contentWindow.postMessage({ type: 'comfytest-open', name: pendingTest }, '*');
-            pendingTest = null;
+            frame.contentWindow.postMessage({
+              type: 'comfytest-platform-select',
+              platform: pendingPlatform,
+              workflow: pendingWorkflow,
+            }, '*');
+            pendingPlatform = null;
+            pendingWorkflow = null;
           }, 500);
         }
       });
@@ -84,13 +100,20 @@
       }
     };
 
-    // Listen for test open/close from inner iframes to update hash
+    // Listen for test open/close + platform changes from inner iframes
+    // and reflect them in the URL hash as <branch>/<platform>/<workflow>.
     window.addEventListener('message', function(e) {
-      if (!e.data || !e.data.type) return;
-      if (e.data.type === 'comfytest-open' && activeTab) {
-        history.replaceState(null, '', '#' + activeTab + '/' + encodeURIComponent(e.data.name));
-      } else if (e.data.type === 'comfytest-close' && activeTab) {
-        history.replaceState(null, '', '#' + activeTab);
+      if (!e.data || !e.data.type || !activeTab) return;
+      if (e.data.type === 'comfytest-platform-changed') {
+        lastPlatform = e.data.platform;
+        history.replaceState(null, '', '#' + activeTab + '/' + e.data.platform);
+      } else if (e.data.type === 'comfytest-open') {
+        const wf = '/' + encodeURIComponent(e.data.name);
+        const plat = lastPlatform ? '/' + lastPlatform : '';
+        history.replaceState(null, '', '#' + activeTab + plat + wf);
+      } else if (e.data.type === 'comfytest-close') {
+        const plat = lastPlatform ? '/' + lastPlatform : '';
+        history.replaceState(null, '', '#' + activeTab + plat);
       }
     });
 

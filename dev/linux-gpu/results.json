@@ -1,131 +1,131 @@
 {
-  "timestamp": "2026-05-08T03:07:47.994969+00:00",
+  "timestamp": "2026-05-08T04:21:38.112886+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-    "gpu": "NVIDIA GeForce RTX 5060"
+    "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+    "gpu": "NVIDIA GeForce RTX 3090"
   },
-  "commit_hash": "0f63c99a11b6703355bb1e603fa8f10112cc547f",
-  "success": false,
+  "commit_hash": "a5306fa3d0e94c1ec4cb5dc8238bb6c0c6896139",
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 0,
-    "failed": 8
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "fail",
-      "duration_seconds": 6.52,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 442.57,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 19.16,
+          "avg": 7.62
         },
-        "total_ram_gb": 31.3,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 430,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 4.22,
+          "avg": 1.56
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "fail",
-      "duration_seconds": 6.18,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 226.88,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 19.86,
+          "avg": 13.58
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 221,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 4.39,
+          "avg": 2.6
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 5.92,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 579.18,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 27.93,
+          "avg": 20.83
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 562,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 6.76,
+          "avg": 3.35
         }
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "fail",
-      "duration_seconds": 5.58,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 79.36,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 18.9,
+          "avg": 17.23
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 77,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.68,
+          "avg": 2.1
         }
       }
     },
     {
       "name": "geometry_texture",
-      "status": "fail",
-      "duration_seconds": 6.96,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 130.75,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 17.33,
+          "avg": 12.8
         },
-        "total_ram_gb": 31.3,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 127,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.54,
+          "avg": 1.77
         }
       }
     },
@@ -138,70 +138,70 @@
     },
     {
       "name": "refinement",
-      "status": "fail",
-      "duration_seconds": 6.18,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 147.74,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 12.4,
+          "avg": 6.38
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 144,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 7.18,
+          "avg": 3.52
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 5.99,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 125.03,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 17.26,
+          "avg": 15.6
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 122,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.72,
+          "avg": 2.06
         }
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "fail",
-      "duration_seconds": 6.15,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 216.14,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 0.99,
-          "avg": 0.99
+          "peak": 16.15,
+          "avg": 11.81
         },
-        "total_ram_gb": 31.3,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 210,
         "vram": {
-          "peak": 0.11,
-          "avg": 0.11
+          "peak": 3.88,
+          "avg": 1.67
         }
       }
     }
