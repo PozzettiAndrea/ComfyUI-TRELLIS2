@@ -73,6 +73,11 @@
           frame.src = p.id + '/index.html';
           activeTab = p.id;
           history.replaceState(null, '', '#' + p.id);
+          // Bubble up to the outer branch_index so it can sync the
+          // address bar to #<branch>/<platform>.
+          if (window !== window.top) {
+            window.parent.postMessage({ type: 'comfytest-platform-changed', platform: p.id }, '*');
+          }
         };
         tabs.appendChild(btn);
 
@@ -81,6 +86,21 @@
           btn.click();
         }
       }
+    }
+
+    // The outer branch_index parses #<branch>/<rest> and forwards
+    // <rest> to us. If <rest> is a platform id, click that tab; else
+    // it's a workflow name and the inner report iframe will handle it.
+    function selectPlatform(platform) {
+      const buttons = Array.from(document.querySelectorAll('.tab'));
+      const idx = platforms.findIndex(p => p.id === platform);
+      if (idx < 0) return false;
+      const btn = buttons[idx];
+      if (btn && !btn.classList.contains('unavailable')) {
+        btn.click();
+        return true;
+      }
+      return false;
     }
 
     // Forward keyboard events to report iframe
@@ -107,12 +127,27 @@
       }
     });
 
-    // Forward messages between report iframe and parent (branch_index)
+    // Forward messages between report iframe and parent (branch_index).
+    // Special cases for `comfytest-platform-select` from the parent:
+    // click the tab; if there's a `workflow` field, queue a follow-up
+    // `comfytest-open` to fire once the new platform iframe is ready.
     window.addEventListener('message', function(e) {
       if (e.data && e.data.type && e.data.type.startsWith('comfytest-')) {
         if (e.source === frame.contentWindow) {
           // From report iframe -> forward to parent
           if (window !== window.top) window.parent.postMessage(e.data, '*');
+        } else if (e.data.type === 'comfytest-platform-select') {
+          const ok = selectPlatform(e.data.platform);
+          if (ok && e.data.workflow) {
+            // Queue the workflow open until after the new platform's
+            // report iframe fires its load event.
+            pendingMessage = { type: 'comfytest-open', name: e.data.workflow };
+          } else if (!ok) {
+            // Not a known platform — treat as workflow open instead.
+            const fallback = { type: 'comfytest-open', name: e.data.platform };
+            if (frameReady) frame.contentWindow.postMessage(fallback, '*');
+            else pendingMessage = fallback;
+          }
         } else {
           // From parent -> forward to report iframe
           if (frameReady) {
