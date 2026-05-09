@@ -3,9 +3,9 @@ Capturing execution frames: remove_background.json
   Validating workflow...
   [ComfyUI] === /validate endpoint called ===
   [ComfyUI] === /validate endpoint called ===
+  [ComfyUI] Received JSON with keys: ['prompt']
+  [ComfyUI] Received JSON with keys: ['prompt']
   Queuing workflow for execution...
-  [ComfyUI] Received JSON with keys: ['prompt']
-  [ComfyUI] Received JSON with keys: ['prompt']
   [ComfyUI] Prompt has 10 nodes
   [ComfyUI] Prompt has 10 nodes
   [ComfyUI]   Node 1: LoadImage
@@ -48,8 +48,8 @@ Capturing execution frames: remove_background.json
   [ComfyUI]   Node 97: Trellis2ProcessMesh
   [ComfyUI]     Inputs: {"remesh": "on", "remesh.remesh_band": 1, "remesh.remove_inner_faces": true, "target_face_count": 500000, "floater_threshold": 0.001, "weld_vertices": true, "weld_digits": 4, "chart_cone_angle": 90, "
   [ComfyUI]     Inputs: {"remesh": "on", "remesh.remesh_band": 1, "remesh.remove_inner_faces": true, "target_face_count": 500000, "floater_threshold": 0.001, "weld_vertices": true, "weld_digits": 4, "chart_cone_angle": 90, "
-  [ComfyUI] Generated prompt_id: c90b4b13-971f-4f31-940a-50387d130e16
-  [ComfyUI] Generated prompt_id: c90b4b13-971f-4f31-940a-50387d130e16
+  [ComfyUI] Generated prompt_id: 30afd799-88f0-4665-81ee-7f0c61892020
+  [ComfyUI] Generated prompt_id: 30afd799-88f0-4665-81ee-7f0c61892020
   [ComfyUI] Calling execution.validate_prompt()...
   [ComfyUI] Calling execution.validate_prompt()...
   [ComfyUI] Validation result: valid=True
@@ -60,8 +60,8 @@ Capturing execution frames: remove_background.json
   [ComfyUI] got prompt
   [ComfyUI] [comfy-env] Running Trellis2RemoveBackground: low_vram: True, image: torch.float32 [1,2560,3840,3] cpu
   [ComfyUI] [comfy-env] Running Trellis2RemoveBackground: low_vram: True, image: torch.float32 [1,2560,3840,3] cpu
-  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 387 / 7703 MB
-  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 387 / 7703 MB
+  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 1538 / 24124 MB
+  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 1538 / 24124 MB
   [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2RemoveBackground.EXECUTE_NORMALIZED
   [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2RemoveBackground.EXECUTE_NORMALIZED
   [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
@@ -80,260 +80,326 @@ Capturing execution frames: remove_background.json
   [ComfyUI] [SubprocessWorker] created 0 shm blocks
   [ComfyUI] [SubprocessWorker] sending request via socket...
   [ComfyUI] [SubprocessWorker] sending request via socket...
-  [ComfyUI] [SubprocessWorker] call_id=7 sending call_method
-  [ComfyUI] [SubprocessWorker] call_id=7 sending call_method
+  [ComfyUI] [SubprocessWorker] call_id=70 sending call_method
+  [ComfyUI] [SubprocessWorker] call_id=70 sending call_method
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 2560, 3840, 3]
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 2560, 3840, 3]
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 2560, 3840, 3])
   [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 2560, 3840, 3])
-  [ComfyUI] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
-  [ComfyUI] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
+  Frame 2 saved (frame_001.jpg, t=2.5s)
+  [capture-periodic] freeze=3ms shot=199ms unfreeze=9ms saved=True
+  [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
+  [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
   [ComfyUI] - BiRefNet_config.py
   [ComfyUI] - BiRefNet_config.py
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
-  Frame 2 saved (frame_001.jpg, t=2.3s)
-  [capture-periodic] freeze=2ms shot=162ms unfreeze=8ms saved=True
-  [ComfyUI] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
-  [ComfyUI] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
+  [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
+  [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
   [ComfyUI] - birefnet.py
   [ComfyUI] - birefnet.py
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
-  Frame 3 saved (frame_002.jpg, t=4.6s)
-  [capture-periodic] freeze=6ms shot=186ms unfreeze=9ms saved=True
-  [capture-loop] iter=50 t=5.9s state={'complete': False, 'error': None, 'executedCount': 0, 'wsState': 1} eval_ms=2
-  Frame 4 saved (frame_003.jpg, t=6.9s)
-  [capture-periodic] freeze=2ms shot=159ms unfreeze=9ms saved=True
-  [ComfyUI] [worker:ComfyUI-TRELLIS2]
-  [ComfyUI] [worker:ComfyUI-TRELLIS2]
-  [ComfyUI] === WATCHDOG TICK 1 ===
-  [ComfyUI] === WATCHDOG TICK 1 ===
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007887d953e640 (most recent call first):
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007887d953e640 (most recent call first):
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 324 in wait
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 324 in wait
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 607 in wait
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 607 in wait
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/tqdm/_monitor.py", line 60 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/tqdm/_monitor.py", line 60 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
+  Frame 3 saved (frame_002.jpg, t=4.9s)
+  [capture-periodic] freeze=3ms shot=240ms unfreeze=9ms saved=True
+  [capture-loop] iter=50 t=6.3s state={'complete': False, 'error': None, 'executedCount': 0, 'wsState': 1} eval_ms=4 ram=14.6/31.2GB (47%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=1.18GB
+  Frame 4 saved (frame_003.jpg, t=7.3s)
+  [capture-periodic] freeze=2ms shot=266ms unfreeze=8ms saved=True
   [ComfyUI] 
   [ComfyUI] 
-  [ComfyUI] Thread 0x0000788c1252a640 (most recent call first):
-  [ComfyUI] Thread 0x0000788c1252a640 (most recent call first):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 106 in _vram_poller
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 106 in _vram_poller
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 953 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 953 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
-  [ComfyUI] 
-  [ComfyUI] 
-  [ComfyUI] Current thread 0x0000788c12d2b640 (most recent call first):
-  [ComfyUI] Current thread 0x0000788c12d2b640 (most recent call first):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 52 in _watchdog
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 52 in _watchdog
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 953 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 953 in run
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 1016 in _bootstrap_inner
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/threading.py", line 973 in _bootstrap
-  [ComfyUI] 
-  [ComfyUI] 
-  [ComfyUI] Thread 0x0000788c13301740 (most recent call first):
-  [ComfyUI] Thread 0x0000788c13301740 (most recent call first):
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 633 in xet_get
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 633 in xet_get
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1727 in _download_to_tmp_and_move
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1727 in _download_to_tmp_and_move
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1175 in _hf_hub_download_to_cache_dir
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1175 in _hf_hub_download_to_cache_dir
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1014 in hf_hub_download
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1014 in hf_hub_download
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114 in _inner_fn
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114 in _inner_fn
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/utils/hub.py", line 479 in cached_files
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/utils/hub.py", line 479 in cached_files
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/utils/hub.py", line 322 in cached_file
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/utils/hub.py", line 322 in cached_file
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 1037 in _get_resolved_checkpoint_files
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 1037 in _get_resolved_checkpoint_files
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4900 in from_pretrained
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4900 in from_pretrained
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 277 in _wrapper
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/modeling_utils.py", line 277 in _wrapper
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 597 in from_pretrained
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 597 in from_pretrained
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53 in __init__
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53 in __init__
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275 in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275 in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833 in EXECUTE_NORMALIZED
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833 in EXECUTE_NORMALIZED
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762 in main
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762 in main
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1807 in <module>
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1807 in <module>
-  [ComfyUI] 
-  [ComfyUI] 
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
-  [ComfyUI] 
-  [ComfyUI] 
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +477MB (now 477MB) reserved=490MB peak=477MB
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +477MB (now 477MB) reserved=490MB peak=477MB
-  [capture-loop] iter=100 t=11.6s state={'complete': False, 'error': None, 'executedCount': 0, 'wsState': 1} eval_ms=2
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +391MB (now 869MB) reserved=3634MB peak=1718MB
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +391MB (now 869MB) reserved=3634MB peak=1718MB
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -860MB (now 9MB) reserved=22MB peak=1718MB
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -860MB (now 9MB) reserved=22MB peak=1718MB
-  [ComfyUI] [SubprocessWorker] got response: ok
-  [ComfyUI] [SubprocessWorker] got response: ok
-  [ComfyUI] [comfy-env] Created 1 model patchers: ['BiRefNet_1']
-  [ComfyUI] [comfy-env] Created 1 model patchers: ['BiRefNet_1']
-  [ComfyUI] [comfy-env] Trellis2RemoveBackground done (12.18s): result: NodeOutput
-  [ComfyUI] [comfy-env] Trellis2RemoveBackground done (12.18s): result: NodeOutput
-  [ComfyUI] [VRAM] After Trellis2RemoveBackground: 445 / 7703 MB
-  [ComfyUI] [VRAM] After Trellis2RemoveBackground: 445 / 7703 MB
-  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
-  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
-  [ComfyUI] [comfy-env] Running LoadTrellis2Models: resolution: '512', precision: 'auto', attn_backend: 'auto'
-  [ComfyUI] [comfy-env] Running LoadTrellis2Models: resolution: '512', precision: 'auto', attn_backend: 'auto'
-  [ComfyUI] [VRAM] Before LoadTrellis2Models: 445 / 7703 MB
-  [ComfyUI] [VRAM] Before LoadTrellis2Models: 445 / 7703 MB
-  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
-  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
-  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.EXECUTE_NORMALIZED
-  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.EXECUTE_NORMALIZED
-  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
-  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
-  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
-  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
-  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
-  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
-  [ComfyUI] [SubprocessWorker] worker started/confirmed
-  [ComfyUI] [SubprocessWorker] worker started/confirmed
-  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
-  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
-  [ComfyUI] [SubprocessWorker] created 0 shm blocks
-  [ComfyUI] [SubprocessWorker] created 0 shm blocks
-  [ComfyUI] [SubprocessWorker] sending request via socket...
-  [ComfyUI] [SubprocessWorker] sending request via socket...
-  [ComfyUI] [SubprocessWorker] call_id=8 sending call_method
-  [ComfyUI] [SubprocessWorker] call_id=8 sending call_method
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading pipeline config from HuggingFace...
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading pipeline config from HuggingFace...
+  [ComfyUI] Loading weights:   0%|          | 0/754 [00:00<?, ?it/s]
+  [ComfyUI] Loading weights:   0%|          | 0/754 [00:00<?, ?it/s]
+  [ComfyUI] Loading weights:  57%|█████▋    | 432/754 [00:00<00:00, 4315.68it/s]
+  [ComfyUI] Loading weights:  57%|█████▋    | 432/754 [00:00<00:00, 4315.68it/s]
+  [ComfyUI] Loading weights: 100%|██████████| 754/754 [00:00<00:00, 3951.24it/s]
+  [ComfyUI] Loading weights: 100%|██████████| 754/754 [00:00<00:00, 3951.24it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +382MB (now 391MB) reserved=412MB peak=4618MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +382MB (now 391MB) reserved=412MB peak=4618MB
   [ComfyUI] [SubprocessWorker] got response: error
   [ComfyUI] [SubprocessWorker] got response: error
-  [ComfyUI] !!! Exception during processing !!! hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] !!! Exception during processing !!! hf_hub_download() got an unexpected keyword argument 'tqdm_class'
+  [ComfyUI] !!! Exception during processing !!! Input type (float) and bias type (c10::Half) should be the same
+  [ComfyUI] !!! Exception during processing !!! Input type (float) and bias type (c10::Half) should be the same
   [ComfyUI] 
   [ComfyUI] 
   [ComfyUI] Worker traceback:
   [ComfyUI] Worker traceback:
   [ComfyUI] Traceback (most recent call last):
   [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main
   [ComfyUI]     result = method(**inputs)
   [ComfyUI]     result = method(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
   [ComfyUI]     to_return = cls.execute(*args, **kwargs)
   [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]     _init_config()
-  [ComfyUI]     _init_config()
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute
+  [ComfyUI]     output = model(pil_image)
+  [ComfyUI]     output = model(pil_image)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__
+  [ComfyUI]     preds = self.model(input_images)[-1].sigmoid().cpu()
+  [ComfyUI]     preds = self.model(input_images)[-1].sigmoid().cpu()
+  [ComfyUI]             ~~~~~~~~~~^^^^^^^^^^^^^^
+  [ComfyUI]             ~~~~~~~~~~^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward
+  [ComfyUI]     scaled_preds, class_preds = self.forward_ori(x)
+  [ComfyUI]     scaled_preds, class_preds = self.forward_ori(x)
+  [ComfyUI]                                 ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]                                 ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori
+  [ComfyUI]     (x1, x2, x3, x4), class_preds = self.forward_enc(x)
+  [ComfyUI]     (x1, x2, x3, x4), class_preds = self.forward_enc(x)
+  [ComfyUI]                                     ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]                                     ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc
+  [ComfyUI]     x1, x2, x3, x4 = self.bb(x)
+  [ComfyUI]     x1, x2, x3, x4 = self.bb(x)
+  [ComfyUI]                      ~~~~~~~^^^
+  [ComfyUI]                      ~~~~~~~^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward
+  [ComfyUI]     x = self.patch_embed(x)
+  [ComfyUI]     x = self.patch_embed(x)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward
+  [ComfyUI]     x = self.proj(x)  # B C Wh Ww
+  [ComfyUI]     x = self.proj(x)  # B C Wh Ww
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward
+  [ComfyUI]     return self._conv_forward(input, self.weight, self.bias)
+  [ComfyUI]     return self._conv_forward(input, self.weight, self.bias)
+  [ComfyUI]            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward
+  [ComfyUI]     return F.conv2d(
+  [ComfyUI]     return F.conv2d(
+  [ComfyUI]            ~~~~~~~~^
+  [ComfyUI]            ~~~~~~~~^
+  [ComfyUI]         input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+  [ComfyUI]         input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]     )
+  [ComfyUI]     )
+  [ComfyUI]     ^
+  [ComfyUI]     ^
+  [ComfyUI] RuntimeError: Input type (float) and bias type (c10::Half) should be the same
+  [ComfyUI] RuntimeError: Input type (float) and bias type (c10::Half) should be the same
   [ComfyUI] 
   [ComfyUI] 
   [ComfyUI] Traceback (most recent call last):
   [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 535, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 535, in execute
   [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data
+  [ComfyUI]                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 335, in get_output_data
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 335, in get_output_data
   [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list
+  [ComfyUI]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 309, in _async_map_node_over_list
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 309, in _async_map_node_over_list
   [ComfyUI]     await process_inputs(input_dict, i)
   [ComfyUI]     await process_inputs(input_dict, i)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 297, in process_inputs
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 297, in process_inputs
   [ComfyUI]     result = f(**inputs)
   [ComfyUI]     result = f(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy
   [ComfyUI]     result = worker.call_method(
   [ComfyUI]     result = worker.call_method(
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
+  [ComfyUI]         module_name=mod,
+  [ComfyUI]         module_name=mod,
+  [ComfyUI]     ...<4 lines>...
+  [ComfyUI]     ...<4 lines>...
+  [ComfyUI]         timeout=600.0,
+  [ComfyUI]         timeout=600.0,
+  [ComfyUI]     )
+  [ComfyUI]     )
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
   [ComfyUI]     raise WorkerError(
   [ComfyUI]     raise WorkerError(
-  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
+  [ComfyUI]     ...<2 lines>...
+  [ComfyUI]     ...<2 lines>...
+  [ComfyUI]     )
+  [ComfyUI]     )
+  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: Input type (float) and bias type (c10::Half) should be the same
+  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: Input type (float) and bias type (c10::Half) should be the same
   [ComfyUI] 
   [ComfyUI] 
   [ComfyUI] Worker traceback:
   [ComfyUI] Worker traceback:
   [ComfyUI] Traceback (most recent call last):
   [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main
   [ComfyUI]     result = method(**inputs)
   [ComfyUI]     result = method(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
   [ComfyUI]     to_return = cls.execute(*args, **kwargs)
   [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]     _init_config()
-  [ComfyUI]     _init_config()
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  Node executed (1 total), capturing...
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute
+  [ComfyUI]     output = model(pil_image)
+  [ComfyUI]     output = model(pil_image)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__
+  [ComfyUI]     preds = self.model(input_images)[-1].sigmoid().cpu()
+  [ComfyUI]     preds = self.model(input_images)[-1].sigmoid().cpu()
+  [ComfyUI]             ~~~~~~~~~~^^^^^^^^^^^^^^
+  [ComfyUI]             ~~~~~~~~~~^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward
+  [ComfyUI]     scaled_preds, class_preds = self.forward_ori(x)
+  [ComfyUI]     scaled_preds, class_preds = self.forward_ori(x)
+  [ComfyUI]                                 ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]                                 ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori
+  [ComfyUI]     (x1, x2, x3, x4), class_preds = self.forward_enc(x)
+  [ComfyUI]     (x1, x2, x3, x4), class_preds = self.forward_enc(x)
+  [ComfyUI]                                     ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]                                     ~~~~~~~~~~~~~~~~^^^
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc
+  [ComfyUI]     x1, x2, x3, x4 = self.bb(x)
+  [ComfyUI]     x1, x2, x3, x4 = self.bb(x)
+  [ComfyUI]                      ~~~~~~~^^^
+  [ComfyUI]                      ~~~~~~~^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward
+  [ComfyUI]     x = self.patch_embed(x)
+  [ComfyUI]     x = self.patch_embed(x)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward
+  [ComfyUI]   File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward
+  [ComfyUI]     x = self.proj(x)  # B C Wh Ww
+  [ComfyUI]     x = self.proj(x)  # B C Wh Ww
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]     return self._call_impl(*args, **kwargs)
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]     return forward_call(*args, **kwargs)
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward
+  [ComfyUI]     return self._conv_forward(input, self.weight, self.bias)
+  [ComfyUI]     return self._conv_forward(input, self.weight, self.bias)
+  [ComfyUI]            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward
+  [ComfyUI]     return F.conv2d(
+  [ComfyUI]     return F.conv2d(
+  [ComfyUI]            ~~~~~~~~^
+  [ComfyUI]            ~~~~~~~~^
+  [ComfyUI]         input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+  [ComfyUI]         input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]     )
+  [ComfyUI]     )
+  [ComfyUI]     ^
+  [ComfyUI]     ^
+  [ComfyUI] RuntimeError: Input type (float) and bias type (c10::Half) should be the same
+  [ComfyUI] RuntimeError: Input type (float) and bias type (c10::Half) should be the same
   [ComfyUI] 
   [ComfyUI] 
   [ComfyUI] 
   [ComfyUI] 
-  [ComfyUI] Prompt executed in 13.37 seconds
-  [ComfyUI] Prompt executed in 13.37 seconds
-  Frame 5 saved (frame_004.jpg, t=13.9s)
-  [capture-node] freeze=21ms shot=156ms unfreeze=7ms saved=True
-  Execution complete (t=14.2s)
-  Execution error: {'prompt_id': 'f081c4b7-083f-42f1-9624-596771f63e77', 'node_id': '76', 'node_type': 'LoadTrellis2Models', 'executed': ['81', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute\n    _init_config()\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config\n    hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())\n  File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn\n    return fn(*args, **kwargs)\nTypeError: hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['91', '76', '10', '81', '69', '96', '94', '77', '97', '1'], 'timestamp': 1778321905167}
+  [ComfyUI] Prompt executed in 11.54 seconds
+  [ComfyUI] Prompt executed in 11.54 seconds
+  Execution complete (t=12.3s)
+  Execution error: {'prompt_id': 'ebe8d767-43e3-40f7-be21-d19ab35e3630', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'Input type (float) and bias type (c10::Half) should be the same\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute\n    output = model(pil_image)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__\n    preds = self.model(input_images)[-1].sigmoid().cpu()\n            ~~~~~~~~~~^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward\n    scaled_preds, class_preds = self.forward_ori(x)\n                                ~~~~~~~~~~~~~~~~^^^\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori\n    (x1, x2, x3, x4), class_preds = self.forward_enc(x)\n                                    ~~~~~~~~~~~~~~~~^^^\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc\n    x1, x2, x3, x4 = self.bb(x)\n                     ~~~~~~~^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward\n    x = self.patch_embed(x)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward\n    x = self.proj(x)  # B C Wh Ww\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward\n    return self._conv_forward(input, self.weight, self.bias)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward\n    return F.conv2d(\n           ~~~~~~~~^\n        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\nRuntimeError: Input type (float) and bias type (c10::Half) should be the same\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n        module_name=mod,\n    ...<4 lines>...\n        timeout=600.0,\n    )\n', '  File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n    ...<2 lines>...\n    )\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['81', '76', '96', '1', '91', '94', '97', '10', '77', '69'], 'timestamp': 1778328180174}
     Status: FAILED
-    Error: Workflow execution failed: {'prompt_id': 'f081c4b7-083f-42f1-9624-596771f63e77', 'node_id': '76', 'node_type': 'LoadTrellis2Models', 'executed': ['81', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute\n    _init_config()\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config\n    hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())\n  File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn\n    return fn(*args, **kwargs)\nTypeError: hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['91', '76', '10', '81', '69', '96', '94', '77', '97', '1'], 'timestamp': 1778321905167}
+    Error: Workflow execution failed: {'prompt_id': 'ebe8d767-43e3-40f7-be21-d19ab35e3630', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'Input type (float) and bias type (c10::Half) should be the same\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 296, in execute\n    output = model(pil_image)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 83, in __call__\n    preds = self.model(input_images)[-1].sigmoid().cpu()\n            ~~~~~~~~~~^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2088, in forward\n    scaled_preds, class_preds = self.forward_ori(x)\n                                ~~~~~~~~~~~~~~~~^^^\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2077, in forward_ori\n    (x1, x2, x3, x4), class_preds = self.forward_enc(x)\n                                    ~~~~~~~~~~~~~~~~^^^\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 2045, in forward_enc\n    x1, x2, x3, x4 = self.bb(x)\n                     ~~~~~~~^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1183, in forward\n    x = self.patch_embed(x)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py", line 1045, in forward\n    x = self.proj(x)  # B C Wh Ww\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl\n    return forward_call(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 553, in forward\n    return self._conv_forward(input, self.weight, self.bias)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py", line 548, in _conv_forward\n    return F.conv2d(\n           ~~~~~~~~^\n        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\nRuntimeError: Input type (float) and bias type (c10::Half) should be the same\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1131/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n        module_name=mod,\n    ...<4 lines>...\n        timeout=600.0,\n    )\n', '  File "/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n    ...<2 lines>...\n    )\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['81', '76', '96', '1', '91', '94', '97', '10', '77', '69'], 'timestamp': 1778328180174}
     Details: Workflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json
-Node error: LoadTrellis2Models
+Node error: Trellis2RemoveBackground

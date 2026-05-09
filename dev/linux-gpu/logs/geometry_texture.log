@@ -29,14 +29,122 @@ Capturing execution frames: geometry_texture.json
   [ComfyUI]     Inputs: {"remesh": "on", "remesh.remesh_band": 1, "remesh.remove_inner_faces": true, "target_face_count": 500000, "floater_threshold": 0.001, "weld_vertices": true, "weld_digits": 4, "chart_cone_angle": 90, "
   [ComfyUI]   Node 98: Trellis2RasterizePBR
   [ComfyUI]     Inputs: {"texture_size": 2048, "trimesh": ["97", 0], "voxelgrid": ["83", 0], "original_mesh": ["82", 0]}
-  [ComfyUI] Generated prompt_id: 812ec04b-0a15-4f52-90a6-0fbddfbad977
+  [ComfyUI] Generated prompt_id: 07d7c53b-a1f2-4e3f-9fe7-bcd25098a517
   [ComfyUI] Calling execution.validate_prompt()...
   [ComfyUI] Validation result: valid=True
   [ComfyUI] === Validation PASSED ===
   [ComfyUI] got prompt
   [ComfyUI] [comfy-env] Running LoadTrellis2Models: resolution: '512', precision: 'auto', attn_backend: 'auto'
-  [ComfyUI] [VRAM] Before LoadTrellis2Models: 270 / 7703 MB
+  [ComfyUI] [VRAM] Before LoadTrellis2Models: 1076 / 24124 MB
   [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_loader.LoadTrellis2Models.EXECUTE_NORMALIZED
+  [ComfyUI] [ComfyUI-TRELLIS2] python: /workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/bin/python
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] sys_path sent to worker: ['/workspaces/TRELLIS2-1131/ComfyUI', '/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2', '/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages', '/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2']
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [SubprocessWorker] is_pixi=True, python=/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/bin/python
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: failed
+  [ComfyUI] [SubprocessWorker] launching cmd=['/root/.pixi/bin/pixi', 'run', '--as-is', '--manifest-path', '/workspaces/TRELLIS2-1131/ComfyUI/.ce/pixi.toml', '-e', 'trellis2-nodes', 'python', '/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py', 'abstract://comfy_worker_faabaf1f9af9']...
+  [ComfyUI] [ComfyUI-TRELLIS2] Socket unhealthy, restarting worker...
+  [ComfyUI] [SubprocessWorker] socket_addr=abstract://comfy_worker_faabaf1f9af9 (abstract, no filesystem path)
+  [ComfyUI] [comfy-env] Invalidated 6 stale model patchers (will be cleaned up during next unload)
+  Node executed (1 total), capturing...
+  Frame 2 saved (frame_001.jpg, t=0.8s)
+  [capture-node] freeze=5ms shot=257ms unfreeze=4ms saved=True
+  Frame 3 saved (frame_002.jpg, t=3.2s)
+  [capture-periodic] freeze=3ms shot=261ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] WARNING: WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=35 sending call_method
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=35
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=35
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Config loaded: 9 models registered
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'SLatFlowModel_6' (2464 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=36 sending model_to_device
+  [ComfyUI] Model 'SLatFlowModel_6' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'SLatFlowModel_6' (2464 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'FlexiDualGridVaeDecoder_5' (904 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=37 sending model_to_device
+  [ComfyUI] Model 'FlexiDualGridVaeDecoder_5' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'FlexiDualGridVaeDecoder_5' (904 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'SLatFlowModel_4' (2464 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=38 sending model_to_device
+  [ComfyUI] Model 'SLatFlowModel_4' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'SLatFlowModel_4' (2464 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'SparseStructureDecoder_3' (140 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=39 sending model_to_device
+  [ComfyUI] Model 'SparseStructureDecoder_3' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'SparseStructureDecoder_3' (140 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'SparseStructureFlowModel_2' (2466 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=40 sending model_to_device
+  [ComfyUI] Model 'SparseStructureFlowModel_2' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'SparseStructureFlowModel_2' (2466 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] [VRAM] Before offload 'DINOv3ViT_1' (1156 MB) -> cpu: 1332 / 24124 MB
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] call_id=41 sending model_to_device
+  [ComfyUI] Model 'DINOv3ViT_1' gone from worker (restarted?), treating as offloaded
+  [ComfyUI] [comfy-env] [VRAM] After offload 'DINOv3ViT_1' (1156 MB): 1332 / 24124 MB
+  [ComfyUI] [comfy-env] LoadTrellis2Models done (4.42s): result: NodeOutput
+  [ComfyUI] [VRAM] After LoadTrellis2Models: 1332 / 24124 MB
+  [ComfyUI] [comfy-env] Running Trellis2GetConditioning: background_color: 'black', model_config: dict, image: torch.float32 [1,1042,1042,3] cpu, mask: torch.float32 [1,1042,1042] cpu
+  [ComfyUI] [VRAM] Before Trellis2GetConditioning: 1332 / 24124 MB
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2GetConditioning.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 1042, 1042, 3])
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'mask' shape: torch.Size([1, 1042, 1042])
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=42 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1042, 1042, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1042, 1042, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1042, 1042]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1042, 1042])
+  Frame 4 saved (frame_003.jpg, t=5.5s)
+  [capture-periodic] freeze=4ms shot=252ms unfreeze=4ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=42
+  [ComfyUI] [comfy-env] VRAM request: 1.21GB, free before eviction: 24.42GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.42GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +496MB (now 496MB) reserved=502MB peak=496MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] DinoV3 conditioning: dtype=torch.bfloat16
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy.attention_sparse] Dense attention: attention_sage
+  [capture-loop] iter=50 t=6.9s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4 ram=5.9/31.2GB (19%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=0.84GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +689MB (now 1186MB) reserved=1206MB peak=1186MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=42
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=42
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=42
+  Frame 5 saved (frame_004.jpg, t=7.9s)
+  [capture-periodic] freeze=3ms shot=237ms unfreeze=23ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -967MB (now 219MB) reserved=1226MB peak=1186MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=42
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Created 1 model patchers: ['DINOv3ViT_1']
+  [ComfyUI] [comfy-env] Trellis2GetConditioning done (3.71s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2GetConditioning: 916 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
+  [ComfyUI] [comfy-env] Running Trellis2ImageToShape: seed: 42, ss_guidance_strength: 6.5, ss_guidance_rescale: 0.05, ss_sampling_steps: 12, shape_guidance_strength: 6.5, shape_guidance_rescale: 0.05, shape_sampling_steps: 12, max_tokens: 262144, model_config: dict, conditioning: dict
+  [ComfyUI] [VRAM] Before Trellis2ImageToShape: 916 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2ImageToShape.EXECUTE_NORMALIZED
   [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
   [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
   [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
@@ -44,62 +152,1232 @@ Capturing execution frames: geometry_texture.json
   [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
   [ComfyUI] [SubprocessWorker] created 0 shm blocks
   [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=43 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseStructureFlowModel on CPU: dtype=torch.bfloat16, 0.1s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=43
+  [ComfyUI] [comfy-env] VRAM request: 2.59GB, free before eviction: 24.34GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.34GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +209MB (now 428MB) reserved=444MB peak=1186MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +2020MB (now 2448MB) reserved=2464MB peak=2448MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_flow_model -> GPU: 1.4s
+  Frame 6 saved (frame_005.jpg, t=10.3s)
+  [capture-periodic] freeze=3ms shot=245ms unfreeze=4ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 7 saved (frame_006.jpg, t=12.7s)
+  [capture-periodic] freeze=3ms shot=229ms unfreeze=11ms saved=True
+  [capture-loop] iter=100 t=13.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=6.4/31.2GB (21%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.70GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 8 saved (frame_007.jpg, t=15.1s)
+  [capture-periodic] freeze=3ms shot=227ms unfreeze=3ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -241MB (now 2208MB) reserved=2688MB peak=2632MB
+  Frame 9 saved (frame_008.jpg, t=17.4s)
+  [capture-periodic] freeze=3ms shot=236ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -1651MB (now 558MB) reserved=2688MB peak=2632MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseStructureDecoder on CPU: dtype=torch.bfloat16, 0.3s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=43
+  [ComfyUI] [comfy-env] VRAM request: 0.15GB, free before eviction: 24.33GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.33GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] sparse_structure_decoder -> GPU: 0.1s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -541MB (now 17MB) reserved=26MB peak=2632MB
+  [capture-loop] iter=150 t=19.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=9 ram=9.1/31.2GB (29%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=0.70GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SLatFlowModel on CPU: dtype=torch.bfloat16, 0.1s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=43
+  [ComfyUI] [comfy-env] VRAM request: 2.58GB, free before eviction: 24.33GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.33GB
+  Frame 10 saved (frame_009.jpg, t=19.8s)
+  [capture-periodic] freeze=3ms shot=257ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +1419MB (now 1436MB) reserved=1464MB peak=2632MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_flow_model_512 -> GPU: 1.4s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [33m[comfy-attn] Varlen attention: sage2[0m
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +1171MB (now 2608MB) reserved=2748MB peak=2632MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 11 saved (frame_010.jpg, t=22.2s)
+  [capture-periodic] freeze=14ms shot=258ms unfreeze=3ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 12 saved (frame_011.jpg, t=24.6s)
+  [capture-periodic] freeze=3ms shot=229ms unfreeze=10ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [capture-loop] iter=200 t=25.8s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=9.2/31.2GB (30%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.70GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 13 saved (frame_012.jpg, t=27.0s)
+  [capture-periodic] freeze=11ms shot=241ms unfreeze=3ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -238MB (now 2371MB) reserved=2760MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -1655MB (now 716MB) reserved=2760MB peak=2650MB
+  Frame 14 saved (frame_013.jpg, t=29.4s)
+  [capture-periodic] freeze=3ms shot=241ms unfreeze=4ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -697MB (now 19MB) reserved=46MB peak=2650MB
+  Frame 15 saved (frame_014.jpg, t=31.7s)
+  [capture-periodic] freeze=3ms shot=203ms unfreeze=6ms saved=True
+  [capture-loop] iter=250 t=32.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=12.8/31.2GB (41%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=0.72GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built FlexiDualGridVaeDecoder on CPU: dtype=torch.bfloat16, 5.2s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=43
+  [ComfyUI] [comfy-env] VRAM request: 0.95GB, free before eviction: 24.31GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.31GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +432MB (now 451MB) reserved=486MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] shape_slat_decoder -> GPU: 0.2s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [vae] set max_voxels_per_tile=1000000 on 40 SparseConv3d modules
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=0 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=932MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=941MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=1 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=934MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=2 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=934MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=3 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=934MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=4 SparseResBlockC2S3d N=4,150 ch=1024 alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=933MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=941MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=4,150 Ci=1024 Co=4096 alloc=941MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=941MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=4096 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=32MB alloc=975MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([4150, 4096]) alloc=967MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=975MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=975MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 4,150×4096 -> 18,993×512 in=32MB out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=994MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([18993, 512]) alloc=961MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 4,150×1024 -> 18,993×128 in=8MB out=4MB alloc=962MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=967MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([18993, 128]) alloc=958MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=18,993 h=512ch x=128ch alloc=958MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=958MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=958MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=972MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=953MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=0 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=1 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=2 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=3 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=4 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=5 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=6 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=7 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=8 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=9 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=10 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=11 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=12 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=13 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=14 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=15 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=949MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=16 SparseResBlockC2S3d N=18,993 ch=512 alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=945MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=964MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=18,993 Ci=512 Co=2048 alloc=964MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=964MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=2048 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=968MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=74MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([18993, 2048]) alloc=1024MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 18,993×2048 -> 90,910×256 in=74MB out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1091MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([90910, 256]) alloc=1014MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 18,993×512 -> 90,910×64 in=18MB out=11MB alloc=1018MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1029MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([90910, 64]) alloc=1008MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=90,910 h=256ch x=64ch alloc=1008MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=996MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=996MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=996MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1017MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1061MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1017MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=996MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=1040MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=996MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=0 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=1 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=2 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=3 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=4 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=5 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=6 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=7 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=998MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1043MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +591MB (now 1043MB) reserved=1184MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=8 SparseResBlockC2S3d N=90,910 ch=256 alloc=977MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=978MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=1023MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=90,910 Ci=256 Co=1024 alloc=1023MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=1023MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=1024 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1045MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=177MB alloc=1222MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([90910, 1024]) alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1222MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1222MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 90,910×1024 -> 445,212×128 in=177MB out=108MB alloc=1240MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1349MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([445212, 128]) alloc=1160MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 90,910×256 -> 445,212×32 in=44MB out=27MB alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1205MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([445212, 32]) alloc=1150MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=445,212 h=128ch x=32ch alloc=1149MB
+  Frame 16 saved (frame_015.jpg, t=36.3s)
+  [capture-periodic] freeze=13ms shot=269ms unfreeze=12ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=1115MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=1115MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=1115MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1223MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1331MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1223MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=1115MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=1115MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=0 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1071MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1287MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=1 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1071MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1287MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=2 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1071MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1287MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=3 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1071MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1178MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1287MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=4 SparseResBlockC2S3d N=445,212 ch=128 alloc=1071MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=1078MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=1186MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=445,212 Ci=128 Co=512 alloc=1186MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=1190MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=512 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1297MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=434MB alloc=1732MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([445212, 512]) alloc=1624MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1732MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1732MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 445,212×512 -> 2,166,409×64 in=434MB out=264MB alloc=1818MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +775MB (now 1818MB) reserved=1924MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] offloaded 434MB to CPU, alloc=1384MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1648MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([2166409, 64]) alloc=1595MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 445,212×128 -> 2,166,409×16 in=108MB out=66MB alloc=1681MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1747MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([2166409, 16]) alloc=1586MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=2,166,409 h=64ch x=16ch alloc=1582MB
+  [capture-loop] iter=300 t=38.1s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4 ram=12.1/31.2GB (39%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.71GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] h.feats offloaded for chunked norm2+silu: alloc=1218MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -600MB (now 1218MB) reserved=1684MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after chunked norm2+silu: alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED: N=2,166,409 max_tile=1,000,000 feats=264MB alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED feats offloaded to CPU, alloc=1218MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] N=2,166,409 Ci=64 Co=64 K=(3, 3, 3) feats=264MB out=264MB feats_dev=cpu alloc=1218MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] 3 tiles, VRAM baseline=1218MB
+  [ComfyUI] 
+  Frame 17 saved (frame_016.jpg, t=38.7s)
+  [capture-periodic] freeze=4ms shot=241ms unfreeze=4ms saved=True
+  [ComfyUI] Tiled Conv3d:   0%|          | 0/3 [00:00<?]
+  [ComfyUI] Tiled Conv3d:   0%|          | 0/3 [00:00<?]
+  [ComfyUI] Tiled Conv3d:  33%|███▎      | 1/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d:  33%|███▎      | 1/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d:  67%|██████▋   | 2/3 [00:00<00:00][worker:ComfyUI-TRELLIS2] [VRAM] +366MB (now 1585MB) reserved=1784MB peak=2650MB
+  [ComfyUI] 
+  [ComfyUI] Tiled Conv3d:  67%|██████▋   | 2/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d: 100%|██████████| 3/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d: 100%|██████████| 3/3 [00:00<00:00]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] done: 2166409/2166409 voxels, tile_peak=1632MB, final=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED done: out=264MB alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=1483MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after chunked skip: alloc=1483MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] pre-cleanup: alloc=1027MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -830MB (now 755MB) reserved=1080MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] model to CPU: alloc=122MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] extra[0][0] feats=torch.Size([4150, 8]) on cuda:0, 0MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] extra[0][1] feats=torch.Size([18993, 8]) on cuda:0, 0MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] extra[0][2] feats=torch.Size([90910, 8]) on cuda:0, 1MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] extra[0][3] feats=torch.Size([445212, 8]) on cuda:0, 6MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] subs to CPU: alloc=121MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] coords: torch.Size([2166409, 3]) cuda:0 24MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] vertices.feats: torch.Size([2166409, 3]) cuda:0 12MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] intersected.feats: torch.Size([2166409, 3]) cuda:0 6MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] quad_lerp.feats: torch.Size([2166409, 1]) cuda:0 4MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [FlexiDecoder] post-cleanup: alloc=121MB, starting mesh extraction
+  [ComfyUI] 
+  [ComfyUI] Fast Tiled Decoding:   0%|          | 0/48 [00:00<?, ?it/s]
+  [ComfyUI] Fast Tiled Decoding: 100%|██████████| 48/48 [00:00<00:00, 642.63it/s]
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  Frame 18 saved (frame_017.jpg, t=41.1s)
+  [capture-periodic] freeze=3ms shot=229ms unfreeze=12ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=43
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -747MB (now 9MB) reserved=26MB peak=2650MB
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Created 4 model patchers: ['SparseStructureFlowModel_2', 'SparseStructureDecoder_3', 'SLatFlowModel_4', 'FlexiDualGridVaeDecoder_5']
+  [ComfyUI] [comfy-env] Trellis2ImageToShape done (34.17s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2ImageToShape: 932 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [comfy-env] Running Trellis2ShapeToTexturedMesh: seed: 42, tex_guidance_strength: 3.0, tex_guidance_rescale: 0.2, tex_sampling_steps: 12, model_config: dict, conditioning: dict, shape_slat: dict, subs: list[4]
+  [ComfyUI] [VRAM] Before Trellis2ShapeToTexturedMesh: 932 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2ShapeToTexturedMesh.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=44 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 1029, 1024]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 1029, 1024])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4150, 32]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4150, 32])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4150, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4150, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4150, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4150, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[4150, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([4150, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[18993, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([18993, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[18993, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([18993, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[90910, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([90910, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[90910, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([90910, 4])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[445212, 8]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([445212, 8])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[445212, 4]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([445212, 4])
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SLatFlowModel on CPU: dtype=torch.bfloat16, 0.2s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=44
+  [ComfyUI] [comfy-env] VRAM request: 2.58GB, free before eviction: 24.30GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.30GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +317MB (now 326MB) reserved=346MB peak=2650MB
+  Frame 19 saved (frame_018.jpg, t=43.4s)
+  [capture-periodic] freeze=3ms shot=239ms unfreeze=11ms saved=True
+  [capture-loop] iter=350 t=44.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4 ram=14.2/31.2GB (46%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.71GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +1905MB (now 2232MB) reserved=2246MB peak=2650MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] tex_slat_flow_model_512 -> GPU: 1.5s
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +396MB (now 2629MB) reserved=2772MB peak=2664MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  Frame 20 saved (frame_019.jpg, t=45.8s)
+  [capture-periodic] freeze=3ms shot=244ms unfreeze=4ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  Frame 21 saved (frame_020.jpg, t=48.2s)
+  [capture-periodic] freeze=3ms shot=221ms unfreeze=10ms saved=True
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [capture-loop] iter=400 t=50.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=14.1/31.2GB (45%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=0.71GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  Frame 22 saved (frame_021.jpg, t=50.6s)
+  [capture-periodic] freeze=3ms shot=260ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -217MB (now 2413MB) reserved=2782MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -1622MB (now 791MB) reserved=2782MB peak=2675MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -763MB (now 28MB) reserved=66MB peak=2675MB
+  Frame 23 saved (frame_022.jpg, t=53.0s)
+  [capture-periodic] freeze=3ms shot=257ms unfreeze=3ms saved=True
+  Frame 24 saved (frame_023.jpg, t=55.4s)
+  [capture-periodic] freeze=3ms shot=238ms unfreeze=3ms saved=True
+  [capture-loop] iter=450 t=56.7s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.3/31.2GB (59%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.69GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Built SparseUnetVaeDecoder on CPU: dtype=torch.bfloat16, 5.2s
+  [ComfyUI] [SubprocessWorker] callback 'request_vram_budget' from call_id=44
+  [ComfyUI] [comfy-env] VRAM request: 0.95GB, free before eviction: 24.28GB
+  [ComfyUI] [comfy-env] VRAM after eviction: 24.28GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +378MB (now 406MB) reserved=446MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] tex_slat_decoder -> GPU: 0.3s
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [vae] set max_voxels_per_tile=1000000 on 40 SparseConv3d modules
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=0 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=941MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=950MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=1 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=943MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=951MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=2 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=943MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=951MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=3 SparseConvNeXtBlock3d N=4,150 ch=1024 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=1024 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=943MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=8MB alloc=951MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=0 block=4 SparseResBlockC2S3d N=4,150 ch=1024 alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=942MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=950MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=4,150 Ci=1024 Co=4096 alloc=950MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=950MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=4,150 Ci=1024 Co=4096 feats=8MB cache=1MB (miss) w_dev=cuda:0 alloc=951MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=32MB alloc=984MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([4150, 4096]) alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=984MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=984MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 4,150×4096 -> 18,993×512 in=32MB out=18MB alloc=985MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1003MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([18993, 512]) alloc=970MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 4,150×1024 -> 18,993×128 in=8MB out=4MB alloc=971MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([18993, 128]) alloc=967MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=18,993 h=512ch x=128ch alloc=967MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=962MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=962MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=962MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=966MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=985MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=967MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=962MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=981MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=962MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=0 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=1 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=2 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=3 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=4 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=5 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=6 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=7 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=8 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=9 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=10 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=11 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=12 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=13 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=14 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=15 SparseConvNeXtBlock3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=512 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=957MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=18MB alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=1 block=16 SparseResBlockC2S3d N=18,993 ch=512 alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=953MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=971MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=18,993 Ci=512 Co=2048 alloc=971MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=972MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=18,993 Ci=512 Co=2048 feats=18MB cache=4MB (miss) w_dev=cuda:0 alloc=976MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=74MB alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([18993, 2048]) alloc=1032MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 18,993×2048 -> 90,910×256 in=74MB out=44MB alloc=1054MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1098MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([90910, 256]) alloc=1022MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 18,993×512 -> 90,910×64 in=18MB out=11MB alloc=1025MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1037MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([90910, 64]) alloc=1016MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=90,910 h=256ch x=64ch alloc=1016MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=1003MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=1003MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=1003MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1024MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1069MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1024MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=1003MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=1048MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=1003MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=0 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=1 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=2 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=3 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=4 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=5 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +639MB (now 1046MB) reserved=1144MB peak=2675MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=6 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=7 SparseConvNeXtBlock3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=256 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1001MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=44MB alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=2 block=8 SparseResBlockC2S3d N=90,910 ch=256 alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=980MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=1024MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=90,910 Ci=256 Co=1024 alloc=1024MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=1025MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=90,910 Ci=256 Co=1024 feats=44MB cache=21MB (miss) w_dev=cuda:0 alloc=1046MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=177MB alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([90910, 1024]) alloc=1179MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 90,910×1024 -> 445,212×128 in=177MB out=108MB alloc=1241MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1350MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([445212, 128]) alloc=1162MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 90,910×256 -> 445,212×32 in=44MB out=27MB alloc=1179MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1207MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([445212, 32]) alloc=1151MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=445,212 h=128ch x=32ch alloc=1151MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=1117MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm2: alloc=1117MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after silu: alloc=1117MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1333MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1224MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=1117MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after skip expand: alloc=1225MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-skip: alloc=1117MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=0 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1157MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1266MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=1 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1157MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1266MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=2 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1157MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1266MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=3 SparseConvNeXtBlock3d N=445,212 ch=128 alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=128 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1157MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=108MB alloc=1266MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [UNET] level=3 block=4 SparseResBlockC2S3d N=445,212 ch=128 alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after subdiv: alloc=1050MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after norm1: alloc=1158MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-conv1: N=445,212 Ci=128 Co=512 alloc=1158MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats offloaded before conv1: alloc=1162MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] N=445,212 Ci=128 Co=512 feats=108MB cache=107MB (miss) w_dev=cuda:0 alloc=1269MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] out=434MB alloc=1704MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv1: h=torch.Size([445212, 512]) alloc=1596MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x.feats restored from CPU: alloc=1704MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] pre-C2S(h): alloc=1704MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 445,212×512 -> 2,166,409×64 in=434MB out=264MB alloc=1790MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] offloaded 434MB to CPU, alloc=1356MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +310MB (now 1356MB) reserved=1440MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1620MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(h): h=torch.Size([2166409, 64]) alloc=1567MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter: 445,212×128 -> 2,166,409×16 in=108MB out=66MB alloc=1653MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S] scatter done: alloc=1719MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S(x): x=torch.Size([2166409, 16]) alloc=1558MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-C2S: N=2,166,409 h=64ch x=16ch alloc=1554MB
+  Frame 25 saved (frame_024.jpg, t=60.0s)
+  [capture-periodic] freeze=3ms shot=243ms unfreeze=4ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] x offloaded to CPU, pre-conv2: alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] h.feats offloaded for chunked norm2+silu: alloc=1191MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]
+  [ComfyUI] === WATCHDOG TICK 1 ===
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Thread 0x00007a71cdbcb640 (most recent call first):
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 363 in wait
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 660 in wait
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/tqdm/_monitor.py", line 60 in run
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1015 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007a71d35fc640 (most recent call first):
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/socket.py", line 295 in accept
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/multiprocessing/connection.py", line 648 in accept
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/multiprocessing/connection.py", line 493 in accept
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/multiprocessing/resource_sharer.py", line 138 in _serve
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 995 in run
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1015 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007a7373fff640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 106 in _vram_poller
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 995 in run
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1015 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Current thread 0x00007a7378b8e640 (most recent call first):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 52 in _watchdog
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 995 in run
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/threading.py", line 1015 in _bootstrap
+  [ComfyUI] 
+  [ComfyUI] Thread 0x00007a73791ab740 (most recent call first):
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py", line 725 in _forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py", line 767 in forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790 in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779 in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py", line 1077 in forward
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790 in _call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779 in _wrapped_call_impl
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 735 in _decode_tex_slat
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 1433 in run_texture_generation
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 207 in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py", line 1833 in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1762 in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py", line 1807 in <module>
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] === END ===
+  [ComfyUI] 
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after chunked norm2+silu: alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED: N=2,166,409 max_tile=1,000,000 feats=264MB alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED feats offloaded to CPU, alloc=1191MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] N=2,166,409 Ci=64 Co=64 K=(3, 3, 3) feats=264MB out=264MB feats_dev=cpu alloc=1191MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] 3 tiles, VRAM baseline=1191MB
+  [ComfyUI] 
+  [ComfyUI] Tiled Conv3d:   0%|          | 0/3 [00:00<?][worker:ComfyUI-TRELLIS2] [VRAM] +249MB (now 1605MB) reserved=1840MB peak=2675MB
+  [ComfyUI] 
+  [ComfyUI] Tiled Conv3d:   0%|          | 0/3 [00:00<?]
+  [ComfyUI] Tiled Conv3d:  33%|███▎      | 1/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d:  33%|███▎      | 1/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d:  67%|██████▋   | 2/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d:  67%|██████▋   | 2/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d: 100%|██████████| 3/3 [00:00<00:00]
+  [ComfyUI] Tiled Conv3d: 100%|██████████| 3/3 [00:00<00:00]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [tiled_conv] done: 2166409/2166409 voxels, tile_peak=1604MB, final=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [sparse-conv] TILED done: out=264MB alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2: alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] post-conv2 (cache cleared): alloc=1455MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [C2S3d] after chunked skip: alloc=1455MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -516MB (now 1089MB) reserved=1280MB peak=2675MB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  Frame 26 saved (frame_025.jpg, t=62.4s)
+  [capture-periodic] freeze=3ms shot=226ms unfreeze=3ms saved=True
+  [capture-loop] iter=500 t=63.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=17.1/31.2GB (55%) swap=1.7/32.0GB (5%) cpu=7% browser_rss=0.69GB
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] callback 'report_progress' from call_id=44
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Created 2 model patchers: ['SLatFlowModel_6', 'SparseUnetVaeDecoder_7']
+  [ComfyUI] [comfy-env] Trellis2ShapeToTexturedMesh done (20.39s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2ShapeToTexturedMesh: 1192 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [comfy-env] Running Trellis2ProcessMesh: remesh: dict, target_face_count: 500000, floater_threshold: 0.001, weld_vertices: True, weld_digits: 4, chart_cone_angle: 90.0, chart_refine_iterations: 1, chart_global_iterations: 1, chart_smooth_strength: 1, trimesh: Trimesh
+  [ComfyUI] [VRAM] Before Trellis2ProcessMesh: 1192 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_unwrap.Trellis2ProcessMesh.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 1 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=45 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -1081MB (now 9MB) reserved=286MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] ProcessMesh Start: alloc=9MB reserved=286MB peak=9MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Input: 2167386 verts, 5245490 faces (alloc=93MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Remeshing (quad DC, resolution=512, band=1.0, remove_inner_faces=True)... (alloc=93MB)
+  Frame 27 saved (frame_026.jpg, t=64.7s)
+  [capture-periodic] freeze=3ms shot=245ms unfreeze=4ms saved=True
+  Frame 28 saved (frame_027.jpg, t=67.1s)
+  [capture-periodic] freeze=3ms shot=263ms unfreeze=4ms saved=True
+  [ComfyUI] 
+  [ComfyUI] Sparse Grid:   0%|          | 0/5 [00:00<?, ?it/s]
+  [ComfyUI] Sparse Grid: 100%|██████████| 5/5 [00:00<00:00, 58.83it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Dual Contouring ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +280MB (now 290MB) reserved=486MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Quad Topology ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Re-indexing vertices ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Removing Inner Layer for 2133822 quads ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +707MB (now 997MB) reserved=1086MB peak=2675MB
+  [capture-loop] iter=550 t=69.0s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.3/31.2GB (59%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.64GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Re-indexing vertices after quad filtering ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Triangulation ...
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] After remesh: 1015251 verts, 1789978 faces (alloc=93MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Removing floaters (area_threshold=0.001)... (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] After floater removal: 843786 verts, 1671942 faces (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Simplifying to 500000 faces... (alloc=9MB)
+  [ComfyUI] 
+  [ComfyUI] Simplifying:   0%|          | 0/1171942 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   0%|          | 0/1171942 [00:00<?, ?it/s]
+  [ComfyUI] Simplifying [thres=1.00e-08]:   2%|▏         | 24386/1171942 [00:00<00:00, 1841563.84it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:   3%|▎         | 40792/1171942 [00:00<00:00, 1550186.18it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  13%|█▎        | 153450/1171942 [00:00<00:00, 3943169.46it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  22%|██▏       | 260943/1171942 [00:00<00:00, 5036627.51it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  31%|███       | 360500/1171942 [00:00<00:00, 5727253.96it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  39%|███▊      | 452031/1171942 [00:00<00:00, 6123550.81it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  46%|████▌     | 535790/1171942 [00:00<00:00, 6343980.12it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  52%|█████▏    | 612523/1171942 [00:00<00:00, 6355307.58it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  58%|█████▊    | 682245/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  58%|█████▊    | 682245/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  64%|██████▎   | 744940/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  68%|██████▊   | 801409/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  73%|███████▎  | 851880/1171942 [00:00<00:00, 6445497.19it/s][worker:ComfyUI-TRELLIS2] [VRAM] -989MB (now 9MB) reserved=1106MB peak=2675MB
+  [ComfyUI] 
+  [ComfyUI] Simplifying [thres=1.00e-07]:  77%|███████▋  | 896579/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  80%|███████▉  | 935980/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  83%|████████▎ | 970484/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  85%|████████▌ | 1000597/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  88%|████████▊ | 1026056/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  89%|████████▉ | 1047303/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  91%|█████████ | 1065482/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  92%|█████████▏| 1080769/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  93%|█████████▎| 1093599/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  94%|█████████▍| 1104310/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  95%|█████████▌| 1113569/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  96%|█████████▌| 1121274/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  96%|█████████▌| 1127781/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-07]:  97%|█████████▋| 1133500/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]:  97%|█████████▋| 1138267/1171942 [00:00<00:00, 6445497.19it/s]
+  [ComfyUI] Simplifying [thres=1.00e-06]: 100%|██████████| 1171942/1171942 [00:00<00:00, 5145705.01it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] After simplify: 247835 verts, 488841 faces (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Welding vertices (digits=4)... (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] After weld: 247835 -> 247052 verts, 488833 faces (alloc=17MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] UV unwrapping... (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] Get 2916 clusters after fast clustering
+  [ComfyUI] 
+  [ComfyUI] Adding clusters to xatlas:   0%|          | 0/2916 [00:00<?, ?it/s]
+  [ComfyUI] Adding clusters to xatlas:  29%|██▉       | 850/2916 [00:00<00:00, 8492.19it/s]
+  [ComfyUI] Adding clusters to xatlas:  61%|██████    | 1777/2916 [00:00<00:00, 8947.35it/s]
+  [ComfyUI] Adding clusters to xatlas:  92%|█████████▏| 2688/2916 [00:00<00:00, 9018.55it/s]
+  [ComfyUI] Adding clusters to xatlas: 100%|██████████| 2916/2916 [00:00<00:00, 8999.65it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Computing charts:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Computing charts:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Computing charts:   1%|          | 1/100 [00:00<00:17,  5.56it/s]
+  [ComfyUI] xatlas: Computing charts:   2%|▏         | 2/100 [00:00<00:20,  4.76it/s]
+  [ComfyUI] xatlas: Computing charts:   3%|▎         | 3/100 [00:00<00:18,  5.28it/s]
+  [ComfyUI] xatlas: Computing charts:   4%|▍         | 4/100 [00:00<00:17,  5.36it/s]
+  [ComfyUI] xatlas: Computing charts:   5%|▌         | 5/100 [00:00<00:15,  6.33it/s]
+  [ComfyUI] xatlas: Computing charts:   6%|▌         | 6/100 [00:00<00:14,  6.60it/s]
+  [ComfyUI] xatlas: Computing charts:   7%|▋         | 7/100 [00:00<00:13,  7.00it/s]
+  [ComfyUI] xatlas: Computing charts:   8%|▊         | 8/100 [00:01<00:12,  7.42it/s]
+  [ComfyUI] xatlas: Computing charts:   9%|▉         | 9/100 [00:01<00:12,  7.40it/s]
+  [ComfyUI] xatlas: Computing charts:  10%|█         | 10/100 [00:01<00:11,  7.55it/s]
+  [ComfyUI] xatlas: Computing charts:  11%|█         | 11/100 [00:01<00:11,  8.02it/s]
+  [capture-loop] iter=600 t=75.3s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=5 ram=18.1/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=28% browser_rss=0.64GB
+  [ComfyUI] xatlas: Computing charts:  12%|█▏        | 12/100 [00:01<00:10,  8.31it/s]
+  [ComfyUI] xatlas: Computing charts:  13%|█▎        | 13/100 [00:01<00:10,  8.66it/s]
+  [ComfyUI] xatlas: Computing charts:  14%|█▍        | 14/100 [00:01<00:09,  8.90it/s]
+  [ComfyUI] xatlas: Computing charts:  15%|█▌        | 15/100 [00:01<00:09,  9.32it/s]
+  [ComfyUI] xatlas: Computing charts:  16%|█▌        | 16/100 [00:01<00:08,  9.45it/s]
+  [ComfyUI] xatlas: Computing charts:  17%|█▋        | 17/100 [00:01<00:08,  9.62it/s]
+  [ComfyUI] xatlas: Computing charts:  18%|█▊        | 18/100 [00:01<00:08,  9.79it/s]
+  [ComfyUI] xatlas: Computing charts:  19%|█▉        | 19/100 [00:01<00:08, 10.06it/s]
+  [ComfyUI] xatlas: Computing charts:  20%|██        | 20/100 [00:01<00:07, 10.11it/s]
+  [ComfyUI] xatlas: Computing charts:  21%|██        | 21/100 [00:02<00:07, 10.44it/s]
+  [ComfyUI] xatlas: Computing charts:  22%|██▏       | 22/100 [00:02<00:07, 10.69it/s]
+  [ComfyUI] xatlas: Computing charts:  23%|██▎       | 23/100 [00:02<00:07, 10.94it/s]
+  [ComfyUI] xatlas: Computing charts:  24%|██▍       | 24/100 [00:02<00:06, 11.24it/s]
+  [ComfyUI] xatlas: Computing charts:  25%|██▌       | 25/100 [00:02<00:06, 11.40it/s]
+  [ComfyUI] xatlas: Computing charts:  26%|██▌       | 26/100 [00:02<00:06, 11.67it/s]
+  [ComfyUI] xatlas: Computing charts:  27%|██▋       | 27/100 [00:02<00:06, 12.02it/s]
+  [ComfyUI] xatlas: Computing charts:  28%|██▊       | 28/100 [00:02<00:05, 12.31it/s]
+  [ComfyUI] xatlas: Computing charts:  29%|██▉       | 29/100 [00:02<00:05, 12.49it/s]
+  [ComfyUI] xatlas: Computing charts:  30%|███       | 30/100 [00:02<00:05, 12.73it/s]
+  [ComfyUI] xatlas: Computing charts:  31%|███       | 31/100 [00:02<00:05, 12.89it/s]
+  [ComfyUI] xatlas: Computing charts:  32%|███▏      | 32/100 [00:02<00:05, 13.14it/s]
+  [ComfyUI] xatlas: Computing charts:  33%|███▎      | 33/100 [00:02<00:05, 13.38it/s]
+  [ComfyUI] xatlas: Computing charts:  34%|███▍      | 34/100 [00:02<00:04, 13.60it/s]
+  [ComfyUI] xatlas: Computing charts:  35%|███▌      | 35/100 [00:02<00:04, 13.81it/s]
+  [ComfyUI] xatlas: Computing charts:  36%|███▌      | 36/100 [00:02<00:04, 13.97it/s]
+  [ComfyUI] xatlas: Computing charts:  37%|███▋      | 37/100 [00:02<00:04, 14.24it/s]
+  [ComfyUI] xatlas: Computing charts:  38%|███▊      | 38/100 [00:02<00:04, 14.45it/s]
+  [ComfyUI] xatlas: Computing charts:  39%|███▉      | 39/100 [00:02<00:04, 14.68it/s]
+  [ComfyUI] xatlas: Computing charts:  40%|████      | 40/100 [00:02<00:04, 14.91it/s]
+  [ComfyUI] xatlas: Computing charts:  41%|████      | 41/100 [00:02<00:03, 15.15it/s]
+  [ComfyUI] xatlas: Computing charts:  42%|████▏     | 42/100 [00:02<00:03, 15.38it/s]
+  [ComfyUI] xatlas: Computing charts:  43%|████▎     | 43/100 [00:02<00:03, 15.63it/s]
+  [ComfyUI] xatlas: Computing charts:  44%|████▍     | 44/100 [00:02<00:03, 15.89it/s]
+  [ComfyUI] xatlas: Computing charts:  45%|████▌     | 45/100 [00:02<00:03, 16.17it/s]
+  [ComfyUI] xatlas: Computing charts:  46%|████▌     | 46/100 [00:02<00:03, 16.45it/s]
+  [ComfyUI] xatlas: Computing charts:  47%|████▋     | 47/100 [00:02<00:03, 16.73it/s]
+  [ComfyUI] xatlas: Computing charts:  48%|████▊     | 48/100 [00:02<00:03, 17.02it/s]
+  [ComfyUI] xatlas: Computing charts:  49%|████▉     | 49/100 [00:02<00:02, 17.33it/s]
+  [ComfyUI] xatlas: Computing charts:  50%|█████     | 50/100 [00:02<00:02, 17.65it/s]
+  [ComfyUI] xatlas: Computing charts:  51%|█████     | 51/100 [00:03<00:03, 13.85it/s]
+  [ComfyUI] xatlas: Computing charts:  52%|█████▏    | 52/100 [00:04<00:04, 11.06it/s]
+  [capture-loop] iter=650 t=81.6s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4 ram=18.1/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=36% browser_rss=0.64GB
+  [ComfyUI] xatlas: Computing charts:  53%|█████▎    | 53/100 [00:07<00:06,  7.01it/s]
+  [ComfyUI] xatlas: Computing charts:  54%|█████▍    | 54/100 [00:08<00:07,  6.17it/s]
+  [ComfyUI] xatlas: Computing charts:  57%|█████▋    | 57/100 [00:12<00:09,  4.42it/s]
+  [capture-loop] iter=700 t=87.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.1/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=11% browser_rss=0.64GB
+  [capture-loop] iter=750 t=93.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.1/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=11% browser_rss=0.64GB
+  [ComfyUI] xatlas: Computing charts:  58%|█████▊    | 58/100 [00:12<00:09,  4.48it/s]
+  [ComfyUI] xatlas: Computing charts:  59%|█████▉    | 59/100 [00:22<00:15,  2.68it/s]
+  [ComfyUI] xatlas: Computing charts: 100%|██████████| 100/100 [00:22<00:00,  4.54it/s]
+  [ComfyUI] xatlas: Computing charts: 100%|██████████| 100/100 [00:22<00:00,  4.54it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Packing charts:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Packing charts:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Packing charts:   1%|          | 1/100 [00:00<00:22,  4.32it/s]
+  [ComfyUI] xatlas: Packing charts:   2%|▏         | 2/100 [00:00<00:14,  6.60it/s]
+  [ComfyUI] xatlas: Packing charts:   3%|▎         | 3/100 [00:00<00:11,  8.52it/s]
+  [ComfyUI] xatlas: Packing charts:   4%|▍         | 4/100 [00:00<00:09, 10.20it/s]
+  [ComfyUI] xatlas: Packing charts:   5%|▌         | 5/100 [00:00<00:08, 11.82it/s]
+  [ComfyUI] xatlas: Packing charts:   6%|▌         | 6/100 [00:00<00:07, 13.37it/s]
+  [ComfyUI] xatlas: Packing charts:   7%|▋         | 7/100 [00:00<00:06, 14.97it/s]
+  [ComfyUI] xatlas: Packing charts:   8%|▊         | 8/100 [00:00<00:05, 16.61it/s]
+  [ComfyUI] xatlas: Packing charts:   9%|▉         | 9/100 [00:00<00:05, 18.14it/s]
+  [ComfyUI] xatlas: Packing charts:  10%|█         | 10/100 [00:00<00:04, 19.74it/s]
+  [ComfyUI] xatlas: Packing charts:  11%|█         | 11/100 [00:00<00:04, 21.33it/s]
+  [ComfyUI] xatlas: Packing charts:  12%|█▏        | 12/100 [00:00<00:03, 22.92it/s]
+  [ComfyUI] xatlas: Packing charts:  13%|█▎        | 13/100 [00:00<00:03, 24.51it/s]
+  [ComfyUI] xatlas: Packing charts:  14%|█▍        | 14/100 [00:00<00:03, 26.11it/s]
+  [ComfyUI] xatlas: Packing charts:  15%|█▌        | 15/100 [00:00<00:03, 27.70it/s]
+  [ComfyUI] xatlas: Packing charts:  16%|█▌        | 16/100 [00:00<00:02, 29.30it/s]
+  [ComfyUI] xatlas: Packing charts:  17%|█▋        | 17/100 [00:00<00:02, 30.89it/s]
+  [ComfyUI] xatlas: Packing charts:  18%|█▊        | 18/100 [00:00<00:02, 32.48it/s]
+  [ComfyUI] xatlas: Packing charts:  19%|█▉        | 19/100 [00:00<00:02, 34.09it/s]
+  [ComfyUI] xatlas: Packing charts:  20%|██        | 20/100 [00:00<00:02, 35.68it/s]
+  [ComfyUI] xatlas: Packing charts:  21%|██        | 21/100 [00:00<00:02, 37.30it/s]
+  [ComfyUI] xatlas: Packing charts:  22%|██▏       | 22/100 [00:00<00:02, 38.89it/s]
+  [ComfyUI] xatlas: Packing charts:  23%|██▎       | 23/100 [00:00<00:01, 40.49it/s]
+  [ComfyUI] xatlas: Packing charts:  24%|██▍       | 24/100 [00:00<00:01, 42.12it/s]
+  [ComfyUI] xatlas: Packing charts:  25%|██▌       | 25/100 [00:00<00:01, 43.73it/s]
+  [ComfyUI] xatlas: Packing charts:  26%|██▌       | 26/100 [00:00<00:01, 45.34it/s]
+  [ComfyUI] xatlas: Packing charts:  27%|██▋       | 27/100 [00:00<00:01, 46.96it/s]
+  [ComfyUI] xatlas: Packing charts:  28%|██▊       | 28/100 [00:00<00:01, 48.58it/s]
+  [ComfyUI] xatlas: Packing charts:  29%|██▉       | 29/100 [00:00<00:01, 50.19it/s]
+  [ComfyUI] xatlas: Packing charts:  30%|███       | 30/100 [00:00<00:01, 51.82it/s]
+  [ComfyUI] xatlas: Packing charts:  31%|███       | 31/100 [00:00<00:01, 53.44it/s]
+  [ComfyUI] xatlas: Packing charts:  32%|███▏      | 32/100 [00:00<00:01, 55.05it/s]
+  [ComfyUI] xatlas: Packing charts:  33%|███▎      | 33/100 [00:00<00:01, 56.67it/s]
+  [ComfyUI] xatlas: Packing charts:  34%|███▍      | 34/100 [00:00<00:01, 58.29it/s]
+  [ComfyUI] xatlas: Packing charts:  35%|███▌      | 35/100 [00:00<00:01, 59.91it/s]
+  [ComfyUI] xatlas: Packing charts:  36%|███▌      | 36/100 [00:00<00:01, 61.50it/s]
+  [ComfyUI] xatlas: Packing charts:  37%|███▋      | 37/100 [00:00<00:00, 63.12it/s]
+  [ComfyUI] xatlas: Packing charts:  38%|███▊      | 38/100 [00:00<00:00, 64.75it/s]
+  [ComfyUI] xatlas: Packing charts:  39%|███▉      | 39/100 [00:00<00:00, 66.38it/s]
+  [ComfyUI] xatlas: Packing charts:  40%|████      | 40/100 [00:00<00:00, 67.98it/s]
+  [ComfyUI] xatlas: Packing charts:  41%|████      | 41/100 [00:00<00:00, 69.59it/s]
+  [ComfyUI] xatlas: Packing charts:  42%|████▏     | 42/100 [00:00<00:00, 71.21it/s]
+  [ComfyUI] xatlas: Packing charts:  43%|████▎     | 43/100 [00:00<00:00, 72.83it/s]
+  [ComfyUI] xatlas: Packing charts:  44%|████▍     | 44/100 [00:00<00:00, 74.43it/s]
+  [ComfyUI] xatlas: Packing charts:  45%|████▌     | 45/100 [00:00<00:00, 76.04it/s]
+  [ComfyUI] xatlas: Packing charts:  46%|████▌     | 46/100 [00:00<00:00, 77.65it/s]
+  [ComfyUI] xatlas: Packing charts:  47%|████▋     | 47/100 [00:00<00:00, 79.27it/s]
+  [ComfyUI] xatlas: Packing charts:  48%|████▊     | 48/100 [00:00<00:00, 80.87it/s]
+  [ComfyUI] xatlas: Packing charts:  49%|████▉     | 49/100 [00:00<00:00, 82.48it/s]
+  [ComfyUI] xatlas: Packing charts:  50%|█████     | 50/100 [00:00<00:00, 84.07it/s]
+  [ComfyUI] xatlas: Packing charts:  51%|█████     | 51/100 [00:00<00:00, 85.66it/s]
+  [ComfyUI] xatlas: Packing charts:  52%|█████▏    | 52/100 [00:00<00:00, 87.25it/s]
+  [ComfyUI] xatlas: Packing charts:  53%|█████▎    | 53/100 [00:00<00:00, 88.84it/s]
+  [ComfyUI] xatlas: Packing charts:  54%|█████▍    | 54/100 [00:00<00:00, 90.43it/s]
+  [ComfyUI] xatlas: Packing charts:  55%|█████▌    | 55/100 [00:00<00:00, 92.02it/s]
+  [ComfyUI] xatlas: Packing charts:  56%|█████▌    | 56/100 [00:00<00:00, 93.61it/s]
+  [ComfyUI] xatlas: Packing charts:  57%|█████▋    | 57/100 [00:00<00:00, 95.21it/s]
+  [ComfyUI] xatlas: Packing charts:  58%|█████▊    | 58/100 [00:00<00:00, 96.81it/s]
+  [ComfyUI] xatlas: Packing charts:  59%|█████▉    | 59/100 [00:00<00:00, 98.41it/s]
+  [ComfyUI] xatlas: Packing charts:  60%|██████    | 60/100 [00:00<00:00, 100.00it/s]
+  [ComfyUI] xatlas: Packing charts:  61%|██████    | 61/100 [00:00<00:00, 101.59it/s]
+  [ComfyUI] xatlas: Packing charts:  62%|██████▏   | 62/100 [00:00<00:00, 103.18it/s]
+  [ComfyUI] xatlas: Packing charts:  63%|██████▎   | 63/100 [00:00<00:00, 104.78it/s]
+  [ComfyUI] xatlas: Packing charts:  64%|██████▍   | 64/100 [00:00<00:00, 106.39it/s]
+  [ComfyUI] xatlas: Packing charts:  65%|██████▌   | 65/100 [00:00<00:00, 107.99it/s]
+  [ComfyUI] xatlas: Packing charts:  66%|██████▌   | 66/100 [00:00<00:00, 109.58it/s]
+  [ComfyUI] xatlas: Packing charts:  67%|██████▋   | 67/100 [00:00<00:00, 111.18it/s]
+  [ComfyUI] xatlas: Packing charts:  68%|██████▊   | 68/100 [00:00<00:00, 112.76it/s]
+  [ComfyUI] xatlas: Packing charts:  69%|██████▉   | 69/100 [00:00<00:00, 114.35it/s]
+  [ComfyUI] xatlas: Packing charts:  70%|███████   | 70/100 [00:00<00:00, 115.96it/s]
+  [ComfyUI] xatlas: Packing charts:  71%|███████   | 71/100 [00:00<00:00, 117.56it/s]
+  [ComfyUI] xatlas: Packing charts:  72%|███████▏  | 72/100 [00:00<00:00, 119.15it/s]
+  [ComfyUI] xatlas: Packing charts:  73%|███████▎  | 73/100 [00:00<00:00, 120.76it/s]
+  [ComfyUI] xatlas: Packing charts:  74%|███████▍  | 74/100 [00:00<00:00, 122.36it/s]
+  [ComfyUI] xatlas: Packing charts:  75%|███████▌  | 75/100 [00:00<00:00, 123.96it/s]
+  [ComfyUI] xatlas: Packing charts:  76%|███████▌  | 76/100 [00:00<00:00, 125.55it/s]
+  [ComfyUI] xatlas: Packing charts:  77%|███████▋  | 77/100 [00:00<00:00, 127.14it/s]
+  [ComfyUI] xatlas: Packing charts:  78%|███████▊  | 78/100 [00:00<00:00, 128.72it/s]
+  [ComfyUI] xatlas: Packing charts:  79%|███████▉  | 79/100 [00:00<00:00, 130.29it/s]
+  [ComfyUI] xatlas: Packing charts:  80%|████████  | 80/100 [00:00<00:00, 131.90it/s]
+  [ComfyUI] xatlas: Packing charts:  81%|████████  | 81/100 [00:00<00:00, 133.50it/s]
+  [ComfyUI] xatlas: Packing charts:  82%|████████▏ | 82/100 [00:00<00:00, 135.10it/s]
+  [ComfyUI] xatlas: Packing charts:  83%|████████▎ | 83/100 [00:00<00:00, 136.70it/s]
+  [ComfyUI] xatlas: Packing charts:  84%|████████▍ | 84/100 [00:00<00:00, 138.31it/s]
+  [ComfyUI] xatlas: Packing charts:  85%|████████▌ | 85/100 [00:00<00:00, 139.91it/s]
+  [ComfyUI] xatlas: Packing charts:  86%|████████▌ | 86/100 [00:00<00:00, 141.52it/s]
+  [ComfyUI] xatlas: Packing charts:  87%|████████▋ | 87/100 [00:00<00:00, 143.11it/s]
+  [ComfyUI] xatlas: Packing charts:  88%|████████▊ | 88/100 [00:00<00:00, 144.70it/s]
+  [ComfyUI] xatlas: Packing charts:  89%|████████▉ | 89/100 [00:00<00:00, 146.30it/s]
+  [ComfyUI] xatlas: Packing charts:  90%|█████████ | 90/100 [00:00<00:00, 147.90it/s]
+  [ComfyUI] xatlas: Packing charts:  91%|█████████ | 91/100 [00:00<00:00, 149.48it/s]
+  [ComfyUI] xatlas: Packing charts:  92%|█████████▏| 92/100 [00:00<00:00, 151.06it/s]
+  [ComfyUI] xatlas: Packing charts:  93%|█████████▎| 93/100 [00:00<00:00, 152.63it/s]
+  [ComfyUI] xatlas: Packing charts:  94%|█████████▍| 94/100 [00:00<00:00, 154.22it/s]
+  [ComfyUI] xatlas: Packing charts:  95%|█████████▌| 95/100 [00:00<00:00, 155.81it/s]
+  [ComfyUI] xatlas: Packing charts:  96%|█████████▌| 96/100 [00:00<00:00, 157.40it/s]
+  [ComfyUI] xatlas: Packing charts:  97%|█████████▋| 97/100 [00:00<00:00, 159.00it/s]
+  [ComfyUI] xatlas: Packing charts:  98%|█████████▊| 98/100 [00:00<00:00, 160.59it/s]
+  [ComfyUI] xatlas: Packing charts:  99%|█████████▉| 99/100 [00:00<00:00, 162.19it/s]
+  [ComfyUI] xatlas: Packing charts: 100%|██████████| 100/100 [00:00<00:00, 163.79it/s]
+  [ComfyUI] xatlas: Packing charts: 100%|██████████| 100/100 [00:00<00:00, 163.36it/s]
+  [ComfyUI] 
+  [ComfyUI] xatlas: Building output meshes:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Building output meshes:   0%|          | 0/100 [00:00<?, ?it/s]
+  [ComfyUI] xatlas: Building output meshes:   1%|          | 1/100 [00:00<00:00, 1512.01it/s]
+  [ComfyUI] xatlas: Building output meshes:   2%|▏         | 2/100 [00:00<00:00, 2631.31it/s]
+  [ComfyUI] xatlas: Building output meshes:   3%|▎         | 3/100 [00:00<00:00, 3472.11it/s]
+  [ComfyUI] xatlas: Building output meshes:   4%|▍         | 4/100 [00:00<00:00, 4243.10it/s]
+  [ComfyUI] xatlas: Building output meshes:   5%|▌         | 5/100 [00:00<00:00, 4665.52it/s]
+  [ComfyUI] xatlas: Building output meshes:   6%|▌         | 6/100 [00:00<00:00, 5051.35it/s]
+  [ComfyUI] xatlas: Building output meshes:   7%|▋         | 7/100 [00:00<00:00, 5388.17it/s]
+  [ComfyUI] xatlas: Building output meshes:   8%|▊         | 8/100 [00:00<00:00, 5654.61it/s]
+  [ComfyUI] xatlas: Building output meshes:   9%|▉         | 9/100 [00:00<00:00, 5876.20it/s]
+  [ComfyUI] xatlas: Building output meshes:  10%|█         | 10/100 [00:00<00:00, 5816.54it/s]
+  [ComfyUI] xatlas: Building output meshes:  11%|█         | 11/100 [00:00<00:00, 5887.87it/s]
+  [ComfyUI] xatlas: Building output meshes:  12%|█▏        | 12/100 [00:00<00:00, 5594.89it/s]
+  [ComfyUI] xatlas: Building output meshes:  13%|█▎        | 13/100 [00:00<00:00, 5719.11it/s]
+  [ComfyUI] xatlas: Building output meshes:  14%|█▍        | 14/100 [00:00<00:00, 5795.52it/s]
+  [ComfyUI] xatlas: Building output meshes:  15%|█▌        | 15/100 [00:00<00:00, 5793.77it/s]
+  [ComfyUI] xatlas: Building output meshes:  16%|█▌        | 16/100 [00:00<00:00, 5942.52it/s]
+  [ComfyUI] xatlas: Building output meshes:  17%|█▋        | 17/100 [00:00<00:00, 5971.79it/s]
+  [ComfyUI] xatlas: Building output meshes:  18%|█▊        | 18/100 [00:00<00:00, 5977.16it/s]
+  [ComfyUI] xatlas: Building output meshes:  19%|█▉        | 19/100 [00:00<00:00, 6088.92it/s]
+  [ComfyUI] xatlas: Building output meshes:  20%|██        | 20/100 [00:00<00:00, 6185.38it/s]
+  [ComfyUI] xatlas: Building output meshes:  21%|██        | 21/100 [00:00<00:00, 6302.26it/s]
+  [ComfyUI] xatlas: Building output meshes:  22%|██▏       | 22/100 [00:00<00:00, 5973.24it/s]
+  [ComfyUI] xatlas: Building output meshes:  23%|██▎       | 23/100 [00:00<00:00, 6073.73it/s]
+  [ComfyUI] xatlas: Building output meshes:  24%|██▍       | 24/100 [00:00<00:00, 6137.63it/s]
+  [ComfyUI] xatlas: Building output meshes:  25%|██▌       | 25/100 [00:00<00:00, 6235.21it/s]
+  [ComfyUI] xatlas: Building output meshes:  26%|██▌       | 26/100 [00:00<00:00, 6279.98it/s]
+  [ComfyUI] xatlas: Building output meshes:  27%|██▋       | 27/100 [00:00<00:00, 6311.09it/s]
+  [ComfyUI] xatlas: Building output meshes:  28%|██▊       | 28/100 [00:00<00:00, 6320.46it/s]
+  [ComfyUI] xatlas: Building output meshes:  29%|██▉       | 29/100 [00:00<00:00, 6416.02it/s]
+  [ComfyUI] xatlas: Building output meshes:  30%|███       | 30/100 [00:00<00:00, 6368.19it/s]
+  [ComfyUI] xatlas: Building output meshes:  31%|███       | 31/100 [00:00<00:00, 6434.25it/s]
+  [ComfyUI] xatlas: Building output meshes:  32%|███▏      | 32/100 [00:00<00:00, 6523.97it/s]
+  [ComfyUI] xatlas: Building output meshes:  33%|███▎      | 33/100 [00:00<00:00, 6577.89it/s]
+  [ComfyUI] xatlas: Building output meshes:  34%|███▍      | 34/100 [00:00<00:00, 6624.23it/s]
+  [ComfyUI] xatlas: Building output meshes:  35%|███▌      | 35/100 [00:00<00:00, 6667.91it/s]
+  [ComfyUI] xatlas: Building output meshes:  36%|███▌      | 36/100 [00:00<00:00, 6635.39it/s]
+  [ComfyUI] xatlas: Building output meshes:  37%|███▋      | 37/100 [00:00<00:00, 6648.21it/s]
+  [ComfyUI] xatlas: Building output meshes:  38%|███▊      | 38/100 [00:00<00:00, 6677.99it/s]
+  [ComfyUI] xatlas: Building output meshes:  39%|███▉      | 39/100 [00:00<00:00, 6696.05it/s]
+  [ComfyUI] xatlas: Building output meshes:  40%|████      | 40/100 [00:00<00:00, 6729.73it/s]
+  [ComfyUI] xatlas: Building output meshes:  41%|████      | 41/100 [00:00<00:00, 6803.55it/s]
+  [ComfyUI] xatlas: Building output meshes:  42%|████▏     | 42/100 [00:00<00:00, 6833.76it/s]
+  [ComfyUI] xatlas: Building output meshes:  43%|████▎     | 43/100 [00:00<00:00, 6885.10it/s]
+  [ComfyUI] xatlas: Building output meshes:  44%|████▍     | 44/100 [00:00<00:00, 6880.27it/s]
+  [ComfyUI] xatlas: Building output meshes:  45%|████▌     | 45/100 [00:00<00:00, 6927.90it/s]
+  [ComfyUI] xatlas: Building output meshes:  46%|████▌     | 46/100 [00:00<00:00, 6982.66it/s]
+  [ComfyUI] xatlas: Building output meshes:  47%|████▋     | 47/100 [00:00<00:00, 7019.38it/s]
+  [ComfyUI] xatlas: Building output meshes:  48%|████▊     | 48/100 [00:00<00:00, 7051.47it/s]
+  [ComfyUI] xatlas: Building output meshes:  49%|████▉     | 49/100 [00:00<00:00, 7098.68it/s]
+  [ComfyUI] xatlas: Building output meshes:  50%|█████     | 50/100 [00:00<00:00, 7134.63it/s]
+  [ComfyUI] xatlas: Building output meshes:  51%|█████     | 51/100 [00:00<00:00, 7183.72it/s]
+  [ComfyUI] xatlas: Building output meshes:  52%|█████▏    | 52/100 [00:00<00:00, 7192.69it/s]
+  [ComfyUI] xatlas: Building output meshes:  53%|█████▎    | 53/100 [00:00<00:00, 7215.60it/s]
+  [ComfyUI] xatlas: Building output meshes:  54%|█████▍    | 54/100 [00:00<00:00, 7261.70it/s]
+  [ComfyUI] xatlas: Building output meshes:  55%|█████▌    | 55/100 [00:00<00:00, 7294.21it/s]
+  [ComfyUI] xatlas: Building output meshes:  56%|█████▌    | 56/100 [00:00<00:00, 7271.63it/s]
+  [ComfyUI] xatlas: Building output meshes:  57%|█████▋    | 57/100 [00:00<00:00, 7303.58it/s]
+  [ComfyUI] xatlas: Building output meshes:  58%|█████▊    | 58/100 [00:00<00:00, 7355.54it/s]
+  [ComfyUI] xatlas: Building output meshes:  59%|█████▉    | 59/100 [00:00<00:00, 7360.84it/s]
+  [ComfyUI] xatlas: Building output meshes:  60%|██████    | 60/100 [00:00<00:00, 7334.41it/s]
+  [ComfyUI] xatlas: Building output meshes:  61%|██████    | 61/100 [00:00<00:00, 7296.31it/s]
+  [ComfyUI] xatlas: Building output meshes:  62%|██████▏   | 62/100 [00:00<00:00, 7262.86it/s]
+  [ComfyUI] xatlas: Building output meshes:  63%|██████▎   | 63/100 [00:00<00:00, 7251.80it/s]
+  [ComfyUI] xatlas: Building output meshes:  64%|██████▍   | 64/100 [00:00<00:00, 7200.91it/s]
+  [ComfyUI] xatlas: Building output meshes:  65%|██████▌   | 65/100 [00:00<00:00, 7205.37it/s]
+  [ComfyUI] xatlas: Building output meshes:  66%|██████▌   | 66/100 [00:00<00:00, 7225.33it/s]
+  [ComfyUI] xatlas: Building output meshes:  67%|██████▋   | 67/100 [00:00<00:00, 7225.24it/s]
+  [ComfyUI] xatlas: Building output meshes:  68%|██████▊   | 68/100 [00:00<00:00, 7218.56it/s]
+  [ComfyUI] xatlas: Building output meshes:  69%|██████▉   | 69/100 [00:00<00:00, 7254.58it/s]
+  [ComfyUI] xatlas: Building output meshes:  70%|███████   | 70/100 [00:00<00:00, 7288.83it/s]
+  [ComfyUI] xatlas: Building output meshes:  71%|███████   | 71/100 [00:00<00:00, 7296.77it/s]
+  [ComfyUI] xatlas: Building output meshes:  72%|███████▏  | 72/100 [00:00<00:00, 7334.66it/s]
+  [ComfyUI] xatlas: Building output meshes:  73%|███████▎  | 73/100 [00:00<00:00, 7378.29it/s]
+  [ComfyUI] xatlas: Building output meshes:  74%|███████▍  | 74/100 [00:00<00:00, 7407.95it/s]
+  [ComfyUI] xatlas: Building output meshes:  75%|███████▌  | 75/100 [00:00<00:00, 7451.86it/s]
+  [ComfyUI] xatlas: Building output meshes:  76%|███████▌  | 76/100 [00:00<00:00, 7482.62it/s]
+  [ComfyUI] xatlas: Building output meshes:  77%|███████▋  | 77/100 [00:00<00:00, 7514.75it/s]
+  [ComfyUI] xatlas: Building output meshes:  78%|███████▊  | 78/100 [00:00<00:00, 7530.17it/s]
+  [ComfyUI] xatlas: Building output meshes:  79%|███████▉  | 79/100 [00:00<00:00, 7548.70it/s]
+  [ComfyUI] xatlas: Building output meshes:  80%|████████  | 80/100 [00:00<00:00, 7573.34it/s]
+  [ComfyUI] xatlas: Building output meshes:  81%|████████  | 81/100 [00:00<00:00, 7590.57it/s]
+  [ComfyUI] xatlas: Building output meshes:  82%|████████▏ | 82/100 [00:00<00:00, 7605.27it/s]
+  [ComfyUI] xatlas: Building output meshes:  83%|████████▎ | 83/100 [00:00<00:00, 7620.16it/s]
+  [ComfyUI] xatlas: Building output meshes:  84%|████████▍ | 84/100 [00:00<00:00, 7633.61it/s]
+  [ComfyUI] xatlas: Building output meshes:  85%|████████▌ | 85/100 [00:00<00:00, 7624.21it/s]
+  [ComfyUI] xatlas: Building output meshes:  86%|████████▌ | 86/100 [00:00<00:00, 7647.84it/s]
+  [ComfyUI] xatlas: Building output meshes:  87%|████████▋ | 87/100 [00:00<00:00, 7656.25it/s]
+  [ComfyUI] xatlas: Building output meshes:  88%|████████▊ | 88/100 [00:00<00:00, 7655.90it/s]
+  [ComfyUI] xatlas: Building output meshes:  89%|████████▉ | 89/100 [00:00<00:00, 7643.03it/s]
+  [ComfyUI] xatlas: Building output meshes:  90%|█████████ | 90/100 [00:00<00:00, 7612.78it/s]
+  [ComfyUI] xatlas: Building output meshes:  91%|█████████ | 91/100 [00:00<00:00, 7561.65it/s]
+  [ComfyUI] xatlas: Building output meshes:  92%|█████████▏| 92/100 [00:00<00:00, 7574.36it/s]
+  [ComfyUI] xatlas: Building output meshes:  93%|█████████▎| 93/100 [00:00<00:00, 7601.63it/s]
+  [ComfyUI] xatlas: Building output meshes:  94%|█████████▍| 94/100 [00:00<00:00, 7592.67it/s]
+  [ComfyUI] xatlas: Building output meshes:  95%|█████████▌| 95/100 [00:00<00:00, 7598.23it/s]
+  [ComfyUI] xatlas: Building output meshes:  96%|█████████▌| 96/100 [00:00<00:00, 7621.39it/s]
+  [ComfyUI] xatlas: Building output meshes:  97%|█████████▋| 97/100 [00:00<00:00, 7620.72it/s]
+  [ComfyUI] xatlas: Building output meshes:  98%|█████████▊| 98/100 [00:00<00:00, 7638.05it/s]
+  [ComfyUI] xatlas: Building output meshes:  99%|█████████▉| 99/100 [00:00<00:00, 7670.81it/s]
+  [ComfyUI] xatlas: Building output meshes: 100%|██████████| 100/100 [00:00<00:00, 7707.14it/s]
+  [ComfyUI] xatlas: Building output meshes: 100%|██████████| 100/100 [00:00<00:00, 7489.69it/s]
+  [ComfyUI] 
+  [ComfyUI] Gathering results from xatlas:   0%|          | 0/2916 [00:00<?, ?it/s]
+  [ComfyUI] Gathering results from xatlas: 100%|██████████| 2916/2916 [00:00<00:00, 33447.80it/s]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] After UV unwrap: 329297 verts, 488833 faces (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [ProcessMesh] Done: 329297 verts, 488833 faces (alloc=9MB)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] ProcessMesh done: alloc=9MB reserved=26MB peak=1069MB
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Trellis2ProcessMesh done (34.36s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2ProcessMesh: 970 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [comfy-env] Running Trellis2RasterizePBR: texture_size: 2048, trimesh: Trimesh, voxelgrid: dict, original_mesh: Trimesh
+  [ComfyUI] [VRAM] Before Trellis2RasterizePBR: 970 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_unwrap.Trellis2RasterizePBR.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 2 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=46 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[2166409, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([2166409, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[2166409, 6]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([2166409, 6])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +204MB (now 213MB) reserved=266MB peak=2675MB
+  [capture-loop] iter=800 t=99.2s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.7/31.2GB (60%) swap=1.7/32.0GB (5%) cpu=9% browser_rss=0.64GB
+  Frame 29 saved (frame_028.jpg, t=99.5s)
+  [capture-periodic] freeze=3ms shot=284ms unfreeze=13ms saved=True
+  Frame 30 saved (frame_029.jpg, t=101.9s)
+  [capture-periodic] freeze=3ms shot=237ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +329MB (now 543MB) reserved=626MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +256MB (now 799MB) reserved=886MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -256MB (now 543MB) reserved=886MB peak=2675MB
+  [capture-loop] iter=850 t=105.4s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.3/31.2GB (59%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.64GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] +256MB (now 799MB) reserved=886MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -212MB (now 587MB) reserved=886MB peak=2675MB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [VRAM] -550MB (now 38MB) reserved=86MB peak=2675MB
+  [capture-loop] iter=900 t=111.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=4 ram=18.2/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=5% browser_rss=0.65GB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [RasterizePBR] Output trimesh:
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   vertices: (329297, 3)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   faces: (488833, 3)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   visual type: TextureVisuals
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   UVs: (329297, 2)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   material type: PBRMaterial
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   baseColorTexture: (2048, 2048) mode=RGBA
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   metallicRoughnessTexture: (2048, 2048) mode=RGB
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   vertex_normals: (329297, 3)
+  [ComfyUI] [worker:ComfyUI-TRELLIS2]   vertex_attributes: ['base_color_r', 'base_color_g', 'base_color_b', 'metallic', 'roughness', 'alpha']
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Trellis2RasterizePBR done (14.61s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2RasterizePBR: 990 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [comfy-env] Running Trellis2ExportTrimesh: filename_prefix: 'trellis2', file_format: 'glb', trimesh: Trimesh
+  [ComfyUI] [VRAM] Before Trellis2ExportTrimesh: 990 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_unwrap.Trellis2ExportTrimesh.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 1 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=47 sending call_method
+  Frame 31 saved (frame_030.jpg, t=113.4s)
+  [capture-periodic] freeze=3ms shot=249ms unfreeze=3ms saved=True
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] Trellis2ExportTrimesh done (2.76s): result: NodeOutput
+  [ComfyUI] [VRAM] After Trellis2ExportTrimesh: 990 / 24124 MB
+  [ComfyUI] [ComfyUI-GeometryPack] python: /workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/geometrypack-main/bin/python
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [ComfyUI-GeometryPack] sys_path sent to worker: ['/workspaces/TRELLIS2-1131/ComfyUI', '/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-GeometryPack', '/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/geometrypack-main/lib/python3.13/site-packages', '/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-GeometryPack']
+  [ComfyUI] [comfy-env] Running GeomPackPreviewMeshVTK: mode: 'texture (PBR)', trimesh: Trimesh
+  [ComfyUI] [SubprocessWorker] is_pixi=True, python=/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/geometrypack-main/bin/python
+  [ComfyUI] [VRAM] Before GeomPackPreviewMeshVTK: 990 / 24124 MB
+  [ComfyUI] [SubprocessWorker] launching cmd=['/root/.pixi/bin/pixi', 'run', '--as-is', '--manifest-path', '/workspaces/TRELLIS2-1131/ComfyUI/.ce/pixi.toml', '-e', 'geometrypack-main', 'python', '/tmp/comfyui_pvenv_g8gql2bg/persistent_worker.py', 'abstract://comfy_worker_51be4bfad274']...
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] [SubprocessWorker] socket_addr=abstract://comfy_worker_51be4bfad274 (abstract, no filesystem path)
+  [ComfyUI] [SubprocessWorker] call_method: nodes.main.visualization.preview_mesh_vtk.PreviewMeshVTKNode.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-GeometryPack] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-GeometryPack] Health check: failed
+  [ComfyUI] [ComfyUI-GeometryPack] Socket unhealthy, restarting worker...
+  Frame 32 saved (frame_031.jpg, t=115.8s)
+  [capture-periodic] freeze=3ms shot=272ms unfreeze=3ms saved=True
+  [capture-loop] iter=950 t=117.5s state={'complete': False, 'error': None, 'executedCount': 1, 'wsState': 1} eval_ms=3 ram=18.1/31.2GB (58%) swap=1.7/32.0GB (5%) cpu=6% browser_rss=0.64GB
+  [ComfyUI] [worker:ComfyUI-GeometryPack] WARNING: WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 1 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
   [ComfyUI] [SubprocessWorker] call_id=5 sending call_method
-  [ComfyUI] [worker:ComfyUI-TRELLIS2] [TRELLIS2] Downloading pipeline config from HuggingFace...
-  Node executed (1 total), capturing...
-  [ComfyUI] [SubprocessWorker] got response: error
-  [ComfyUI] !!! Exception during processing !!! hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] 
-  [ComfyUI] Worker traceback:
-  [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
-  [ComfyUI]     result = method(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]     _init_config()
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] 
-  [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute
-  [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data
-  [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list
-  [ComfyUI]     await process_inputs(input_dict, i)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs
-  [ComfyUI]     result = f(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy
-  [ComfyUI]     result = worker.call_method(
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
-  [ComfyUI]     raise WorkerError(
-  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] 
-  [ComfyUI] Worker traceback:
-  [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main
-  [ComfyUI]     result = method(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute
-  [ComfyUI]     _init_config()
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config
-  [ComfyUI]     hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())
-  [ComfyUI]   File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
-  [ComfyUI]     return fn(*args, **kwargs)
-  [ComfyUI] TypeError: hf_hub_download() got an unexpected keyword argument 'tqdm_class'
-  [ComfyUI] 
-  [ComfyUI] 
-  [ComfyUI] Prompt executed in 0.30 seconds
-  Frame 2 saved (frame_001.jpg, t=0.7s)
-  [capture-node] freeze=13ms shot=182ms unfreeze=9ms saved=True
-  Execution complete (t=1.1s)
-  Execution error: {'prompt_id': '61fa1153-9f54-43ab-9be6-c5baf8235e88', 'node_id': '68', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute\n    _init_config()\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config\n    hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())\n  File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn\n    return fn(*args, **kwargs)\nTypeError: hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['83', '86', '64', '10', '68', '82', '69', '93', '97', '98', '11', '1'], 'timestamp': 1778321872418}
-    Status: FAILED
-    Error: Workflow execution failed: {'prompt_id': '61fa1153-9f54-43ab-9be6-c5baf8235e88', 'node_id': '68', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py", line 71, in execute\n    _init_config()\n  File "/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py", line 190, in _init_config\n    hf_hub_download("microsoft/TRELLIS.2-4B", "pipeline.json", local_dir=models_dir, tqdm_class=_comfy_tqdm())\n  File "/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn\n    return fn(*args, **kwargs)\nTypeError: hf_hub_download() got an unexpected keyword argument \'tqdm_class\'\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1012/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py", line 536, in proxy\n    result = worker.call_method(\n', '  File "/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['83', '86', '64', '10', '68', '82', '69', '93', '97', '98', '11', '1'], 'timestamp': 1778321872418}
-    Details: Workflow: /node/ComfyUI-TRELLIS2/workflows/geometry_texture.json
-Node error: LoadTrellis2Models
+  Frame 33 saved (frame_032.jpg, t=118.2s)
+  [capture-periodic] freeze=3ms shot=252ms unfreeze=3ms saved=True
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Preparing preview: Mesh - 329297 vertices, 488833 faces
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Mode: texture (PBR)
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Visual data - has_visual: True, kind: texture, texture: True, vertex_colors: False
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Using PBR mode - GLB export with Three.js PBR viewer
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Set alphaMode to BLEND for PBR mode
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Exported GLB to: /workspaces/TRELLIS2-1131/ComfyUI/output/preview_vtk_a059f1aa.glb
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: Vertex attributes: ['base_color_r', 'base_color_g', 'base_color_b', 'metallic', 'roughness', 'alpha']
+  [ComfyUI] [worker:ComfyUI-GeometryPack] INFO: PBR mode info: watertight=False, volume=None, area=3.095121984930741, texture=True, vertex_colors=False
+  [ComfyUI] [SubprocessWorker] got response: ok
+  [ComfyUI] [comfy-env] GeomPackPreviewMeshVTK done (6.72s): result: NodeOutput
+  [ComfyUI] [VRAM] After GeomPackPreviewMeshVTK: 990 / 24124 MB
+  [ComfyUI] [VRAM] Loaded: SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB), SubprocessModel (0 MB)
+  [ComfyUI] Prompt executed in 121.33 seconds
+  Node executed (2 total), capturing...
+  Frame 34 saved (frame_033.jpg, t=121.9s)
+  [capture-node] freeze=4ms shot=406ms unfreeze=49ms saved=True
+  Node executed (3 total), capturing...
+  Frame 35 saved (frame_034.jpg, t=122.8s)
+  [capture-node] freeze=888ms shot=1469ms unfreeze=0ms saved=True
+  Execution complete (t=122.8s)
+  [3d-wait] Phase 1: Waiting for 'Loading 3D Model' text to disappear...
+  [3d-wait] Phase 1 exception after 60.0s: Page.wait_for_function: Timeout 60000ms exceeded.
+  [3d-wait] Phase 2: iframes=1
+  [3d-wait] iframe viewer_ready=True (matched 1 console logs)
+  [3d-wait] Unfrozen in 0.004s, rendering for 5s...
+  [3d-wait] JS halted via CDP after 5.4s
+  [3d-wait] Re-frozen in 6.4s
+  [3d-wait] Total 3D wait: 66.4s
+  Captured 35 unique frames over 191.73s
+  [debug] iframes: 1
+  [debug]   iframe[0]: src=http://127.0.0.1:41898/extensions/ComfyUI-GeometryPack/viewer_pbr.html?v=1778327, canvas=486x471, rafFrozen=True
+  [timing] trigger_3d_previews: 0.0s
+  Saved high-quality screenshot: geometry_texture_executed.png
+  [timing] final_screenshot: 0.5s
+    Captured 36 video frames
