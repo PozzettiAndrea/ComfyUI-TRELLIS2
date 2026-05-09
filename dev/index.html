@@ -58,12 +58,12 @@
         if (status === 'passed') {
           const mark = document.createElement('span');
           mark.className = 'status-mark';
-          mark.textContent = '✓';
+          mark.textContent = 'âœ“';
           btn.appendChild(mark);
         } else if (status === 'failed') {
           const mark = document.createElement('span');
           mark.className = 'status-mark';
-          mark.textContent = '✗';
+          mark.textContent = 'âœ—';
           btn.appendChild(mark);
         }
         btn.onclick = () => {
@@ -143,7 +143,7 @@
             // report iframe fires its load event.
             pendingMessage = { type: 'comfytest-open', name: e.data.workflow };
           } else if (!ok) {
-            // Not a known platform — treat as workflow open instead.
+            // Not a known platform â€” treat as workflow open instead.
             const fallback = { type: 'comfytest-open', name: e.data.platform };
             if (frameReady) frame.contentWindow.postMessage(fallback, '*');
             else pendingMessage = fallback;
