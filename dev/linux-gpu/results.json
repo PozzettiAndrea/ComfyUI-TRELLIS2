@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-05-09T12:06:38.407654+00:00",
+  "timestamp": "2026-05-09T16:47:14.464768+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-    "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-    "gpu": "NVIDIA GeForce RTX 3090"
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+    "gpu": "NVIDIA GeForce RTX 5060"
   },
-  "commit_hash": "36110108751a0f79847bdc8736b4fef3356e4bba",
+  "commit_hash": "8e045dc8933ab7d27207da4a4b976d1459c95893",
   "success": false,
   "summary": {
     "total": 9,
@@ -17,115 +17,115 @@
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 408.07,
+      "duration_seconds": 457.72,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 19.01,
-          "avg": 8.11
+          "peak": 18.32,
+          "avg": 7.87
         },
-        "total_ram_gb": 31.2,
-        "samples": 396,
+        "total_ram_gb": 31.3,
+        "samples": 444,
         "vram": {
-          "peak": 4.22,
-          "avg": 1.66
+          "peak": 3.87,
+          "avg": 1.42
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 221.28,
+      "duration_seconds": 252.58,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 23.62,
-          "avg": 19.07
+          "peak": 23.39,
+          "avg": 19.25
         },
-        "total_ram_gb": 31.2,
-        "samples": 215,
+        "total_ram_gb": 31.3,
+        "samples": 246,
         "vram": {
-          "peak": 4.44,
-          "avg": 2.68
+          "peak": 4.07,
+          "avg": 2.27
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "pass",
-      "duration_seconds": 492.52,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 402.31,
+      "error": "Workflow execution failed: {'prompt_id': '7bbfa360-3313-466a-9ade-474b24d59220', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['91', '10', '92', '1', '11'], 'exception_message': '[CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_gki1zjs6/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 982, in run_shape_generation\\n    mesh.fill_holes()  # match original decode_latent()\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py\", line 1169, in fill_holes\\n    mesh.fill_holes(max_hole_perimeter=max_hole_perimeter)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/cumesh_vb/cumesh.py\", line 286, in fill_holes\\n    self.cu_mesh.fill_holes(max_hole_perimeter)\\nRuntimeError: [CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1612/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1612/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'seed': [1163985367], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1536_cascade', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.3281e-01, -1.3984e+00, -5.7812e+00,  ..., -7.3828e-01,\\n          -8.6328e-01, -6.4453e-01],\\n         [-4.1250e+00,  6.5430e-02, -8.7500e+00,  ...,  9.3750e-02,\\n          -2.4844e+00,  4.3359e-01],\\n         [ 2.7734e-01, -8.9645e-04, -9.5215e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0391e-01, -6.1328e-01, -5.6875e+00,  ..., -5.6885e-02,\\n          -6.2109e-01,  7.1777e-02],\\n         [-5.3125e-01, -6.4844e-01, -5.9375e+00,  ..., -1.1523e-01,\\n          -5.8203e-01,  5.4443e-02],\\n         [-3.7305e-01, -7.9297e-01, -5.7188e+00,  ...,  4.3213e-02,\\n          -2.9492e-01,  5.7373e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 8.3008e-02, -1.3828e+00, -5.8750e+00,  ..., -6.8359e-01,\\n          -9.4531e-01, -6.1328e-01],\\n         [-3.8750e+00,  1.4453e-01, -8.8125e+00,  ...,  2.1484e-01,\\n          -2.4219e+00,  4.8828e-01],\\n         [ 2.7930e-01, -4.0588e-03, -1.0938e-01,  ...,  3.2471e-02,\\n           1.5259e-02,  3.0029e-02],\\n         ...,\\n         [-4.9414e-01, -5.6641e-01, -5.8750e+00,  ..., -5.9814e-02,\\n          -4.9609e-01,  1.4160e-01],\\n         [-4.8633e-01, -5.9766e-01, -6.0000e+00,  ..., -7.3242e-02,\\n          -4.7461e-01,  1.2695e-01],\\n         [-3.3398e-01, -8.0469e-01, -5.5312e+00,  ...,  1.3379e-01,\\n          -1.6602e-01,  1.2158e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['104', '91', '108', '10', '92', '112', '1', '11'], 'timestamp': 1778344512748}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1536.json\nNode error: Trellis2ImageToShape",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 26.11,
-          "avg": 16.02
+          "peak": 26.47,
+          "avg": 18.62
         },
-        "total_ram_gb": 31.2,
-        "samples": 478,
+        "total_ram_gb": 31.3,
+        "samples": 392,
         "vram": {
-          "peak": 6.7,
-          "avg": 3.62
+          "peak": 5.7,
+          "avg": 4.18
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 80.84,
+      "duration_seconds": 86.73,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 21.65,
-          "avg": 20.3
+          "peak": 21.4,
+          "avg": 10.4
         },
-        "total_ram_gb": 31.2,
-        "samples": 79,
+        "total_ram_gb": 31.3,
+        "samples": 85,
         "vram": {
-          "peak": 3.62,
-          "avg": 2.01
+          "peak": 3.61,
+          "avg": 1.78
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 202.14,
+      "duration_seconds": 171.3,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 20.58,
-          "avg": 14.21
+          "peak": 18.1,
+          "avg": 15.65
         },
-        "total_ram_gb": 31.2,
-        "samples": 196,
+        "total_ram_gb": 31.3,
+        "samples": 166,
         "vram": {
-          "peak": 3.54,
-          "avg": 1.52
+          "peak": 3.09,
+          "avg": 1.17
         }
       }
     },
@@ -139,69 +139,69 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 150.95,
+      "duration_seconds": 147.94,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 12.48,
-          "avg": 6.3
+          "peak": 16.53,
+          "avg": 7.75
         },
-        "total_ram_gb": 31.2,
-        "samples": 147,
+        "total_ram_gb": 31.3,
+        "samples": 144,
         "vram": {
-          "peak": 7.18,
-          "avg": 3.41
+          "peak": 6.73,
+          "avg": 2.6
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 19.5,
-      "error": "Workflow execution failed: {'prompt_id': 'ebe8d767-43e3-40f7-be21-d19ab35e3630', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'Input type (float) and bias type (c10::Half) should be the same\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_tcqnt62d/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 296, in execute\\n    output = model(pil_image)\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py\", line 83, in __call__\\n    preds = self.model(input_images)[-1].sigmoid().cpu()\\n            ~~~~~~~~~~^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py\", line 2088, in forward\\n    scaled_preds, class_preds = self.forward_ori(x)\\n                                ~~~~~~~~~~~~~~~~^^^\\n  File \"/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py\", line 2077, in forward_ori\\n    (x1, x2, x3, x4), class_preds = self.forward_enc(x)\\n                                    ~~~~~~~~~~~~~~~~^^^\\n  File \"/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py\", line 2045, in forward_enc\\n    x1, x2, x3, x4 = self.bb(x)\\n                     ~~~~~~~^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py\", line 1183, in forward\\n    x = self.patch_embed(x)\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"/root/.cache/huggingface/modules/transformers_modules/ZhengPeng7/BiRefNet/e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4/birefnet.py\", line 1045, in forward\\n    x = self.proj(x)  # B C Wh Ww\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py\", line 553, in forward\\n    return self._conv_forward(input, self.weight, self.bias)\\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1131/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.13/site-packages/torch/nn/modules/conv.py\", line 548, in _conv_forward\\n    return F.conv2d(\\n           ~~~~~~~~^\\n        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\nRuntimeError: Input type (float) and bias type (c10::Half) should be the same\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1131/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1131/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1131/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1131/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n        module_name=mod,\\n    ...<4 lines>...\\n        timeout=600.0,\\n    )\\n', '  File \"/workspaces/TRELLIS2-1131/.venv/lib/python3.13/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n    ...<2 lines>...\\n    )\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\\n          [0.3627, 0.3561, 0.2872],\\n          [0.3673, 0.3607, 0.2918],\\n          ...,\\n          [0.7461, 0.7164, 0.3795],\\n          [0.7387, 0.7026, 0.3501],\\n          [0.7327, 0.6934, 0.3332]],\\n\\n         [[0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          ...,\\n          [0.7324, 0.7044, 0.3570],\\n          [0.7341, 0.6994, 0.3387],\\n          [0.7327, 0.6946, 0.3272]],\\n\\n         [[0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          ...,\\n          [0.7370, 0.7124, 0.3438],\\n          [0.7387, 0.7066, 0.3294],\\n          [0.7418, 0.7060, 0.3245]],\\n\\n         ...,\\n\\n         [[0.6741, 0.5576, 0.5080],\\n          [0.6786, 0.5622, 0.5125],\\n          [0.6923, 0.5758, 0.5262],\\n          ...,\\n          [0.8146, 0.7248, 0.6751],\\n          [0.8055, 0.7157, 0.6660],\\n          [0.8009, 0.7112, 0.6614]],\\n\\n         [[0.6604, 0.5440, 0.4943],\\n          [0.6695, 0.5531, 0.5034],\\n          [0.6832, 0.5667, 0.5171],\\n          ...,\\n          [0.8055, 0.7157, 0.6660],\\n          [0.7964, 0.7066, 0.6569],\\n          [0.7918, 0.7021, 0.6523]],\\n\\n         [[0.6513, 0.5349, 0.4852],\\n          [0.6604, 0.5440, 0.4943],\\n          [0.6741, 0.5576, 0.5080],\\n          ...,\\n          [0.8009, 0.7112, 0.6614],\\n          [0.7918, 0.7021, 0.6523],\\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['81', '76', '96', '1', '91', '94', '97', '10', '77', '69'], 'timestamp': 1778328180174}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json\nNode error: Trellis2RemoveBackground",
+      "status": "pass",
+      "duration_seconds": 97.93,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 12.18,
-          "avg": 11.85
+          "peak": 12.65,
+          "avg": 8.24
         },
-        "total_ram_gb": 31.2,
-        "samples": 19,
+        "total_ram_gb": 31.3,
+        "samples": 96,
         "vram": {
-          "peak": 1.44,
-          "avg": 1.44
+          "peak": 2.98,
+          "avg": 1.17
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 217.29,
+      "duration_seconds": 216.52,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
-        "gpu": "NVIDIA GeForce RTX 3090"
+        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
+        "gpu": "NVIDIA GeForce RTX 5060"
       },
       "resources": {
         "ram": {
-          "peak": 13.71,
-          "avg": 10.3
+          "peak": 12.41,
+          "avg": 9.49
         },
-        "total_ram_gb": 31.2,
-        "samples": 211,
+        "total_ram_gb": 31.3,
+        "samples": 210,
         "vram": {
-          "peak": 3.88,
-          "avg": 1.85
+          "peak": 3.43,
+          "avg": 0.92
         }
       }
     }
