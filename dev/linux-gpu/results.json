@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-05-08T11:52:20.718601+00:00",
+  "timestamp": "2026-05-09T10:19:42.445893+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
     "cpu": "AMD Ryzen 5 3600 6-Core Processor",
     "gpu": "NVIDIA GeForce RTX 5060"
   },
-  "commit_hash": "28b4fee9aad69998a2a1a42112a6486ed8dae0f8",
-  "success": true,
+  "commit_hash": "a8684742884b2be0bfe741dabdb607da000dcb25",
+  "success": false,
   "summary": {
     "total": 9,
-    "passed": 8,
-    "failed": 0
+    "passed": 0,
+    "failed": 8
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "pass",
-      "duration_seconds": 461.72,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 10.12,
+      "error": "Workflow execution failed: {'prompt_id': 'e45fce6a-a076-4c6e-997e-ddca19bad2fc', 'node_id': '92', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['1024'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['92', '91', '10', '110', '108', '104', '11', '1'], 'timestamp': 1778321843161}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1024.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -26,22 +26,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.25,
-          "avg": 7.26
+          "peak": 1.8,
+          "avg": 1.14
         },
         "total_ram_gb": 31.3,
-        "samples": 448,
+        "samples": 10,
         "vram": {
-          "peak": 3.87,
-          "avg": 1.39
+          "peak": 0.22,
+          "avg": 0.12
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "pass",
-      "duration_seconds": 224.22,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 7.47,
+      "error": "Workflow execution failed: {'prompt_id': '48375652-1ad8-4cbd-b146-48b58f33fa58', 'node_id': '92', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['1024_cascade'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['92', '91', '10', '110', '108', '104', '11', '1'], 'timestamp': 1778321850195}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1024_cascade.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -49,22 +49,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 23.8,
-          "avg": 18.92
+          "peak": 1.9,
+          "avg": 1.88
         },
         "total_ram_gb": 31.3,
-        "samples": 218,
+        "samples": 8,
         "vram": {
-          "peak": 4.07,
-          "avg": 2.54
+          "peak": 0.22,
+          "avg": 0.22
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "pass",
-      "duration_seconds": 677.2,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.98,
+      "error": "Workflow execution failed: {'prompt_id': 'b4845bad-47d1-4015-82e1-bdd650c2fadc', 'node_id': '92', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['1536_cascade'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['92', '91', '10', '112', '108', '104', '11', '1'], 'timestamp': 1778321857632}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1536.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -72,22 +72,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 27.46,
-          "avg": 20.63
+          "peak": 1.9,
+          "avg": 1.9
         },
         "total_ram_gb": 31.3,
-        "samples": 655,
+        "samples": 7,
         "vram": {
-          "peak": 5.86,
-          "avg": 3.12
+          "peak": 0.22,
+          "avg": 0.22
         }
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "pass",
-      "duration_seconds": 91.1,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.66,
+      "error": "Workflow execution failed: {'prompt_id': 'beaa9a9a-82de-42c5-a40e-3b5cabf4d935', 'node_id': '92', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['92', '91', '10', '110', '108', '104', '11', '1'], 'timestamp': 1778321864662}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_512.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -95,22 +95,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 19.28,
-          "avg": 17.95
+          "peak": 1.9,
+          "avg": 1.9
         },
         "total_ram_gb": 31.3,
-        "samples": 89,
+        "samples": 7,
         "vram": {
-          "peak": 3.28,
-          "avg": 1.9
+          "peak": 0.22,
+          "avg": 0.22
         }
       }
     },
     {
       "name": "geometry_texture",
-      "status": "pass",
-      "duration_seconds": 131.77,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 7.59,
+      "error": "Workflow execution failed: {'prompt_id': '61fa1153-9f54-43ab-9be6-c5baf8235e88', 'node_id': '68', 'node_type': 'LoadTrellis2Models', 'executed': ['11', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['83', '86', '64', '10', '68', '82', '69', '93', '97', '98', '11', '1'], 'timestamp': 1778321872418}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_texture.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 18.57,
-          "avg": 12.72
+          "peak": 1.91,
+          "avg": 1.9
         },
         "total_ram_gb": 31.3,
-        "samples": 128,
+        "samples": 8,
         "vram": {
-          "peak": 3.05,
-          "avg": 1.5
+          "peak": 0.22,
+          "avg": 0.22
         }
       }
     },
@@ -138,9 +138,9 @@
     },
     {
       "name": "refinement",
-      "status": "pass",
-      "duration_seconds": 135.23,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 11.97,
+      "error": "Workflow execution failed: {'prompt_id': 'a7f0ab41-54a4-4c87-b24c-bfafebcae61c', 'node_id': '1', 'node_type': 'LoadTrellis2Models', 'executed': ['12'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['4', '12', '3', '21', '13', '2', '11', '1'], 'timestamp': 1778321885298}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/refinement.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 16.09,
-          "avg": 6.3
+          "peak": 2.78,
+          "avg": 2.21
         },
         "total_ram_gb": 31.3,
-        "samples": 132,
+        "samples": 12,
         "vram": {
-          "peak": 6.73,
-          "avg": 2.7
+          "peak": 0.33,
+          "avg": 0.25
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "pass",
-      "duration_seconds": 107.06,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 20.02,
+      "error": "Workflow execution failed: {'prompt_id': 'f081c4b7-083f-42f1-9624-596771f63e77', 'node_id': '76', 'node_type': 'LoadTrellis2Models', 'executed': ['81', '1', '10'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['91', '76', '10', '81', '69', '96', '94', '77', '97', '1'], 'timestamp': 1778321905167}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -171,22 +171,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 14.36,
-          "avg": 9.92
+          "peak": 5.09,
+          "avg": 3.26
         },
         "total_ram_gb": 31.3,
-        "samples": 105,
+        "samples": 20,
         "vram": {
-          "peak": 3.91,
-          "avg": 1.25
+          "peak": 2.29,
+          "avg": 0.43
         }
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "pass",
-      "duration_seconds": 157.01,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 76.31,
+      "error": "Workflow execution failed: {'prompt_id': '2e2ac786-46fd-4a36-a0c9-b5de8bbeec76', 'node_id': '1', 'node_type': 'LoadTrellis2Models', 'executed': ['3', '10', '.0.0.1', '2', '13', '29'], 'exception_message': 'hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_17d1wp5l/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_loader.py\", line 71, in execute\\n    _init_config()\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 190, in _init_config\\n    hf_hub_download(\"microsoft/TRELLIS.2-4B\", \"pipeline.json\", local_dir=models_dir, tqdm_class=_comfy_tqdm())\\n  File \"/workspaces/TRELLIS2-1012/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\\n    return fn(*args, **kwargs)\\nTypeError: hf_hub_download() got an unexpected keyword argument \\'tqdm_class\\'\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1012/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1012/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'resolution': ['512'], 'precision': ['auto'], 'attn_backend': ['auto']}, 'current_outputs': ['35', '4', '12', '28', '3', '10', '25', '23', '36', '33', '2', '13', '1', '29'], 'timestamp': 1778321982052}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/standalone_texturing.json\nNode error: LoadTrellis2Models",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "AMD Ryzen 5 3600 6-Core Processor",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.66,
-          "avg": 9.51
+          "peak": 5.27,
+          "avg": 5.08
         },
         "total_ram_gb": 31.3,
-        "samples": 153,
+        "samples": 74,
         "vram": {
-          "peak": 3.43,
-          "avg": 1.09
+          "peak": 0.38,
+          "avg": 0.37
         }
       }
     }
