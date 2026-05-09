@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-05-08T04:47:54.471986+00:00",
+  "timestamp": "2026-05-09T12:46:03.654432+00:00",
   "platform": "windows_portable",
   "hardware": {
     "os": "Windows-10-10.0.26200-SP0",
     "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
     "gpu": "NVIDIA GeForce RTX 3060"
   },
-  "commit_hash": "a5306fa3d0e94c1ec4cb5dc8238bb6c0c6896139",
-  "success": true,
+  "commit_hash": "36110108751a0f79847bdc8736b4fef3356e4bba",
+  "success": false,
   "summary": {
     "total": 9,
-    "passed": 8,
-    "failed": 0
+    "passed": 7,
+    "failed": 1
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 522.76,
+      "duration_seconds": 523.12,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -26,21 +26,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 18.55,
-          "avg": 7.64
+          "peak": 19.19,
+          "avg": 7.81
         },
         "total_ram_gb": 31.9,
         "samples": 458,
         "vram": {
           "peak": 4.71,
-          "avg": 2.19
+          "avg": 2.18
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 292.36,
+      "duration_seconds": 293.74,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -49,21 +49,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 21.93,
-          "avg": 16.27
+          "peak": 22.55,
+          "avg": 16.4
         },
         "total_ram_gb": 31.9,
-        "samples": 257,
+        "samples": 258,
         "vram": {
-          "peak": 4.93,
-          "avg": 3.26
+          "peak": 4.91,
+          "avg": 3.19
         }
       }
     },
     {
       "name": "geometry_only_1536",
       "status": "pass",
-      "duration_seconds": 764.46,
+      "duration_seconds": 767.05,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -72,21 +72,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 23.77,
-          "avg": 12.85
+          "peak": 26.95,
+          "avg": 12.58
         },
         "total_ram_gb": 31.9,
-        "samples": 670,
+        "samples": 673,
         "vram": {
-          "peak": 7.69,
-          "avg": 4.77
+          "peak": 7.76,
+          "avg": 4.83
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 122.62,
+      "duration_seconds": 123.21,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -95,21 +95,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.29,
-          "avg": 8.02
+          "peak": 12.26,
+          "avg": 7.9
         },
         "total_ram_gb": 31.9,
         "samples": 108,
         "vram": {
-          "peak": 3.5,
-          "avg": 1.92
+          "peak": 3.56,
+          "avg": 1.95
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 187.66,
+      "duration_seconds": 239.58,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -118,14 +118,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 16.19,
-          "avg": 11.94
+          "peak": 16.15,
+          "avg": 12.53
         },
         "total_ram_gb": 31.9,
-        "samples": 165,
+        "samples": 210,
         "vram": {
-          "peak": 3.65,
-          "avg": 2.0
+          "peak": 3.62,
+          "avg": 1.69
         }
       }
     },
@@ -139,7 +139,7 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 196.42,
+      "duration_seconds": 202.35,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -148,22 +148,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 15.05,
-          "avg": 5.73
+          "peak": 14.89,
+          "avg": 5.77
         },
         "total_ram_gb": 31.9,
-        "samples": 173,
+        "samples": 178,
         "vram": {
-          "peak": 7.48,
-          "avg": 3.45
+          "peak": 7.49,
+          "avg": 3.39
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "pass",
-      "duration_seconds": 145.25,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 24.83,
+      "error": "Workflow execution failed: {'prompt_id': '6ccfb036-7b2f-472e-8b9e-7b16d0f8a6ab', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'Input type (float) and bias type (struct c10::Half) should be the same\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Temp\\\\comfyui_pvenv_3dljhsfi\\\\persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\comfy_api\\\\latest\\\\_io.py\", line 1826, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\custom_nodes\\\\ComfyUI-TRELLIS2\\\\nodes\\\\nodes_inference.py\", line 296, in execute\\n    output = model(pil_image)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\custom_nodes\\\\ComfyUI-TRELLIS2\\\\nodes\\\\rembg\\\\BiRefNet.py\", line 83, in __call__\\n    preds = self.model(input_images)[-1].sigmoid().cpu()\\n            ~~~~~~~~~~^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\.cache\\\\huggingface\\\\modules\\\\transformers_modules\\\\ZhengPeng7\\\\BiRefNet\\\\e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4\\\\birefnet.py\", line 2088, in forward\\n    scaled_preds, class_preds = self.forward_ori(x)\\n                                ~~~~~~~~~~~~~~~~^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\.cache\\\\huggingface\\\\modules\\\\transformers_modules\\\\ZhengPeng7\\\\BiRefNet\\\\e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4\\\\birefnet.py\", line 2077, in forward_ori\\n    (x1, x2, x3, x4), class_preds = self.forward_enc(x)\\n                                    ~~~~~~~~~~~~~~~~^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\.cache\\\\huggingface\\\\modules\\\\transformers_modules\\\\ZhengPeng7\\\\BiRefNet\\\\e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4\\\\birefnet.py\", line 2045, in forward_enc\\n    x1, x2, x3, x4 = self.bb(x)\\n                     ~~~~~~~^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\.cache\\\\huggingface\\\\modules\\\\transformers_modules\\\\ZhengPeng7\\\\BiRefNet\\\\e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4\\\\birefnet.py\", line 1183, in forward\\n    x = self.patch_embed(x)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\.cache\\\\huggingface\\\\modules\\\\transformers_modules\\\\ZhengPeng7\\\\BiRefNet\\\\e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4\\\\birefnet.py\", line 1045, in forward\\n    x = self.proj(x)  # B C Wh Ww\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1779, in _wrapped_call_impl\\n    return self._call_impl(*args, **kwargs)\\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\module.py\", line 1790, in _call_impl\\n    return forward_call(*args, **kwargs)\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\conv.py\", line 553, in forward\\n    return self._conv_forward(input, self.weight, self.bias)\\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\.ce\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\torch\\\\nn\\\\modules\\\\conv.py\", line 548, in _conv_forward\\n    return F.conv2d(\\n           ~~~~~~~~^\\n        input, weight, bias, self.stride, self.padding, self.dilation, self.groups\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\nRuntimeError: Input type (float) and bias type (struct c10::Half) should be the same\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\execution.py\", line 534, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\execution.py\", line 334, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\execution.py\", line 308, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\ComfyUI\\\\execution.py\", line 296, in process_inputs\\n    result = f(**inputs)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\python_embeded\\\\Lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n        module_name=mod,\\n    ...<4 lines>...\\n        timeout=600.0,\\n    )\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1357\\\\portable-comfyui\\\\ComfyUI_windows_portable\\\\python_embeded\\\\Lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\workers\\\\subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n    ...<2 lines>...\\n    )\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3647, 0.3569, 0.2902],\\n          [0.3647, 0.3569, 0.2902],\\n          [0.3686, 0.3608, 0.2941],\\n          ...,\\n          [0.7529, 0.7176, 0.3804],\\n          [0.7451, 0.7020, 0.3529],\\n          [0.7373, 0.6980, 0.3333]],\\n\\n         [[0.3725, 0.3647, 0.2980],\\n          [0.3725, 0.3647, 0.2980],\\n          [0.3725, 0.3647, 0.2980],\\n          ...,\\n          [0.7373, 0.7059, 0.3608],\\n          [0.7412, 0.7020, 0.3373],\\n          [0.7373, 0.6980, 0.3255]],\\n\\n         [[0.3882, 0.3804, 0.3098],\\n          [0.3882, 0.3804, 0.3098],\\n          [0.3882, 0.3804, 0.3098],\\n          ...,\\n          [0.7412, 0.7137, 0.3490],\\n          [0.7451, 0.7098, 0.3294],\\n          [0.7451, 0.7098, 0.3294]],\\n\\n         ...,\\n\\n         [[0.6784, 0.5608, 0.5098],\\n          [0.6824, 0.5647, 0.5137],\\n          [0.6941, 0.5765, 0.5294],\\n          ...,\\n          [0.8196, 0.7294, 0.6784],\\n          [0.8078, 0.7176, 0.6667],\\n          [0.8039, 0.7137, 0.6627]],\\n\\n         [[0.6627, 0.5451, 0.4980],\\n          [0.6706, 0.5569, 0.5059],\\n          [0.6863, 0.5686, 0.5176],\\n          ...,\\n          [0.8078, 0.7176, 0.6667],\\n          [0.8000, 0.7098, 0.6588],\\n          [0.7961, 0.7059, 0.6549]],\\n\\n         [[0.6549, 0.5373, 0.4863],\\n          [0.6627, 0.5451, 0.4980],\\n          [0.6784, 0.5608, 0.5098],\\n          ...,\\n          [0.8039, 0.7137, 0.6627],\\n          [0.7961, 0.7059, 0.6549],\\n          [0.7843, 0.6941, 0.6471]]]])']}, 'current_outputs': ['1', '91', '77', '76', '96', '10', '81', '94', '97', '69'], 'timestamp': 1778330522552}\n\nDetails:\nWorkflow: C:\\ComfyUI-TRELLIS2\\workflows\\remove_background.json\nNode error: Trellis2RemoveBackground",
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
         "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel",
@@ -171,21 +171,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 13.08,
-          "avg": 8.46
+          "peak": 11.23,
+          "avg": 3.92
         },
         "total_ram_gb": 31.9,
-        "samples": 128,
+        "samples": 22,
         "vram": {
-          "peak": 5.19,
-          "avg": 1.64
+          "peak": 1.06,
+          "avg": 0.66
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 297.78,
+      "duration_seconds": 239.99,
       "error": null,
       "hardware": {
         "os": "Windows-10-10.0.26200-SP0",
@@ -194,14 +194,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 10.88,
-          "avg": 8.62
+          "peak": 12.59,
+          "avg": 5.35
         },
         "total_ram_gb": 31.9,
-        "samples": 261,
+        "samples": 211,
         "vram": {
-          "peak": 3.99,
-          "avg": 1.38
+          "peak": 4.1,
+          "avg": 1.74
         }
       }
     }
