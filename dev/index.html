@@ -32,6 +32,7 @@
     const tabs = document.getElementById('tabs');
     const frame = document.getElementById('frame');
     let activeTab = null;
+    const platformWorkflows = {};  // id -> Set of workflow names (only set for platforms with results.json)
 
     async function fetchStatus(id) {
       // Returns 'passed' | 'failed' | 'available' | 'unavailable'.
@@ -39,6 +40,7 @@
         const r = await fetch(id + '/results.json', { cache: 'no-cache' });
         if (r.ok) {
           const data = await r.json();
+          platformWorkflows[id] = new Set((data.workflows || []).map(w => w.name));
           if (typeof data.success === 'boolean') return data.success ? 'passed' : 'failed';
         }
       } catch {}
@@ -105,7 +107,7 @@
 
     // Forward keyboard events to report iframe
     document.onkeydown = function(e) {
-      if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (['Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
         e.preventDefault();
         if (frameReady) frame.contentWindow.postMessage({ type: 'comfytest-key', key: e.key }, '*');
       }
@@ -133,7 +135,26 @@
     // `comfytest-open` to fire once the new platform iframe is ready.
     window.addEventListener('message', function(e) {
       if (e.data && e.data.type && e.data.type.startsWith('comfytest-')) {
-        if (e.source === frame.contentWindow) {
+        if (e.source === frame.contentWindow && e.data.type === 'comfytest-platform-shift') {
+          // Up/Down from the report lightbox: hop to the prev/next platform
+          // that has the same workflow. No wrap-around.
+          const { delta, workflow } = e.data;
+          const order = platforms.map(p => p.id);
+          const cur = order.indexOf(activeTab);
+          if (cur < 0) return;
+          const allTabs = document.querySelectorAll('.tab');
+          for (let step = 1; step < order.length; step++) {
+            const idx = cur + delta * step;
+            if (idx < 0 || idx >= order.length) break;
+            const target = order[idx];
+            const tabBtn = allTabs[idx];
+            if (tabBtn.classList.contains('unavailable')) continue;
+            if (workflow && platformWorkflows[target] && !platformWorkflows[target].has(workflow)) continue;
+            if (workflow) pendingMessage = { type: 'comfytest-open', name: workflow };
+            tabBtn.click();
+            break;
+          }
+        } else if (e.source === frame.contentWindow) {
           // From report iframe -> forward to parent
           if (window !== window.top) window.parent.postMessage(e.data, '*');
         } else if (e.data.type === 'comfytest-platform-select') {

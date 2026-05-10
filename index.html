@@ -94,7 +94,7 @@
 
     // Forward keyboard events down to iframe chain
     document.onkeydown = function(e) {
-      if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(e.key) && activeTab) {
+      if (['Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) && activeTab) {
         e.preventDefault();
         frame.contentWindow.postMessage({ type: 'comfytest-key', key: e.key }, '*');
       }
