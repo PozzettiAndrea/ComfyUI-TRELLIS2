@@ -1,131 +1,131 @@
 {
-  "timestamp": "2026-05-09T16:47:14.464768+00:00",
+  "timestamp": "2026-05-10T03:36:05.097283+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-    "gpu": "NVIDIA GeForce RTX 5060"
+    "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+    "gpu": "NVIDIA GeForce RTX 3090"
   },
-  "commit_hash": "8e045dc8933ab7d27207da4a4b976d1459c95893",
-  "success": false,
+  "commit_hash": "fa130e75e7176141935ccb7b315f94f3e4833f54",
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 7,
-    "failed": 1
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 457.72,
+      "duration_seconds": 378.52,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 18.32,
-          "avg": 7.87
+          "peak": 19.03,
+          "avg": 7.82
         },
-        "total_ram_gb": 31.3,
-        "samples": 444,
+        "total_ram_gb": 31.2,
+        "samples": 368,
         "vram": {
-          "peak": 3.87,
-          "avg": 1.42
+          "peak": 4.22,
+          "avg": 1.67
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 252.58,
+      "duration_seconds": 213.2,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 23.39,
-          "avg": 19.25
+          "peak": 19.04,
+          "avg": 13.19
         },
-        "total_ram_gb": 31.3,
-        "samples": 246,
+        "total_ram_gb": 31.2,
+        "samples": 207,
         "vram": {
-          "peak": 4.07,
-          "avg": 2.27
+          "peak": 4.39,
+          "avg": 2.66
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 402.31,
-      "error": "Workflow execution failed: {'prompt_id': '7bbfa360-3313-466a-9ade-474b24d59220', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['91', '10', '92', '1', '11'], 'exception_message': '[CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_gki1zjs6/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 982, in run_shape_generation\\n    mesh.fill_holes()  # match original decode_latent()\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/trellis2/vae.py\", line 1169, in fill_holes\\n    mesh.fill_holes(max_hole_perimeter=max_hole_perimeter)\\n  File \"/workspaces/TRELLIS2-1612/ComfyUI/.ce/.pixi/envs/trellis2-nodes/lib/python3.10/site-packages/cumesh_vb/cumesh.py\", line 286, in fill_holes\\n    self.cu_mesh.fill_holes(max_hole_perimeter)\\nRuntimeError: [CuMesh] CUDA error:\\n    File:       /home/runner/work/cuda-wheels/cuda-wheels/source/src/utils.h\\n    Line:       64\\n    Error code: 2\\n    Error text: out of memory\\n\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1612/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1612/.venv/lib/python3.10/site-packages/comfy_env/isolation/metadata.py\", line 536, in proxy\\n    result = worker.call_method(\\n', '  File \"/workspaces/TRELLIS2-1612/.venv/lib/python3.10/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'seed': [1163985367], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1536_cascade', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.3281e-01, -1.3984e+00, -5.7812e+00,  ..., -7.3828e-01,\\n          -8.6328e-01, -6.4453e-01],\\n         [-4.1250e+00,  6.5430e-02, -8.7500e+00,  ...,  9.3750e-02,\\n          -2.4844e+00,  4.3359e-01],\\n         [ 2.7734e-01, -8.9645e-04, -9.5215e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0391e-01, -6.1328e-01, -5.6875e+00,  ..., -5.6885e-02,\\n          -6.2109e-01,  7.1777e-02],\\n         [-5.3125e-01, -6.4844e-01, -5.9375e+00,  ..., -1.1523e-01,\\n          -5.8203e-01,  5.4443e-02],\\n         [-3.7305e-01, -7.9297e-01, -5.7188e+00,  ...,  4.3213e-02,\\n          -2.9492e-01,  5.7373e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 8.3008e-02, -1.3828e+00, -5.8750e+00,  ..., -6.8359e-01,\\n          -9.4531e-01, -6.1328e-01],\\n         [-3.8750e+00,  1.4453e-01, -8.8125e+00,  ...,  2.1484e-01,\\n          -2.4219e+00,  4.8828e-01],\\n         [ 2.7930e-01, -4.0588e-03, -1.0938e-01,  ...,  3.2471e-02,\\n           1.5259e-02,  3.0029e-02],\\n         ...,\\n         [-4.9414e-01, -5.6641e-01, -5.8750e+00,  ..., -5.9814e-02,\\n          -4.9609e-01,  1.4160e-01],\\n         [-4.8633e-01, -5.9766e-01, -6.0000e+00,  ..., -7.3242e-02,\\n          -4.7461e-01,  1.2695e-01],\\n         [-3.3398e-01, -8.0469e-01, -5.5312e+00,  ...,  1.3379e-01,\\n          -1.6602e-01,  1.2158e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['104', '91', '108', '10', '92', '112', '1', '11'], 'timestamp': 1778344512748}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1536.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 472.17,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 26.47,
-          "avg": 18.62
+          "peak": 28.23,
+          "avg": 21.18
         },
-        "total_ram_gb": 31.3,
-        "samples": 392,
+        "total_ram_gb": 31.2,
+        "samples": 458,
         "vram": {
-          "peak": 5.7,
-          "avg": 4.18
+          "peak": 6.8,
+          "avg": 3.77
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 86.73,
+      "duration_seconds": 74.92,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 21.4,
-          "avg": 10.4
+          "peak": 20.45,
+          "avg": 18.45
         },
-        "total_ram_gb": 31.3,
-        "samples": 85,
+        "total_ram_gb": 31.2,
+        "samples": 73,
         "vram": {
-          "peak": 3.61,
-          "avg": 1.78
+          "peak": 3.68,
+          "avg": 2.05
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 171.3,
+      "duration_seconds": 183.97,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 18.1,
-          "avg": 15.65
+          "peak": 22.05,
+          "avg": 20.09
         },
-        "total_ram_gb": 31.3,
-        "samples": 166,
+        "total_ram_gb": 31.2,
+        "samples": 179,
         "vram": {
-          "peak": 3.09,
-          "avg": 1.17
+          "peak": 3.75,
+          "avg": 1.75
         }
       }
     },
@@ -139,69 +139,69 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 147.94,
+      "duration_seconds": 151.68,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 16.53,
-          "avg": 7.75
+          "peak": 12.67,
+          "avg": 6.39
         },
-        "total_ram_gb": 31.3,
-        "samples": 144,
+        "total_ram_gb": 31.2,
+        "samples": 147,
         "vram": {
-          "peak": 6.73,
-          "avg": 2.6
+          "peak": 7.18,
+          "avg": 3.37
         }
       }
     },
     {
       "name": "remove_background",
       "status": "pass",
-      "duration_seconds": 97.93,
+      "duration_seconds": 130.5,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 12.65,
-          "avg": 8.24
+          "peak": 16.0,
+          "avg": 14.79
         },
-        "total_ram_gb": 31.3,
-        "samples": 96,
+        "total_ram_gb": 31.2,
+        "samples": 127,
         "vram": {
-          "peak": 2.98,
-          "avg": 1.17
+          "peak": 3.73,
+          "avg": 2.0
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 216.52,
+      "duration_seconds": 213.95,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 12.41,
-          "avg": 9.49
+          "peak": 14.81,
+          "avg": 11.01
         },
-        "total_ram_gb": 31.3,
-        "samples": 210,
+        "total_ram_gb": 31.2,
+        "samples": 208,
         "vram": {
-          "peak": 3.43,
-          "avg": 0.92
+          "peak": 3.88,
+          "avg": 1.66
         }
       }
     }
