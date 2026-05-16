@@ -1,132 +1,132 @@
 {
-  "timestamp": "2026-05-15T11:48:35.132053+00:00",
+  "timestamp": "2026-05-16T18:49:37.905355+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-    "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-    "gpu": "NVIDIA GeForce RTX 5060"
+    "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+    "gpu": "NVIDIA GeForce RTX 3090"
   },
-  "commit_hash": "ac4f8bce566a266881f19affe7a841f1eff8ed00",
-  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/25915381218",
+  "commit_hash": "d97874d6c4d90d66efe33a1a1c0af9900dc98d34",
+  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/25969260746",
   "success": false,
   "summary": {
     "total": 9,
-    "passed": 0,
-    "failed": 8
+    "passed": 7,
+    "failed": 1
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "fail",
-      "duration_seconds": 162.0,
-      "error": "Workflow execution failed: {'prompt_id': '81c328e3-644c-4d03-9081-46aa6e4916dc', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['1', '92', '91', '10', '11'], 'exception_message': \"No module named 'cumesh_vb'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n                                                         ~~~~~~~~~~~~~~~~~~~~^\\n        model_config=model_config,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    ...<8 lines>...\\n        max_num_tokens=max_tokens,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 897, in run_shape_generation\\n    import cumesh_vb as CuMesh\\n'], 'current_inputs': {'seed': [1406845044], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1024', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.2988e-01, -1.4141e+00, -5.7500e+00,  ..., -7.4219e-01,\\n          -8.5938e-01, -6.4453e-01],\\n         [-4.1250e+00,  5.4199e-02, -8.6875e+00,  ...,  9.8145e-02,\\n          -2.5000e+00,  4.2969e-01],\\n         [ 2.7734e-01, -9.0790e-04, -9.6680e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0781e-01, -6.1719e-01, -5.6875e+00,  ..., -6.0791e-02,\\n          -6.1328e-01,  6.8848e-02],\\n         [-5.3516e-01, -6.4453e-01, -5.9688e+00,  ..., -1.1621e-01,\\n          -5.7422e-01,  6.1035e-02],\\n         [-3.7891e-01, -7.8906e-01, -5.7500e+00,  ...,  3.9795e-02,\\n          -2.8711e-01,  6.0303e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 9.7656e-02, -1.3672e+00, -5.9375e+00,  ..., -6.8750e-01,\\n          -9.3750e-01, -6.0938e-01],\\n         [-3.8906e+00,  1.5234e-01, -8.8750e+00,  ...,  2.1973e-01,\\n          -2.4531e+00,  4.8438e-01],\\n         [ 2.7930e-01, -4.3335e-03, -1.1133e-01,  ...,  3.2471e-02,\\n           1.5015e-02,  2.9907e-02],\\n         ...,\\n         [-4.9023e-01, -5.6250e-01, -5.9375e+00,  ..., -6.0303e-02,\\n          -4.9805e-01,  1.3477e-01],\\n         [-4.9023e-01, -5.9375e-01, -6.0000e+00,  ..., -7.7148e-02,\\n          -4.7266e-01,  1.2158e-01],\\n         [-3.3594e-01, -7.8516e-01, -5.5625e+00,  ...,  1.2500e-01,\\n          -1.6895e-01,  1.1230e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['1', '92', '91', '104', '10', '11', '110', '108'], 'timestamp': 1778845597741}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1024.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 415.03,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 3.3,
-          "avg": 1.65
+          "peak": 18.71,
+          "avg": 8.31
         },
-        "total_ram_gb": 23.4,
-        "samples": 157,
+        "total_ram_gb": 31.2,
+        "samples": 403,
         "vram": {
-          "peak": 1.53,
-          "avg": 0.13
+          "peak": 4.22,
+          "avg": 1.68
         }
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "fail",
-      "duration_seconds": 7.0,
-      "error": "Workflow execution failed: {'prompt_id': 'c35a674f-fdaf-48db-a8c6-eb8f5e071509', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['1', '92', '91', '10', '11'], 'exception_message': \"No module named 'cumesh_vb'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n                                                         ~~~~~~~~~~~~~~~~~~~~^\\n        model_config=model_config,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    ...<8 lines>...\\n        max_num_tokens=max_tokens,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 897, in run_shape_generation\\n    import cumesh_vb as CuMesh\\n'], 'current_inputs': {'seed': [192221883], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1024_cascade', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.2988e-01, -1.4141e+00, -5.7500e+00,  ..., -7.4219e-01,\\n          -8.5938e-01, -6.4453e-01],\\n         [-4.1250e+00,  5.4199e-02, -8.6875e+00,  ...,  9.8145e-02,\\n          -2.5000e+00,  4.2969e-01],\\n         [ 2.7734e-01, -9.0790e-04, -9.6680e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0781e-01, -6.1719e-01, -5.6875e+00,  ..., -6.0791e-02,\\n          -6.1328e-01,  6.8848e-02],\\n         [-5.3516e-01, -6.4453e-01, -5.9688e+00,  ..., -1.1621e-01,\\n          -5.7422e-01,  6.1035e-02],\\n         [-3.7891e-01, -7.8906e-01, -5.7500e+00,  ...,  3.9795e-02,\\n          -2.8711e-01,  6.0303e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 9.7656e-02, -1.3672e+00, -5.9375e+00,  ..., -6.8750e-01,\\n          -9.3750e-01, -6.0938e-01],\\n         [-3.8906e+00,  1.5234e-01, -8.8750e+00,  ...,  2.1973e-01,\\n          -2.4531e+00,  4.8438e-01],\\n         [ 2.7930e-01, -4.3335e-03, -1.1133e-01,  ...,  3.2471e-02,\\n           1.5015e-02,  2.9907e-02],\\n         ...,\\n         [-4.9023e-01, -5.6250e-01, -5.9375e+00,  ..., -6.0303e-02,\\n          -4.9805e-01,  1.3477e-01],\\n         [-4.9023e-01, -5.9375e-01, -6.0000e+00,  ..., -7.7148e-02,\\n          -4.7266e-01,  1.2158e-01],\\n         [-3.3594e-01, -7.8516e-01, -5.5625e+00,  ...,  1.2500e-01,\\n          -1.6895e-01,  1.1230e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['1', '92', '91', '104', '10', '11', '110', '108'], 'timestamp': 1778845605048}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1024_cascade.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 222.6,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 3.33,
-          "avg": 3.29
+          "peak": 21.9,
+          "avg": 16.13
         },
-        "total_ram_gb": 23.4,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 216,
         "vram": {
-          "peak": 0.28,
-          "avg": 0.28
+          "peak": 4.5,
+          "avg": 2.75
         }
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 6.29,
-      "error": "Workflow execution failed: {'prompt_id': 'bd7676e2-f3c3-46f2-b226-9f3f3d43b144', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['1', '92', '91', '10', '11'], 'exception_message': \"No module named 'cumesh_vb'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n                                                         ~~~~~~~~~~~~~~~~~~~~^\\n        model_config=model_config,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    ...<8 lines>...\\n        max_num_tokens=max_tokens,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 897, in run_shape_generation\\n    import cumesh_vb as CuMesh\\n'], 'current_inputs': {'seed': [1163985367], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '1536_cascade', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.2988e-01, -1.4141e+00, -5.7500e+00,  ..., -7.4219e-01,\\n          -8.5938e-01, -6.4453e-01],\\n         [-4.1250e+00,  5.4199e-02, -8.6875e+00,  ...,  9.8145e-02,\\n          -2.5000e+00,  4.2969e-01],\\n         [ 2.7734e-01, -9.0790e-04, -9.6680e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0781e-01, -6.1719e-01, -5.6875e+00,  ..., -6.0791e-02,\\n          -6.1328e-01,  6.8848e-02],\\n         [-5.3516e-01, -6.4453e-01, -5.9688e+00,  ..., -1.1621e-01,\\n          -5.7422e-01,  6.1035e-02],\\n         [-3.7891e-01, -7.8906e-01, -5.7500e+00,  ...,  3.9795e-02,\\n          -2.8711e-01,  6.0303e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16), 'cond_1024': tensor([[[ 9.7656e-02, -1.3672e+00, -5.9375e+00,  ..., -6.8750e-01,\\n          -9.3750e-01, -6.0938e-01],\\n         [-3.8906e+00,  1.5234e-01, -8.8750e+00,  ...,  2.1973e-01,\\n          -2.4531e+00,  4.8438e-01],\\n         [ 2.7930e-01, -4.3335e-03, -1.1133e-01,  ...,  3.2471e-02,\\n           1.5015e-02,  2.9907e-02],\\n         ...,\\n         [-4.9023e-01, -5.6250e-01, -5.9375e+00,  ..., -6.0303e-02,\\n          -4.9805e-01,  1.3477e-01],\\n         [-4.9023e-01, -5.9375e-01, -6.0000e+00,  ..., -7.7148e-02,\\n          -4.7266e-01,  1.2158e-01],\\n         [-3.3594e-01, -7.8516e-01, -5.5625e+00,  ...,  1.2500e-01,\\n          -1.6895e-01,  1.1230e-01]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['1', '92', '91', '104', '10', '11', '112', '108'], 'timestamp': 1778845611865}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_1536.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 583.86,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 3.39,
-          "avg": 3.39
+          "peak": 22.23,
+          "avg": 14.27
         },
-        "total_ram_gb": 23.4,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 567,
         "vram": {
-          "peak": 1.53,
-          "avg": 0.46
+          "peak": 6.83,
+          "avg": 3.46
         }
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "fail",
-      "duration_seconds": 6.14,
-      "error": "Workflow execution failed: {'prompt_id': '91cd6bd6-7914-4621-9660-3476e4011a4a', 'node_id': '104', 'node_type': 'Trellis2ImageToShape', 'executed': ['1', '92', '91', '10', '11'], 'exception_message': \"No module named 'cumesh_vb'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n                                                         ~~~~~~~~~~~~~~~~~~~~^\\n        model_config=model_config,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    ...<8 lines>...\\n        max_num_tokens=max_tokens,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 897, in run_shape_generation\\n    import cumesh_vb as CuMesh\\n'], 'current_inputs': {'seed': [684120575], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [49152], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '512', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 1.2988e-01, -1.4141e+00, -5.7500e+00,  ..., -7.4219e-01,\\n          -8.5938e-01, -6.4453e-01],\\n         [-4.1250e+00,  5.4199e-02, -8.6875e+00,  ...,  9.8145e-02,\\n          -2.5000e+00,  4.2969e-01],\\n         [ 2.7734e-01, -9.0790e-04, -9.6680e-02,  ...,  3.0884e-02,\\n           1.6724e-02,  2.9419e-02],\\n         ...,\\n         [-5.0781e-01, -6.1719e-01, -5.6875e+00,  ..., -6.0791e-02,\\n          -6.1328e-01,  6.8848e-02],\\n         [-5.3516e-01, -6.4453e-01, -5.9688e+00,  ..., -1.1621e-01,\\n          -5.7422e-01,  6.1035e-02],\\n         [-3.7891e-01, -7.8906e-01, -5.7500e+00,  ...,  3.9795e-02,\\n          -2.8711e-01,  6.0303e-02]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['1', '92', '91', '104', '10', '11', '110', '108'], 'timestamp': 1778845618033}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_only_512.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 84.8,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 3.39,
-          "avg": 3.39
+          "peak": 17.8,
+          "avg": 16.44
         },
-        "total_ram_gb": 23.4,
-        "samples": 6,
+        "total_ram_gb": 31.2,
+        "samples": 83,
         "vram": {
-          "peak": 0.28,
-          "avg": 0.28
+          "peak": 3.76,
+          "avg": 2.16
         }
       }
     },
     {
       "name": "geometry_texture",
-      "status": "fail",
-      "duration_seconds": 6.72,
-      "error": "Workflow execution failed: {'prompt_id': '73874e32-019b-45eb-9ec4-40aee6316398', 'node_id': '82', 'node_type': 'Trellis2ImageToShape', 'executed': ['1', '68', '10', '11', '69'], 'exception_message': \"No module named 'cumesh_vb'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 132, in execute\\n    mesh_verts, mesh_faces, shape_slat_data, subs_data = run_shape_generation(\\n                                                         ~~~~~~~~~~~~~~~~~~~~^\\n        model_config=model_config,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    ...<8 lines>...\\n        max_num_tokens=max_tokens,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 897, in run_shape_generation\\n    import cumesh_vb as CuMesh\\n'], 'current_inputs': {'seed': [42], 'ss_guidance_strength': [6.5], 'ss_guidance_rescale': [0.05], 'ss_sampling_steps': [12], 'shape_guidance_strength': [6.5], 'shape_guidance_rescale': [0.05], 'shape_sampling_steps': [12], 'max_tokens': [262144], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '512', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'conditioning': [\"{'cond_512': tensor([[[ 4.7656e-01, -1.7109e+00, -5.3125e+00,  ..., -8.6328e-01,\\n          -1.7090e-01, -3.6914e-01],\\n         [-4.1562e+00,  1.7676e-01, -8.5000e+00,  ...,  9.9121e-02,\\n          -1.8594e+00,  1.7578e-01],\\n         [ 2.7734e-01, -4.8637e-04, -8.9844e-02,  ...,  3.0762e-02,\\n           1.6724e-02,  3.1250e-02],\\n         ...,\\n         [-4.3945e-01, -6.5234e-01, -5.3750e+00,  ..., -1.1670e-01,\\n          -5.8203e-01, -1.1914e-01],\\n         [-4.6484e-01, -7.4609e-01, -5.6250e+00,  ..., -1.5820e-01,\\n          -5.5078e-01, -1.3574e-01],\\n         [-2.8320e-01, -9.6094e-01, -5.4375e+00,  ...,  6.7949e-06,\\n          -2.9883e-01, -1.2451e-01]]], dtype=torch.bfloat16), 'neg_cond': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         ...,\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.],\\n         [0., 0., 0.,  ..., 0., 0., 0.]]], dtype=torch.bfloat16)}\"]}, 'current_outputs': ['98', '64', '1', '68', '93', '10', '11', '82', '97', '86', '83', '69'], 'timestamp': 1778845625208}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/geometry_texture.json\nNode error: Trellis2ImageToShape",
+      "status": "pass",
+      "duration_seconds": 204.13,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 3.41,
-          "avg": 3.41
+          "peak": 17.21,
+          "avg": 13.86
         },
-        "total_ram_gb": 23.4,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 198,
         "vram": {
-          "peak": 0.9,
-          "avg": 0.37
+          "peak": 3.54,
+          "avg": 1.51
         }
       }
     },
@@ -139,70 +139,70 @@
     },
     {
       "name": "refinement",
-      "status": "fail",
-      "duration_seconds": 9.58,
-      "error": "Workflow execution failed: {'prompt_id': 'cd503556-b4e1-4bd9-850b-8f3b0b690289', 'node_id': '11', 'node_type': 'Trellis2EncodeMesh', 'executed': ['1', '12'], 'exception_message': \"No module named 'o_voxel_vb_ap'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 414, in execute\\n    shape_latent = run_encode_mesh(\\n        model_config=model_config,\\n    ...<2 lines>...\\n        resolution=resolution,\\n    )\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 1498, in run_encode_mesh\\n    shape_slat = _encode_mesh_to_shape_slat(verts_internal, faces_internal, resolution, device)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 105, in _encode_mesh_to_shape_slat\\n    import o_voxel_vb_ap\\n'], 'current_inputs': {'resolution': [1024], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '512', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'mesh': ['<trimesh.Trimesh(vertices.shape=(1851, 3), faces.shape=(3698, 3), name=`lowwrap.stl`)>']}, 'current_outputs': ['2', '1', '21', '11', '3', '4', '13', '12'], 'timestamp': 1778845634924}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/refinement.json\nNode error: Trellis2EncodeMesh",
+      "status": "pass",
+      "duration_seconds": 151.68,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 4.33,
-          "avg": 3.63
+          "peak": 12.54,
+          "avg": 5.63
         },
-        "total_ram_gb": 23.4,
-        "samples": 10,
+        "total_ram_gb": 31.2,
+        "samples": 148,
         "vram": {
-          "peak": 0.38,
-          "avg": 0.3
+          "peak": 7.18,
+          "avg": 3.36
         }
       }
     },
     {
       "name": "remove_background",
       "status": "fail",
-      "duration_seconds": 6.6,
-      "error": "Workflow execution failed: {'prompt_id': '95842d04-5aa2-4bcd-a3bc-3927a539b50a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`\\n', 'exception_type': 'ImportError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 275, in execute\\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name=\"briaai/RMBG-2.0\")\\n                                      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py\", line 53, in __init__\\n    self.model = AutoModelForImageSegmentation.from_pretrained(\\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\\n        actual_model_name, trust_remote_code=True, cache_dir=cache_dir,\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n        local_files_only=local_files_only\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n    )\\n    ^\\n', '  File \"/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/models/auto/auto_factory.py\", line 379, in from_pretrained\\n    model_class = get_class_from_dynamic_module(\\n        class_ref, pretrained_model_name_or_path, code_revision=code_revision, **hub_kwargs, **kwargs\\n    )\\n', '  File \"/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py\", line 616, in get_class_from_dynamic_module\\n    final_module = get_cached_module_file(\\n        repo_id,\\n    ...<7 lines>...\\n        repo_type=repo_type,\\n    )\\n', '  File \"/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py\", line 445, in get_cached_module_file\\n    modules_needed = check_imports(resolved_module_file)\\n', '  File \"/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py\", line 258, in check_imports\\n    raise ImportError(\\n    ...<2 lines>...\\n    )\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\\n          [0.3627, 0.3561, 0.2872],\\n          [0.3673, 0.3607, 0.2918],\\n          ...,\\n          [0.7461, 0.7164, 0.3795],\\n          [0.7387, 0.7026, 0.3501],\\n          [0.7327, 0.6934, 0.3332]],\\n\\n         [[0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          ...,\\n          [0.7324, 0.7044, 0.3570],\\n          [0.7341, 0.6994, 0.3387],\\n          [0.7327, 0.6946, 0.3272]],\\n\\n         [[0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          ...,\\n          [0.7370, 0.7124, 0.3438],\\n          [0.7387, 0.7066, 0.3294],\\n          [0.7418, 0.7060, 0.3245]],\\n\\n         ...,\\n\\n         [[0.6741, 0.5576, 0.5080],\\n          [0.6786, 0.5622, 0.5125],\\n          [0.6923, 0.5758, 0.5262],\\n          ...,\\n          [0.8146, 0.7248, 0.6751],\\n          [0.8055, 0.7157, 0.6660],\\n          [0.8009, 0.7112, 0.6614]],\\n\\n         [[0.6604, 0.5440, 0.4943],\\n          [0.6695, 0.5531, 0.5034],\\n          [0.6832, 0.5667, 0.5171],\\n          ...,\\n          [0.8055, 0.7157, 0.6660],\\n          [0.7964, 0.7066, 0.6569],\\n          [0.7918, 0.7021, 0.6523]],\\n\\n         [[0.6513, 0.5349, 0.4852],\\n          [0.6604, 0.5440, 0.4943],\\n          [0.6741, 0.5576, 0.5080],\\n          ...,\\n          [0.8009, 0.7112, 0.6614],\\n          [0.7918, 0.7021, 0.6523],\\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['1', '94', '76', '91', '81', '77', '10', '96', '97', '69'], 'timestamp': 1778845641887}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json\nNode error: Trellis2RemoveBackground",
+      "duration_seconds": 13.75,
+      "error": "Workflow execution failed: {'prompt_id': '52c12046-f008-4a0c-9107-4235279e119a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n             ^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 275, in execute\\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name=\"briaai/RMBG-2.0\")\\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py\", line 53, in __init__\\n    self.model = AutoModelForImageSegmentation.from_pretrained(\\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py\", line 379, in from_pretrained\\n    model_class = get_class_from_dynamic_module(\\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 616, in get_class_from_dynamic_module\\n    final_module = get_cached_module_file(\\n                   ^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 445, in get_cached_module_file\\n    modules_needed = check_imports(resolved_module_file)\\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 258, in check_imports\\n    raise ImportError(\\nImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n             ^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py\", line 556, in proxy\\n    result = worker.call_method(\\n             ^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\\n          [0.3627, 0.3561, 0.2872],\\n          [0.3673, 0.3607, 0.2918],\\n          ...,\\n          [0.7461, 0.7164, 0.3795],\\n          [0.7387, 0.7026, 0.3501],\\n          [0.7327, 0.6934, 0.3332]],\\n\\n         [[0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          ...,\\n          [0.7324, 0.7044, 0.3570],\\n          [0.7341, 0.6994, 0.3387],\\n          [0.7327, 0.6946, 0.3272]],\\n\\n         [[0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          ...,\\n          [0.7370, 0.7124, 0.3438],\\n          [0.7387, 0.7066, 0.3294],\\n          [0.7418, 0.7060, 0.3245]],\\n\\n         ...,\\n\\n         [[0.6741, 0.5576, 0.5080],\\n          [0.6786, 0.5622, 0.5125],\\n          [0.6923, 0.5758, 0.5262],\\n          ...,\\n          [0.8146, 0.7248, 0.6751],\\n          [0.8055, 0.7157, 0.6660],\\n          [0.8009, 0.7112, 0.6614]],\\n\\n         [[0.6604, 0.5440, 0.4943],\\n          [0.6695, 0.5531, 0.5034],\\n          [0.6832, 0.5667, 0.5171],\\n          ...,\\n          [0.8055, 0.7157, 0.6660],\\n          [0.7964, 0.7066, 0.6569],\\n          [0.7918, 0.7021, 0.6523]],\\n\\n         [[0.6513, 0.5349, 0.4852],\\n          [0.6604, 0.5440, 0.4943],\\n          [0.6741, 0.5576, 0.5080],\\n          ...,\\n          [0.8009, 0.7112, 0.6614],\\n          [0.7918, 0.7021, 0.6523],\\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['96', '77', '97', '81', '10', '91', '1', '94', '69', '76'], 'timestamp': 1778957098838}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json\nNode error: Trellis2RemoveBackground",
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 4.49,
-          "avg": 4.4
+          "peak": 4.01,
+          "avg": 3.8
         },
-        "total_ram_gb": 23.4,
-        "samples": 7,
+        "total_ram_gb": 31.2,
+        "samples": 14,
         "vram": {
-          "peak": 0.38,
-          "avg": 0.38
+          "peak": 0.75,
+          "avg": 0.75
         }
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "fail",
-      "duration_seconds": 72.79,
-      "error": "Workflow execution failed: {'prompt_id': '6a8eea67-c4c3-430b-89c4-a64e42d0ffcb', 'node_id': '12', 'node_type': 'Trellis2EncodeMesh', 'executed': ['2', '29', '1', '10', '3', '13', '.0.0.1'], 'exception_message': \"No module named 'o_voxel_vb_ap'\\n\", 'exception_type': 'ModuleNotFoundError', 'traceback': ['  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py\", line 149, in wrapped_func\\n    return method(locked_class, **inputs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 414, in execute\\n    shape_latent = run_encode_mesh(\\n        model_config=model_config,\\n    ...<2 lines>...\\n        resolution=resolution,\\n    )\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 1498, in run_encode_mesh\\n    shape_slat = _encode_mesh_to_shape_slat(verts_internal, faces_internal, resolution, device)\\n', '  File \"/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/stages.py\", line 105, in _encode_mesh_to_shape_slat\\n    import o_voxel_vb_ap\\n'], 'current_inputs': {'resolution': [512], 'model_config': [\"{'model_name': 'microsoft/TRELLIS.2-4B', 'resolution': '512', 'precision': 'auto', 'dtype': 'bf16', 'attn_backend': 'auto'}\"], 'mesh': ['<trimesh.Trimesh(vertices.shape=(131718, 3), faces.shape=(263528, 3), name=`pineapple_alphawrapped.stl`)>']}, 'current_outputs': ['2', '29', '1', '25', '35', '36', '10', '3', '4', '13', '33', '28', '12', '23'], 'timestamp': 1778845714234}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/standalone_texturing.json\nNode error: Trellis2EncodeMesh",
+      "status": "pass",
+      "duration_seconds": 278.17,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
-        "cpu": "AMD Ryzen 5 3600 6-Core Processor",
-        "gpu": "NVIDIA GeForce RTX 5060"
+        "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
+        "gpu": "NVIDIA GeForce RTX 3090"
       },
       "resources": {
         "ram": {
-          "peak": 4.53,
-          "avg": 4.47
+          "peak": 13.08,
+          "avg": 6.87
         },
-        "total_ram_gb": 23.4,
-        "samples": 71,
+        "total_ram_gb": 31.2,
+        "samples": 270,
         "vram": {
-          "peak": 0.38,
-          "avg": 0.38
+          "peak": 3.88,
+          "avg": 1.31
         }
       }
     }

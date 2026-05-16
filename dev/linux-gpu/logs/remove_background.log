@@ -9,15 +9,15 @@ Capturing execution frames: remove_background.json
   [ComfyUI] Prompt has 10 nodes
   [ComfyUI]   Node 1: LoadImage
   [ComfyUI]   Node 1: LoadImage
-  [ComfyUI]     Inputs: {"image": "bike.webp"}
-  [ComfyUI]     Inputs: {"image": "bike.webp"}
-  [ComfyUI]   Node 10: MaskPreview
-  [ComfyUI]   Node 10: MaskPreview
-  [ComfyUI]     Inputs: {"mask": ["81", 1]}
-  [ComfyUI]     Inputs: {"mask": ["81", 1]}
-  [ComfyUI]   Node 69: Trellis2RemoveBackground
-  [ComfyUI]   Node 69: Trellis2RemoveBackground
   Queuing workflow for execution...
+  [ComfyUI]     Inputs: {"image": "bike.webp"}
+  [ComfyUI]     Inputs: {"image": "bike.webp"}
+  [ComfyUI]   Node 10: MaskPreview
+  [ComfyUI]   Node 10: MaskPreview
+  [ComfyUI]     Inputs: {"mask": ["81", 1]}
+  [ComfyUI]     Inputs: {"mask": ["81", 1]}
+  [ComfyUI]   Node 69: Trellis2RemoveBackground
+  [ComfyUI]   Node 69: Trellis2RemoveBackground
   [ComfyUI]     Inputs: {"low_vram": true, "image": ["1", 0]}
   [ComfyUI]     Inputs: {"low_vram": true, "image": ["1", 0]}
   [ComfyUI]   Node 76: LoadTrellis2Models
@@ -48,8 +48,8 @@ Capturing execution frames: remove_background.json
   [ComfyUI]   Node 97: Trellis2ProcessMesh
   [ComfyUI]     Inputs: {"remesh": "on", "remesh.remesh_band": 1, "remesh.remove_inner_faces": true, "target_face_count": 500000, "floater_threshold": 0.001, "weld_vertices": true, "weld_digits": 4, "chart_cone_angle": 90, "
   [ComfyUI]     Inputs: {"remesh": "on", "remesh.remesh_band": 1, "remesh.remove_inner_faces": true, "target_face_count": 500000, "floater_threshold": 0.001, "weld_vertices": true, "weld_digits": 4, "chart_cone_angle": 90, "
-  [ComfyUI] Generated prompt_id: 4e838ec7-f9aa-4507-af1e-3fbfde11a80e
-  [ComfyUI] Generated prompt_id: 4e838ec7-f9aa-4507-af1e-3fbfde11a80e
+  [ComfyUI] Generated prompt_id: cd0e2bb6-2963-4f13-9aa8-6502191cc48f
+  [ComfyUI] Generated prompt_id: cd0e2bb6-2963-4f13-9aa8-6502191cc48f
   [ComfyUI] Calling execution.validate_prompt()...
   [ComfyUI] Calling execution.validate_prompt()...
   [ComfyUI] Validation result: valid=True
@@ -60,117 +60,209 @@ Capturing execution frames: remove_background.json
   [ComfyUI] got prompt
   [ComfyUI] invalid TIFF header in Exif data
   [ComfyUI] invalid TIFF header in Exif data
-  [ComfyUI] Loading BiRefNet model for background removal...
-  [ComfyUI] Loading BiRefNet model for background removal...
-  [ComfyUI] Remapping briaai/RMBG-2.0 -> ZhengPeng7/BiRefNet
-  [ComfyUI] Remapping briaai/RMBG-2.0 -> ZhengPeng7/BiRefNet
-  [ComfyUI] Downloading BiRefNet model: ZhengPeng7/BiRefNet...
-  [ComfyUI] Downloading BiRefNet model: ZhengPeng7/BiRefNet...
+  [ComfyUI] [comfy-env] Running Trellis2RemoveBackground: low_vram: True, image: torch.float32 [1,2560,3840,3] cpu
+  [ComfyUI] [comfy-env] Running Trellis2RemoveBackground: low_vram: True, image: torch.float32 [1,2560,3840,3] cpu
+  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 833 / 24124 MB
+  [ComfyUI] [VRAM] Before Trellis2RemoveBackground: 833 / 24124 MB
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2RemoveBackground.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] call_method: nodes.nodes_inference.Trellis2RemoveBackground.EXECUTE_NORMALIZED
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [SubprocessWorker] acquired lock, ensuring started...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ping (timeout=5.0s)...
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [ComfyUI-TRELLIS2] Health check: ok
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [SubprocessWorker] worker started/confirmed
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 2560, 3840, 3])
+  [ComfyUI] [comfy-env] PRE-SERIALIZE 'image' shape: torch.Size([1, 2560, 3840, 3])
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] serializing kwargs to shm...
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] created 0 shm blocks
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] sending request via socket...
+  [ComfyUI] [SubprocessWorker] call_id=58 sending call_method
+  [ComfyUI] [SubprocessWorker] call_id=58 sending call_method
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] _from_shm got dict with keys: ['__type__', 'strategy', 'parent_pid', 'fd', 'storage_size']
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 2560, 3840, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZE TensorRef: tensor_size=[1, 2560, 3840, 3]
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 2560, 3840, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] [comfy-env] DESERIALIZED tensor shape: torch.Size([1, 2560, 3840, 3])
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] WARNING: No comfy kitchen, using old apply_rope functions.
+  [ComfyUI] [worker:ComfyUI-TRELLIS2] WARNING: No comfy kitchen, using old apply_rope functions.
+  Frame 2 saved (frame_001.jpg, t=2.5s)
+  [capture-periodic] freeze=4ms shot=280ms unfreeze=3ms saved=True
   [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
   [ComfyUI] [transformers] A new version of the following files was downloaded from https://huggingface.co/ZhengPeng7/BiRefNet:
   [ComfyUI] - BiRefNet_config.py
   [ComfyUI] - BiRefNet_config.py
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
   [ComfyUI] . Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
-  [ComfyUI] [transformers] Encountered exception while importing timm: No module named 'timm'
-  [ComfyUI] [transformers] Encountered exception while importing timm: No module named 'timm'
-  [ComfyUI] !!! Exception during processing !!! This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`
-  [ComfyUI] !!! Exception during processing !!! This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`
+  [ComfyUI] [transformers] Encountered exception while importing kornia: No module named 'kornia'
+  [ComfyUI] [transformers] Encountered exception while importing kornia: No module named 'kornia'
+  Frame 3 saved (frame_002.jpg, t=4.9s)
+  [capture-periodic] freeze=3ms shot=186ms unfreeze=9ms saved=True
+  [ComfyUI] [SubprocessWorker] got response: error
+  [ComfyUI] [SubprocessWorker] got response: error
+  [ComfyUI] !!! Exception during processing !!! This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] !!! Exception during processing !!! This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Worker traceback:
+  [ComfyUI] Worker traceback:
   [ComfyUI] Traceback (most recent call last):
   [ComfyUI] Traceback (most recent call last):
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 535, in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 535, in execute
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]              ^^^^^^^^^^^^^^^^
+  [ComfyUI]              ^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
+  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
+  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
+  [ComfyUI]                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
+  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
+  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
+  [ComfyUI]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
+  [ComfyUI]     model_class = get_class_from_dynamic_module(
+  [ComfyUI]     model_class = get_class_from_dynamic_module(
+  [ComfyUI]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
+  [ComfyUI]     final_module = get_cached_module_file(
+  [ComfyUI]     final_module = get_cached_module_file(
+  [ComfyUI]                    ^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                    ^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
+  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
+  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
+  [ComfyUI]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
+  [ComfyUI]     raise ImportError(
+  [ComfyUI]     raise ImportError(
+  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 535, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 535, in execute
   [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]     output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   [ComfyUI]                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 335, in get_output_data
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 335, in get_output_data
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 335, in get_output_data
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 335, in get_output_data
   [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]     return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)
   [ComfyUI]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   [ComfyUI]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 309, in _async_map_node_over_list
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 309, in _async_map_node_over_list
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 309, in _async_map_node_over_list
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 309, in _async_map_node_over_list
   [ComfyUI]     await process_inputs(input_dict, i)
   [ComfyUI]     await process_inputs(input_dict, i)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 297, in process_inputs
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 297, in process_inputs
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 297, in process_inputs
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 297, in process_inputs
   [ComfyUI]     result = f(**inputs)
   [ComfyUI]     result = f(**inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py", line 149, in wrapped_func
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py", line 149, in wrapped_func
-  [ComfyUI]     return method(locked_class, **inputs)
-  [ComfyUI]     return method(locked_class, **inputs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
-  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
-  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
-  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
-  [ComfyUI]                                       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]                                       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
-  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
-  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
-  [ComfyUI]                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-  [ComfyUI]                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-  [ComfyUI]         actual_model_name, trust_remote_code=True, cache_dir=cache_dir,
-  [ComfyUI]         actual_model_name, trust_remote_code=True, cache_dir=cache_dir,
-  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]         local_files_only=local_files_only
-  [ComfyUI]         local_files_only=local_files_only
-  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [ComfyUI]     )
-  [ComfyUI]     )
-  [ComfyUI]     ^
-  [ComfyUI]     ^
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
-  [ComfyUI]     model_class = get_class_from_dynamic_module(
-  [ComfyUI]     model_class = get_class_from_dynamic_module(
-  [ComfyUI]         class_ref, pretrained_model_name_or_path, code_revision=code_revision, **hub_kwargs, **kwargs
-  [ComfyUI]         class_ref, pretrained_model_name_or_path, code_revision=code_revision, **hub_kwargs, **kwargs
-  [ComfyUI]     )
-  [ComfyUI]     )
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
-  [ComfyUI]     final_module = get_cached_module_file(
-  [ComfyUI]     final_module = get_cached_module_file(
-  [ComfyUI]         repo_id,
-  [ComfyUI]         repo_id,
-  [ComfyUI]     ...<7 lines>...
-  [ComfyUI]     ...<7 lines>...
-  [ComfyUI]         repo_type=repo_type,
-  [ComfyUI]         repo_type=repo_type,
-  [ComfyUI]     )
-  [ComfyUI]     )
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
-  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
-  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
-  [ComfyUI]   File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
-  [ComfyUI]     raise ImportError(
-  [ComfyUI]     raise ImportError(
-  [ComfyUI]     ...<2 lines>...
-  [ComfyUI]     ...<2 lines>...
-  [ComfyUI]     )
-  [ComfyUI]     )
-  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`
-  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`
+  [ComfyUI]              ^^^^^^^^^^^
+  [ComfyUI]              ^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py", line 556, in proxy
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py", line 556, in proxy
+  [ComfyUI]     result = worker.call_method(
+  [ComfyUI]     result = worker.call_method(
+  [ComfyUI]              ^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]              ^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method
+  [ComfyUI]     raise WorkerError(
+  [ComfyUI]     raise WorkerError(
+  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] comfy_env.isolation.workers.base.WorkerError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
   [ComfyUI] 
   [ComfyUI] 
-  [ComfyUI] Prompt executed in 1.07 seconds
-  [ComfyUI] Prompt executed in 1.07 seconds
-  Execution complete (t=1.3s)
-  Execution error: {'prompt_id': '95842d04-5aa2-4bcd-a3bc-3927a539b50a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`\n', 'exception_type': 'ImportError', 'traceback': ['  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py", line 149, in wrapped_func\n    return method(locked_class, **inputs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")\n                                      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__\n    self.model = AutoModelForImageSegmentation.from_pretrained(\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        actual_model_name, trust_remote_code=True, cache_dir=cache_dir,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        local_files_only=local_files_only\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained\n    model_class = get_class_from_dynamic_module(\n        class_ref, pretrained_model_name_or_path, code_revision=code_revision, **hub_kwargs, **kwargs\n    )\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module\n    final_module = get_cached_module_file(\n        repo_id,\n    ...<7 lines>...\n        repo_type=repo_type,\n    )\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file\n    modules_needed = check_imports(resolved_module_file)\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports\n    raise ImportError(\n    ...<2 lines>...\n    )\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['1', '94', '76', '91', '81', '77', '10', '96', '97', '69'], 'timestamp': 1778845641887}
+  [ComfyUI] Worker traceback:
+  [ComfyUI] Worker traceback:
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI] Traceback (most recent call last):
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main
+  [ComfyUI]   File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]     result = method(**inputs)
+  [ComfyUI]              ^^^^^^^^^^^^^^^^
+  [ComfyUI]              ^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]     to_return = cls.execute(*args, **kwargs)
+  [ComfyUI]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute
+  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
+  [ComfyUI]     Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")
+  [ComfyUI]                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
+  [ComfyUI]   File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__
+  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
+  [ComfyUI]     self.model = AutoModelForImageSegmentation.from_pretrained(
+  [ComfyUI]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained
+  [ComfyUI]     model_class = get_class_from_dynamic_module(
+  [ComfyUI]     model_class = get_class_from_dynamic_module(
+  [ComfyUI]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module
+  [ComfyUI]     final_module = get_cached_module_file(
+  [ComfyUI]     final_module = get_cached_module_file(
+  [ComfyUI]                    ^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                    ^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file
+  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
+  [ComfyUI]     modules_needed = check_imports(resolved_module_file)
+  [ComfyUI]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
+  [ComfyUI]   File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports
+  [ComfyUI]     raise ImportError(
+  [ComfyUI]     raise ImportError(
+  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] ImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] 
+  [ComfyUI] Prompt executed in 5.33 seconds
+  [ComfyUI] Prompt executed in 5.33 seconds
+  Execution complete (t=6.0s)
+  Execution error: {'prompt_id': '52c12046-f008-4a0c-9107-4235279e119a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n             ^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__\n    self.model = AutoModelForImageSegmentation.from_pretrained(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained\n    model_class = get_class_from_dynamic_module(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module\n    final_module = get_cached_module_file(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file\n    modules_needed = check_imports(resolved_module_file)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports\n    raise ImportError(\nImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n             ^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py", line 556, in proxy\n    result = worker.call_method(\n             ^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['96', '77', '97', '81', '10', '91', '1', '94', '69', '76'], 'timestamp': 1778957098838}
     Status: FAILED
-    Error: Workflow execution failed: {'prompt_id': '95842d04-5aa2-4bcd-a3bc-3927a539b50a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: timm. Run `pip install timm`\n', 'exception_type': 'ImportError', 'traceback': ['  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/internal/__init__.py", line 149, in wrapped_func\n    return method(locked_class, **inputs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")\n                                      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1139/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__\n    self.model = AutoModelForImageSegmentation.from_pretrained(\n                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        actual_model_name, trust_remote_code=True, cache_dir=cache_dir,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        local_files_only=local_files_only\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained\n    model_class = get_class_from_dynamic_module(\n        class_ref, pretrained_model_name_or_path, code_revision=code_revision, **hub_kwargs, **kwargs\n    )\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module\n    final_module = get_cached_module_file(\n        repo_id,\n    ...<7 lines>...\n        repo_type=repo_type,\n    )\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file\n    modules_needed = check_imports(resolved_module_file)\n', '  File "/workspaces/TRELLIS2-1139/.venv/lib/python3.13/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports\n    raise ImportError(\n    ...<2 lines>...\n    )\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['1', '94', '76', '91', '81', '77', '10', '96', '97', '69'], 'timestamp': 1778845641887}
+    Error: Workflow execution failed: {'prompt_id': '52c12046-f008-4a0c-9107-4235279e119a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\n\nWorker traceback:\nTraceback (most recent call last):\n  File "/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py", line 1762, in main\n    result = method(**inputs)\n             ^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py", line 1833, in EXECUTE_NORMALIZED\n    to_return = cls.execute(*args, **kwargs)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py", line 275, in execute\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name="briaai/RMBG-2.0")\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py", line 53, in __init__\n    self.model = AutoModelForImageSegmentation.from_pretrained(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 379, in from_pretrained\n    model_class = get_class_from_dynamic_module(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 616, in get_class_from_dynamic_module\n    final_module = get_cached_module_file(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 445, in get_cached_module_file\n    modules_needed = check_imports(resolved_module_file)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py", line 258, in check_imports\n    raise ImportError(\nImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\n\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 535, in execute\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 335, in get_output_data\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 309, in _async_map_node_over_list\n    await process_inputs(input_dict, i)\n', '  File "/workspaces/TRELLIS2-1813/ComfyUI/execution.py", line 297, in process_inputs\n    result = f(**inputs)\n             ^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py", line 556, in proxy\n    result = worker.call_method(\n             ^^^^^^^^^^^^^^^^^^^\n', '  File "/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py", line 674, in call_method\n    raise WorkerError(\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\n          [0.3627, 0.3561, 0.2872],\n          [0.3673, 0.3607, 0.2918],\n          ...,\n          [0.7461, 0.7164, 0.3795],\n          [0.7387, 0.7026, 0.3501],\n          [0.7327, 0.6934, 0.3332]],\n\n         [[0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          [0.3718, 0.3652, 0.2963],\n          ...,\n          [0.7324, 0.7044, 0.3570],\n          [0.7341, 0.6994, 0.3387],\n          [0.7327, 0.6946, 0.3272]],\n\n         [[0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          [0.3855, 0.3789, 0.3099],\n          ...,\n          [0.7370, 0.7124, 0.3438],\n          [0.7387, 0.7066, 0.3294],\n          [0.7418, 0.7060, 0.3245]],\n\n         ...,\n\n         [[0.6741, 0.5576, 0.5080],\n          [0.6786, 0.5622, 0.5125],\n          [0.6923, 0.5758, 0.5262],\n          ...,\n          [0.8146, 0.7248, 0.6751],\n          [0.8055, 0.7157, 0.6660],\n          [0.8009, 0.7112, 0.6614]],\n\n         [[0.6604, 0.5440, 0.4943],\n          [0.6695, 0.5531, 0.5034],\n          [0.6832, 0.5667, 0.5171],\n          ...,\n          [0.8055, 0.7157, 0.6660],\n          [0.7964, 0.7066, 0.6569],\n          [0.7918, 0.7021, 0.6523]],\n\n         [[0.6513, 0.5349, 0.4852],\n          [0.6604, 0.5440, 0.4943],\n          [0.6741, 0.5576, 0.5080],\n          ...,\n          [0.8009, 0.7112, 0.6614],\n          [0.7918, 0.7021, 0.6523],\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['96', '77', '97', '81', '10', '91', '1', '94', '69', '76'], 'timestamp': 1778957098838}
     Details: Workflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json
 Node error: Trellis2RemoveBackground
