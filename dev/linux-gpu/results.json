@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-05-16T18:49:37.905355+00:00",
+  "timestamp": "2026-05-16T20:25:41.812057+00:00",
   "platform": "linux",
   "hardware": {
     "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
     "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
     "gpu": "NVIDIA GeForce RTX 3090"
   },
-  "commit_hash": "d97874d6c4d90d66efe33a1a1c0af9900dc98d34",
-  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/25969260746",
-  "success": false,
+  "commit_hash": "c7be831cdcabd331389f012247514e80cb4b93a9",
+  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/25971123925",
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 7,
-    "failed": 1
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
       "status": "pass",
-      "duration_seconds": 415.03,
+      "duration_seconds": 395.34,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -27,13 +27,13 @@
       },
       "resources": {
         "ram": {
-          "peak": 18.71,
-          "avg": 8.31
+          "peak": 19.85,
+          "avg": 8.27
         },
         "total_ram_gb": 31.2,
-        "samples": 403,
+        "samples": 384,
         "vram": {
-          "peak": 4.22,
+          "peak": 4.18,
           "avg": 1.68
         }
       }
@@ -41,7 +41,7 @@
     {
       "name": "geometry_only_1024_cascade",
       "status": "pass",
-      "duration_seconds": 222.6,
+      "duration_seconds": 202.36,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -50,21 +50,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 21.9,
-          "avg": 16.13
+          "peak": 23.99,
+          "avg": 19.74
         },
         "total_ram_gb": 31.2,
-        "samples": 216,
+        "samples": 197,
         "vram": {
           "peak": 4.5,
-          "avg": 2.75
+          "avg": 2.8
         }
       }
     },
     {
       "name": "geometry_only_1536",
       "status": "pass",
-      "duration_seconds": 583.86,
+      "duration_seconds": 478.41,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -73,21 +73,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 22.23,
-          "avg": 14.27
+          "peak": 27.95,
+          "avg": 20.03
         },
         "total_ram_gb": 31.2,
-        "samples": 567,
+        "samples": 465,
         "vram": {
-          "peak": 6.83,
-          "avg": 3.46
+          "peak": 6.84,
+          "avg": 3.9
         }
       }
     },
     {
       "name": "geometry_only_512",
       "status": "pass",
-      "duration_seconds": 84.8,
+      "duration_seconds": 76.24,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -96,21 +96,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.8,
-          "avg": 16.44
+          "peak": 18.79,
+          "avg": 17.33
         },
         "total_ram_gb": 31.2,
-        "samples": 83,
+        "samples": 74,
         "vram": {
-          "peak": 3.76,
-          "avg": 2.16
+          "peak": 3.75,
+          "avg": 2.17
         }
       }
     },
     {
       "name": "geometry_texture",
       "status": "pass",
-      "duration_seconds": 204.13,
+      "duration_seconds": 212.94,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -119,14 +119,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 17.21,
-          "avg": 13.86
+          "peak": 17.42,
+          "avg": 9.27
         },
         "total_ram_gb": 31.2,
-        "samples": 198,
+        "samples": 206,
         "vram": {
           "peak": 3.54,
-          "avg": 1.51
+          "avg": 1.45
         }
       }
     },
@@ -140,7 +140,7 @@
     {
       "name": "refinement",
       "status": "pass",
-      "duration_seconds": 151.68,
+      "duration_seconds": 151.29,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -149,22 +149,22 @@
       },
       "resources": {
         "ram": {
-          "peak": 12.54,
-          "avg": 5.63
+          "peak": 12.36,
+          "avg": 6.12
         },
         "total_ram_gb": 31.2,
-        "samples": 148,
+        "samples": 147,
         "vram": {
           "peak": 7.18,
-          "avg": 3.36
+          "avg": 3.39
         }
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 13.75,
-      "error": "Workflow execution failed: {'prompt_id': '52c12046-f008-4a0c-9107-4235279e119a', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"/tmp/comfyui_pvenv_tqq7j_0s/persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n             ^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/comfy_api/latest/_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/nodes_inference.py\", line 275, in execute\\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name=\"briaai/RMBG-2.0\")\\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/workspaces/TRELLIS2-1813/ComfyUI/custom_nodes/ComfyUI-TRELLIS2/nodes/rembg/BiRefNet.py\", line 53, in __init__\\n    self.model = AutoModelForImageSegmentation.from_pretrained(\\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py\", line 379, in from_pretrained\\n    model_class = get_class_from_dynamic_module(\\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 616, in get_class_from_dynamic_module\\n    final_module = get_cached_module_file(\\n                   ^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 445, in get_cached_module_file\\n    modules_needed = check_imports(resolved_module_file)\\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/root/.ce/.pixi/envs/trellis2-nodes/lib/python3.12/site-packages/transformers/dynamic_module_utils.py\", line 258, in check_imports\\n    raise ImportError(\\nImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"/workspaces/TRELLIS2-1813/ComfyUI/execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n             ^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/metadata.py\", line 556, in proxy\\n    result = worker.call_method(\\n             ^^^^^^^^^^^^^^^^^^^\\n', '  File \"/workspaces/TRELLIS2-1813/.venv/lib/python3.12/site-packages/comfy_env/isolation/workers/subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\\n          [0.3627, 0.3561, 0.2872],\\n          [0.3673, 0.3607, 0.2918],\\n          ...,\\n          [0.7461, 0.7164, 0.3795],\\n          [0.7387, 0.7026, 0.3501],\\n          [0.7327, 0.6934, 0.3332]],\\n\\n         [[0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          ...,\\n          [0.7324, 0.7044, 0.3570],\\n          [0.7341, 0.6994, 0.3387],\\n          [0.7327, 0.6946, 0.3272]],\\n\\n         [[0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          ...,\\n          [0.7370, 0.7124, 0.3438],\\n          [0.7387, 0.7066, 0.3294],\\n          [0.7418, 0.7060, 0.3245]],\\n\\n         ...,\\n\\n         [[0.6741, 0.5576, 0.5080],\\n          [0.6786, 0.5622, 0.5125],\\n          [0.6923, 0.5758, 0.5262],\\n          ...,\\n          [0.8146, 0.7248, 0.6751],\\n          [0.8055, 0.7157, 0.6660],\\n          [0.8009, 0.7112, 0.6614]],\\n\\n         [[0.6604, 0.5440, 0.4943],\\n          [0.6695, 0.5531, 0.5034],\\n          [0.6832, 0.5667, 0.5171],\\n          ...,\\n          [0.8055, 0.7157, 0.6660],\\n          [0.7964, 0.7066, 0.6569],\\n          [0.7918, 0.7021, 0.6523]],\\n\\n         [[0.6513, 0.5349, 0.4852],\\n          [0.6604, 0.5440, 0.4943],\\n          [0.6741, 0.5576, 0.5080],\\n          ...,\\n          [0.8009, 0.7112, 0.6614],\\n          [0.7918, 0.7021, 0.6523],\\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['96', '77', '97', '81', '10', '91', '1', '94', '69', '76'], 'timestamp': 1778957098838}\n\nDetails:\nWorkflow: /node/ComfyUI-TRELLIS2/workflows/remove_background.json\nNode error: Trellis2RemoveBackground",
+      "status": "pass",
+      "duration_seconds": 157.91,
+      "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
         "cpu": "Intel(R) Xeon(R) CPU E5-2697 v4 @ 2.30GHz",
@@ -172,21 +172,21 @@
       },
       "resources": {
         "ram": {
-          "peak": 4.01,
-          "avg": 3.8
+          "peak": 13.99,
+          "avg": 10.34
         },
         "total_ram_gb": 31.2,
-        "samples": 14,
+        "samples": 154,
         "vram": {
-          "peak": 0.75,
-          "avg": 0.75
+          "peak": 3.43,
+          "avg": 1.72
         }
       }
     },
     {
       "name": "standalone_texturing",
       "status": "pass",
-      "duration_seconds": 278.17,
+      "duration_seconds": 284.68,
       "error": null,
       "hardware": {
         "os": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
@@ -195,14 +195,14 @@
       },
       "resources": {
         "ram": {
-          "peak": 13.08,
-          "avg": 6.87
+          "peak": 12.16,
+          "avg": 9.86
         },
         "total_ram_gb": 31.2,
-        "samples": 270,
+        "samples": 276,
         "vram": {
           "peak": 3.88,
-          "avg": 1.31
+          "avg": 1.37
         }
       }
     }
