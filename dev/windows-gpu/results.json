@@ -1,107 +1,107 @@
 {
-  "timestamp": "2026-05-13T09:10:20.576635+00:00",
+  "timestamp": "2026-05-18T15:51:06.981051+00:00",
   "platform": "windows",
   "hardware": {
-    "os": "Windows-11-10.0.26200-SP0",
-    "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+    "os": "Windows-11-10.0.26100-SP0",
+    "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
   },
-  "commit_hash": "189d837c4f4965fdaa32d235e87804abce4c4019",
-  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/25787824995",
+  "commit_hash": "c7be831cdcabd331389f012247514e80cb4b93a9",
+  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/26042388793",
   "success": false,
   "summary": {
     "total": 9,
-    "passed": 7,
-    "failed": 1
+    "passed": 0,
+    "failed": 8
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "pass",
-      "duration_seconds": 418.76,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 6.6,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [91,92,104,110], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 19.58,
-          "avg": 7.78
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 410
+        "samples": 7
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "pass",
-      "duration_seconds": 222.36,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 4.89,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [91,92,104,110], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 24.47,
-          "avg": 17.96
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 219
+        "samples": 5
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "pass",
-      "duration_seconds": 465.72,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 4.91,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [91,92,104,112], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 25.04,
-          "avg": 17.03
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 459
+        "samples": 5
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "pass",
-      "duration_seconds": 82.4,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 4.92,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [91,92,104,110], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 11.78,
-          "avg": 9.81
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 82
+        "samples": 5
       }
     },
     {
       "name": "geometry_texture",
-      "status": "pass",
-      "duration_seconds": 178.56,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 5.18,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [68,69,82,83,86,97,98], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 16.16,
-          "avg": 12.14
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 176
+        "samples": 6
       }
     },
     {
@@ -113,56 +113,56 @@
     },
     {
       "name": "refinement",
-      "status": "pass",
-      "duration_seconds": 149.73,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 5.16,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [1,4,11,21], sample: {\"inputs\":{\"UNKNOWN\":\"auto\"},\"_meta\":{}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 18.06,
-          "avg": 14.27
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 148
+        "samples": 6
       }
     },
     {
       "name": "remove_background",
       "status": "fail",
-      "duration_seconds": 15.43,
-      "error": "Workflow execution failed: {'prompt_id': '737eaedc-e61e-42de-a4db-fdbab2dd0ee2', 'node_id': '81', 'node_type': 'Trellis2RemoveBackground', 'executed': ['1'], 'exception_message': 'This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\nWorker traceback:\\nTraceback (most recent call last):\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Temp\\\\comfyui_pvenv_n_9555ka\\\\persistent_worker.py\", line 1762, in main\\n    result = method(**inputs)\\n             ^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\comfy_api\\\\latest\\\\_io.py\", line 1833, in EXECUTE_NORMALIZED\\n    to_return = cls.execute(*args, **kwargs)\\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\custom_nodes\\\\ComfyUI-TRELLIS2\\\\nodes\\\\nodes_inference.py\", line 275, in execute\\n    Trellis2RemoveBackground._model = rembg.BiRefNet(model_name=\"briaai/RMBG-2.0\")\\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\custom_nodes\\\\ComfyUI-TRELLIS2\\\\nodes\\\\rembg\\\\BiRefNet.py\", line 53, in __init__\\n    self.model = AutoModelForImageSegmentation.from_pretrained(\\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Programs\\\\comfy-env\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\transformers\\\\models\\\\auto\\\\auto_factory.py\", line 379, in from_pretrained\\n    model_class = get_class_from_dynamic_module(\\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Programs\\\\comfy-env\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\transformers\\\\dynamic_module_utils.py\", line 616, in get_class_from_dynamic_module\\n    final_module = get_cached_module_file(\\n                   ^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Programs\\\\comfy-env\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\transformers\\\\dynamic_module_utils.py\", line 445, in get_cached_module_file\\n    modules_needed = check_imports(resolved_module_file)\\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"C:\\\\Users\\\\ContainerAdministrator\\\\AppData\\\\Local\\\\Programs\\\\comfy-env\\\\.pixi\\\\envs\\\\trellis2-nodes\\\\Lib\\\\site-packages\\\\transformers\\\\dynamic_module_utils.py\", line 258, in check_imports\\n    raise ImportError(\\nImportError: This modeling file requires the following packages that were not found in your environment: kornia. Run `pip install kornia`\\n\\n', 'exception_type': 'comfy_env.isolation.workers.base.WorkerError', 'traceback': ['  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\execution.py\", line 535, in execute\\n    output_data, output_ui, has_subgraph, has_pending_tasks = await get_output_data(prompt_id, unique_id, obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\execution.py\", line 335, in get_output_data\\n    return_values = await _async_map_node_over_list(prompt_id, unique_id, obj, input_data_all, obj.FUNCTION, allow_interrupt=True, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb, v3_data=v3_data)\\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\execution.py\", line 309, in _async_map_node_over_list\\n    await process_inputs(input_dict, i)\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\ComfyUI\\\\execution.py\", line 297, in process_inputs\\n    result = f(**inputs)\\n             ^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\.venv\\\\Lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\metadata.py\", line 556, in proxy\\n    result = worker.call_method(\\n             ^^^^^^^^^^^^^^^^^^^\\n', '  File \"C:\\\\workspaces\\\\TRELLIS2-1033\\\\.venv\\\\Lib\\\\site-packages\\\\comfy_env\\\\isolation\\\\workers\\\\subprocess.py\", line 674, in call_method\\n    raise WorkerError(\\n'], 'current_inputs': {'low_vram': [True], 'image': ['tensor([[[[0.3627, 0.3561, 0.2872],\\n          [0.3627, 0.3561, 0.2872],\\n          [0.3673, 0.3607, 0.2918],\\n          ...,\\n          [0.7461, 0.7164, 0.3795],\\n          [0.7387, 0.7026, 0.3501],\\n          [0.7327, 0.6934, 0.3332]],\\n\\n         [[0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          [0.3718, 0.3652, 0.2963],\\n          ...,\\n          [0.7324, 0.7044, 0.3570],\\n          [0.7341, 0.6994, 0.3387],\\n          [0.7327, 0.6946, 0.3272]],\\n\\n         [[0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          [0.3855, 0.3789, 0.3099],\\n          ...,\\n          [0.7370, 0.7124, 0.3438],\\n          [0.7387, 0.7066, 0.3294],\\n          [0.7418, 0.7060, 0.3245]],\\n\\n         ...,\\n\\n         [[0.6741, 0.5576, 0.5080],\\n          [0.6786, 0.5622, 0.5125],\\n          [0.6923, 0.5758, 0.5262],\\n          ...,\\n          [0.8146, 0.7248, 0.6751],\\n          [0.8055, 0.7157, 0.6660],\\n          [0.8009, 0.7112, 0.6614]],\\n\\n         [[0.6604, 0.5440, 0.4943],\\n          [0.6695, 0.5531, 0.5034],\\n          [0.6832, 0.5667, 0.5171],\\n          ...,\\n          [0.8055, 0.7157, 0.6660],\\n          [0.7964, 0.7066, 0.6569],\\n          [0.7918, 0.7021, 0.6523]],\\n\\n         [[0.6513, 0.5349, 0.4852],\\n          [0.6604, 0.5440, 0.4943],\\n          [0.6741, 0.5576, 0.5080],\\n          ...,\\n          [0.8009, 0.7112, 0.6614],\\n          [0.7918, 0.7021, 0.6523],\\n          [0.7827, 0.6930, 0.6432]]]])']}, 'current_outputs': ['10', '81', '94', '96', '69', '91', '97', '76', '77', '1'], 'timestamp': 1778663184942}\n\nDetails:\nWorkflow: C:\\ComfyUI-TRELLIS2\\workflows\\remove_background.json\nNode error: Trellis2RemoveBackground",
+      "duration_seconds": 4.97,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [69,76,77,81,91,96,97], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 3.61,
-          "avg": 3.44
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 16
+        "samples": 5
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "pass",
-      "duration_seconds": 234.61,
-      "error": null,
+      "status": "fail",
+      "duration_seconds": 5.2,
+      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [1,4,12,23,25,35], sample: {\"inputs\":{\"UNKNOWN\":\"auto\"},\"_meta\":{}}",
       "hardware": {
-        "os": "Windows-11-10.0.26200-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "os": "Windows-11-10.0.26100-SP0",
+        "cpu": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 12.6,
-          "avg": 5.19
+          "peak": 0.9,
+          "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 232
+        "samples": 6
       }
     }
   ]
