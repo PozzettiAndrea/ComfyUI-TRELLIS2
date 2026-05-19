@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-05-19T07:01:03.739324+00:00",
+  "timestamp": "2026-05-19T07:31:17.623257+00:00",
   "platform": "windows_portable",
   "hardware": {
     "os": "Windows-11-10.0.26100-SP0",
     "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
   },
   "commit_hash": "f2b0ca4f24a78dfb05400ed031d29b945221c1a4",
-  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/26081028120",
+  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/26082621162",
   "success": false,
   "summary": {
     "total": 9,
@@ -17,7 +17,7 @@
     {
       "name": "geometry_only_1024",
       "status": "fail",
-      "duration_seconds": 7.87,
+      "duration_seconds": 8.11,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -35,7 +35,7 @@
     {
       "name": "geometry_only_1024_cascade",
       "status": "fail",
-      "duration_seconds": 6.17,
+      "duration_seconds": 6.16,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -53,7 +53,7 @@
     {
       "name": "geometry_only_1536",
       "status": "fail",
-      "duration_seconds": 6.04,
+      "duration_seconds": 6.4,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -65,13 +65,13 @@
           "avg": 0.9
         },
         "total_ram_gb": 31.9,
-        "samples": 6
+        "samples": 7
       }
     },
     {
       "name": "geometry_only_512",
       "status": "fail",
-      "duration_seconds": 6.35,
+      "duration_seconds": 6.36,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -89,7 +89,7 @@
     {
       "name": "geometry_texture",
       "status": "fail",
-      "duration_seconds": 6.69,
+      "duration_seconds": 6.68,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -114,7 +114,7 @@
     {
       "name": "refinement",
       "status": "fail",
-      "duration_seconds": 6.9,
+      "duration_seconds": 6.64,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -132,7 +132,7 @@
     {
       "name": "remove_background",
       "status": "fail",
-      "duration_seconds": 6.3,
+      "duration_seconds": 6.27,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
@@ -150,7 +150,7 @@
     {
       "name": "standalone_texturing",
       "status": "fail",
-      "duration_seconds": 6.66,
+      "duration_seconds": 7.05,
       "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",

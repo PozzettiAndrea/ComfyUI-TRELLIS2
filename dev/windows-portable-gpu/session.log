@@ -1,4 +1,4 @@
-[00:00] Crash dump logging enabled: C:\logs\TRELLIS2-0846\dev\windows-portable-gpu\crash_dump.log
+[00:00] Crash dump logging enabled: C:\logs\TRELLIS2-0923\dev\windows-portable-gpu\crash_dump.log
 [00:00] 
 [00:00] [1/3] SYNTAX
 [00:00] ----------------------------------------
@@ -19,489 +19,495 @@ Setting up ComfyUI...
 [00:00] Fetching latest release version...
 [00:00] Latest version: v0.21.1
 [00:00] Downloading portable ComfyUI from https://github.com/comfyanonymous/ComfyUI/releases/download/v0.21.1/ComfyUI_windows_portable_nvidia.7z...
-[00:22]   Downloaded: 10%
-[00:29]   Downloaded: 20%
-[00:35]   Downloaded: 30%
-[00:39]   Downloaded: 40%
-[00:43]   Downloaded: 50%
-[00:46]   Downloaded: 60%
-[00:50]   Downloaded: 70%
-[00:53]   Downloaded: 80%
-[00:56]   Downloaded: 90%
-[00:59]   Downloaded: 100%
-[00:59] Downloaded to C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1.7z
-[00:59] Extracting to cache: C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1
-[00:59] Extracting ComfyUI_portable_v0.21.1.7z...
-[00:59] Using 7z: C:\Program Files\7-Zip\7z.exe
-[09:29] Extracted to C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1
-[09:29] Copying from cache to: C:\workspaces\TRELLIS2-0846\portable-comfyui
-[09:45] Installing uv into embedded Python...
-[09:45] Running: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m pip install uv
-[09:51] Installing ComfyUI requirements...
-[09:51] Running: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m uv pip install -r C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\requirements.txt
-[09:53] 
+[00:04]   Downloaded: 10%
+[00:07]   Downloaded: 20%
+[00:10]   Downloaded: 30%
+[00:14]   Downloaded: 40%
+[00:17]   Downloaded: 50%
+[00:20]   Downloaded: 60%
+[00:23]   Downloaded: 70%
+[00:26]   Downloaded: 80%
+[00:29]   Downloaded: 90%
+[00:32]   Downloaded: 100%
+[00:32] Downloaded to C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1.7z
+[00:32] Extracting to cache: C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1
+[00:32] Extracting ComfyUI_portable_v0.21.1.7z...
+[00:32] Using 7z: C:\Program Files\7-Zip\7z.exe
+[02:08] Extracted to C:\Users\ContainerUser\.comfy-test\cache\portable\ComfyUI_portable_v0.21.1
+[02:08] Copying from cache to: C:\workspaces\TRELLIS2-0923\portable-comfyui
+[02:24] Installing uv into embedded Python...
+[02:24] Running: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m pip install uv
+[02:29] Installing ComfyUI requirements...
+[02:29] Running: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m uv pip install -r C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\requirements.txt
+[02:31] 
 Installing custom node...
-[09:53] Copying ComfyUI-TRELLIS2 to custom_nodes/...
-[09:53] Installing node requirements...
-[09:53] Running: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m pip install -r C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
-[10:03] 
+[02:31] Copying ComfyUI-TRELLIS2 to custom_nodes/...
+[02:31] Installing node requirements...
+[02:31] Running: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe -m pip install -r C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\requirements.txt
+[02:41] 
 Running install.py...
-[10:03] Running: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
-[10:04]   
-[10:04]   Installing 1 node dependencies...
-[10:04]     Cloning ComfyUI-GeometryPack...
-[10:10]     Installing requirements for ComfyUI-GeometryPack...
-[10:10]     Running install.py for ComfyUI-GeometryPack...
-[10:13]   [comfy-env] _discover: scanning C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes
-[10:13]   [comfy-env] _discover: ComfyUI-GeometryPack -> geometrypack-nodes (custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml)
-[10:13]   [comfy-env] _discover: ComfyUI-TRELLIS2 -> trellis2-nodes (custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml)
-[10:13]   [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
-[10:13]   [comfy-env] ComfyUI: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI
-[10:13]   [comfy-env] Found 2 node config(s):
-[10:13]     - geometrypack-nodes <- custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml (python=host)
-[10:13]     - trellis2-nodes <- custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml (python=host)
-[10:14]   [comfy-env] Bootstrap interpreter has python 3.13 + torch 2.11.0 (cu130). Looking for cuda-only wheels matching cu130/torch2.11/cp313.
-[10:41]   [comfy-env] GPU: Detection: torch
-[10:41]   Recommended: CUDA 13.1
-[10:41]   
-[10:41]     GPU 0: NVIDIA GeForce RTX 3090 (sm_86) [Ampere] 24575MB
-[10:41]   [comfy-env] Comfyui feature -> torch 2.11.0 from https://download.pytorch.org/whl/cu130 (CUDA 13.0 via bootstrap torch)
-[10:41]   [comfy-env] cuda-wheels: 7 package(s) need a matched (cuda, torch, python) combo: ['cumesh', 'flex_gemm_ap', 'cumesh_vb', 'o_voxel_vb_ap', 'flash-attn', 'sageattention', 'drtk']
-[10:41]   [comfy-env] cuda-wheels tier 1 (bootstrap): probing cu13.0/torch2.11/cp313
-[10:41]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
-[10:42]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
-[10:44]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:44]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
-[10:46]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:46]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
-[10:47]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:47]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
-[10:48]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:48]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
-[10:49]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:49]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
-[10:49]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:49]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
-[10:50]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:50]   [comfy-env] cuda-wheels combo: cu13.0/torch2.11 (bootstrap matches; per-node envs will pin to this)
-[10:50]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
-[10:50]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
-[10:51]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:51]   [comfy-env] geometrypack-nodes: cuda-wheels deferred for post-pixi install (cumesh)
-[10:51]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
-[10:52]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:52]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
-[10:53]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:53]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
-[10:54]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:54]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
-[10:54]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:54]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
-[10:55]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:55]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
-[10:55]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[10:55]   [comfy-env] trellis2-nodes: cuda-wheels deferred for post-pixi install (flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash-attn, sageattention, drtk)
-[10:55]   Generated C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.10-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.10.20-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.11.15-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.12.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[10:55]   [comfy-env] Installing 2 environment(s):
-[10:55]     - geometrypack-nodes (python=host, 14 pypi deps, 1 cuda wheels)
-[10:55]     - trellis2-nodes (python=host, 20 pypi deps, 6 cuda wheels)
-[10:55]   [comfy-env] Running `pixi install -e geometrypack-nodes -e trellis2-nodes`...
-[11:51]      WARN Skipped running the post-link scripts because `run-post-link-scripts` = `false`
-[11:51]     	- Scripts/.librsvg-pre-unlink.bat
-[11:51]     To enable them, run:
-[11:51]     	pixi config set --local run-post-link-scripts insecure
-[11:51]     More info:
-[11:51]     	https://pixi.sh/latest/reference/pixi_configuration/#run-post-link-scripts
-[12:12]     Error:   Ã— Failed to update PyPI packages for environment 'geometrypack-nodes'
-[12:12]       â•°â”€â–¶ Querying Python at `C:\Users\ContainerUser\AppData\Local\Programs\comfy-
-[12:12]           env\.pixi\envs\geometrypack-nodes\python.exe` failed with exit status
-[12:12]           exit code: 0xc0000005
-[12:12]           [31m[stdout][39m
-[12:12]           {"result": "success", "markers": {"implementation_name":
-[12:12]           "cpython", "implementation_version": "3.13.13", "os_name": "nt",
-[12:12]           "platform_machine": "AMD64", "platform_python_implementation":
-[12:12]           "CPython", "platform_release": "11", "platform_system": "Windows",
-[12:12]           "platform_version": "10.0.26100", "python_full_version": "3.13.13",
-[12:12]           "python_version": "3.13", "sys_platform": "win32"}, "sys_base_prefix":
-[12:12]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\
-[12:12]           \.pixi\\envs\\geometrypack-nodes", "sys_base_exec_prefix": "C:\
-[12:12]           \Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:12]           \envs\\geometrypack-nodes", "sys_prefix": "C:\\Users\\ContainerUser\
-[12:12]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
-[12:12]           "sys_base_executable": "C:\\Users\\ContainerUser\\AppData\\Local\
-[12:12]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe",
-[12:12]           "sys_executable": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
-[12:12]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe", "sys_path":
-[12:12]           ["C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:12]           \envs\\geometrypack-nodes\\python313.zip", "C:\\Users\\ContainerUser\
-[12:12]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
-[12:12]           \DLLs", "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-
-[12:12]           env\\.pixi\\envs\\geometrypack-nodes\\Lib", "C:\\Users\\ContainerUser\
-[12:12]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
-[12:12]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:12]           \envs\\geometrypack-nodes\\Lib\\site-packages"], "site_packages": ["C:
-[12:12]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:12]           \envs\\geometrypack-nodes", "C:\\Users\\ContainerUser\\AppData\
-[12:12]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
-[12:12]           \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
-[12:12]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
-[12:12]           "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
-[12:12]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
-[12:12]           \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
-[12:12]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
-[12:12]           \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
-[12:12]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
-[12:12]           "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
-[12:12]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
-[12:12]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:12]           \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
-[12:12]           packages", "platlib": "Lib\\site-packages", "include": "include\\site\
-[12:12]           \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
-[12:12]           {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
-[12:12]           "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
-[12:13]     Warning: ComfyUI-GeometryPack install.py failed (exit code 1)
-[12:13]   
-[12:13]   [requirements] Re-installing main package requirements...
-[12:13]     Installing requirements for ComfyUI-TRELLIS2...
-[12:13]   [comfy-env] _discover: scanning C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes
-[12:13]   [comfy-env] _discover: ComfyUI-GeometryPack -> geometrypack-nodes (custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml)
-[12:13]   [comfy-env] _discover: ComfyUI-TRELLIS2 -> trellis2-nodes (custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml)
-[12:13]   [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
-[12:13]   [comfy-env] ComfyUI: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI
-[12:13]   [comfy-env] Found 2 node config(s):
-[12:13]     - geometrypack-nodes <- custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml (python=host)
-[12:13]     - trellis2-nodes <- custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml (python=host)
-[12:13]   [comfy-env] Bootstrap interpreter has python 3.13 + torch 2.11.0 (cu130). Looking for cuda-only wheels matching cu130/torch2.11/cp313.
-[12:15]   [comfy-env] GPU: Detection: torch
-[12:15]   Recommended: CUDA 13.1
-[12:15]   
-[12:15]     GPU 0: NVIDIA GeForce RTX 3090 (sm_86) [Ampere] 24575MB
-[12:15]   [comfy-env] Comfyui feature -> torch 2.11.0 from https://download.pytorch.org/whl/cu130 (CUDA 13.0 via bootstrap torch)
-[12:15]   [comfy-env] cuda-wheels: 7 package(s) need a matched (cuda, torch, python) combo: ['cumesh', 'flex_gemm_ap', 'cumesh_vb', 'o_voxel_vb_ap', 'flash-attn', 'sageattention', 'drtk']
-[12:15]   [comfy-env] cuda-wheels tier 1 (bootstrap): probing cu13.0/torch2.11/cp313
-[12:15]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
-[12:16]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
-[12:20]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:20]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
-[12:21]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:21]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
-[12:21]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:21]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
-[12:22]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:22]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
-[12:23]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:23]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
-[12:23]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:23]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
-[12:24]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:24]   [comfy-env] cuda-wheels combo: cu13.0/torch2.11 (bootstrap matches; per-node envs will pin to this)
-[12:24]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
-[12:24]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
-[12:25]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:25]   [comfy-env] geometrypack-nodes: cuda-wheels deferred for post-pixi install (cumesh)
-[12:25]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
-[12:26]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:26]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
-[12:27]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:27]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
-[12:28]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:28]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
-[12:29]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:29]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
-[12:29]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:29]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
-[12:29]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
-[12:29]   [comfy-env] trellis2-nodes: cuda-wheels deferred for post-pixi install (flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash-attn, sageattention, drtk)
-[12:29]   Generated C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml
-[12:29]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
-[12:29]   [comfy-env] Installing 2 environment(s):
-[12:29]     - geometrypack-nodes (python=host, 14 pypi deps, 1 cuda wheels)
-[12:29]     - trellis2-nodes (python=host, 20 pypi deps, 6 cuda wheels)
-[12:29]   [comfy-env] Running `pixi install -e geometrypack-nodes -e trellis2-nodes`...
-[12:33]     Error:   Ã— Failed to update PyPI packages for environment 'geometrypack-nodes'
-[12:33]       â•°â”€â–¶ Querying Python at `C:\Users\ContainerUser\AppData\Local\Programs\comfy-
-[12:33]           env\.pixi\envs\geometrypack-nodes\python.exe` failed with exit status
-[12:33]           exit code: 0xc0000005
-[12:33]           [31m[stdout][39m
-[12:33]           {"result": "success", "markers": {"implementation_name":
-[12:33]           "cpython", "implementation_version": "3.13.13", "os_name": "nt",
-[12:33]           "platform_machine": "AMD64", "platform_python_implementation":
-[12:33]           "CPython", "platform_release": "11", "platform_system": "Windows",
-[12:33]           "platform_version": "10.0.26100", "python_full_version": "3.13.13",
-[12:33]           "python_version": "3.13", "sys_platform": "win32"}, "sys_base_prefix":
-[12:33]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\
-[12:33]           \.pixi\\envs\\geometrypack-nodes", "sys_base_exec_prefix": "C:\
-[12:33]           \Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:33]           \envs\\geometrypack-nodes", "sys_prefix": "C:\\Users\\ContainerUser\
-[12:33]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
-[12:33]           "sys_base_executable": "C:\\Users\\ContainerUser\\AppData\\Local\
-[12:33]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe",
-[12:33]           "sys_executable": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
-[12:33]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe", "sys_path":
-[12:33]           ["C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:33]           \envs\\geometrypack-nodes\\python313.zip", "C:\\Users\\ContainerUser\
-[12:33]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
-[12:33]           \DLLs", "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-
-[12:33]           env\\.pixi\\envs\\geometrypack-nodes\\Lib", "C:\\Users\\ContainerUser\
-[12:33]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
-[12:33]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:33]           \envs\\geometrypack-nodes\\Lib\\site-packages"], "site_packages": ["C:
-[12:33]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:33]           \envs\\geometrypack-nodes", "C:\\Users\\ContainerUser\\AppData\
-[12:33]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
-[12:33]           \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
-[12:33]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
-[12:33]           "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
-[12:33]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
-[12:33]           \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
-[12:33]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
-[12:33]           \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
-[12:33]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
-[12:33]           "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
-[12:33]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
-[12:33]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:33]           \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
-[12:33]           packages", "platlib": "Lib\\site-packages", "include": "include\\site\
-[12:33]           \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
-[12:33]           {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
-[12:33]           "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
-[12:33] Warning: install.py failed (exit code 1), continuing...
-[12:33]   [!]       \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
-[12:33]   [!]       \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
-[12:33]   [!]       "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
-[12:33]   [!]       \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
-[12:34]   [!]       \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
-[12:34]   [!]       \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
-[12:34]   [!]       \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
-[12:34]   [!]       \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
-[12:34]   [!]       "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
-[12:34]   [!]       \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
-[12:34]   [!]       \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
-[12:34]   [!]       \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
-[12:34]   [!]       packages", "platlib": "Lib\\site-packages", "include": "include\\site\
-[12:34]   [!]       \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
-[12:34]   [!]       {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
-[12:34]   [!]       "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
-[12:34]   [!]       
-[12:34]   [!] 
-[12:34]   [!] 
-[12:34]   [!] stdout:
-[12:34] Installing 1 node dependency(ies)...
-[12:34]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
-[12:34]   ComfyUI-GeometryPack already exists, skipping...
-[12:34] Installing validation endpoint...
-[12:34]   Cloning PozzettiAndrea/ComfyUI-validate-endpoint...
-[12:34] Running: git clone --depth 1 https://x-access-token:***@github.com/PozzettiAndrea/ComfyUI-validate-endpoint.git C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-validate-endpoint
-[12:35] CUDA packages absent (will mock): flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash_attn, sageattention, drtk
-[12:35] [INSTALL] PASSED
-[12:35] 
-[12:35] [3/3] EXECUTION
-[12:35] ----------------------------------------
-[12:35] 
+[02:41] Running: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\python_embeded\python.exe C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\install.py
+[02:42]   
+[02:42]   Installing 1 node dependencies...
+[02:42]     Cloning ComfyUI-GeometryPack...
+[02:47]     Installing requirements for ComfyUI-GeometryPack...
+[02:47]     Running install.py for ComfyUI-GeometryPack...
+[02:50]   [comfy-env] _discover: scanning C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes
+[02:50]   [comfy-env] _discover: ComfyUI-GeometryPack -> geometrypack-nodes (custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml)
+[02:50]   [comfy-env] _discover: ComfyUI-TRELLIS2 -> trellis2-nodes (custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml)
+[02:50]   [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
+[02:50]   [comfy-env] ComfyUI: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI
+[02:50]   [comfy-env] Found 2 node config(s):
+[02:50]     - geometrypack-nodes <- custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml (python=host)
+[02:50]     - trellis2-nodes <- custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml (python=host)
+[02:51]   [comfy-env] Bootstrap interpreter has python 3.13 + torch 2.11.0 (cu130). Looking for cuda-only wheels matching cu130/torch2.11/cp313.
+[03:17]   [comfy-env] GPU: Detection: torch
+[03:17]   Recommended: CUDA 13.1
+[03:17]   
+[03:17]     GPU 0: NVIDIA GeForce RTX 3090 (sm_86) [Ampere] 24575MB
+[03:17]   [comfy-env] Comfyui feature -> torch 2.11.0 from https://download.pytorch.org/whl/cu130 (CUDA 13.0 via bootstrap torch)
+[03:17]   [comfy-env] cuda-wheels: 7 package(s) need a matched (cuda, torch, python) combo: ['cumesh', 'flex_gemm_ap', 'cumesh_vb', 'o_voxel_vb_ap', 'flash-attn', 'sageattention', 'drtk']
+[03:17]   [comfy-env] cuda-wheels tier 1 (bootstrap): probing cu13.0/torch2.11/cp313
+[03:17]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
+[03:17]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
+[03:22]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:22]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
+[03:23]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:23]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
+[03:24]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:24]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
+[03:25]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:25]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
+[03:26]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:26]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
+[03:26]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:26]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
+[03:27]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:27]   [comfy-env] cuda-wheels combo: cu13.0/torch2.11 (bootstrap matches; per-node envs will pin to this)
+[03:27]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
+[03:27]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
+[03:28]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:28]   [comfy-env] geometrypack-nodes: cuda-wheels deferred for post-pixi install (cumesh)
+[03:28]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
+[03:29]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:29]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
+[03:30]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:30]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
+[03:30]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:30]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
+[03:31]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:31]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
+[03:32]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:32]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
+[03:32]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[03:32]   [comfy-env] trellis2-nodes: cuda-wheels deferred for post-pixi install (flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash-attn, sageattention, drtk)
+[03:32]   Generated C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.10-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.10.20-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.11.15-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.12.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[03:32]   [comfy-env] Installing 2 environment(s):
+[03:32]     - geometrypack-nodes (python=host, 14 pypi deps, 1 cuda wheels)
+[03:32]     - trellis2-nodes (python=host, 20 pypi deps, 6 cuda wheels)
+[03:32]   [comfy-env] Running `pixi install -e geometrypack-nodes -e trellis2-nodes`...
+[04:24]      WARN Skipped running the post-link scripts because `run-post-link-scripts` = `false`
+[04:24]     	- Scripts/.librsvg-pre-unlink.bat
+[04:24]     To enable them, run:
+[04:24]     	pixi config set --local run-post-link-scripts insecure
+[04:24]     More info:
+[04:24]     	https://pixi.sh/latest/reference/pixi_configuration/#run-post-link-scripts
+[04:48]     Error:   Ã— Failed to update PyPI packages for environment 'geometrypack-nodes'
+[04:48]       â•°â”€â–¶ Querying Python at `C:\Users\ContainerUser\AppData\Local\Programs\comfy-
+[04:48]           env\.pixi\envs\geometrypack-nodes\python.exe` failed with exit status
+[04:48]           exit code: 0xc0000005
+[04:48]           [31m[stdout][39m
+[04:48]           {"result": "success", "markers": {"implementation_name":
+[04:48]           "cpython", "implementation_version": "3.13.13", "os_name": "nt",
+[04:48]           "platform_machine": "AMD64", "platform_python_implementation":
+[04:48]           "CPython", "platform_release": "11", "platform_system": "Windows",
+[04:48]           "platform_version": "10.0.26100", "python_full_version": "3.13.13",
+[04:48]           "python_version": "3.13", "sys_platform": "win32"}, "sys_base_prefix":
+[04:48]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\
+[04:48]           \.pixi\\envs\\geometrypack-nodes", "sys_base_exec_prefix": "C:\
+[04:48]           \Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[04:48]           \envs\\geometrypack-nodes", "sys_prefix": "C:\\Users\\ContainerUser\
+[04:48]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
+[04:48]           "sys_base_executable": "C:\\Users\\ContainerUser\\AppData\\Local\
+[04:48]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe",
+[04:49]           "sys_executable": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
+[04:49]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe", "sys_path":
+[04:49]           ["C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[04:49]           \envs\\geometrypack-nodes\\python313.zip", "C:\\Users\\ContainerUser\
+[04:49]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
+[04:49]           \DLLs", "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-
+[04:49]           env\\.pixi\\envs\\geometrypack-nodes\\Lib", "C:\\Users\\ContainerUser\
+[04:49]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
+[04:49]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[04:49]           \envs\\geometrypack-nodes\\Lib\\site-packages"], "site_packages": ["C:
+[04:49]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[04:49]           \envs\\geometrypack-nodes", "C:\\Users\\ContainerUser\\AppData\
+[04:49]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
+[04:49]           \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
+[04:49]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
+[04:49]           "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
+[04:49]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
+[04:49]           \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
+[04:49]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
+[04:49]           \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
+[04:49]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
+[04:49]           "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
+[04:49]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
+[04:49]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[04:49]           \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
+[04:49]           packages", "platlib": "Lib\\site-packages", "include": "include\\site\
+[04:49]           \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
+[04:49]           {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
+[04:49]           "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
+[04:49]     Warning: ComfyUI-GeometryPack install.py failed (exit code 1)
+[04:49]   
+[04:49]   [requirements] Re-installing main package requirements...
+[04:49]     Installing requirements for ComfyUI-TRELLIS2...
+[04:49]   [comfy-env] _discover: scanning C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes
+[04:49]   [comfy-env] _discover: ComfyUI-GeometryPack -> geometrypack-nodes (custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml)
+[04:49]   [comfy-env] _discover: ComfyUI-TRELLIS2 -> trellis2-nodes (custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml)
+[04:49]   [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
+[04:49]   [comfy-env] ComfyUI: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI
+[04:49]   [comfy-env] Found 2 node config(s):
+[04:49]     - geometrypack-nodes <- custom_nodes\ComfyUI-GeometryPack\nodes\comfy-env.toml (python=host)
+[04:49]     - trellis2-nodes <- custom_nodes\ComfyUI-TRELLIS2\nodes\comfy-env.toml (python=host)
+[04:49]   [comfy-env] Bootstrap interpreter has python 3.13 + torch 2.11.0 (cu130). Looking for cuda-only wheels matching cu130/torch2.11/cp313.
+[04:52]   [comfy-env] GPU: Detection: torch
+[04:52]   Recommended: CUDA 13.1
+[04:52]   
+[04:52]     GPU 0: NVIDIA GeForce RTX 3090 (sm_86) [Ampere] 24575MB
+[04:52]   [comfy-env] Comfyui feature -> torch 2.11.0 from https://download.pytorch.org/whl/cu130 (CUDA 13.0 via bootstrap torch)
+[04:52]   [comfy-env] cuda-wheels: 7 package(s) need a matched (cuda, torch, python) combo: ['cumesh', 'flex_gemm_ap', 'cumesh_vb', 'o_voxel_vb_ap', 'flash-attn', 'sageattention', 'drtk']
+[04:52]   [comfy-env] cuda-wheels tier 1 (bootstrap): probing cu13.0/torch2.11/cp313
+[04:52]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
+[04:52]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
+[04:56]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:56]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
+[04:56]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:56]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
+[04:57]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:57]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
+[04:58]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:58]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
+[04:59]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:59]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
+[04:59]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[04:59]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
+[05:00]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:00]   [comfy-env] cuda-wheels combo: cu13.0/torch2.11 (bootstrap matches; per-node envs will pin to this)
+[05:00]   [cuda-wheels] Looking up cumesh: cu130 torch2.11 cp313 win_amd64
+[05:00]   [cuda-wheels]   GH Pages index unreachable, falling back to GitHub Releases API...
+[05:01]   [cuda-wheels]   Found via API: cumesh-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:01]   [comfy-env] geometrypack-nodes: cuda-wheels deferred for post-pixi install (cumesh)
+[05:01]   [cuda-wheels] Looking up flex_gemm_ap: cu130 torch2.11 cp313 win_amd64
+[05:02]   [cuda-wheels]   Found: flex_gemm_ap-1.0.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:02]   [cuda-wheels] Looking up cumesh_vb: cu130 torch2.11 cp313 win_amd64
+[05:03]   [cuda-wheels]   Found: cumesh_vb-1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:03]   [cuda-wheels] Looking up o_voxel_vb_ap: cu130 torch2.11 cp313 win_amd64
+[05:04]   [cuda-wheels]   Found: o_voxel_vb_ap-0.0.1+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:04]   [cuda-wheels] Looking up flash-attn: cu130 torch2.11 cp313 win_amd64
+[05:05]   [cuda-wheels]   Found: flash_attn-2.8.3+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:05]   [cuda-wheels] Looking up sageattention: cu130 torch2.11 cp313 win_amd64
+[05:05]   [cuda-wheels]   Found: sageattention-2.2.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:05]   [cuda-wheels] Looking up drtk: cu130 torch2.11 cp313 win_amd64
+[05:05]   [cuda-wheels]   Found: drtk-0.1.0+cu130torch2.11-cp313-cp313-win_amd64.whl
+[05:05]   [comfy-env] trellis2-nodes: cuda-wheels deferred for post-pixi install (flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash-attn, sageattention, drtk)
+[05:05]   Generated C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml
+[05:05]   [comfy-env] Patched C:\Users\ContainerUser\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\platform.py for conda-forge compat
+[05:05]   [comfy-env] Installing 2 environment(s):
+[05:05]     - geometrypack-nodes (python=host, 14 pypi deps, 1 cuda wheels)
+[05:05]     - trellis2-nodes (python=host, 20 pypi deps, 6 cuda wheels)
+[05:05]   [comfy-env] Running `pixi install -e geometrypack-nodes -e trellis2-nodes`...
+[05:09]     Error:   Ã— Failed to update PyPI packages for environment 'geometrypack-nodes'
+[05:09]       â•°â”€â–¶ Querying Python at `C:\Users\ContainerUser\AppData\Local\Programs\comfy-
+[05:09]           env\.pixi\envs\geometrypack-nodes\python.exe` failed with exit status
+[05:09]           exit code: 0xc0000005
+[05:09]           [31m[stdout][39m
+[05:09]           {"result": "success", "markers": {"implementation_name":
+[05:09]           "cpython", "implementation_version": "3.13.13", "os_name": "nt",
+[05:09]           "platform_machine": "AMD64", "platform_python_implementation":
+[05:09]           "CPython", "platform_release": "11", "platform_system": "Windows",
+[05:09]           "platform_version": "10.0.26100", "python_full_version": "3.13.13",
+[05:09]           "python_version": "3.13", "sys_platform": "win32"}, "sys_base_prefix":
+[05:09]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\
+[05:09]           \.pixi\\envs\\geometrypack-nodes", "sys_base_exec_prefix": "C:\
+[05:09]           \Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]           \envs\\geometrypack-nodes", "sys_prefix": "C:\\Users\\ContainerUser\
+[05:09]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
+[05:09]           "sys_base_executable": "C:\\Users\\ContainerUser\\AppData\\Local\
+[05:09]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe",
+[05:09]           "sys_executable": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
+[05:09]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\python.exe", "sys_path":
+[05:09]           ["C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]           \envs\\geometrypack-nodes\\python313.zip", "C:\\Users\\ContainerUser\
+[05:09]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
+[05:09]           \DLLs", "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-
+[05:09]           env\\.pixi\\envs\\geometrypack-nodes\\Lib", "C:\\Users\\ContainerUser\
+[05:09]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes",
+[05:09]           "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]           \envs\\geometrypack-nodes\\Lib\\site-packages"], "site_packages": ["C:
+[05:09]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]           \envs\\geometrypack-nodes", "C:\\Users\\ContainerUser\\AppData\
+[05:09]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
+[05:09]           \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
+[05:09]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
+[05:09]           "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
+[05:09]           \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
+[05:09]           \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
+[05:09]           \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
+[05:09]           \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
+[05:09]           \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
+[05:09]           "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
+[05:09]           \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
+[05:09]           \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]           \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
+[05:09]           packages", "platlib": "Lib\\site-packages", "include": "include\\site\
+[05:09]           \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
+[05:09]           {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
+[05:09]           "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
+[05:09] Warning: install.py failed (exit code 1), continuing...
+[05:09]   [!]       \site-packages"], "stdlib": "C:\\Users\\ContainerUser\\AppData\
+[05:09]   [!]       \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib",
+[05:09]   [!]       "standalone": false, "scheme": {"platlib": "C:\\Users\\ContainerUser\
+[05:09]   [!]       \AppData\\Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\
+[05:09]   [!]       \Lib\\site-packages", "purelib": "C:\\Users\\ContainerUser\\AppData\
+[05:09]   [!]       \Local\\Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Lib\
+[05:09]   [!]       \site-packages", "include": "C:\\Users\\ContainerUser\\AppData\\Local\
+[05:09]   [!]       \Programs\\comfy-env\\.pixi\\envs\\geometrypack-nodes\\Include",
+[05:09]   [!]       "scripts": "C:\\Users\\ContainerUser\\AppData\\Local\\Programs\
+[05:09]   [!]       \comfy-env\\.pixi\\envs\\geometrypack-nodes\\Scripts", "data": "C:
+[05:09]   [!]       \\Users\\ContainerUser\\AppData\\Local\\Programs\\comfy-env\\.pixi\
+[05:09]   [!]       \envs\\geometrypack-nodes"}, "virtualenv": {"purelib": "Lib\\site-
+[05:09]   [!]       packages", "platlib": "Lib\\site-packages", "include": "include\\site\
+[05:09]   [!]       \python3.13", "scripts": "Scripts", "data": ""}, "platform": {"os":
+[05:09]   [!]       {"name": "windows"}, "arch": "amd64"}, "manylinux_compatible": false,
+[05:09]   [!]       "gil_disabled": false, "debug_enabled": false, "pointer_size": "64"}
+[05:09]   [!]       
+[05:09]   [!] 
+[05:09]   [!] 
+[05:09]   [!] stdout:
+[05:09] Installing 1 node dependency(ies)...
+[05:09]   ComfyUI-GeometryPack from PozzettiAndrea/ComfyUI-GeometryPack
+[05:09]   ComfyUI-GeometryPack already exists, skipping...
+[05:09] Installing validation endpoint...
+[05:09]   Cloning PozzettiAndrea/ComfyUI-validate-endpoint...
+[05:09] Running: git clone --depth 1 https://x-access-token:***@github.com/PozzettiAndrea/ComfyUI-validate-endpoint.git C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-validate-endpoint
+[05:11] CUDA packages absent (will mock): flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash_attn, sageattention, drtk
+[05:11] [INSTALL] PASSED
+[05:11] 
+[05:11] [3/3] EXECUTION
+[05:11] ----------------------------------------
+[05:11] 
 [DEBUG] server=None, api=None
-[12:35] Starting ComfyUI server...
-[12:35] Starting ComfyUI server on port 41883...
-[12:35] CUDA mock packages: flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash_attn, sageattention, drtk
-[12:35] Starting ComfyUI server on port 41883...
-[12:35] Server stdout/stderr -> C:\workspaces\TRELLIS2-0846\server.log
-[12:35] Waiting for server to be ready (timeout: 600s)...
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.schemas
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.tables
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.types
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.constraints
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.defaults
-[12:36]   [ComfyUI] setup plugin alembic.autogenerate.comments
-[12:37]   [ComfyUI] [comfy-env] ComfyUI-GeometryPack: 1 isolation env(s):
-[12:37]   [ComfyUI] [comfy-env]   nodes -> C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes
-[12:37]   [ComfyUI] [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
-[12:37]   [ComfyUI] [comfy-env]     env: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes  [OK]
-[12:37]   [ComfyUI] [comfy-env] prestartup complete
-[12:37]   [ComfyUI] [comfy-env] ComfyUI-TRELLIS2: 1 isolation env(s):
-[12:37]   [ComfyUI] [comfy-env]   nodes -> C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes
-[12:37]   [ComfyUI] [comfy-env]     env: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\trellis2-nodes  [OK]
-[12:37]   [ComfyUI] [comfy-env] prestartup complete
-[12:37]   [ComfyUI] 
-[12:37]   [ComfyUI] Prestartup times for custom nodes:
-[12:37]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2
-[12:37]   [ComfyUI]    0.5 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
-[12:37]   [ComfyUI] 
-[12:41]   [ComfyUI] Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['apply_rope', 'apply_rope1', 'dequantize_mxfp8', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'scaled_mm_mxfp8', 'scaled_mm_nvfp4']}
-[12:41]   [ComfyUI] Found comfy_kitchen backend triton: {'available': False, 'disabled': True, 'unavailable_reason': "ImportError: No module named 'triton'", 'capabilities': []}
-[12:41]   [ComfyUI] Found comfy_kitchen backend cuda: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['apply_rope', 'apply_rope1', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'scaled_mm_nvfp4']}
-[12:41]   [ComfyUI] Checkpoint files will always be loaded safely.
-[12:42]   [ComfyUI] Total VRAM 24576 MB, total RAM 32684 MB
-[12:42]   [ComfyUI] pytorch version: 2.11.0+cu130
-[12:42]   [ComfyUI] Set vram state to: NORMAL_VRAM
-[12:42]   [ComfyUI] Device: cuda:0 NVIDIA GeForce RTX 3090 : cudaMallocAsync
-[12:42]   [ComfyUI] Using async weight offloading with 2 streams
-[12:42]   [ComfyUI] Enabled pinned memory 13073.0
-[12:42]   [ComfyUI] Using pytorch attention
-[12:53]   [ComfyUI] aimdo: src-win/cuda-detour.c:38:INFO:aimdo_setup_hooks: installing 6 hooks
-[12:53]   [ComfyUI] aimdo: src-win/cuda-detour.c:28:DEBUG:install_hook_entries: hooks successfully installed
-[12:53]   [ComfyUI] aimdo: src-win/shmem-detect.c:80:INFO:comfy-aimdo WDDM adapter match: NVIDIA GeForce RTX 3090 runtime_luid=00000000:0000bc16 dxgi_luid=00000000:0000bc16
-[12:53]   [ComfyUI] aimdo: src/control.c:152:INFO:comfy-aimdo inited for GPU: NVIDIA GeForce RTX 3090 (VRAM: 24575 MB)
-[12:53]   [ComfyUI] DynamicVRAM support detected and enabled
-[12:53]   [ComfyUI] Python version: 3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]
-[12:53]   [ComfyUI] ComfyUI version: 0.21.1
-[12:53]   [ComfyUI] comfy-aimdo version: 0.3.0
-[12:53]   [ComfyUI] comfy-kitchen version: 0.2.8
-[12:53]   [ComfyUI] ****** User settings have been changed to be stored on the server instead of browser storage. ******
-[12:53]   [ComfyUI] ****** For multi-user setups add the --multi-user CLI argument to enable multiple user profiles. ******
-[12:53]   [ComfyUI] ComfyUI frontend version: 1.43.18
-[12:53]   [ComfyUI] [Prompt Server] web root: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\python_embeded\Lib\site-packages\comfyui_frontend_package\static
-[12:53]   [ComfyUI] Asset seeder disabled
-[12:56]   [ComfyUI] loading...
-[12:56]   [ComfyUI] calling register_nodes
-[12:56]   [ComfyUI] [comfy-env] Version: 0.3.89
-[12:57]   [ComfyUI] [comfy-env] register_nodes: ComfyUI-GeometryPack
-[12:57]   [ComfyUI] [comfy-env] ComfyUI source dir: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI
-[12:57]   [ComfyUI] [comfy-env] Found 1 isolation env(s)
-[12:57]   [ComfyUI] [comfy-env] Scanning nodes metadata (isolation root)...
-[12:57]   [ComfyUI] [comfy-env] geometrypack-nodes: Library/bin has 613 DLLs
-[12:57]   [ComfyUI] [comfy-env] Metadata scan: C:\Users\ContainerUser\.pixi\bin\pixi.exe run --as-is --manifest-path C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml -e geometrypack-nodes python C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta_c2svpp0c.py C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack nodes C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta_out_rhafcab4.pkl
-[12:57]   [ComfyUI] [comfy-env] Scan env PATH for nodes:
-[12:57]   [ComfyUI] [comfy-env]   [0] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes
-[12:57]   [ComfyUI] [comfy-env]   [1] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Library\bin
-[12:57]   [ComfyUI] [comfy-env]   [2] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Scripts
-[12:57]   [ComfyUI] [comfy-env]   [3] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Lib\site-packages\bpy
-[12:57]   [ComfyUI] [comfy-env]   [4] C:\Windows\System32
-[12:57]   [ComfyUI] [comfy-env]   [5] C:\Windows
-[12:57]   [ComfyUI] [comfy-env]   [6] C:\Windows\System32\Wbem
-[13:06]   [ComfyUI] [comfy-env] Metadata scan stderr for nodes:
-[13:06]   [ComfyUI] [comfy-env]   [meta-scan] importing nodes from C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
-[13:06]   [ComfyUI] [comfy-env]   Traceback (most recent call last):
-[13:06]   [ComfyUI] [comfy-env]     File "C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta_c2svpp0c.py", line 65, in <module>
-[13:06]   [ComfyUI] [comfy-env]       module = importlib.import_module(package_name)
-[13:06]   [ComfyUI] [comfy-env]     File "C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Lib\importlib\__init__.py", line 88, in import_module
-[13:06]   [ComfyUI] [comfy-env]       return _bootstrap._gcd_import(name[level:], package, level)
-[13:06]   [ComfyUI] [comfy-env]              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1395, in _gcd_import
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap_external>", line 1023, in exec_module
-[13:06]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\__init__.py", line 17, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from . import blender_io
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\__init__.py", line 8, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from .load_mesh_blend import NODE_CLASS_MAPPINGS as LOAD_MESH_BLEND_MAPS, NODE_DISPLAY_NAME_MAPPINGS as LOAD_MESH_BLEND_DISP
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\load_mesh_blend.py", line 29, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from comfy_api.latest import io
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\__init__.py", line 8, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from ._input import ImageInput, AudioInput, MaskInput, LatentInput, VideoInput
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\__init__.py", line 1, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from .basic_types import ImageInput, AudioInput, MaskInput, LatentInput
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\basic_types.py", line 1, in <module>
-[13:06]   [ComfyUI] [comfy-env]       import torch
-[13:06]   [ComfyUI] [comfy-env]   ModuleNotFoundError: No module named 'torch'
-[13:06]   [ComfyUI] [comfy-env] Metadata scan failed for nodes (exit 3221225477, 9.2s):
-[13:06]   [ComfyUI] [comfy-env]       from .load_mesh_blend import NODE_CLASS_MAPPINGS as LOAD_MESH_BLEND_MAPS, NODE_DISPLAY_NAME_MAPPINGS as LOAD_MESH_BLEND_DISP
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\load_mesh_blend.py", line 29, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from comfy_api.latest import io
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\__init__.py", line 8, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from ._input import ImageInput, AudioInput, MaskInput, LatentInput, VideoInput
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\__init__.py", line 1, in <module>
-[13:06]   [ComfyUI] [comfy-env]       from .basic_types import ImageInput, AudioInput, MaskInput, LatentInput
-[13:06]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\basic_types.py", line 1, in <module>
-[13:06]   [ComfyUI] [comfy-env]       import torch
-[13:06]   [ComfyUI] [comfy-env]   ModuleNotFoundError: No module named 'torch'
-[13:06]   [ComfyUI] [comfy-env] Scanned nodes root: 0 nodes (9.2s)
-[13:06]   [ComfyUI] [comfy-env] Imported nodes root: 0 nodes (isolation)
-[13:06]   [ComfyUI] [comfy-env] Registered 0 total nodes
-[13:06]   [ComfyUI] Aliased comfy.sparse -> comfy_sparse_attn.sparse
-[13:06]   [ComfyUI] Aliased comfy.ops_sparse -> comfy_sparse_attn.ops_sparse
-[13:06]   [ComfyUI] Aliased comfy.attention_sparse -> comfy_sparse_attn.attention_sparse
-[13:06]   [ComfyUI] loading...
-[13:06]   [ComfyUI] calling register_nodes
-[13:06]   [ComfyUI] registered TRELLIS2 model configs with ComfyUI
-[13:06]   [ComfyUI] [comfy-env] Version: 0.3.89
-[13:06]   [ComfyUI] [comfy-env] register_nodes: ComfyUI-TRELLIS2
-[13:06]   [ComfyUI] [comfy-env] ComfyUI source dir: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI
-[13:06]   [ComfyUI] [comfy-env] Found 0 isolation env(s)
-[13:06]   [ComfyUI] [comfy-env] Importing nodes (root)...
-[13:06]   [ComfyUI] [comfy-env] Imported nodes root: 24 nodes
-[13:06]   [ComfyUI] [comfy-env] Registered 24 total nodes
-[13:06]   [ComfyUI] 
-[13:06]   [ComfyUI] Import times for custom nodes:
-[13:06]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\websocket_image_save.py
-[13:06]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-validate-endpoint
-[13:06]   [ComfyUI]    0.1 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2
-[13:06]   [ComfyUI]   10.1 seconds: C:\workspaces\TRELLIS2-0846\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
-[13:06]   [ComfyUI] 
-[13:06]   [ComfyUI] Context impl SQLiteImpl.
-[13:06]   [ComfyUI] Will assume non-transactional DDL.
-[13:06]   [ComfyUI] Context impl SQLiteImpl.
-[13:06]   [ComfyUI] Will assume non-transactional DDL.
-[13:06]   [ComfyUI] Running upgrade  -> 0001_assets, Initial assets schema
-[13:06]   [ComfyUI] Revision ID: 0001_assets
-[13:06]   [ComfyUI] Revises: None
-[13:06]   [ComfyUI] Create Date: 2025-12-10 00:00:00
-[13:06]   [ComfyUI] Running upgrade 0001_assets -> 0002_merge_to_asset_references, Merge AssetInfo and AssetCacheState into unified asset_references table.
-[13:06]   [ComfyUI] Running upgrade 0002_merge_to_asset_references -> 0003_add_metadata_job_id, Add system_metadata and job_id columns to asset_references.
-[13:06]   [ComfyUI] Change preview_id FK from assets.id to asset_references.id.
-[13:06]   [ComfyUI] Database upgraded from None to 0003_add_metadata_job_id
-[13:07]   [ComfyUI] Starting server
-[13:07]   [ComfyUI] 
-[13:07]   [ComfyUI] To see the GUI go to: http://127.0.0.1:41883
-[13:07] Server responding, waiting for nodes to load...
-[13:27] Server is ready!
-[13:27] GPU runner - will execute 8 workflow(s)
-[13:27] Running 9 workflow(s) (all with videos)...
-[13:27] Installing screenshot dependencies (playwright, pillow)...
-[13:29]   Packages installed, downloading chromium browser...
-[13:50]   Screenshot dependencies installed successfully
-[13:51] Starting headless browser...
-[13:51]   Downloading Mesa llvmpipe for Windows...
-[13:52]   Mesa download error: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
-[13:52]   Mesa unavailable -- falling back to SwiftShader
-[13:56] Capturing execution frames: geometry_only_1024.json
-[14:04]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:04]   Validating workflow...
-[14:04]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:04] Capturing execution frames: geometry_only_1024_cascade.json
-[14:10]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:10]   Validating workflow...
-[14:10]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:11] Capturing execution frames: geometry_only_1536.json
-[14:17]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:17]   Validating workflow...
-[14:17]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:17] Capturing execution frames: geometry_only_512.json
-[14:23]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:23]   Validating workflow...
-[14:23]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:24] Capturing execution frames: geometry_texture.json
-[14:30]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:30]   Validating workflow...
-[14:30]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {"inputs":{"image":"cannon.webp"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:31]   [6/9] SKIPPED (not in gpu list) mesh_audit.json
-[14:31] Capturing execution frames: refinement.json
-[14:38]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:38]   Validating workflow...
-[14:38]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {"inputs":{"resolution":"512","precision":"auto","attn_backend":"auto"},"class_type":"LoadTrellis2Models","_meta":{"title":"(Down)Load TRELLIS.2 Models"}}
-[14:38] Capturing execution frames: remove_background.json
-[14:44]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:44]   Validating workflow...
-[14:44]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {"inputs":{"image":"bike.webp"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
-[14:45] Capturing execution frames: standalone_texturing.json
-[14:51]   Frame 1 saved (frame_000.jpg, t=0.0s)
-[14:51]   Validating workflow...
-[14:51]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {"inputs":{"resolution":"512","precision":"auto","attn_backend":"auto"},"class_type":"LoadTrellis2Models","_meta":{"title":"(Down)Load TRELLIS.2 Models"}}
-[14:52] Results saved to C:\logs\TRELLIS2-0846\dev\windows-portable-gpu\results.json
-[14:52] Model report: 8 files, 18.7 MB -> C:\logs\TRELLIS2-0846\dev\windows-portable-gpu\models.json
-[14:52] Saved: C:\logs\TRELLIS2-0846\dev\windows-portable-gpu\index.html
-[14:52] 
+[05:11] Starting ComfyUI server...
+[05:11] Starting ComfyUI server on port 41883...
+[05:11] CUDA mock packages: flex_gemm_ap, cumesh_vb, o_voxel_vb_ap, flash_attn, sageattention, drtk
+[05:11] Starting ComfyUI server on port 41883...
+[05:11] Server stdout/stderr -> C:\workspaces\TRELLIS2-0923\server.log
+[05:11] Waiting for server to be ready (timeout: 600s)...
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.schemas
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.tables
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.types
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.constraints
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.defaults
+[05:12]   [ComfyUI] setup plugin alembic.autogenerate.comments
+[05:13]   [ComfyUI] [comfy-env] ComfyUI-GeometryPack: 1 isolation env(s):
+[05:13]   [ComfyUI] [comfy-env]   nodes -> C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes
+[05:13]   [ComfyUI] [comfy-env] Workspace: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env
+[05:13]   [ComfyUI] [comfy-env]     env: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes  [OK]
+[05:13]   [ComfyUI] [comfy-env] prestartup complete
+[05:13]   [ComfyUI] [comfy-env] ComfyUI-TRELLIS2: 1 isolation env(s):
+[05:13]   [ComfyUI] [comfy-env]   nodes -> C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2\nodes
+[05:13]   [ComfyUI] [comfy-env]     env: C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\trellis2-nodes  [OK]
+[05:13]   [ComfyUI] [comfy-env] prestartup complete
+[05:13]   [ComfyUI] 
+[05:13]   [ComfyUI] Prestartup times for custom nodes:
+[05:13]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2
+[05:13]   [ComfyUI]    0.6 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
+[05:13]   [ComfyUI] 
+[05:17]   [ComfyUI] Found comfy_kitchen backend triton: {'available': False, 'disabled': True, 'unavailable_reason': "ImportError: No module named 'triton'", 'capabilities': []}
+[05:17]   [ComfyUI] Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['apply_rope', 'apply_rope1', 'dequantize_mxfp8', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'scaled_mm_mxfp8', 'scaled_mm_nvfp4']}
+[05:17]   [ComfyUI] Found comfy_kitchen backend cuda: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['apply_rope', 'apply_rope1', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'scaled_mm_nvfp4']}
+[05:17]   [ComfyUI] Checkpoint files will always be loaded safely.
+[05:17]   [ComfyUI] Total VRAM 24576 MB, total RAM 32684 MB
+[05:17]   [ComfyUI] pytorch version: 2.11.0+cu130
+[05:17]   [ComfyUI] Set vram state to: NORMAL_VRAM
+[05:17]   [ComfyUI] Device: cuda:0 NVIDIA GeForce RTX 3090 : cudaMallocAsync
+[05:17]   [ComfyUI] Using async weight offloading with 2 streams
+[05:17]   [ComfyUI] Enabled pinned memory 13073.0
+[05:18]   [ComfyUI] Using pytorch attention
+[05:27]   [ComfyUI] aimdo: src-win/cuda-detour.c:38:INFO:aimdo_setup_hooks: installing 6 hooks
+[05:27]   [ComfyUI] aimdo: src-win/cuda-detour.c:28:DEBUG:install_hook_entries: hooks successfully installed
+[05:27]   [ComfyUI] aimdo: src-win/shmem-detect.c:80:INFO:comfy-aimdo WDDM adapter match: NVIDIA GeForce RTX 3090 runtime_luid=00000000:0000bc16 dxgi_luid=00000000:0000bc16
+[05:27]   [ComfyUI] aimdo: src/control.c:152:INFO:comfy-aimdo inited for GPU: NVIDIA GeForce RTX 3090 (VRAM: 24575 MB)
+[05:27]   [ComfyUI] DynamicVRAM support detected and enabled
+[05:27]   [ComfyUI] Python version: 3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]
+[05:27]   [ComfyUI] ComfyUI version: 0.21.1
+[05:27]   [ComfyUI] comfy-aimdo version: 0.3.0
+[05:27]   [ComfyUI] comfy-kitchen version: 0.2.8
+[05:27]   [ComfyUI] ****** User settings have been changed to be stored on the server instead of browser storage. ******
+[05:27]   [ComfyUI] ****** For multi-user setups add the --multi-user CLI argument to enable multiple user profiles. ******
+[05:27]   [ComfyUI] ComfyUI frontend version: 1.43.18
+[05:27]   [ComfyUI] [Prompt Server] web root: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\python_embeded\Lib\site-packages\comfyui_frontend_package\static
+[05:27]   [ComfyUI] Asset seeder disabled
+[05:30]   [ComfyUI] loading...
+[05:30]   [ComfyUI] calling register_nodes
+[05:30]   [ComfyUI] [comfy-env] Version: 0.3.89
+[05:31]   [ComfyUI] [comfy-env] register_nodes: ComfyUI-GeometryPack
+[05:31]   [ComfyUI] [comfy-env] ComfyUI source dir: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI
+[05:31]   [ComfyUI] [comfy-env] Found 1 isolation env(s)
+[05:31]   [ComfyUI] [comfy-env] Scanning nodes metadata (isolation root)...
+[05:31]   [ComfyUI] [comfy-env] geometrypack-nodes: Library/bin has 613 DLLs
+[05:31]   [ComfyUI] [comfy-env] Metadata scan: C:\Users\ContainerUser\.pixi\bin\pixi.exe run --as-is --manifest-path C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\pixi.toml -e geometrypack-nodes python C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta__cjabp30.py C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack nodes C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta_out_4rogisvb.pkl
+[05:31]   [ComfyUI] [comfy-env] Scan env PATH for nodes:
+[05:31]   [ComfyUI] [comfy-env]   [0] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes
+[05:31]   [ComfyUI] [comfy-env]   [1] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Library\bin
+[05:31]   [ComfyUI] [comfy-env]   [2] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Scripts
+[05:31]   [ComfyUI] [comfy-env]   [3] C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Lib\site-packages\bpy
+[05:31]   [ComfyUI] [comfy-env]   [4] C:\Windows\System32
+[05:31]   [ComfyUI] [comfy-env]   [5] C:\Windows
+[05:31]   [ComfyUI] [comfy-env]   [6] C:\Windows\System32\Wbem
+[05:40]   [ComfyUI] [comfy-env] Metadata scan stderr for nodes:
+[05:40]   [ComfyUI] [comfy-env]   [meta-scan] importing nodes from C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
+[05:40]   [ComfyUI] [comfy-env]   Traceback (most recent call last):
+[05:40]   [ComfyUI] [comfy-env]     File "C:\Users\ContainerUser\AppData\Local\Temp\comfy_meta__cjabp30.py", line 65, in <module>
+[05:40]   [ComfyUI] [comfy-env]       module = importlib.import_module(package_name)
+[05:40]   [ComfyUI] [comfy-env]     File "C:\Users\ContainerUser\AppData\Local\Programs\comfy-env\.pixi\envs\geometrypack-nodes\Lib\importlib\__init__.py", line 88, in import_module
+[05:40]   [ComfyUI] [comfy-env]       return _bootstrap._gcd_import(name[level:], package, level)
+[05:40]   [ComfyUI] [comfy-env]              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1395, in _gcd_import
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap_external>", line 1023, in exec_module
+[05:40]   [ComfyUI] [comfy-env]     File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\__init__.py", line 17, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from . import blender_io
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\__init__.py", line 8, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from .load_mesh_blend import NODE_CLASS_MAPPINGS as LOAD_MESH_BLEND_MAPS, NODE_DISPLAY_NAME_MAPPINGS as LOAD_MESH_BLEND_DISP
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\load_mesh_blend.py", line 29, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from comfy_api.latest import io
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\__init__.py", line 8, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from ._input import ImageInput, AudioInput, MaskInput, LatentInput, VideoInput
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\__init__.py", line 1, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from .basic_types import ImageInput, AudioInput, MaskInput, LatentInput
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\basic_types.py", line 1, in <module>
+[05:40]   [ComfyUI] [comfy-env]       import torch
+[05:40]   [ComfyUI] [comfy-env]   ModuleNotFoundError: No module named 'torch'
+[05:40]   [ComfyUI] [comfy-env] Metadata scan failed for nodes (exit 3221225477, 9.1s):
+[05:40]   [ComfyUI] [comfy-env]       from .load_mesh_blend import NODE_CLASS_MAPPINGS as LOAD_MESH_BLEND_MAPS, NODE_DISPLAY_NAME_MAPPINGS as LOAD_MESH_BLEND_DISP
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack\nodes\blender_io\load_mesh_blend.py", line 29, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from comfy_api.latest import io
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\__init__.py", line 8, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from ._input import ImageInput, AudioInput, MaskInput, LatentInput, VideoInput
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\__init__.py", line 1, in <module>
+[05:40]   [ComfyUI] [comfy-env]       from .basic_types import ImageInput, AudioInput, MaskInput, LatentInput
+[05:40]   [ComfyUI] [comfy-env]     File "C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\comfy_api\latest\_input\basic_types.py", line 1, in <module>
+[05:40]   [ComfyUI] [comfy-env]       import torch
+[05:40]   [ComfyUI] [comfy-env]   ModuleNotFoundError: No module named 'torch'
+[05:40]   [ComfyUI] [comfy-env] Scanned nodes root: 0 nodes (9.2s)
+[05:40]   [ComfyUI] [comfy-env] Imported nodes root: 0 nodes (isolation)
+[05:40]   [ComfyUI] [comfy-env] Registered 0 total nodes
+[05:40]   [ComfyUI] Aliased comfy.sparse -> comfy_sparse_attn.sparse
+[05:40]   [ComfyUI] Aliased comfy.ops_sparse -> comfy_sparse_attn.ops_sparse
+[05:40]   [ComfyUI] Aliased comfy.attention_sparse -> comfy_sparse_attn.attention_sparse
+[05:40]   [ComfyUI] loading...
+[05:40]   [ComfyUI] calling register_nodes
+[05:40]   [ComfyUI] registered TRELLIS2 model configs with ComfyUI
+[05:40]   [ComfyUI] [comfy-env] Version: 0.3.89
+[05:40]   [ComfyUI] [comfy-env] register_nodes: ComfyUI-TRELLIS2
+[05:40]   [ComfyUI] [comfy-env] ComfyUI source dir: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI
+[05:40]   [ComfyUI] [comfy-env] Found 0 isolation env(s)
+[05:40]   [ComfyUI] [comfy-env] Importing nodes (root)...
+[05:40]   [ComfyUI] [comfy-env] Imported nodes root: 24 nodes
+[05:40]   [ComfyUI] [comfy-env] Registered 24 total nodes
+[05:40]   [ComfyUI] 
+[05:40]   [ComfyUI] Import times for custom nodes:
+[05:40]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\websocket_image_save.py
+[05:40]   [ComfyUI]    0.0 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-validate-endpoint
+[05:40]   [ComfyUI]    0.1 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-TRELLIS2
+[05:40]   [ComfyUI]   10.0 seconds: C:\workspaces\TRELLIS2-0923\portable-comfyui\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-GeometryPack
+[05:40]   [ComfyUI] 
+[05:40]   [ComfyUI] Context impl SQLiteImpl.
+[05:40]   [ComfyUI] Will assume non-transactional DDL.
+[05:40]   [ComfyUI] Context impl SQLiteImpl.
+[05:40]   [ComfyUI] Will assume non-transactional DDL.
+[05:40]   [ComfyUI] Running upgrade  -> 0001_assets, Initial assets schema
+[05:40]   [ComfyUI] Revision ID: 0001_assets
+[05:40]   [ComfyUI] Revises: None
+[05:40]   [ComfyUI] Create Date: 2025-12-10 00:00:00
+[05:40]   [ComfyUI] Running upgrade 0001_assets -> 0002_merge_to_asset_references, Merge AssetInfo and AssetCacheState into unified asset_references table.
+[05:41]   [ComfyUI] Running upgrade 0002_merge_to_asset_references -> 0003_add_metadata_job_id, Add system_metadata and job_id columns to asset_references.
+[05:41]   [ComfyUI] Change preview_id FK from assets.id to asset_references.id.
+[05:41]   [ComfyUI] Database upgraded from None to 0003_add_metadata_job_id
+[05:41]   [ComfyUI] Starting server
+[05:41]   [ComfyUI] 
+[05:41]   [ComfyUI] To see the GUI go to: http://127.0.0.1:41883
+[05:41] Server responding, waiting for nodes to load...
+[06:01] Server is ready!
+[06:01] GPU runner - will execute 8 workflow(s)
+[06:01] Running 9 workflow(s) (all with videos)...
+[06:01] Installing screenshot dependencies (playwright, pillow)...
+[06:03]   Packages installed, downloading chromium browser...
+[06:24]   Screenshot dependencies installed successfully
+[06:25] Starting headless browser...
+[06:25]   Downloading Mesa llvmpipe for Windows...
+[06:25]   Mesa download error: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+[06:25]   Mesa unavailable -- falling back to SwiftShader
+[06:30] Capturing execution frames: geometry_only_1024.json
+[06:38]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[06:38]   Validating workflow...
+[06:38]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[06:38] Capturing execution frames: geometry_only_1024_cascade.json
+[06:44]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[06:44]   Validating workflow...
+[06:44]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[06:44] Capturing execution frames: geometry_only_1536.json
+[06:45]   [ComfyUI] Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+[06:45]   [ComfyUI] handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+[06:45]   [ComfyUI] Traceback (most recent call last):
+[06:45]   [ComfyUI]   File "asyncio\events.py", line 89, in _run
+[06:45]   [ComfyUI]   File "asyncio\proactor_events.py", line 165, in _call_connection_lost
+[06:45]   [ComfyUI] ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+[06:51]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[06:51]   Validating workflow...
+[06:51]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[06:51] Capturing execution frames: geometry_only_512.json
+[06:57]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[06:57]   Validating workflow...
+[06:57]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[06:58] Capturing execution frames: geometry_texture.json
+[07:04]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[07:04]   Validating workflow...
+[07:04]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {"inputs":{"image":"cannon.webp"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[07:05]   [6/9] SKIPPED (not in gpu list) mesh_audit.json
+[07:05] Capturing execution frames: refinement.json
+[07:12]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[07:12]   Validating workflow...
+[07:12]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {"inputs":{"resolution":"512","precision":"auto","attn_backend":"auto"},"class_type":"LoadTrellis2Models","_meta":{"title":"(Down)Load TRELLIS.2 Models"}}
+[07:12] Capturing execution frames: remove_background.json
+[07:18]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[07:18]   Validating workflow...
+[07:18]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {"inputs":{"image":"bike.webp"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
+[07:19] Capturing execution frames: standalone_texturing.json
+[07:26]   Frame 1 saved (frame_000.jpg, t=0.0s)
+[07:26]   Validating workflow...
+[07:26]   Validation failed: graphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {"inputs":{"resolution":"512","precision":"auto","attn_backend":"auto"},"class_type":"LoadTrellis2Models","_meta":{"title":"(Down)Load TRELLIS.2 Models"}}
+[07:26] Results saved to C:\logs\TRELLIS2-0923\dev\windows-portable-gpu\results.json
+[07:26] Model report: 8 files, 18.7 MB -> C:\logs\TRELLIS2-0923\dev\windows-portable-gpu\models.json
+[07:26] Saved: C:\logs\TRELLIS2-0923\dev\windows-portable-gpu\index.html
+[07:26] 
 windows_portable: FAILED
-[14:52] Error: Workflow execution failed (8 error(s))
-[14:52] Details: geometry_only_1024.json: Workflow validation failed
+[07:26] Error: Workflow execution failed (8 error(s))
+[07:26] Details: geometry_only_1024.json: Workflow validation failed
 
 Details:
 graphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {"inputs":{"image":"t_logo.png"},"class_type":"LoadImage","_meta":{"title":"Load Image"}}
