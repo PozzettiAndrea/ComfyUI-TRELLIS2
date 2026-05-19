@@ -1,107 +1,107 @@
 {
-  "timestamp": "2026-05-19T07:31:17.623257+00:00",
+  "timestamp": "2026-05-19T16:45:17.670869+00:00",
   "platform": "windows_portable",
   "hardware": {
     "os": "Windows-11-10.0.26100-SP0",
-    "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+    "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
   },
-  "commit_hash": "f2b0ca4f24a78dfb05400ed031d29b945221c1a4",
-  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/26082621162",
-  "success": false,
+  "commit_hash": "8383d799935bf4f4a12f47e86ad49cf3b6aaef1f",
+  "run_url": "https://github.com/PozzettiAndrea/comfy-gpu-ci/actions/runs/26108852006",
+  "success": true,
   "summary": {
     "total": 9,
-    "passed": 0,
-    "failed": 8
+    "passed": 8,
+    "failed": 0
   },
   "workflows": [
     {
       "name": "geometry_only_1024",
-      "status": "fail",
-      "duration_seconds": 8.11,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 421.35,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 17.83,
+          "avg": 7.07
         },
-        "total_ram_gb": 31.9,
-        "samples": 8
+        "total_ram_gb": 23.9,
+        "samples": 417
       }
     },
     {
       "name": "geometry_only_1024_cascade",
-      "status": "fail",
-      "duration_seconds": 6.16,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 219.58,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 19.43,
+          "avg": 10.98
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 217
       }
     },
     {
       "name": "geometry_only_1536",
-      "status": "fail",
-      "duration_seconds": 6.4,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 544.83,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 19.12,
+          "avg": 9.24
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 538
       }
     },
     {
       "name": "geometry_only_512",
-      "status": "fail",
-      "duration_seconds": 6.36,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [108], sample: {\"inputs\":{\"image\":\"t_logo.png\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 89.79,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 10.23,
+          "avg": 5.89
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 89
       }
     },
     {
       "name": "geometry_texture",
-      "status": "fail",
-      "duration_seconds": 6.68,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 12 nodes, missing class_type: [93], sample: {\"inputs\":{\"image\":\"cannon.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 134.29,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 15.69,
+          "avg": 11.15
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 133
       }
     },
     {
@@ -113,56 +113,56 @@
     },
     {
       "name": "refinement",
-      "status": "fail",
-      "duration_seconds": 6.64,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 8 nodes, missing class_type: [12,13], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 135.99,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 15.23,
+          "avg": 5.5
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 135
       }
     },
     {
       "name": "remove_background",
-      "status": "fail",
-      "duration_seconds": 6.27,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 10 nodes, missing class_type: [94], sample: {\"inputs\":{\"image\":\"bike.webp\"},\"class_type\":\"LoadImage\",\"_meta\":{\"title\":\"Load Image\"}}",
+      "status": "pass",
+      "duration_seconds": 92.5,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 15.1,
+          "avg": 13.44
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 92
       }
     },
     {
       "name": "standalone_texturing",
-      "status": "fail",
-      "duration_seconds": 7.05,
-      "error": "Workflow validation failed\n\nDetails:\ngraphToPrompt produced nodes without class_type: graphToPrompt: 14 nodes, missing class_type: [10,28,29,36], sample: {\"inputs\":{\"resolution\":\"512\",\"precision\":\"auto\",\"attn_backend\":\"auto\"},\"class_type\":\"LoadTrellis2Models\",\"_meta\":{\"title\":\"(Down)Load TRELLIS.2 Models\"}}",
+      "status": "pass",
+      "duration_seconds": 180.36,
+      "error": null,
       "hardware": {
         "os": "Windows-11-10.0.26100-SP0",
-        "cpu": "Intel64 Family 6 Model 79 Stepping 1, GenuineIntel"
+        "cpu": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD"
       },
       "resources": {
         "ram": {
-          "peak": 0.9,
-          "avg": 0.9
+          "peak": 13.75,
+          "avg": 9.65
         },
-        "total_ram_gb": 31.9,
-        "samples": 7
+        "total_ram_gb": 23.9,
+        "samples": 179
       }
     }
   ]
