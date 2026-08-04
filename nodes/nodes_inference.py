@@ -27,6 +27,9 @@ Parameters:
 - model_config: The loaded TRELLIS.2 config
 - image: Input image (RGB)
 - mask: Foreground mask (white=object, black=background)
+- background_color: Color of background to fill (black, gray, or white)
+- crop_margin: Padding ratio around the segmented object before DinoV3 extraction (0.1 = 10%).
+
 Use any background removal node (BiRefNet, rembg, etc.) to generate the mask.""",
             inputs=[
                 io.Custom("TRELLIS2_MODEL_CONFIG").Input("model_config"),
@@ -34,6 +37,8 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask."""
                 io.Mask.Input("mask"),
                 io.Combo.Input("background_color", options=["black", "gray", "white"],
                                default="black", optional=True),
+                io.Float.Input("crop_margin", default=0.1, min=0.0, max=0.5, step=0.01, optional=True,
+                               tooltip="Padding ratio around the segmented object before DinoV3 extraction (0.1 = 10%)."),
             ],
             outputs=[
                 io.Custom("TRELLIS2_CONDITIONING").Output(display_name="conditioning"),
@@ -42,7 +47,7 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask."""
         )
 
     @classmethod
-    def execute(cls, model_config, image, mask, background_color="black"):
+    def execute(cls, model_config, image, mask, background_color="black", crop_margin=0.1):
         # All heavy imports happen inside subprocess
         from .stages import run_conditioning
 
@@ -58,6 +63,7 @@ Use any background removal node (BiRefNet, rembg, etc.) to generate the mask."""
             mask=mask,
             include_1024=include_1024,
             background_color=background_color,
+            crop_margin=crop_margin,
         )
 
         return io.NodeOutput(conditioning, preprocessed_image)
@@ -99,6 +105,8 @@ Returns mesh, shape_slat (for texture generation), and subs (subdivision guides)
                 # VRAM Control
                 io.Int.Input("max_tokens", default=49152, min=16384, max=262144, step=4096, optional=True,
                              tooltip="Max tokens for 1024 cascade. Lower = less VRAM but potentially lower quality. Default 49152 (~9GB), try 32768 (~7GB) or 24576 (~6GB) for lower VRAM."),
+                io.Float.Input("shape_rescale_t", default=3.0, min=0.0, max=10.0, step=0.1, optional=True,
+                               tooltip="Shape generation flow-matching time rescaling parameter (rescale_t). Higher values spend more sampler steps on fine details, creating sharper geometry."),
             ],
             outputs=[
                 io.Custom("TRIMESH").Output(display_name="mesh"),
@@ -120,6 +128,7 @@ Returns mesh, shape_slat (for texture generation), and subs (subdivision guides)
         shape_guidance_rescale=0.05,
         shape_sampling_steps=12,
         max_tokens=49152,
+        shape_rescale_t=3.0,
     ):
         import numpy as np
         import trimesh as Trimesh
@@ -140,6 +149,7 @@ Returns mesh, shape_slat (for texture generation), and subs (subdivision guides)
                 shape_guidance_rescale=shape_guidance_rescale,
                 shape_sampling_steps=shape_sampling_steps,
                 max_num_tokens=max_tokens,
+                shape_rescale_t=shape_rescale_t,
             )
 
         # TRIMESH stays in internal Z-up (conversion to Y-up happens only at export)
@@ -180,6 +190,8 @@ Takes shape_slat and subs from "Image to Shape" and generates PBR materials
                                tooltip="Texture guidance rescale. Reduces artifacts from high CFG"),
                 io.Int.Input("tex_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
                              tooltip="Texture sampling steps. More steps = better quality but slower"),
+                io.Float.Input("tex_rescale_t", default=3.0, min=1.0, max=6.0, step=0.1, optional=True,
+                               tooltip="Time-rescaling parameter for the texture flow sampler (Microsoft default: 3.0)."),
             ],
             outputs=[
                 io.Custom("TRELLIS2_VOXELGRID").Output(display_name="voxelgrid"),
@@ -197,6 +209,7 @@ Takes shape_slat and subs from "Image to Shape" and generates PBR materials
         tex_guidance_strength=3.0,
         tex_guidance_rescale=0.20,
         tex_sampling_steps=12,
+        tex_rescale_t=3.0,
     ):
         from .stages import run_texture_generation
 
@@ -213,6 +226,7 @@ Takes shape_slat and subs from "Image to Shape" and generates PBR materials
                 tex_guidance_strength=tex_guidance_strength,
                 tex_guidance_rescale=tex_guidance_rescale,
                 tex_sampling_steps=tex_sampling_steps,
+                tex_rescale_t=tex_rescale_t,
             )
 
         return io.NodeOutput(voxelgrid)
@@ -462,6 +476,8 @@ Parameters:
                                tooltip="Texture guidance rescale. Reduces artifacts from high CFG"),
                 io.Int.Input("tex_sampling_steps", default=12, min=1, max=50, step=1, optional=True,
                              tooltip="Texture sampling steps"),
+                io.Float.Input("tex_rescale_t", default=3.0, min=0.0, max=10.0, step=0.1, optional=True,
+                               tooltip="Texture flow-matching time rescaling parameter (rescale_t). Higher values spend more sampler steps on fine details, creating sharper textures."),
             ],
             outputs=[
                 io.Custom("TRELLIS2_VOXELGRID").Output(display_name="voxelgrid"),
@@ -478,6 +494,7 @@ Parameters:
         tex_guidance_strength=3.0,
         tex_guidance_rescale=0.20,
         tex_sampling_steps=12,
+        tex_rescale_t=3.0,
     ):
         import torch
         from .stages import run_texture_mesh
@@ -493,6 +510,7 @@ Parameters:
                 tex_guidance_strength=tex_guidance_strength,
                 tex_guidance_rescale=tex_guidance_rescale,
                 tex_sampling_steps=tex_sampling_steps,
+                tex_rescale_t=tex_rescale_t,
             )
 
         return io.NodeOutput(voxelgrid)
@@ -718,6 +736,8 @@ views participate in blending.""",
                                tooltip="Softmax temperature for view blending. Higher = sharper transitions between views."),
                 io.Combo.Input("background_color", options=["black", "gray", "white"], default="black", optional=True,
                                tooltip="Background color for masked regions"),
+                io.Float.Input("shape_rescale_t", default=3.0, min=0.0, max=10.0, step=0.1, optional=True,
+                               tooltip="Shape generation flow-matching time rescaling parameter (rescale_t). Higher values spend more sampler steps on fine details, creating sharper geometry."),
             ],
             outputs=[
                 io.Custom("TRIMESH").Output(display_name="mesh"),
@@ -748,6 +768,7 @@ views participate in blending.""",
         front_axis='z',
         blend_temperature=2.0,
         background_color="black",
+        shape_rescale_t=3.0,
     ):
         import numpy as np
         import torch
@@ -802,6 +823,7 @@ views participate in blending.""",
                 max_num_tokens=max_tokens,
                 front_axis=front_axis,
                 blend_temperature=blend_temperature,
+                shape_rescale_t=shape_rescale_t,
             )
 
         # TRIMESH stays in internal Z-up (conversion to Y-up happens only at export)

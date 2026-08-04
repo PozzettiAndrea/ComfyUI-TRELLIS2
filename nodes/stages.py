@@ -749,6 +749,7 @@ def run_conditioning(
     mask: torch.Tensor,
     include_1024: bool = True,
     background_color: str = "black",
+    crop_margin: float = 0.1,
 ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
     """
     Run DinoV3 conditioning extraction.
@@ -787,6 +788,8 @@ def run_conditioning(
 
     # Process mask - handle various input formats and ensure 2D grayscale
     mask_np = mask.cpu().numpy()
+    if mask_np.max() > 1.0:
+        mask_np = mask_np / 255.0
 
     # Handle 4D [B, H, W, C] format (e.g., IMAGE passed as MASK)
     if mask_np.ndim == 4:
@@ -825,7 +828,7 @@ def run_conditioning(
     pil_image = Image.fromarray(rgba, 'RGBA')
 
     # Smart crop
-    pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=0.1, background_color=bg_color)
+    pil_image = smart_crop_square(pil_image, alpha_np, margin_ratio=crop_margin, background_color=bg_color)
 
     # Load (or reuse cached) DinoV3 via ComfyUI ModelPatcher
     comfy.model_management.throw_exception_if_processing_interrupted()
@@ -878,6 +881,7 @@ def run_shape_generation(
     shape_guidance_rescale: float = 0.05,
     shape_sampling_steps: int = 12,
     max_num_tokens: int = 49152,
+    shape_rescale_t: float = 3.0,
 ) -> Dict[str, Any]:
     """
     Run shape generation.
@@ -889,6 +893,7 @@ def run_shape_generation(
         ss_*: Sparse structure sampling params
         shape_*: Shape latent sampling params
         max_num_tokens: Max tokens for 1024 cascade (lower = less VRAM)
+        shape_rescale_t: Flow matching time rescaling parameter
 
     Returns:
         Tuple of (mesh_vertices, mesh_faces, shape_slat_data, subs_data)
@@ -921,6 +926,7 @@ def run_shape_generation(
         "steps": shape_sampling_steps,
         "guidance_strength": shape_guidance_strength,
         "guidance_rescale": shape_guidance_rescale,
+        "rescale_t": shape_rescale_t,
     }
 
     torch.manual_seed(seed)
@@ -1201,6 +1207,7 @@ def run_multiview_shape_generation(
     max_num_tokens: int = 49152,
     front_axis: str = 'z',
     blend_temperature: float = 2.0,
+    shape_rescale_t: float = 3.0,
 ) -> Dict[str, Any]:
     """
     Multi-view shape generation.
@@ -1245,6 +1252,7 @@ def run_multiview_shape_generation(
         "steps": shape_sampling_steps,
         "guidance_strength": shape_guidance_strength,
         "guidance_rescale": shape_guidance_rescale,
+        "rescale_t": shape_rescale_t,
     }
 
     torch.manual_seed(seed)
@@ -1360,6 +1368,7 @@ def run_texture_generation(
     tex_guidance_strength: float = 3.0,
     tex_guidance_rescale: float = 0.20,
     tex_sampling_steps: int = 12,
+    tex_rescale_t: float = 3.0,
 ) -> Dict[str, Any]:
     """
     Run texture generation.
@@ -1414,6 +1423,7 @@ def run_texture_generation(
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
         "guidance_rescale": tex_guidance_rescale,
+        "rescale_t": tex_rescale_t,
     }
 
     torch.manual_seed(seed)
@@ -1522,6 +1532,7 @@ def run_texture_mesh(
     tex_guidance_strength: float = 3.0,
     tex_guidance_rescale: float = 0.20,
     tex_sampling_steps: int = 12,
+    tex_rescale_t: float = 3.0,
 ) -> Dict[str, Any]:
     """
     Generate PBR textures for an existing mesh using its encoded shape latent.
@@ -1537,6 +1548,7 @@ def run_texture_mesh(
         seed: Random seed
         tex_guidance_strength: Texture CFG scale
         tex_sampling_steps: Texture sampling steps
+        tex_rescale_t: Flow matching time rescaling parameter
 
     Returns:
         Dict with voxel data for NPZ export (same format as run_texture_generation)
@@ -1579,6 +1591,7 @@ def run_texture_mesh(
         "steps": tex_sampling_steps,
         "guidance_strength": tex_guidance_strength,
         "guidance_rescale": tex_guidance_rescale,
+        "rescale_t": tex_rescale_t,
     }
 
     torch.manual_seed(seed)
