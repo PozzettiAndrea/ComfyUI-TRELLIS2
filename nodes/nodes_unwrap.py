@@ -44,7 +44,9 @@ Parameters:
 - fill_holes: Fill small holes before simplifying
 - fill_holes_perimeter: Max hole perimeter to fill
 - remesh: Apply dual-contouring remesh for cleaner topology
-- remesh_band: Remesh band width""",
+- remesh_band: Remesh band width
+- project_back: How strongly remeshed vertices snap back to the original surface (0.0 = smooth, 1.0 = sharp)
+""",
             inputs=[
                 io.Custom("TRIMESH").Input("trimesh"),
                 io.Int.Input("target_face_count", default=500000, min=1000, max=5000000, step=1000),
@@ -52,6 +54,8 @@ Parameters:
                 io.Float.Input("fill_holes_perimeter", default=0.03, min=0.001, max=0.5, step=0.001, optional=True),
                 io.Boolean.Input("remesh", default=False, optional=True),
                 io.Float.Input("remesh_band", default=1.0, min=0.1, max=5.0, step=0.1, optional=True),
+                io.Float.Input("project_back", default=0.0, min=0.0, max=1.0, step=0.05, optional=True,
+                               tooltip="How strongly remeshed vertices snap back to the original surface (0.0 = smooth, 1.0 = sharp)."),
             ],
             outputs=[
                 io.Custom("TRIMESH").Output(display_name="trimesh"),
@@ -67,6 +71,7 @@ Parameters:
         fill_holes_perimeter=0.03,
         remesh=False,
         remesh_band=1.0,
+        project_back=0.0,
     ):
         import torch
         import cumesh_vb as CuMesh
@@ -115,7 +120,7 @@ Parameters:
                 scale=(resolution + 3 * remesh_band) / resolution * scale,
                 resolution=resolution,
                 band=remesh_band,
-                project_back=0.0,
+                project_back=project_back,
                 verbose=True,
                 bvh=bvh,
             ))
@@ -514,16 +519,39 @@ Takes a mesh WITH UVs and bakes color/metallic/roughness from the VOXELGRID.
 Input mesh MUST have UVs (use UV Unwrap node first).
 
 Parameters:
-- texture_size: Resolution of baked textures (512-16384px)""",
+- texture_size: Resolution of baked textures (512-16384px)
+- pixel_expansion: Base Color map padding/dilation to prevent seams (0-64px)
+- pbr_pixel_expansion: Metallic, Roughness, and Alpha map padding/dilation to prevent seams (0-64px)
+- double_sided: Enable double-sided material rendering (prevents transparent backfaces)
+- force_opaque: Force the texture to be opaque. Eliminates transparent pixel gaps and reduces file size.
+""",
             inputs=[
                 io.Custom("TRIMESH").Input("trimesh"),
                 io.Custom("TRELLIS2_VOXELGRID").Input("voxelgrid"),
                 io.Int.Input("texture_size", default=2048, min=512, max=16384, step=512),
                 io.Custom("TRIMESH").Input("original_mesh", optional=True,
                     tooltip="Original mesh (pre-simplification) for BVH projection. Improves texture accuracy by projecting texel positions back to the original surface."),
+                io.Int.Input("pixel_expansion", default=3, min=0, max=64, step=1, optional=True,
+                             tooltip="Pixel expansion (inpaint radius) for the Base Color map to prevent seam bleeding."),
+                io.Int.Input("pbr_pixel_expansion", default=1, min=0, max=64, step=1, optional=True,
+                             tooltip="Pixel expansion (inpaint radius) for Metallic, Roughness, and Alpha maps."),
+                io.Boolean.Input("double_sided", default=True, optional=True,
+                                 tooltip="Enable double-sided material rendering (prevents transparent backfaces)."),
+                io.Boolean.Input("base_force_opaque", default=False, optional=True,
+                                 tooltip="Strip alpha channel from the base_color texture if it exists."),
+                io.Combo.Input("expansion_mode", options=["hybrid", "fast_dilate", "cv2_inpaint"], default="hybrid", optional=True,
+                               tooltip="Seam prevention algorithm: 'hybrid' is fast and smooth (combines dilation and inpainting), 'fast_dilate' is near-instant, 'cv2_inpaint' is smooth but very slow."),
+                io.Combo.Input("compression_mode", options=["WEBP", "PNG", "JPEG"], default="WEBP", optional=True,
+                               tooltip="Texture compression format inside GLB: 'WEBP' supports transparency and is highly compressed, 'PNG' is lossless and supports transparency, 'JPEG' does NOT support alpha/transparency."),
+                io.Int.Input("texture_quality", default=90, min=10, max=100, step=1, optional=True,
+                             tooltip="Compression quality level (10-100). 100 is fully lossless."),
             ],
             outputs=[
                 io.Custom("TRIMESH").Output(display_name="trimesh"),
+                io.Image.Output(display_name="base_color"),
+                io.Image.Output(display_name="normal_map"),
+                io.Image.Output(display_name="metallic_roughness"),
+                io.Image.Output(display_name="alpha_map"),
             ],
         )
 
@@ -534,6 +562,13 @@ Parameters:
         voxelgrid,
         texture_size=2048,
         original_mesh=None,
+        pixel_expansion=3,
+        pbr_pixel_expansion=1,
+        double_sided=True,
+        base_force_opaque=False,
+        expansion_mode="hybrid",
+        compression_mode="WEBP",
+        texture_quality=90,
     ):
         import torch
         import cv2
@@ -638,26 +673,82 @@ Parameters:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        # Inpaint UV seams
+        # Inpaint UV seams (pixel expansion)
         mask_inv = (~mask_np).astype(np.uint8)
-        base_color = cv2.inpaint(base_color, mask_inv, 3, cv2.INPAINT_TELEA)
-        metallic = cv2.inpaint(metallic, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
-        roughness = cv2.inpaint(roughness, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
-        alpha = cv2.inpaint(alpha, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
+
+        def _fast_dilate_fill(img, mask_i, iterations):
+            dilated = img.copy()
+            kernel = np.ones((3, 3), np.uint8)
+            is_3d = img.ndim == 3
+            mask_cond = mask_i[:, :, np.newaxis] > 0 if is_3d else mask_i > 0
+            for _ in range(iterations):
+                dilated_step = cv2.dilate(dilated, kernel)
+                dilated = np.where(mask_cond, dilated_step, dilated)
+            return dilated
+
+        def _apply_expansion(img, mask_i, radius, is_pbr=False):
+            if radius <= 0:
+                return img
+            
+            # Extract channel if 3D single-channel
+            if is_pbr and img.ndim == 3 and img.shape[-1] == 1:
+                img_2d = img[..., 0]
+                use_pbr_wrap = True
+            else:
+                img_2d = img
+                use_pbr_wrap = False
+
+            if expansion_mode == "fast_dilate":
+                res = _fast_dilate_fill(img_2d, mask_i, radius)
+            elif expansion_mode == "cv2_inpaint":
+                res = cv2.inpaint(img_2d, mask_i, radius, cv2.INPAINT_TELEA)
+            else:  # hybrid
+                if radius <= 4:
+                    res = cv2.inpaint(img_2d, mask_i, radius, cv2.INPAINT_TELEA)
+                else:
+                    res = _fast_dilate_fill(img_2d, mask_i, radius)
+
+            if use_pbr_wrap:
+                return res[..., None]
+            return res
+
+        base_color = _apply_expansion(base_color, mask_inv, pixel_expansion)
+        metallic = _apply_expansion(metallic, mask_inv, pbr_pixel_expansion, is_pbr=True)
+        roughness = _apply_expansion(roughness, mask_inv, pbr_pixel_expansion, is_pbr=True)
+        alpha = _apply_expansion(alpha, mask_inv, pbr_pixel_expansion, is_pbr=True)
+
+        # Compress textures for GLB
+        def _compress_texture(pil_img, format_mode, q):
+            if format_mode == "PNG" or q >= 100:
+                return pil_img
+            import io
+            out = io.BytesIO()
+            if format_mode == "JPEG":
+                pil_img.convert('RGB').save(out, format='JPEG', quality=q)
+            else: # WEBP
+                pil_img.save(out, format='WEBP', quality=q)
+            out.seek(0)
+            return Image.open(out)
 
         # Create PBR material
+        base_texture = Image.fromarray(base_color) if base_force_opaque else Image.fromarray(np.concatenate([base_color, alpha], axis=-1))
+        base_texture = _compress_texture(base_texture, compression_mode, texture_quality)
+
+        mr_texture = Image.fromarray(np.concatenate([
+            np.zeros_like(metallic),
+            roughness,
+            metallic
+        ], axis=-1))
+        mr_texture = _compress_texture(mr_texture, compression_mode, texture_quality)
+
         material = Trimesh.visual.material.PBRMaterial(
-            baseColorTexture=Image.fromarray(np.concatenate([base_color, alpha], axis=-1)),
+            baseColorTexture=base_texture,
             baseColorFactor=np.array([255, 255, 255, 255], dtype=np.uint8),
-            metallicRoughnessTexture=Image.fromarray(np.concatenate([
-                np.zeros_like(metallic),
-                roughness,
-                metallic
-            ], axis=-1)),
+            metallicRoughnessTexture=mr_texture,
             metallicFactor=1.0,
             roughnessFactor=1.0,
-            alphaMode='OPAQUE',
-            doubleSided=False,
+            alphaMode='OPAQUE' if base_force_opaque else 'BLEND',
+            doubleSided=double_sided,
         )
 
         # Build result
@@ -681,6 +772,23 @@ Parameters:
                 result.vertex_attributes[f'{attr_name}_b'] = values[:, 2].astype(np.float32)
 
         logger.info(f"Rasterize complete: {texture_size}x{texture_size} PBR textures")
+
+        # Convert PBR textures to ComfyUI IMAGE tensors
+        from .image_utils import numpy_to_comfy
+        base_color_tensor = numpy_to_comfy(base_color)
+
+        flat_normal = np.full((texture_size, texture_size, 3), [128, 128, 255], dtype=np.uint8)
+        normal_map_tensor = numpy_to_comfy(flat_normal)
+
+        metallic_roughness_np = np.concatenate([
+            np.zeros_like(metallic),
+            roughness,
+            metallic
+        ], axis=-1)
+        metallic_roughness_tensor = numpy_to_comfy(metallic_roughness_np)
+
+        alpha_3ch = np.concatenate([alpha, alpha, alpha], axis=-1)
+        alpha_map_tensor = numpy_to_comfy(alpha_3ch)
 
         del vertices, faces, uvs, vertex_pbr_attrs
         gc.collect()
@@ -715,7 +823,7 @@ Parameters:
             print(f"  vertex_normals: None", file=sys.stderr, flush=True)
         print(f"  vertex_attributes: {list(result.vertex_attributes.keys()) if hasattr(result, 'vertex_attributes') else 'None'}", file=sys.stderr, flush=True)
 
-        return io.NodeOutput(result)
+        return io.NodeOutput(result, base_color_tensor, normal_map_tensor, metallic_roughness_tensor, alpha_map_tensor)
 
 
 def remesh_narrow_band_dc_lowmem(
@@ -1105,6 +1213,12 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
                 io.Boolean.Input("double_sided", default=False, optional=True,
                     tooltip="Mark material as double-sided in GLB (renders both front and back faces)."),
                 io.String.Input("filename_prefix", default="trellis2", optional=True),
+                io.Int.Input("pixel_expansion", default=3, min=0, max=64, step=1, optional=True,
+                             tooltip="Pixel expansion (inpaint radius) for the Base Color map to prevent seam bleeding."),
+                io.Int.Input("pbr_pixel_expansion", default=1, min=0, max=64, step=1, optional=True,
+                             tooltip="Pixel expansion (inpaint radius) for Metallic, Roughness, and Alpha maps."),
+                io.Boolean.Input("force_opaque", default=True, optional=True,
+                                 tooltip="Force the texture to be opaque. Eliminates transparent pixel gaps and reduces file size."),
             ],
             outputs=[
                 io.String.Output(display_name="glb_path"),
@@ -1122,6 +1236,9 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
         remove_inner_faces=False,
         double_sided=False,
         filename_prefix="trellis2",
+        pixel_expansion=3,
+        pbr_pixel_expansion=1,
+        force_opaque=True,
     ):
         import json
         import torch
@@ -1300,14 +1417,18 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        base_color = cv2.inpaint(base_color, mask_inv, 3, cv2.INPAINT_TELEA)
-        metallic = cv2.inpaint(metallic, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
-        roughness = cv2.inpaint(roughness, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
-        alpha = cv2.inpaint(alpha, mask_inv, 1, cv2.INPAINT_TELEA)[..., None]
+        if pixel_expansion > 0:
+            base_color = cv2.inpaint(base_color, mask_inv, pixel_expansion, cv2.INPAINT_TELEA)
+        if pbr_pixel_expansion > 0:
+            metallic = cv2.inpaint(metallic, mask_inv, pbr_pixel_expansion, cv2.INPAINT_TELEA)[..., None]
+            roughness = cv2.inpaint(roughness, mask_inv, pbr_pixel_expansion, cv2.INPAINT_TELEA)[..., None]
+            alpha = cv2.inpaint(alpha, mask_inv, pbr_pixel_expansion, cv2.INPAINT_TELEA)[..., None]
 
         # --- 13. Build PBR material ---
+        base_texture = Image.fromarray(base_color) if force_opaque else Image.fromarray(np.concatenate([base_color, alpha], axis=-1))
+
         material = Trimesh.visual.material.PBRMaterial(
-            baseColorTexture=Image.fromarray(np.concatenate([base_color, alpha], axis=-1)),
+            baseColorTexture=base_texture,
             baseColorFactor=np.array([255, 255, 255, 255], dtype=np.uint8),
             metallicRoughnessTexture=Image.fromarray(np.concatenate([np.zeros_like(metallic), roughness, metallic], axis=-1)),
             metallicFactor=1.0,
@@ -1417,6 +1538,167 @@ Supports: GLB, OBJ, PLY, STL, 3MF, DAE""",
         return io.NodeOutput(str(output_path))
 
 
+class Trellis2SetMeshTextures(io.ComfyNode):
+    """Pack custom (or upscaled) PBR textures directly back into a 3D mesh's material."""
+
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="Trellis2SetMeshTextures",
+            display_name="TRELLIS.2 Set Mesh Textures",
+            category="TRELLIS2",
+            description="""Pack custom (or upscaled) PBR textures directly back into a 3D mesh's material.
+
+If the input textures are not connected, the original textures on the mesh are fully preserved.""",
+            inputs=[
+                io.Custom("TRIMESH").Input("trimesh"),
+                # Base Color & Geometry controls
+                io.Image.Input("base_color", optional=True,
+                               tooltip="Base Color texture map."),
+                io.Image.Input("alpha_map", optional=True,
+                               tooltip="Alpha/Transparency map."),
+                io.Boolean.Input("base_force_opaque", default=False, optional=True,
+                                 tooltip="Strip alpha channel from the base_color texture if it exists."),
+                io.Boolean.Input("double_sided", default=True, optional=True,
+                                 tooltip="Enable double-sided material rendering (prevents transparent backfaces)."),
+                # Normal details
+                io.Image.Input("normal_map", optional=True,
+                               tooltip="Tangent Space Normal map."),
+                io.Float.Input("normal_scale", default=1.0, min=0.0, max=5.0, step=0.01, optional=True,
+                               tooltip="Normal map strength/intensity multiplier."),
+                # Metallic & Roughness
+                io.Image.Input("metallic_roughness", optional=True,
+                               tooltip="Metallic/Roughness combined texture map (Green=Roughness, Blue=Metallic)."),
+                io.Float.Input("metallic_factor", default=1.0, min=0.0, max=1.0, step=0.01, optional=True,
+                               tooltip="Metallic multiplier or uniform constant (if no map is connected)."),
+                io.Float.Input("roughness_factor", default=1.0, min=0.0, max=1.0, step=0.01, optional=True,
+                               tooltip="Roughness multiplier or uniform constant (if no map is connected)."),
+                # Emissive & Occlusion
+                io.Image.Input("emissive_map", optional=True,
+                               tooltip="Emissive / Glow texture map."),
+                io.Float.Input("emissive_strength", default=1.0, min=0.0, max=10.0, step=0.1, optional=True,
+                               tooltip="Emissive glow multiplier/strength."),
+                io.Image.Input("occlusion_map", optional=True,
+                               tooltip="Custom Ambient Occlusion (AO) texture map."),
+                io.Float.Input("occlusion_strength", default=1.0, min=0.0, max=1.0, step=0.01, optional=True,
+                               tooltip="Ambient Occlusion shadow strength multiplier."),
+                # Compression settings
+                io.Combo.Input("compression_mode", options=["PNG", "JPEG", "WEBP"], default="WEBP", optional=True,
+                               tooltip="Texture compression format inside GLB: 'WEBP' is state-of-the-art with transparency, 'JPEG' is legacy (does NOT support alpha/transparency), 'PNG' is lossless."),
+                io.Int.Input("texture_quality", default=90, min=10, max=100, step=1, optional=True,
+                             tooltip="Compression quality level (10-100). 100 is fully lossless."),
+            ],
+            outputs=[
+                io.Custom("TRIMESH").Output(display_name="trimesh"),
+            ],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        trimesh,
+        base_color=None,
+        alpha_map=None,
+        base_force_opaque=False,
+        double_sided=True,
+        normal_map=None,
+        normal_scale=1.0,
+        metallic_roughness=None,
+        metallic_factor=1.0,
+        roughness_factor=1.0,
+        emissive_map=None,
+        emissive_strength=1.0,
+        occlusion_map=None,
+        occlusion_strength=1.0,
+        compression_mode="WEBP",
+        texture_quality=90,
+    ):
+        from PIL import Image
+        import numpy as np
+        import trimesh as Trimesh
+        from .image_utils import comfy_to_pil
+
+        # Always instantiate a brand new, empty PBR material to ignore existing textures
+        material = Trimesh.visual.material.PBRMaterial(
+            baseColorFactor=np.array([255, 255, 255, 255], dtype=np.uint8),
+            metallicFactor=metallic_factor,
+            roughnessFactor=roughness_factor,
+            normalScale=normal_scale,
+            occlusionStrength=occlusion_strength,
+            alphaMode='OPAQUE' if base_force_opaque else 'BLEND',
+            doubleSided=double_sided,
+        )
+
+        # Compress helper for override textures
+        def _compress(pil_img):
+            if compression_mode == "PNG" or texture_quality >= 100:
+                return pil_img
+            import io
+            out = io.BytesIO()
+            if compression_mode == "JPEG":
+                pil_img.convert('RGB').save(out, format='JPEG', quality=texture_quality)
+            else: # WEBP
+                pil_img.save(out, format='WEBP', quality=texture_quality)
+            out.seek(0)
+            return Image.open(out)
+
+        # 1. Update Base Color / Albedo texture
+        if base_color is not None or alpha_map is not None:
+            if base_color is not None:
+                pil_color = comfy_to_pil(base_color).convert('RGBA')
+            else:
+                pil_color = Image.new('RGBA', (2048, 2048), (255, 255, 255, 255))
+
+            if alpha_map is not None and not base_force_opaque:
+                pil_alpha = comfy_to_pil(alpha_map).convert('L')
+                if pil_alpha.size != pil_color.size:
+                    pil_alpha = pil_alpha.resize(pil_color.size, Image.Resampling.BILINEAR)
+                pil_color.putalpha(pil_alpha)
+
+            if base_force_opaque:
+                pil_color = pil_color.convert('RGB')
+
+            pil_color = _compress(pil_color)
+            material.baseColorTexture = pil_color
+
+        # 2. Update Tangent Space Normal texture
+        if normal_map is not None:
+            pil_normal = comfy_to_pil(normal_map)
+            material.normalTexture = pil_normal
+
+        # 3. Update Metallic Roughness texture
+        if metallic_roughness is not None:
+            pil_mr = comfy_to_pil(metallic_roughness)
+            pil_mr = _compress(pil_mr)
+            material.metallicRoughnessTexture = pil_mr
+
+        # 4. Update Emissive (Glow) texture
+        if emissive_map is not None:
+            pil_emissive = comfy_to_pil(emissive_map)
+            pil_emissive = _compress(pil_emissive)
+            material.emissiveTexture = pil_emissive
+            material.emissiveFactor = np.array([emissive_strength, emissive_strength, emissive_strength], dtype=np.float32)
+
+        # 5. Update Ambient Occlusion texture
+        if occlusion_map is not None:
+            pil_occlusion = comfy_to_pil(occlusion_map)
+            pil_occlusion = _compress(pil_occlusion)
+            material.occlusionTexture = pil_occlusion
+
+        # Rebuild visual visuals to ensure correct propagation
+        result = Trimesh.Trimesh(
+            vertices=trimesh.vertices,
+            faces=trimesh.faces,
+            vertex_normals=trimesh.vertex_normals if hasattr(trimesh, 'vertex_normals') else None,
+            process=False,
+            visual=Trimesh.visual.TextureVisuals(uv=trimesh.visual.uv, material=material)
+        )
+        if hasattr(trimesh, 'vertex_attributes'):
+            result.vertex_attributes = trimesh.vertex_attributes
+
+        return io.NodeOutput(result)
+
+
 NODE_CLASS_MAPPINGS = {
     "Trellis2Simplify": Trellis2Simplify,
     "Trellis2UVUnwrap": Trellis2UVUnwrap,
@@ -1424,6 +1706,7 @@ NODE_CLASS_MAPPINGS = {
     "Trellis2RasterizePBR": Trellis2RasterizePBR,
     "Trellis2ExportGLB": Trellis2ExportGLB,
     "Trellis2ExportTrimesh": Trellis2ExportTrimesh,
+    "Trellis2SetMeshTextures": Trellis2SetMeshTextures,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -1433,4 +1716,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Trellis2RasterizePBR": "TRELLIS.2 Rasterize PBR",
     "Trellis2ExportGLB": "TRELLIS.2 Export GLB",
     "Trellis2ExportTrimesh": "TRELLIS.2 Export Trimesh",
+    "Trellis2SetMeshTextures": "TRELLIS.2 Set Mesh Textures",
 }
