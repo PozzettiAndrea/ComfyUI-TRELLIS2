@@ -1352,7 +1352,18 @@ Takes the voxelgrid_npz_path from "Shape to Textured Mesh" and:
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
-        return io.NodeOutput(output_path)
+        # Emit three_model UI entry so downstream consumers (the production
+        # character pipeline's _extract_three_model_glb) can locate the file
+        # via ComfyUI's /history endpoint. Without this, the workflow output
+        # dict is empty and the orchestrator can't fetch the result.
+        return io.NodeOutput(
+            output_path,
+            ui={"three_model": [{
+                "filename": filename,
+                "subfolder": "",
+                "type": "output",
+            }]},
+        )
 
 
 class Trellis2ExportTrimesh(io.ComfyNode):
@@ -1414,7 +1425,18 @@ Supports: GLB, OBJ, PLY, STL, 3MF, DAE""",
 
         logger.info(f"Exported to: {output_path}")
 
-        return io.NodeOutput(str(output_path))
+        # Emit three_model UI entry so downstream consumers (the production
+        # character pipeline's _extract_three_model_glb) can locate the file
+        # via ComfyUI's /history endpoint. Without this, the workflow output
+        # dict is empty and the orchestrator can't fetch the result.
+        return io.NodeOutput(
+            str(output_path),
+            ui={"three_model": [{
+                "filename": filename,
+                "subfolder": "",
+                "type": "output",
+            }]},
+        )
 
 
 NODE_CLASS_MAPPINGS = {
