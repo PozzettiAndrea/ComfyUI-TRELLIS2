@@ -1,18 +1,10 @@
 [test]
-levels = ["syntax", "install", "execution"]
-publish = 'true'
+levels = ["syntax", "javascript", "install", "execution"]
+publish = true
 
 [test.workflows]
 cpu = []
-gpu = ["!mesh_audit"]
+cuda = ["!mesh_audit"]
 
 [test.platforms]
-# CPU platforms
-linux = false
-macos = false
-windows = false
-windows_portable = false
-linux_gpu = true
-windows_gpu = true
-windows_portable_gpu = true
-windows_desktop_gpu = true
+platforms = ["linux_cuda", "windows_cuda", "windows_portable_cuda", "windows_desktop_cuda"]
