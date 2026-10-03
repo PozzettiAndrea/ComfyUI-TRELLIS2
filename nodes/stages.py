@@ -328,10 +328,41 @@ def _unload_model(model_key):
     calls can properly manage VRAM — load_models_gpu fast-exits when a model is
     already in current_loaded_models, so without an explicit offload all models
     accumulate on GPU.
+
+    TRELLIS2_FREE_MODELS=1 additionally DROPS the CPU copy instead of parking
+    it. The default keeps every stage model resident in this process for its
+    whole life, and each model is used by exactly one stage, so a textured 512
+    run parks the whole pipeline (~11 GiB of bf16 weights) in RAM and the pod
+    crosses a 16 GiB cgroup exactly when tex_slat_flow_model_512 loads.
+    Freeing bounds the resident set to the stage in flight; a model needed
+    again is simply rebuilt from disk. Gated so the default is unchanged.
+    Measured 2026-10-03, kanban t_4a4fef4a.
     """
-    if model_key in _model_patchers:
-        patcher = _model_patchers[model_key]
-        patcher.unpatch_model(device_to=patcher.offload_device)
+    free = os.environ.get("TRELLIS2_FREE_MODELS", "").lower() in ("1", "true", "yes")
+    if free:
+        patcher = _model_patchers.pop(model_key, None)
+        if patcher is not None:
+            patcher.unpatch_model(device_to=patcher.offload_device)
+            try:
+                comfy.model_management.current_loaded_models = [
+                    lm for lm in comfy.model_management.current_loaded_models
+                    if getattr(lm, "model", None) is not patcher]
+            except Exception:
+                pass
+            try:
+                patcher.model.to("meta")
+            except Exception:
+                pass
+            try:
+                _post_loaded.discard(model_key)
+            except Exception:
+                pass
+            del patcher
+    else:
+        if model_key in _model_patchers:
+            patcher = _model_patchers[model_key]
+            patcher.unpatch_model(device_to=patcher.offload_device)
+    gc.collect()
     comfy.model_management.soft_empty_cache()
 
 
